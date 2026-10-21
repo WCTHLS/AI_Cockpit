@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from .config import settings
 from .routers import auth, summary, agents, costs, seats, admin, telemetry
 
@@ -37,6 +38,10 @@ def health_check():
         "service": settings.PROJECT_NAME,
         "version": settings.VERSION
     }
+
+@app.get("/docs", include_in_schema=False)
+def docs_redirect():
+    return RedirectResponse(url=f"{settings.API_V1_STR}/docs")
 
 @app.get("/", tags=["system"])
 def root():
