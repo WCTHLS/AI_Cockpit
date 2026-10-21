@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
-import { Users, UserX, Clock, Award, Calculator, ArrowRight, DollarSign } from 'lucide-react';
+import { Users, UserX, Clock, Award, Calculator } from 'lucide-react';
 import { SeatInventorySummary } from '../types';
-import { formatUSD, formatPct } from '../api';
+import { formatUSD } from '../api';
 
 interface SeatsAdoptionTabProps {
   seats: SeatInventorySummary | null;
   onCostPerSeatChange: (cost: number) => void;
+  theme?: 'dark' | 'light';
 }
 
-export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCostPerSeatChange }) => {
+export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCostPerSeatChange, theme = 'dark' }) => {
   const [seatCost, setSeatCost] = useState<number>(30);
   const chartRef = useRef<HTMLDivElement>(null);
+
+  const isLight = theme === 'light';
 
   const total = seats?.total_licensed_seats ?? 1840;
   const active7d = seats?.active_seats_7d ?? 950;
@@ -30,16 +33,19 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'item',
+        backgroundColor: isLight ? '#FFFFFF' : '#101a33',
+        borderColor: isLight ? '#D6E2FA' : 'rgba(0, 210, 255, 0.3)',
+        textStyle: { color: isLight ? '#1A1A1A' : '#FFFFFF' },
         formatter: (params: any) => {
-          return `<div style="font-family: Outfit, sans-serif; padding: 4px;">
-            <b>${params.name}</b><br/>
+          return `<div style="font-family: Satoshi, Outfit, sans-serif; padding: 4px;">
+            <b style="color: ${isLight ? '#00349B' : '#fff'}">${params.name}</b><br/>
             Seats: <b>${params.value.toLocaleString()}</b> (${params.percent}%)
           </div>`;
         }
       },
       legend: {
         bottom: 0,
-        textStyle: { color: '#94a3b8', fontSize: 11 }
+        textStyle: { color: isLight ? '#475569' : '#94a3b8', fontSize: 11, fontWeight: isLight ? 600 : 400 }
       },
       series: [
         {
@@ -50,14 +56,14 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
           avoidLabelOverlap: false,
           itemStyle: {
             borderRadius: 6,
-            borderColor: '#0b1329',
+            borderColor: isLight ? '#FFFFFF' : '#0b1329',
             borderWidth: 2
           },
           label: { show: false },
           data: [
-            { name: 'Active (Last 7 Days)', value: active7d, itemStyle: { color: '#10b981' } },
-            { name: 'Lapsing (7-29 Days)', value: lapsing, itemStyle: { color: '#f59e0b' } },
-            { name: 'Idle (30+ Days)', value: idle, itemStyle: { color: '#ef4444' } }
+            { name: 'Active (Last 7 Days)', value: active7d, itemStyle: { color: isLight ? '#1B5E20' : '#10b981' } },
+            { name: 'Lapsing (7-29 Days)', value: lapsing, itemStyle: { color: isLight ? '#A16207' : '#f59e0b' } },
+            { name: 'Idle (30+ Days)', value: idle, itemStyle: { color: isLight ? '#C62828' : '#ef4444' } }
           ]
         }
       ]
@@ -69,7 +75,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [active7d, lapsing, idle]);
+  }, [active7d, lapsing, idle, isLight]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -82,8 +88,13 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
         {/* Total Licensed */}
         <div className="glass-panel kpi-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>TOTAL LICENSED SEATS</span>
-            <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: 7, borderRadius: 8, color: 'var(--accent-blue)' }}>
+            <span className="kpi-label">TOTAL LICENSED SEATS</span>
+            <div style={{
+              background: isLight ? '#E9EFFB' : 'rgba(59, 130, 246, 0.1)',
+              padding: 7,
+              borderRadius: 8,
+              color: isLight ? '#00349B' : 'var(--accent-blue)'
+            }}>
               <Users size={18} />
             </div>
           </div>
@@ -96,12 +107,17 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
         {/* Active 7d */}
         <div className="glass-panel kpi-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>ACTIVE SEATS (7 DAYS)</span>
-            <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: 7, borderRadius: 8, color: 'var(--accent-emerald)' }}>
+            <span className="kpi-label">ACTIVE SEATS (7 DAYS)</span>
+            <div style={{
+              background: isLight ? '#E3F1E4' : 'rgba(16, 185, 129, 0.1)',
+              padding: 7,
+              borderRadius: 8,
+              color: isLight ? '#1B5E20' : 'var(--accent-emerald)'
+            }}>
               <Award size={18} />
             </div>
           </div>
-          <div className="kpi-value" style={{ color: 'var(--accent-emerald)' }}>
+          <div className="kpi-value" style={{ color: isLight ? '#1B5E20' : 'var(--accent-emerald)' }}>
             {active7d.toLocaleString()}
           </div>
           <div className="kpi-sub">
@@ -112,12 +128,17 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
         {/* Lapsing 7-29d */}
         <div className="glass-panel kpi-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>LAPSING SEATS (7-29 DAYS)</span>
-            <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: 7, borderRadius: 8, color: 'var(--accent-amber)' }}>
+            <span className="kpi-label">LAPSING SEATS (7-29 DAYS)</span>
+            <div style={{
+              background: isLight ? '#FDF0C8' : 'rgba(245, 158, 11, 0.1)',
+              padding: 7,
+              borderRadius: 8,
+              color: isLight ? '#7A5300' : 'var(--accent-amber)'
+            }}>
               <Clock size={18} />
             </div>
           </div>
-          <div className="kpi-value" style={{ color: 'var(--accent-amber)' }}>
+          <div className="kpi-value" style={{ color: isLight ? '#A16207' : 'var(--accent-amber)' }}>
             {lapsing.toLocaleString()}
           </div>
           <div className="kpi-sub">
@@ -128,12 +149,17 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
         {/* Idle 30d+ */}
         <div className="glass-panel kpi-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>IDLE SEATS (30+ DAYS)</span>
-            <div style={{ background: 'rgba(239, 68, 68, 0.1)', padding: 7, borderRadius: 8, color: 'var(--accent-rose)' }}>
+            <span className="kpi-label">IDLE SEATS (30+ DAYS)</span>
+            <div style={{
+              background: isLight ? '#F9DEDC' : 'rgba(239, 68, 68, 0.1)',
+              padding: 7,
+              borderRadius: 8,
+              color: isLight ? '#A4161A' : 'var(--accent-rose)'
+            }}>
               <UserX size={18} />
             </div>
           </div>
-          <div className="kpi-value" style={{ color: '#f87171' }}>
+          <div className="kpi-value" style={{ color: isLight ? '#C62828' : '#f87171' }}>
             {idle.toLocaleString()}
           </div>
           <div className="kpi-sub">
@@ -161,7 +187,12 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
         <div className="glass-panel" style={{ padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-              <div style={{ background: 'rgba(0, 210, 255, 0.1)', padding: 8, borderRadius: 8, color: 'var(--accent-cyan)' }}>
+              <div style={{
+                background: isLight ? '#E9EFFB' : 'rgba(0, 210, 255, 0.1)',
+                padding: 8,
+                borderRadius: 8,
+                color: isLight ? '#00349B' : 'var(--accent-cyan)'
+              }}>
                 <Calculator size={20} />
               </div>
               <div>
@@ -173,10 +204,16 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
             </div>
 
             {/* Slider */}
-            <div style={{ marginTop: 20, background: 'rgba(0,0,0,0.25)', padding: 16, borderRadius: 10 }}>
+            <div style={{
+              marginTop: 20,
+              background: isLight ? '#F3F6FC' : 'rgba(0,0,0,0.25)',
+              border: isLight ? '1px solid #D6E2FA' : 'none',
+              padding: 16,
+              borderRadius: 10
+            }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontSize: 13, fontWeight: 600 }}>Assumed Monthly Cost Per Seat:</span>
-                <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--accent-cyan)' }}>${seatCost} / seat / mo</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)' }}>Assumed Monthly Cost Per Seat:</span>
+                <span style={{ fontSize: 15, fontWeight: 800, color: isLight ? '#00349B' : 'var(--accent-cyan)' }}>${seatCost} / seat / mo</span>
               </div>
               <input
                 type="range"
@@ -189,9 +226,9 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
                   setSeatCost(val);
                   onCostPerSeatChange(val);
                 }}
-                style={{ width: '100%', accentColor: 'var(--accent-cyan)', cursor: 'pointer' }}
+                style={{ width: '100%', accentColor: isLight ? '#00349B' : 'var(--accent-cyan)', cursor: 'pointer' }}
               />
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
                 <span>$15 (Copilot Studio)</span>
                 <span>$30 (M365 Copilot Std)</span>
                 <span>$60 (Pro Dev Tier)</span>
@@ -206,20 +243,24 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: 16,
-            background: 'rgba(16, 185, 129, 0.08)',
-            border: '1px solid rgba(16, 185, 129, 0.25)',
+            background: isLight ? '#E3F1E4' : 'rgba(16, 185, 129, 0.08)',
+            border: isLight ? '1.5px solid #C8E6C9' : '1px solid rgba(16, 185, 129, 0.25)',
             padding: 16,
             borderRadius: 12
           }}>
             <div>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Monthly Cost Recovery</span>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#34d399' }}>{formatUSD(monthlySavings)}</div>
-              <span style={{ fontSize: 11, color: 'var(--text-dim)' }}>from {idle} unassigned/idle seats</span>
+              <span style={{ fontSize: 11, color: isLight ? '#1B5E20' : 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+                Monthly Cost Recovery
+              </span>
+              <div style={{ fontSize: 24, fontWeight: 800, color: isLight ? '#1B5E20' : '#34d399' }}>{formatUSD(monthlySavings)}</div>
+              <span style={{ fontSize: 11, color: isLight ? '#475569' : 'var(--text-dim)' }}>from {idle} unassigned/idle seats</span>
             </div>
             <div>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Annualized Savings</span>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#00d2ff' }}>{formatUSD(annualSavings)}</div>
-              <span style={{ fontSize: 11, color: 'var(--text-dim)' }}>Direct EBITDA contribution</span>
+              <span style={{ fontSize: 11, color: isLight ? '#00349B' : 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+                Annualized Savings
+              </span>
+              <div style={{ fontSize: 24, fontWeight: 800, color: isLight ? '#00349B' : '#00d2ff' }}>{formatUSD(annualSavings)}</div>
+              <span style={{ fontSize: 11, color: isLight ? '#475569' : 'var(--text-dim)' }}>Direct EBITDA contribution</span>
             </div>
           </div>
         </div>
@@ -228,44 +269,52 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ seats, onCos
       {/* Breakdown by SKU Table */}
       <div className="glass-panel" style={{ padding: 20 }}>
         <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 14 }}>Licence Utilization by Tool &amp; Platform</h3>
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Platform / SKU</th>
-              <th>Total Provisioned</th>
-              <th>Active (7d)</th>
-              <th>Idle (30d+)</th>
-              <th>Utilization Rate</th>
-              <th>Potential Reclaimable Savings</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(seats?.by_tool ?? [
-              { tool: 'M365 Copilot', total: 1100, active: 620, idle: 290 },
-              { tool: 'Copilot Studio', total: 740, active: 330, idle: 190 }
-            ]).map((t, idx) => {
-              const util = ((t.active / t.total) * 100).toFixed(1);
-              const potSavings = t.idle * seatCost;
-              return (
-                <tr key={idx}>
-                  <td style={{ fontWeight: 600, color: '#fff' }}>{t.tool}</td>
-                  <td>{t.total.toLocaleString()}</td>
-                  <td style={{ color: '#34d399', fontWeight: 600 }}>{t.active.toLocaleString()}</td>
-                  <td style={{ color: '#f87171', fontWeight: 600 }}>{t.idle.toLocaleString()}</td>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ width: 60, height: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
-                        <div style={{ width: `${util}%`, height: '100%', background: '#3b82f6' }} />
+        <div style={{ overflowX: 'auto' }}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Platform / SKU</th>
+                <th>Total Provisioned</th>
+                <th>Active (7d)</th>
+                <th>Idle (30d+)</th>
+                <th>Utilization Rate</th>
+                <th>Potential Reclaimable Savings</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(seats?.by_tool ?? [
+                { tool: 'M365 Copilot', total: 1100, active: 620, idle: 290 },
+                { tool: 'Copilot Studio', total: 740, active: 330, idle: 190 }
+              ]).map((t, idx) => {
+                const util = ((t.active / t.total) * 100).toFixed(1);
+                const potSavings = t.idle * seatCost;
+                return (
+                  <tr key={idx}>
+                    <td style={{ fontWeight: 700, color: isLight ? '#00349B' : '#fff' }}>{t.tool}</td>
+                    <td>{t.total.toLocaleString()}</td>
+                    <td style={{ color: isLight ? '#1B5E20' : '#34d399', fontWeight: 700 }}>{t.active.toLocaleString()}</td>
+                    <td style={{ color: isLight ? '#C62828' : '#f87171', fontWeight: 700 }}>{t.idle.toLocaleString()}</td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{
+                          width: 60,
+                          height: 6,
+                          background: isLight ? '#D6E2FA' : 'rgba(255,255,255,0.1)',
+                          borderRadius: 3,
+                          overflow: 'hidden'
+                        }}>
+                          <div style={{ width: `${util}%`, height: '100%', background: isLight ? '#1713FD' : '#3b82f6' }} />
+                        </div>
+                        <span style={{ fontWeight: 600 }}>{util}%</span>
                       </div>
-                      <span>{util}%</span>
-                    </div>
-                  </td>
-                  <td style={{ fontWeight: 700, color: '#00d2ff' }}>{formatUSD(potSavings)} / mo</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                    <td style={{ fontWeight: 700, color: isLight ? '#00349B' : '#00d2ff' }}>{formatUSD(potSavings)} / mo</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

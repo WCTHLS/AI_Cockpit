@@ -4,10 +4,7 @@ import {
   TableProperties,
   PieChart,
   Users,
-  Settings,
-  HelpCircle,
-  TrendingUp,
-  Cpu
+  Settings
 } from 'lucide-react';
 import { Header } from './components/Header';
 import { ExecutiveSummaryTab } from './components/ExecutiveSummaryTab';
@@ -37,6 +34,11 @@ import {
 } from './types';
 
 export const App: React.FC = () => {
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('wct_cockpit_theme');
+    return saved === 'light' || saved === 'dark' ? saved : 'dark';
+  });
+
   const [activeTab, setActiveTab] = useState<'summary' | 'scorecard' | 'costs' | 'seats' | 'admin'>('summary');
   const [currentMonth, setCurrentMonth] = useState<string>('2026-09');
   const [selectedFunction, setSelectedFunction] = useState<string>('');
@@ -59,6 +61,12 @@ export const App: React.FC = () => {
 
   const [selectedAgent, setSelectedAgent] = useState<AgentScorecardItem | null>(null);
   const [scorecardActionFilter, setScorecardActionFilter] = useState<string>('');
+
+  // Sync theme to root DOM node
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('wct_cockpit_theme', theme);
+  }, [theme]);
 
   // Load dashboard data
   const loadDashboardData = async () => {
@@ -102,7 +110,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="app-container">
+    <div className="app-container" data-theme={theme}>
       {/* Executive Header */}
       <Header
         currentMonth={currentMonth}
@@ -113,22 +121,13 @@ export const App: React.FC = () => {
         onUserChange={setCurrentUser}
         onRefresh={loadDashboardData}
         isLoading={isLoading}
+        theme={theme}
+        onThemeChange={setTheme}
       />
 
       {/* Main Tab Navigation */}
-      <div style={{
-        background: 'rgba(8, 13, 26, 0.6)',
-        borderBottom: '1px solid var(--border-subtle)',
-        padding: '0 32px'
-      }}>
-        <div style={{
-          maxWidth: 1600,
-          margin: '0 auto',
-          display: 'flex',
-          gap: 8,
-          overflowX: 'auto',
-          padding: '8px 0'
-        }}>
+      <div className="nav-tabs-wrapper">
+        <div className="nav-tabs-container">
           <button
             className={`tab-button ${activeTab === 'summary' ? 'active' : ''}`}
             onClick={() => setActiveTab('summary')}
@@ -181,6 +180,7 @@ export const App: React.FC = () => {
             whereToAct={whereToAct}
             onSelectAgent={setSelectedAgent}
             onFilterAction={handleFilterAction}
+            theme={theme}
           />
         )}
 
@@ -189,6 +189,7 @@ export const App: React.FC = () => {
             agents={agents}
             onSelectAgent={setSelectedAgent}
             initialActionFilter={scorecardActionFilter}
+            theme={theme}
           />
         )}
 
@@ -196,6 +197,7 @@ export const App: React.FC = () => {
           <CostBudgetTab
             costBreakdown={costBreakdown}
             agents={agents}
+            theme={theme}
           />
         )}
 
@@ -205,6 +207,7 @@ export const App: React.FC = () => {
             onCostPerSeatChange={(cost) => {
               fetchSeats(selectedFunction, cost).then(res => setSeats(res)).catch(() => {});
             }}
+            theme={theme}
           />
         )}
 
@@ -212,6 +215,7 @@ export const App: React.FC = () => {
           <AdminTab
             initialThresholds={thresholds}
             onThresholdsUpdated={loadDashboardData}
+            theme={theme}
           />
         )}
       </main>
@@ -220,6 +224,7 @@ export const App: React.FC = () => {
       <AgentDetailModal
         agent={selectedAgent}
         onClose={() => setSelectedAgent(null)}
+        theme={theme}
       />
     </div>
   );

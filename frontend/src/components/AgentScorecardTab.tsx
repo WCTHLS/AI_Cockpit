@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
-import { Search, Filter, ArrowUpDown, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Search, ArrowUpDown, ChevronRight } from 'lucide-react';
 import { AgentScorecardItem } from '../types';
 import { formatUSD, formatPct } from '../api';
 
@@ -8,18 +8,22 @@ interface AgentScorecardTabProps {
   agents: AgentScorecardItem[];
   onSelectAgent: (agent: AgentScorecardItem) => void;
   initialActionFilter?: string;
+  theme?: 'dark' | 'light';
 }
 
 export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
   agents,
   onSelectAgent,
-  initialActionFilter = ''
+  initialActionFilter = '',
+  theme = 'dark'
 }) => {
   const [search, setSearch] = useState('');
   const [actionFilter, setActionFilter] = useState(initialActionFilter);
   const [sortBy, setSortBy] = useState<string>('net_value');
   const [sortDesc, setSortDesc] = useState<boolean>(true);
   const scatterRef = useRef<HTMLDivElement>(null);
+
+  const isLight = theme === 'light';
 
   useEffect(() => {
     if (initialActionFilter) {
@@ -59,7 +63,12 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
     if (!scatterRef.current || !agents.length) return;
     const chart = echarts.init(scatterRef.current);
 
-    const actionColors: Record<string, string> = {
+    const actionColors: Record<string, string> = isLight ? {
+      accelerate: '#1B5E20',
+      optimize: '#7A5300',
+      experiment: '#455A64',
+      intervene: '#A4161A'
+    } : {
       accelerate: '#10b981',
       optimize: '#3b82f6',
       experiment: '#a855f7',
@@ -70,10 +79,13 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'item',
+        backgroundColor: isLight ? '#FFFFFF' : '#101a33',
+        borderColor: isLight ? '#D6E2FA' : 'rgba(0, 210, 255, 0.3)',
+        textStyle: { color: isLight ? '#1A1A1A' : '#FFFFFF' },
         formatter: (params: any) => {
           const raw = params.data[3];
-          return `<div style="font-family: Outfit, sans-serif; padding: 4px;">
-            <b>${raw.name}</b> (${raw.function})<br/>
+          return `<div style="font-family: Satoshi, Outfit, sans-serif; padding: 4px;">
+            <b style="color: ${isLight ? '#00349B' : '#fff'}">${raw.name}</b> (${raw.function})<br/>
             Adoption: <b>${formatPct(raw.adoption_pct)}</b><br/>
             Net Value: <b>${formatUSD(raw.net_value)}</b><br/>
             Eval Pass: <b>${formatPct(raw.eval_pass_rate)}</b><br/>
@@ -86,22 +98,24 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
         name: 'Adoption Rate (%)',
         nameLocation: 'middle',
         nameGap: 25,
+        nameTextStyle: { color: isLight ? '#475569' : '#94a3b8' },
         type: 'value',
         min: 0,
         max: 100,
-        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
-        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
-        axisLabel: { color: '#94a3b8', fontSize: 11, formatter: '{value}%' }
+        axisLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.2)' : 'rgba(255,255,255,0.1)' } },
+        splitLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.08)' : 'rgba(255,255,255,0.06)' } },
+        axisLabel: { color: isLight ? '#475569' : '#94a3b8', fontSize: 11, formatter: '{value}%' }
       },
       yAxis: {
         name: 'Net Value ($)',
         nameLocation: 'middle',
         nameGap: 45,
+        nameTextStyle: { color: isLight ? '#475569' : '#94a3b8' },
         type: 'value',
-        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
-        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
+        axisLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.2)' : 'rgba(255,255,255,0.1)' } },
+        splitLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.08)' : 'rgba(255,255,255,0.06)' } },
         axisLabel: {
-          color: '#94a3b8',
+          color: isLight ? '#475569' : '#94a3b8',
           fontSize: 10,
           formatter: (v: number) => `$${(v / 1000).toFixed(0)}k`
         }
@@ -119,8 +133,8 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           ]),
           itemStyle: {
             color: (params: any) => actionColors[params.data[3].action] || '#3b82f6',
-            shadowBlur: 8,
-            shadowColor: 'rgba(0,0,0,0.4)'
+            shadowBlur: isLight ? 4 : 8,
+            shadowColor: isLight ? 'rgba(0, 52, 155, 0.2)' : 'rgba(0,0,0,0.4)'
           }
         }
       ]
@@ -138,24 +152,24 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [agents, onSelectAgent]);
+  }, [agents, onSelectAgent, isLight]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Scatter Plot Card */}
       <div className="glass-panel" style={{ padding: 20 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 10 }}>
           <div>
             <h3 style={{ fontSize: 16, fontWeight: 700 }}>Value vs. Adoption Quadrant Map</h3>
             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
               Bubble size represents hours saved · Click any bubble to inspect telemetry
             </span>
           </div>
-          <div style={{ display: 'flex', gap: 12, fontSize: 11, fontWeight: 600 }}>
-            <span style={{ color: '#10b981' }}>● Accelerate (High Val / High Adop)</span>
-            <span style={{ color: '#3b82f6' }}>● Optimize (Steady)</span>
-            <span style={{ color: '#a855f7' }}>● Experiment (Early &lt;60d)</span>
-            <span style={{ color: '#ef4444' }}>● Intervene (At Risk)</span>
+          <div style={{ display: 'flex', gap: 12, fontSize: 12, fontWeight: 700, flexWrap: 'wrap' }}>
+            <span style={{ color: isLight ? '#1B5E20' : '#10b981' }}>● Accelerate (High Val / High Adop)</span>
+            <span style={{ color: isLight ? '#7A5300' : '#3b82f6' }}>● Optimize (Steady)</span>
+            <span style={{ color: isLight ? '#455A64' : '#a855f7' }}>● Experiment (Early &lt;60d)</span>
+            <span style={{ color: isLight ? '#A4161A' : '#ef4444' }}>● Intervene (At Risk)</span>
           </div>
         </div>
         <div ref={scatterRef} style={{ height: 290, width: '100%' }} />
@@ -173,44 +187,63 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
               onChange={e => setSearch(e.target.value)}
               style={{
                 width: '100%',
-                background: 'rgba(11, 19, 38, 0.9)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 8,
+                background: isLight ? '#FFFFFF' : 'rgba(11, 19, 38, 0.9)',
+                border: isLight ? '1.5px solid #D6E2FA' : '1px solid var(--border-subtle)',
+                borderRadius: 'var(--radius-pill)',
                 padding: '8px 12px 8px 36px',
-                color: '#fff',
+                color: 'var(--text-main)',
                 fontSize: 13,
-                outline: 'none'
+                outline: 'none',
+                boxShadow: isLight ? '0 2px 6px rgba(0,0,0,0.05)' : 'none'
               }}
             />
           </div>
         </div>
 
         {/* Action Status Filter Tabs */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{
+          display: 'flex',
+          gap: 6,
+          flexWrap: 'wrap',
+          background: isLight ? '#FFFFFF' : 'transparent',
+          padding: isLight ? 4 : 0,
+          borderRadius: isLight ? 'var(--radius-pill)' : 0,
+          border: isLight ? '1.5px solid #D6E2FA' : 'none'
+        }}>
           {[
             { label: 'All Agents', value: '' },
             { label: 'Accelerate', value: 'accelerate' },
             { label: 'Optimize', value: 'optimize' },
             { label: 'Experiment', value: 'experiment' },
             { label: 'Intervene', value: 'intervene' }
-          ].map(opt => (
-            <button
-              key={opt.value}
-              onClick={() => setActionFilter(opt.value)}
-              style={{
-                background: actionFilter === opt.value ? 'rgba(0, 210, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                color: actionFilter === opt.value ? '#fff' : 'var(--text-muted)',
-                border: actionFilter === opt.value ? '1px solid rgba(0, 210, 255, 0.4)' : '1px solid var(--border-subtle)',
-                borderRadius: 6,
-                padding: '6px 12px',
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
-            >
-              {opt.label}
-            </button>
-          ))}
+          ].map(opt => {
+            const active = actionFilter === opt.value;
+            return (
+              <button
+                key={opt.value}
+                onClick={() => setActionFilter(opt.value)}
+                style={{
+                  background: active 
+                    ? (isLight ? '#1713FD' : 'rgba(0, 210, 255, 0.2)') 
+                    : (isLight ? 'transparent' : 'rgba(255, 255, 255, 0.05)'),
+                  color: active 
+                    ? '#FFFFFF' 
+                    : (isLight ? '#00349B' : 'var(--text-muted)'),
+                  border: active 
+                    ? (isLight ? '1px solid #1713FD' : '1px solid rgba(0, 210, 255, 0.4)') 
+                    : (isLight ? '1px solid transparent' : '1px solid var(--border-subtle)'),
+                  borderRadius: 'var(--radius-pill)',
+                  padding: '5px 12px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -259,11 +292,19 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                     onClick={() => onSelectAgent(agent)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <td style={{ fontWeight: 600, color: '#fff' }}>
+                    <td style={{ fontWeight: 700, color: isLight ? '#00349B' : '#fff' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         {agent.name}
                         {agent.in_portfolio && (
-                          <span style={{ fontSize: 9, background: 'rgba(0, 210, 255, 0.15)', color: 'var(--accent-cyan)', padding: '1px 5px', borderRadius: 4 }}>
+                          <span style={{
+                            fontSize: 9,
+                            fontWeight: 700,
+                            background: isLight ? '#E9EFFB' : 'rgba(0, 210, 255, 0.15)',
+                            color: isLight ? '#00349B' : 'var(--accent-cyan)',
+                            border: isLight ? '1px solid #D6E2FA' : 'none',
+                            padding: '1px 5px',
+                            borderRadius: 4
+                          }}>
                             PORTFOLIO
                           </span>
                         )}
@@ -271,15 +312,21 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                     </td>
                     <td>{agent.function}</td>
                     <td style={{ color: 'var(--text-muted)' }}>{agent.team}</td>
-                    <td style={{ fontWeight: 700, color: '#fff' }}>{formatUSD(agent.net_value)}</td>
+                    <td style={{ fontWeight: 700, color: isLight ? '#00349B' : '#fff' }}>{formatUSD(agent.net_value)}</td>
                     <td style={{ color: 'var(--text-muted)' }}>{formatUSD(agent.cost)}</td>
                     <td>{agent.hours_saved.toLocaleString()}h</td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 40, height: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
-                          <div style={{ width: `${agent.adoption_pct}%`, height: '100%', background: 'var(--accent-cyan)' }} />
+                        <div style={{
+                          width: 44,
+                          height: 6,
+                          background: isLight ? '#D6E2FA' : 'rgba(255,255,255,0.1)',
+                          borderRadius: 3,
+                          overflow: 'hidden'
+                        }}>
+                          <div style={{ width: `${agent.adoption_pct}%`, height: '100%', background: isLight ? '#1713FD' : 'var(--accent-cyan)' }} />
                         </div>
-                        <span style={{ fontSize: 12 }}>{agent.adoption_pct}%</span>
+                        <span style={{ fontSize: 12, fontWeight: 600 }}>{agent.adoption_pct}%</span>
                       </div>
                     </td>
                     <td>
@@ -287,9 +334,13 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                         padding: '3px 8px',
                         borderRadius: 4,
                         fontSize: 12,
-                        fontWeight: 600,
-                        background: isUnderEval ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.15)',
-                        color: isUnderEval ? '#f87171' : '#34d399'
+                        fontWeight: 700,
+                        background: isUnderEval 
+                          ? (isLight ? '#F9DEDC' : 'rgba(239, 68, 68, 0.2)') 
+                          : (isLight ? '#E3F1E4' : 'rgba(16, 185, 129, 0.15)'),
+                        color: isUnderEval 
+                          ? (isLight ? '#A4161A' : '#f87171') 
+                          : (isLight ? '#1B5E20' : '#34d399')
                       }}>
                         {formatPct(agent.eval_pass_rate)}
                       </span>

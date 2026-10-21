@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
-import { DollarSign, TrendingUp, Cpu, AlertTriangle, ArrowUpRight, Zap, Target, CheckCircle2 } from 'lucide-react';
+import { DollarSign, TrendingUp, Cpu, AlertTriangle, ArrowUpRight, Zap, Target } from 'lucide-react';
 import { SummaryKPI, FunctionSummary, CostBreakdownItem, TrendMonth, AgentScorecardItem } from '../types';
 import { formatUSD, formatPct } from '../api';
 
@@ -12,6 +12,7 @@ interface ExecutiveSummaryTabProps {
   whereToAct: AgentScorecardItem[];
   onSelectAgent: (agent: AgentScorecardItem) => void;
   onFilterAction: (action: string) => void;
+  theme?: 'dark' | 'light';
 }
 
 export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
@@ -21,11 +22,14 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   trend,
   whereToAct,
   onSelectAgent,
-  onFilterAction
+  onFilterAction,
+  theme = 'dark'
 }) => {
   const functionChartRef = useRef<HTMLDivElement>(null);
   const costChartRef = useRef<HTMLDivElement>(null);
   const trendChartRef = useRef<HTMLDivElement>(null);
+
+  const isLight = theme === 'light';
 
   // Render Net Value by Function Bar Chart
   useEffect(() => {
@@ -37,11 +41,14 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
+        backgroundColor: isLight ? '#FFFFFF' : '#101a33',
+        borderColor: isLight ? '#D6E2FA' : 'rgba(0, 210, 255, 0.3)',
+        textStyle: { color: isLight ? '#1A1A1A' : '#FFFFFF' },
         formatter: (params: any) => {
           const item = params[0];
-          return `<div style="font-family: Outfit, sans-serif; padding: 4px;">
-            <b>${item.name}</b><br/>
-            Net Value: <span style="color: #00d2ff; font-weight:700;">${formatUSD(item.value)}</span>
+          return `<div style="font-family: Satoshi, Outfit, sans-serif; padding: 4px;">
+            <b style="color: ${isLight ? '#00349B' : '#fff'}">${item.name}</b><br/>
+            Net Value: <span style="color: ${isLight ? '#1713FD' : '#00d2ff'}; font-weight:700;">${formatUSD(item.value)}</span>
           </div>`;
         }
       },
@@ -49,15 +56,15 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       xAxis: {
         type: 'category',
         data: byFunction.map(f => f.function_name),
-        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
-        axisLabel: { color: '#94a3b8', fontSize: 11 }
+        axisLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.2)' : 'rgba(255,255,255,0.1)' } },
+        axisLabel: { color: isLight ? '#475569' : '#94a3b8', fontSize: 11, fontWeight: isLight ? 600 : 400 }
       },
       yAxis: {
         type: 'value',
         axisLine: { show: false },
-        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
+        splitLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.08)' : 'rgba(255,255,255,0.06)' } },
         axisLabel: {
-          color: '#94a3b8',
+          color: isLight ? '#475569' : '#94a3b8',
           fontSize: 11,
           formatter: (v: number) => `$${(v / 1000).toFixed(0)}k`
         }
@@ -69,14 +76,19 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           data: byFunction.map(f => f.net_value),
           itemStyle: {
             borderRadius: [6, 6, 0, 0],
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: '#00d2ff' },
-              { offset: 1, color: '#0055ff' }
-            ])
+            color: isLight
+              ? new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: '#1713FD' },
+                  { offset: 1, color: '#00349B' }
+                ])
+              : new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: '#00d2ff' },
+                  { offset: 1, color: '#0055ff' }
+                ])
           },
           emphasis: {
             itemStyle: {
-              color: '#38bdf8'
+              color: isLight ? '#0B1F4D' : '#38bdf8'
             }
           }
         }
@@ -89,27 +101,33 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [byFunction]);
+  }, [byFunction, isLight]);
 
   // Render Cost Factors Breakdown Chart
   useEffect(() => {
     if (!costChartRef.current || !costBreakdown.length) return;
     const chart = echarts.init(costChartRef.current);
 
+    const lightColors = ['#00349B', '#1713FD', '#172D9D', '#0B1F4D', '#FBAE40'];
+    const darkColors = ['#3b82f6', '#06b6d4', '#8b5cf6', '#ec4899', '#f59e0b'];
+
     chart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'item',
+        backgroundColor: isLight ? '#FFFFFF' : '#101a33',
+        borderColor: isLight ? '#D6E2FA' : 'rgba(0, 210, 255, 0.3)',
+        textStyle: { color: isLight ? '#1A1A1A' : '#FFFFFF' },
         formatter: (params: any) => {
-          return `<div style="font-family: Outfit, sans-serif; padding: 4px;">
-            <b>${params.name}</b><br/>
-            Cost: <span style="color: #f43f5e; font-weight:700;">${formatUSD(params.value)}</span> (${params.percent}%)
+          return `<div style="font-family: Satoshi, Outfit, sans-serif; padding: 4px;">
+            <b style="color: ${isLight ? '#00349B' : '#fff'}">${params.name}</b><br/>
+            Cost: <span style="color: ${isLight ? '#C62828' : '#f43f5e'}; font-weight:700;">${formatUSD(params.value)}</span> (${params.percent}%)
           </div>`;
         }
       },
       legend: {
         bottom: 0,
-        textStyle: { color: '#94a3b8', fontSize: 11 }
+        textStyle: { color: isLight ? '#475569' : '#94a3b8', fontSize: 11, fontWeight: isLight ? 600 : 400 }
       },
       series: [
         {
@@ -120,12 +138,12 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           avoidLabelOverlap: false,
           itemStyle: {
             borderRadius: 6,
-            borderColor: '#0b1329',
+            borderColor: isLight ? '#FFFFFF' : '#0b1329',
             borderWidth: 2
           },
           label: { show: false },
           data: costBreakdown.map((c, i) => {
-            const colors = ['#3b82f6', '#06b6d4', '#8b5cf6', '#ec4899', '#f59e0b'];
+            const colors = isLight ? lightColors : darkColors;
             return {
               name: c.factor,
               value: c.cost,
@@ -142,7 +160,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [costBreakdown]);
+  }, [costBreakdown, isLight]);
 
   // Render 6-Month Trend Chart
   useEffect(() => {
@@ -153,27 +171,31 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'axis',
-        axisPointer: { type: 'cross' }
+        axisPointer: { type: 'cross' },
+        backgroundColor: isLight ? '#FFFFFF' : '#101a33',
+        borderColor: isLight ? '#D6E2FA' : 'rgba(0, 210, 255, 0.3)',
+        textStyle: { color: isLight ? '#1A1A1A' : '#FFFFFF' }
       },
       legend: {
         top: 0,
         right: 0,
-        textStyle: { color: '#94a3b8', fontSize: 11 }
+        textStyle: { color: isLight ? '#475569' : '#94a3b8', fontSize: 11, fontWeight: isLight ? 600 : 400 }
       },
       grid: { top: 35, right: 40, bottom: 25, left: 55 },
       xAxis: {
         type: 'category',
         data: trend.map(t => t.month),
-        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
-        axisLabel: { color: '#94a3b8', fontSize: 11 }
+        axisLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.2)' : 'rgba(255,255,255,0.1)' } },
+        axisLabel: { color: isLight ? '#475569' : '#94a3b8', fontSize: 11, fontWeight: isLight ? 600 : 400 }
       },
       yAxis: [
         {
           type: 'value',
           name: 'Value ($)',
-          splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
+          nameTextStyle: { color: isLight ? '#475569' : '#94a3b8' },
+          splitLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.08)' : 'rgba(255,255,255,0.06)' } },
           axisLabel: {
-            color: '#94a3b8',
+            color: isLight ? '#475569' : '#94a3b8',
             fontSize: 10,
             formatter: (v: number) => `$${(v / 1_000_000).toFixed(1)}M`
           }
@@ -181,9 +203,10 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         {
           type: 'value',
           name: 'ROI',
+          nameTextStyle: { color: isLight ? '#475569' : '#94a3b8' },
           splitLine: { show: false },
           axisLabel: {
-            color: '#94a3b8',
+            color: isLight ? '#475569' : '#94a3b8',
             fontSize: 10,
             formatter: (v: number) => `${v}x`
           }
@@ -195,12 +218,12 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           type: 'line',
           smooth: true,
           data: trend.map(t => t.net_value),
-          lineStyle: { width: 3, color: '#00d2ff' },
-          itemStyle: { color: '#00d2ff' },
+          lineStyle: { width: 3, color: isLight ? '#00349B' : '#00d2ff' },
+          itemStyle: { color: isLight ? '#00349B' : '#00d2ff' },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: 'rgba(0, 210, 255, 0.3)' },
-              { offset: 1, color: 'rgba(0, 210, 255, 0.0)' }
+              { offset: 0, color: isLight ? 'rgba(0, 52, 155, 0.18)' : 'rgba(0, 210, 255, 0.3)' },
+              { offset: 1, color: isLight ? 'rgba(0, 52, 155, 0.0)' : 'rgba(0, 210, 255, 0.0)' }
             ])
           }
         },
@@ -209,8 +232,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           type: 'line',
           smooth: true,
           data: trend.map(t => t.cost),
-          lineStyle: { width: 2, color: '#f43f5e' },
-          itemStyle: { color: '#f43f5e' }
+          lineStyle: { width: 2, color: isLight ? '#C62828' : '#f43f5e' },
+          itemStyle: { color: isLight ? '#C62828' : '#f43f5e' }
         },
         {
           name: 'ROI Multiple',
@@ -218,8 +241,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           yAxisIndex: 1,
           smooth: true,
           data: trend.map(t => t.roi),
-          lineStyle: { width: 2, type: 'dashed', color: '#10b981' },
-          itemStyle: { color: '#10b981' }
+          lineStyle: { width: 2, type: 'dashed', color: isLight ? '#1B5E20' : '#10b981' },
+          itemStyle: { color: isLight ? '#1B5E20' : '#10b981' }
         }
       ]
     });
@@ -230,7 +253,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [trend]);
+  }, [trend, isLight]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -243,8 +266,13 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         {/* KPI 1: Net Value */}
         <div className="glass-panel kpi-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>NET VALUE DELIVERED</span>
-            <div style={{ background: 'rgba(0, 210, 255, 0.1)', padding: 7, borderRadius: 8, color: 'var(--accent-cyan)' }}>
+            <span className="kpi-label">NET VALUE DELIVERED</span>
+            <div style={{
+              background: isLight ? '#E3F1E4' : 'rgba(0, 210, 255, 0.1)',
+              padding: 7,
+              borderRadius: 8,
+              color: isLight ? '#1B5E20' : 'var(--accent-cyan)'
+            }}>
               <DollarSign size={18} />
             </div>
           </div>
@@ -252,7 +280,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             {summary ? formatUSD(summary.total_net_value) : '$1.80M'}
           </div>
           <div className="kpi-sub">
-            <span style={{ color: 'var(--accent-emerald)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+            <span style={{ color: isLight ? '#1B5E20' : 'var(--accent-emerald)', fontWeight: 700, display: 'flex', alignItems: 'center' }}>
               <ArrowUpRight size={14} /> +4.9%
             </span>
             <span>vs previous month ($1.72M)</span>
@@ -262,8 +290,13 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         {/* KPI 2: AI Cost */}
         <div className="glass-panel kpi-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>TOTAL AI EXPENDITURE</span>
-            <div style={{ background: 'rgba(244, 63, 94, 0.1)', padding: 7, borderRadius: 8, color: 'var(--accent-rose)' }}>
+            <span className="kpi-label">TOTAL AI EXPENDITURE</span>
+            <div style={{
+              background: isLight ? '#F9DEDC' : 'rgba(244, 63, 94, 0.1)',
+              padding: 7,
+              borderRadius: 8,
+              color: isLight ? '#A4161A' : 'var(--accent-rose)'
+            }}>
               <Cpu size={18} />
             </div>
           </div>
@@ -272,19 +305,24 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           </div>
           <div className="kpi-sub">
             <span>Budget $430K ·</span>
-            <span style={{ color: 'var(--accent-emerald)', fontWeight: 600 }}>4.1% under plan</span>
+            <span style={{ color: isLight ? '#1B5E20' : 'var(--accent-emerald)', fontWeight: 700 }}>4.1% under plan</span>
           </div>
         </div>
 
         {/* KPI 3: Program ROI */}
         <div className="glass-panel kpi-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>VALUE-TO-COST ROI</span>
-            <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: 7, borderRadius: 8, color: 'var(--accent-emerald)' }}>
+            <span className="kpi-label">VALUE-TO-COST ROI</span>
+            <div style={{
+              background: isLight ? '#E9EFFB' : 'rgba(16, 185, 129, 0.1)',
+              padding: 7,
+              borderRadius: 8,
+              color: isLight ? '#00349B' : 'var(--accent-emerald)'
+            }}>
               <TrendingUp size={18} />
             </div>
           </div>
-          <div className="kpi-value" style={{ color: 'var(--accent-emerald)' }}>
+          <div className="kpi-value" style={{ color: isLight ? '#1B5E20' : 'var(--accent-emerald)' }}>
             {summary ? `${summary.roi_ratio.toFixed(2)}x` : '5.38x'}
           </div>
           <div className="kpi-sub">
@@ -295,8 +333,13 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         {/* KPI 4: Active Agents */}
         <div className="glass-panel kpi-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>PRODUCTION AGENTS</span>
-            <div style={{ background: 'rgba(139, 92, 246, 0.1)', padding: 7, borderRadius: 8, color: 'var(--accent-purple)' }}>
+            <span className="kpi-label">PRODUCTION AGENTS</span>
+            <div style={{
+              background: isLight ? '#E0EBFF' : 'rgba(139, 92, 246, 0.1)',
+              padding: 7,
+              borderRadius: 8,
+              color: isLight ? '#1713FD' : 'var(--accent-purple)'
+            }}>
               <Zap size={18} />
             </div>
           </div>
@@ -312,35 +355,35 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       {/* Action Distribution Bar */}
       <div className="glass-panel" style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Target size={18} color="var(--accent-cyan)" />
-          <span style={{ fontSize: 14, fontWeight: 700 }}>Portfolio Action Posture:</span>
+          <Target size={18} color={isLight ? '#00349B' : 'var(--accent-cyan)'} />
+          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>Portfolio Action Posture:</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <button
             onClick={() => onFilterAction('accelerate')}
             className="badge-status badge-accelerate"
-            style={{ cursor: 'pointer', border: 'none' }}
+            style={{ cursor: 'pointer' }}
           >
             ● ACCELERATE ({summary?.action_counts.accelerate ?? 16})
           </button>
           <button
             onClick={() => onFilterAction('optimize')}
             className="badge-status badge-optimize"
-            style={{ cursor: 'pointer', border: 'none' }}
+            style={{ cursor: 'pointer' }}
           >
             ● OPTIMIZE ({summary?.action_counts.optimize ?? 15})
           </button>
           <button
             onClick={() => onFilterAction('experiment')}
             className="badge-status badge-experiment"
-            style={{ cursor: 'pointer', border: 'none' }}
+            style={{ cursor: 'pointer' }}
           >
             ● EXPERIMENT ({summary?.action_counts.experiment ?? 6})
           </button>
           <button
             onClick={() => onFilterAction('intervene')}
             className="badge-status badge-intervene"
-            style={{ cursor: 'pointer', border: 'none' }}
+            style={{ cursor: 'pointer' }}
           >
             ● INTERVENE ({summary?.action_counts.intervene ?? 7})
           </button>
@@ -386,8 +429,10 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <AlertTriangle size={18} color="var(--accent-rose)" />
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#f87171' }}>Where to Act: Executive Intervention Backlog</h3>
+              <AlertTriangle size={18} color={isLight ? '#C62828' : 'var(--accent-rose)'} />
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: isLight ? '#C62828' : '#f87171' }}>
+                Where to Act: Executive Intervention Backlog
+              </h3>
             </div>
             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
               Agents triggered by rule engine: pass rate &lt; 88%, cost &gt; 110% budget, net value &lt; $15K, or policy incidents
@@ -415,44 +460,48 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
                 const budgetPct = agent.budget > 0 ? (agent.cost / agent.budget) * 100 : 0;
                 return (
                   <tr key={agent.id} style={{ cursor: 'pointer' }} onClick={() => onSelectAgent(agent)}>
-                    <td style={{ fontWeight: 600, color: '#fff' }}>{agent.name}</td>
+                    <td style={{ fontWeight: 700, color: isLight ? '#00349B' : '#fff' }}>{agent.name}</td>
                     <td>{agent.function}</td>
-                    <td>{agent.team}</td>
-                    <td style={{ fontWeight: 600, color: agent.net_value < 10000 ? '#f87171' : 'var(--text-main)' }}>
+                    <td style={{ color: 'var(--text-muted)' }}>{agent.team}</td>
+                    <td style={{ fontWeight: 700, color: agent.net_value < 10000 ? (isLight ? '#C62828' : '#f87171') : 'var(--text-main)' }}>
                       {formatUSD(agent.net_value)}
                     </td>
                     <td>
-                      <span style={{ color: budgetPct > 110 ? '#f87171' : 'var(--text-main)', fontWeight: 600 }}>
+                      <span style={{ color: budgetPct > 110 ? (isLight ? '#C62828' : '#f87171') : 'var(--text-main)', fontWeight: 600 }}>
                         {budgetPct.toFixed(0)}%
                       </span>
                     </td>
                     <td>
                       <span style={{
-                        padding: '2px 6px',
+                        padding: '3px 8px',
                         borderRadius: 4,
                         fontSize: 12,
-                        fontWeight: 600,
-                        background: agent.eval_pass_rate < 85 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-                        color: agent.eval_pass_rate < 85 ? '#f87171' : '#fbbf24'
+                        fontWeight: 700,
+                        background: agent.eval_pass_rate < 85 
+                          ? (isLight ? '#F9DEDC' : 'rgba(239, 68, 68, 0.2)') 
+                          : (isLight ? '#FDF0C8' : 'rgba(245, 158, 11, 0.2)'),
+                        color: agent.eval_pass_rate < 85 
+                          ? (isLight ? '#A4161A' : '#f87171') 
+                          : (isLight ? '#7A5300' : '#fbbf24')
                       }}>
                         {formatPct(agent.eval_pass_rate)}
                       </span>
                     </td>
                     <td>
                       {agent.policy_incidents > 0 ? (
-                        <span style={{ color: '#f87171', fontWeight: 700 }}>{agent.policy_incidents} alert</span>
+                        <span style={{ color: isLight ? '#C62828' : '#f87171', fontWeight: 700 }}>{agent.policy_incidents} alert</span>
                       ) : (
                         <span style={{ color: 'var(--text-dim)' }}>0</span>
                       )}
                     </td>
                     <td>
                       <span style={{
-                        background: 'rgba(255, 255, 255, 0.06)',
-                        border: '1px solid rgba(255, 255, 255, 0.12)',
+                        background: isLight ? '#F3F6FC' : 'rgba(255, 255, 255, 0.06)',
+                        border: isLight ? '1px solid #D6E2FA' : '1px solid rgba(255, 255, 255, 0.12)',
                         padding: '4px 8px',
                         borderRadius: 6,
                         fontSize: 12,
-                        color: '#e2e8f0'
+                        color: 'var(--text-main)'
                       }}>
                         {agent.suggested_action}
                       </span>

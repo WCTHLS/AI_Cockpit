@@ -1,17 +1,20 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
-import { DollarSign, ShieldAlert, CheckCircle, TrendingDown } from 'lucide-react';
+import { ShieldAlert, CheckCircle } from 'lucide-react';
 import { CostBreakdownItem } from '../types';
-import { formatUSD, formatPct } from '../api';
+import { formatUSD } from '../api';
 
 interface CostBudgetTabProps {
   costBreakdown: CostBreakdownItem[];
   agents: any[];
+  theme?: 'dark' | 'light';
 }
 
-export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, agents }) => {
+export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, agents, theme = 'dark' }) => {
   const teamChartRef = useRef<HTMLDivElement>(null);
   const factorChartRef = useRef<HTMLDivElement>(null);
+
+  const isLight = theme === 'light';
 
   // Group costs by team
   const teamsMap: Record<string, { team: string; cost: number; budget: number; function: string }> = {};
@@ -34,30 +37,34 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, age
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'axis',
-        axisPointer: { type: 'shadow' }
+        axisPointer: { type: 'shadow' },
+        backgroundColor: isLight ? '#FFFFFF' : '#101a33',
+        borderColor: isLight ? '#D6E2FA' : 'rgba(0, 210, 255, 0.3)',
+        textStyle: { color: isLight ? '#1A1A1A' : '#FFFFFF' }
       },
       legend: {
         top: 0,
         right: 10,
-        textStyle: { color: '#94a3b8', fontSize: 11 }
+        textStyle: { color: isLight ? '#475569' : '#94a3b8', fontSize: 11, fontWeight: isLight ? 600 : 400 }
       },
       grid: { top: 35, right: 20, bottom: 65, left: 60 },
       xAxis: {
         type: 'category',
         data: teamData.map(t => t.team),
-        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
+        axisLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.2)' : 'rgba(255,255,255,0.1)' } },
         axisLabel: {
-          color: '#94a3b8',
+          color: isLight ? '#475569' : '#94a3b8',
           fontSize: 10,
+          fontWeight: isLight ? 600 : 400,
           interval: 0,
           rotate: 30
         }
       },
       yAxis: {
         type: 'value',
-        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
+        splitLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.08)' : 'rgba(255,255,255,0.06)' } },
         axisLabel: {
-          color: '#94a3b8',
+          color: isLight ? '#475569' : '#94a3b8',
           fontSize: 10,
           formatter: (v: number) => `$${(v / 1000).toFixed(0)}k`
         }
@@ -69,7 +76,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, age
           data: teamData.map(t => t.cost),
           itemStyle: {
             borderRadius: [4, 4, 0, 0],
-            color: '#f43f5e'
+            color: isLight ? '#C62828' : '#f43f5e'
           }
         },
         {
@@ -78,7 +85,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, age
           data: teamData.map(t => t.budget),
           itemStyle: {
             borderRadius: [4, 4, 0, 0],
-            color: '#3b82f6'
+            color: isLight ? '#00349B' : '#3b82f6'
           }
         }
       ]
@@ -90,7 +97,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, age
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [teamData]);
+  }, [teamData, isLight]);
 
   // Render Cost Factor Waterfall/Horizontal Stack
   useEffect(() => {
@@ -101,14 +108,17 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, age
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'axis',
-        axisPointer: { type: 'shadow' }
+        axisPointer: { type: 'shadow' },
+        backgroundColor: isLight ? '#FFFFFF' : '#101a33',
+        borderColor: isLight ? '#D6E2FA' : 'rgba(0, 210, 255, 0.3)',
+        textStyle: { color: isLight ? '#1A1A1A' : '#FFFFFF' }
       },
       grid: { top: 20, right: 30, bottom: 20, left: 110 },
       xAxis: {
         type: 'value',
-        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
+        splitLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.08)' : 'rgba(255,255,255,0.06)' } },
         axisLabel: {
-          color: '#94a3b8',
+          color: isLight ? '#475569' : '#94a3b8',
           fontSize: 10,
           formatter: (v: number) => `$${(v / 1000).toFixed(0)}k`
         }
@@ -116,8 +126,8 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, age
       yAxis: {
         type: 'category',
         data: costBreakdown.map(c => c.factor),
-        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
-        axisLabel: { color: '#e2e8f0', fontSize: 11 }
+        axisLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.2)' : 'rgba(255,255,255,0.1)' } },
+        axisLabel: { color: isLight ? '#1A1A1A' : '#e2e8f0', fontSize: 11, fontWeight: isLight ? 700 : 400 }
       },
       series: [
         {
@@ -126,10 +136,15 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, age
           data: costBreakdown.map(c => c.cost),
           itemStyle: {
             borderRadius: [0, 4, 4, 0],
-            color: new echarts.graphic.LinearGradient(1, 0, 0, 0, [
-              { offset: 0, color: '#3b82f6' },
-              { offset: 1, color: '#1e3a8a' }
-            ])
+            color: isLight
+              ? new echarts.graphic.LinearGradient(1, 0, 0, 0, [
+                  { offset: 0, color: '#1713FD' },
+                  { offset: 1, color: '#00349B' }
+                ])
+              : new echarts.graphic.LinearGradient(1, 0, 0, 0, [
+                  { offset: 0, color: '#3b82f6' },
+                  { offset: 1, color: '#1e3a8a' }
+                ])
           }
         }
       ]
@@ -141,7 +156,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, age
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [costBreakdown]);
+  }, [costBreakdown, isLight]);
 
   const totalCost = costBreakdown.reduce((acc, c) => acc + c.cost, 0);
   const totalBudget = costBreakdown.reduce((acc, c) => acc + c.budget, 0);
@@ -157,18 +172,18 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, age
             Comparing metered expenditure against CFO allocations for Current Billing Cycle
           </span>
         </div>
-        <div style={{ display: 'flex', gap: 20 }}>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
           <div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Total Incurred Cost</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#fff' }}>{formatUSD(totalCost)}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Total Incurred Cost</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: isLight ? '#00349B' : '#fff' }}>{formatUSD(totalCost)}</div>
           </div>
           <div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Plan Budget</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--accent-blue)' }}>{formatUSD(totalBudget)}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Plan Budget</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: isLight ? '#1713FD' : 'var(--accent-blue)' }}>{formatUSD(totalBudget)}</div>
           </div>
           <div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Budget Variance</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: totalVariance <= 0 ? 'var(--accent-emerald)' : 'var(--accent-rose)' }}>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Budget Variance</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: totalVariance <= 0 ? (isLight ? '#1B5E20' : 'var(--accent-emerald)') : (isLight ? '#C62828' : 'var(--accent-rose)') }}>
               {totalVariance <= 0 ? `${formatUSD(Math.abs(totalVariance))} under` : `${formatUSD(totalVariance)} over`}
             </div>
           </div>
@@ -203,53 +218,55 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ costBreakdown, age
       {/* Cost Factor Detail Table */}
       <div className="glass-panel" style={{ padding: 20 }}>
         <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 14 }}>Cost Factor Accounting Mart</h3>
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Factor</th>
-              <th>Scope Description</th>
-              <th>Actual Cost</th>
-              <th>Budget Plan</th>
-              <th>Variance ($)</th>
-              <th>Share of AI Spend</th>
-              <th>FinOps Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {costBreakdown.map((row, idx) => {
-              const under = row.variance <= 0;
-              return (
-                <tr key={idx}>
-                  <td style={{ fontWeight: 600, color: '#fff' }}>{row.factor}</td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-                    {row.factor === 'Licences' && 'M365 Copilot, Copilot Studio seats, Claude API licenses'}
-                    {row.factor === 'Consumption' && 'Metered LLM inference tokens, agent tool executions'}
-                    {row.factor === 'Platform' && 'Fabric Lakehouse compute, vector indexing, Azure AI Search'}
-                    {row.factor === 'Build and run' && 'FDE engineering pods, CI/CD, evaluation harness'}
-                    {row.factor === 'Enablement' && 'Change management, prompt libraries, user onboarding'}
-                  </td>
-                  <td style={{ fontWeight: 700 }}>{formatUSD(row.cost)}</td>
-                  <td style={{ color: 'var(--text-muted)' }}>{formatUSD(row.budget)}</td>
-                  <td style={{ color: under ? '#34d399' : '#f87171', fontWeight: 600 }}>
-                    {under ? `-$${Math.abs(row.variance).toLocaleString()}` : `+$${row.variance.toLocaleString()}`}
-                  </td>
-                  <td>{row.pct_of_total}%</td>
-                  <td>
-                    {under ? (
-                      <span style={{ color: '#34d399', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <CheckCircle size={14} /> Within Budget
-                      </span>
-                    ) : (
-                      <span style={{ color: '#f87171', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <ShieldAlert size={14} /> Attention
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Factor</th>
+                <th>Scope Description</th>
+                <th>Actual Cost</th>
+                <th>Budget Plan</th>
+                <th>Variance ($)</th>
+                <th>Share of AI Spend</th>
+                <th>FinOps Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {costBreakdown.map((row, idx) => {
+                const under = row.variance <= 0;
+                return (
+                  <tr key={idx}>
+                    <td style={{ fontWeight: 700, color: isLight ? '#00349B' : '#fff' }}>{row.factor}</td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>
+                      {row.factor === 'Licences' && 'M365 Copilot, Copilot Studio seats, Claude API licenses'}
+                      {row.factor === 'Consumption' && 'Metered LLM inference tokens, agent tool executions'}
+                      {row.factor === 'Platform' && 'Fabric Lakehouse compute, vector indexing, Azure AI Search'}
+                      {row.factor === 'Build and run' && 'FDE engineering pods, CI/CD, evaluation harness'}
+                      {row.factor === 'Enablement' && 'Change management, prompt libraries, user onboarding'}
+                    </td>
+                    <td style={{ fontWeight: 700, color: 'var(--text-main)' }}>{formatUSD(row.cost)}</td>
+                    <td style={{ color: 'var(--text-muted)' }}>{formatUSD(row.budget)}</td>
+                    <td style={{ color: under ? (isLight ? '#1B5E20' : '#34d399') : (isLight ? '#C62828' : '#f87171'), fontWeight: 700 }}>
+                      {under ? `-$${Math.abs(row.variance).toLocaleString()}` : `+$${row.variance.toLocaleString()}`}
+                    </td>
+                    <td>{row.pct_of_total}%</td>
+                    <td>
+                      {under ? (
+                        <span style={{ color: isLight ? '#1B5E20' : '#34d399', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <CheckCircle size={14} /> Within Budget
+                        </span>
+                      ) : (
+                        <span style={{ color: isLight ? '#C62828' : '#f87171', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <ShieldAlert size={14} /> Attention
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
