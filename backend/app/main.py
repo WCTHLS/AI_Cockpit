@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
-from .routers import auth, summary, agents, costs, seats, admin
+from .routers import auth, summary, agents, costs, seats, admin, telemetry
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -28,6 +28,7 @@ app.include_router(agents.router, prefix=settings.API_V1_STR)
 app.include_router(costs.router, prefix=settings.API_V1_STR)
 app.include_router(seats.router, prefix=settings.API_V1_STR)
 app.include_router(admin.router, prefix=settings.API_V1_STR)
+app.include_router(telemetry.router, prefix=settings.API_V1_STR)
 
 @app.get("/health", tags=["system"])
 def health_check():
@@ -44,3 +45,4 @@ def root():
         "docs": f"{settings.API_V1_STR}/docs",
         "health": "/health"
     }
+
