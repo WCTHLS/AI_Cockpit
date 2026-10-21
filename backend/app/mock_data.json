@@ -1,0 +1,4754 @@
+{
+  "agents": [
+    {
+      "Month": "2026-08",
+      "Agent": "Case Triage Agent",
+      "Team": "Customer Service",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 58100,
+      "CostUSD": 11200,
+      "BudgetUSD": 12300,
+      "HoursSaved": 1226,
+      "ActiveUsers": 167,
+      "LicensedUsers": 200,
+      "EvalRuns": 281,
+      "EvalPassed": 274,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 389,
+      "NetValueUSD": 46900
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Order Status Agent",
+      "Team": "Customer Service",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 46500,
+      "CostUSD": 7400,
+      "BudgetUSD": 8100,
+      "HoursSaved": 981,
+      "ActiveUsers": 126,
+      "LicensedUsers": 150,
+      "EvalRuns": 187,
+      "EvalPassed": 183,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 349,
+      "NetValueUSD": 39100
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Customer Self Service Agent",
+      "Team": "Customer Service",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 34900,
+      "CostUSD": 11100,
+      "BudgetUSD": 12300,
+      "HoursSaved": 736,
+      "ActiveUsers": 126,
+      "LicensedUsers": 150,
+      "EvalRuns": 187,
+      "EvalPassed": 183,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 229,
+      "NetValueUSD": 23800
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Device Troubleshooting Agent",
+      "Team": "Product Support",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 52800,
+      "CostUSD": 7600,
+      "BudgetUSD": 8500,
+      "HoursSaved": 965,
+      "ActiveUsers": 119,
+      "LicensedUsers": 150,
+      "EvalRuns": 234,
+      "EvalPassed": 218,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 269,
+      "NetValueUSD": 45200
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Driver & BIOS Advisor",
+      "Team": "Product Support",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 31700,
+      "CostUSD": 5100,
+      "BudgetUSD": 5600,
+      "HoursSaved": 579,
+      "ActiveUsers": 60,
+      "LicensedUsers": 75,
+      "EvalRuns": 157,
+      "EvalPassed": 145,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 209,
+      "NetValueUSD": 26600
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Knowledge Article Agent",
+      "Team": "Product Support",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 21100,
+      "CostUSD": 5100,
+      "BudgetUSD": 5600,
+      "HoursSaved": 386,
+      "ActiveUsers": 59,
+      "LicensedUsers": 75,
+      "EvalRuns": 78,
+      "EvalPassed": 72,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 159,
+      "NetValueUSD": 16000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Warranty Entitlement Agent",
+      "Team": "Warranty & Returns",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 29500,
+      "CostUSD": 5100,
+      "BudgetUSD": 5900,
+      "HoursSaved": 496,
+      "ActiveUsers": 63,
+      "LicensedUsers": 84,
+      "EvalRuns": 141,
+      "EvalPassed": 133,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 139,
+      "NetValueUSD": 24400
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "RMA Processing Agent",
+      "Team": "Warranty & Returns",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 19700,
+      "CostUSD": 7700,
+      "BudgetUSD": 5900,
+      "HoursSaved": 331,
+      "ActiveUsers": 42,
+      "LicensedUsers": 56,
+      "EvalRuns": 141,
+      "EvalPassed": 132,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 89,
+      "NetValueUSD": 12000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Field Dispatch Agent",
+      "Team": "Field Services",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4000,
+      "BudgetUSD": 5000,
+      "HoursSaved": 0,
+      "ActiveUsers": 19,
+      "LicensedUsers": 30,
+      "EvalRuns": 47,
+      "EvalPassed": 43,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 17,
+      "NetValueUSD": -4000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Field Engineer Copilot",
+      "Team": "Field Services",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4000,
+      "BudgetUSD": 5000,
+      "HoursSaved": 0,
+      "ActiveUsers": 19,
+      "LicensedUsers": 30,
+      "EvalRuns": 47,
+      "EvalPassed": 42,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 9,
+      "NetValueUSD": -4000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Ticket Triage Agent",
+      "Team": "IT Service Desk",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 77400,
+      "CostUSD": 14200,
+      "BudgetUSD": 17000,
+      "HoursSaved": 1154,
+      "ActiveUsers": 104,
+      "LicensedUsers": 150,
+      "EvalRuns": 356,
+      "EvalPassed": 338,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 334,
+      "NetValueUSD": 63200
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Password & Access Agent",
+      "Team": "IT Service Desk",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 58000,
+      "CostUSD": 7100,
+      "BudgetUSD": 11300,
+      "HoursSaved": 866,
+      "ActiveUsers": 103,
+      "LicensedUsers": 150,
+      "EvalRuns": 237,
+      "EvalPassed": 226,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 299,
+      "NetValueUSD": 50900
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "IT Knowledge Agent",
+      "Team": "IT Service Desk",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 38700,
+      "CostUSD": 14200,
+      "BudgetUSD": 11300,
+      "HoursSaved": 576,
+      "ActiveUsers": 69,
+      "LicensedUsers": 100,
+      "EvalRuns": 237,
+      "EvalPassed": 226,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 179,
+      "NetValueUSD": 24500
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Developer Copilot",
+      "Team": "Software Engineering",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 81500,
+      "CostUSD": 26200,
+      "BudgetUSD": 20100,
+      "HoursSaved": 1244,
+      "ActiveUsers": 63,
+      "LicensedUsers": 107,
+      "EvalRuns": 277,
+      "EvalPassed": 258,
+      "PolicyIncidents": 1,
+      "DaysInProduction": 509,
+      "NetValueUSD": 55300
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Code Review Agent",
+      "Team": "Software Engineering",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 32600,
+      "CostUSD": 10500,
+      "BudgetUSD": 10000,
+      "HoursSaved": 498,
+      "ActiveUsers": 42,
+      "LicensedUsers": 72,
+      "EvalRuns": 185,
+      "EvalPassed": 172,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 189,
+      "NetValueUSD": 22100
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Test Generation Agent",
+      "Team": "Software Engineering",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 32500,
+      "CostUSD": 7800,
+      "BudgetUSD": 7500,
+      "HoursSaved": 497,
+      "ActiveUsers": 32,
+      "LicensedUsers": 71,
+      "EvalRuns": 184,
+      "EvalPassed": 171,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 119,
+      "NetValueUSD": 24700
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Incident Response Agent",
+      "Team": "DevOps & SRE",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 45700,
+      "CostUSD": 9200,
+      "BudgetUSD": 9200,
+      "HoursSaved": 591,
+      "ActiveUsers": 38,
+      "LicensedUsers": 60,
+      "EvalRuns": 208,
+      "EvalPassed": 193,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 169,
+      "NetValueUSD": 36500
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Release Readiness Agent",
+      "Team": "DevOps & SRE",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 30400,
+      "CostUSD": 4600,
+      "BudgetUSD": 4600,
+      "HoursSaved": 394,
+      "ActiveUsers": 26,
+      "LicensedUsers": 40,
+      "EvalRuns": 208,
+      "EvalPassed": 193,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 99,
+      "NetValueUSD": 25800
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Device Telemetry Agent",
+      "Team": "Device Engineering",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4000,
+      "BudgetUSD": 4000,
+      "HoursSaved": 0,
+      "ActiveUsers": 13,
+      "LicensedUsers": 25,
+      "EvalRuns": 69,
+      "EvalPassed": 67,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 13,
+      "NetValueUSD": -4000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Firmware Validation Agent",
+      "Team": "Device Engineering",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4000,
+      "BudgetUSD": 4000,
+      "HoursSaved": 0,
+      "ActiveUsers": 12,
+      "LicensedUsers": 25,
+      "EvalRuns": 69,
+      "EvalPassed": 66,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 7,
+      "NetValueUSD": -4000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Account Research Agent",
+      "Team": "Sales",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 39600,
+      "CostUSD": 7200,
+      "BudgetUSD": 8000,
+      "HoursSaved": 299,
+      "ActiveUsers": 23,
+      "LicensedUsers": 48,
+      "EvalRuns": 72,
+      "EvalPassed": 66,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 209,
+      "NetValueUSD": 32400
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Opportunity Insights Agent",
+      "Team": "Sales",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 39500,
+      "CostUSD": 7200,
+      "BudgetUSD": 8000,
+      "HoursSaved": 299,
+      "ActiveUsers": 19,
+      "LicensedUsers": 48,
+      "EvalRuns": 72,
+      "EvalPassed": 66,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 169,
+      "NetValueUSD": 32300
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Quote Assistant Agent",
+      "Team": "Sales",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 13200,
+      "CostUSD": 3600,
+      "BudgetUSD": 4000,
+      "HoursSaved": 99,
+      "ActiveUsers": 11,
+      "LicensedUsers": 24,
+      "EvalRuns": 36,
+      "EvalPassed": 33,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 79,
+      "NetValueUSD": 9600
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "RFP Response Agent",
+      "Team": "Bids & Proposals",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 34300,
+      "CostUSD": 12800,
+      "BudgetUSD": 10000,
+      "HoursSaved": 295,
+      "ActiveUsers": 24,
+      "LicensedUsers": 53,
+      "EvalRuns": 90,
+      "EvalPassed": 76,
+      "PolicyIncidents": 1,
+      "DaysInProduction": 149,
+      "NetValueUSD": 21500
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Compliance Matrix Agent",
+      "Team": "Bids & Proposals",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 11400,
+      "CostUSD": 4200,
+      "BudgetUSD": 5000,
+      "HoursSaved": 98,
+      "ActiveUsers": 11,
+      "LicensedUsers": 27,
+      "EvalRuns": 45,
+      "EvalPassed": 38,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 64,
+      "NetValueUSD": 7200
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Partner Enablement Agent",
+      "Team": "Channel & Partners",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 30700,
+      "CostUSD": 8700,
+      "BudgetUSD": 8700,
+      "HoursSaved": 288,
+      "ActiveUsers": 20,
+      "LicensedUsers": 40,
+      "EvalRuns": 60,
+      "EvalPassed": 54,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 89,
+      "NetValueUSD": 22000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Deal Registration Agent",
+      "Team": "Channel & Partners",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 20400,
+      "CostUSD": 4400,
+      "BudgetUSD": 4300,
+      "HoursSaved": 192,
+      "ActiveUsers": 10,
+      "LicensedUsers": 20,
+      "EvalRuns": 30,
+      "EvalPassed": 27,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 59,
+      "NetValueUSD": 16000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Campaign Content Agent",
+      "Team": "Marketing",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 3500,
+      "BudgetUSD": 3500,
+      "HoursSaved": 0,
+      "ActiveUsers": 4,
+      "LicensedUsers": 20,
+      "EvalRuns": 23,
+      "EvalPassed": 17,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 5,
+      "NetValueUSD": -3500
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Product Copy Agent",
+      "Team": "Marketing",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 3500,
+      "BudgetUSD": 3500,
+      "HoursSaved": 0,
+      "ActiveUsers": 4,
+      "LicensedUsers": 20,
+      "EvalRuns": 22,
+      "EvalPassed": 17,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 4,
+      "NetValueUSD": -3500
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Supplier Risk Agent",
+      "Team": "Supply Chain",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 23600,
+      "CostUSD": 3800,
+      "BudgetUSD": 4800,
+      "HoursSaved": 324,
+      "ActiveUsers": 31,
+      "LicensedUsers": 42,
+      "EvalRuns": 68,
+      "EvalPassed": 63,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 129,
+      "NetValueUSD": 19800
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Inventory Optimization Agent",
+      "Team": "Supply Chain",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 39300,
+      "CostUSD": 3800,
+      "BudgetUSD": 4700,
+      "HoursSaved": 539,
+      "ActiveUsers": 31,
+      "LicensedUsers": 42,
+      "EvalRuns": 68,
+      "EvalPassed": 63,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 109,
+      "NetValueUSD": 35500
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Logistics Tracking Agent",
+      "Team": "Supply Chain",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 15700,
+      "CostUSD": 1900,
+      "BudgetUSD": 2400,
+      "HoursSaved": 215,
+      "ActiveUsers": 21,
+      "LicensedUsers": 28,
+      "EvalRuns": 45,
+      "EvalPassed": 42,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 89,
+      "NetValueUSD": 13800
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Order Promising Agent",
+      "Team": "Supply Chain",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 7900,
+      "CostUSD": 3700,
+      "BudgetUSD": 4700,
+      "HoursSaved": 107,
+      "ActiveUsers": 20,
+      "LicensedUsers": 28,
+      "EvalRuns": 45,
+      "EvalPassed": 42,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 44,
+      "NetValueUSD": 4200
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Demand Sensing Agent",
+      "Team": "Planning",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 39300,
+      "CostUSD": 5500,
+      "BudgetUSD": 6900,
+      "HoursSaved": 711,
+      "ActiveUsers": 56,
+      "LicensedUsers": 72,
+      "EvalRuns": 90,
+      "EvalPassed": 83,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 179,
+      "NetValueUSD": 33800
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "S&OP Planning Agent",
+      "Team": "Planning",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 26300,
+      "CostUSD": 5500,
+      "BudgetUSD": 6900,
+      "HoursSaved": 474,
+      "ActiveUsers": 38,
+      "LicensedUsers": 48,
+      "EvalRuns": 90,
+      "EvalPassed": 83,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 129,
+      "NetValueUSD": 20800
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Purchase Request Agent",
+      "Team": "Procurement",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4000,
+      "BudgetUSD": 5600,
+      "HoursSaved": 0,
+      "ActiveUsers": 17,
+      "LicensedUsers": 25,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 7,
+      "NetValueUSD": -4000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Contract Review Agent",
+      "Team": "Procurement",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4000,
+      "BudgetUSD": 5600,
+      "HoursSaved": 0,
+      "ActiveUsers": 17,
+      "LicensedUsers": 25,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 11,
+      "NetValueUSD": -4000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Line Inspection Agent",
+      "Team": "Manufacturing Quality",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 6400,
+      "BudgetUSD": 9300,
+      "HoursSaved": 0,
+      "ActiveUsers": 32,
+      "LicensedUsers": 38,
+      "EvalRuns": 67,
+      "EvalPassed": 60,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 24,
+      "NetValueUSD": -6400
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Defect Root Cause Agent",
+      "Team": "Manufacturing Quality",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 6400,
+      "BudgetUSD": 9200,
+      "HoursSaved": 0,
+      "ActiveUsers": 31,
+      "LicensedUsers": 37,
+      "EvalRuns": 67,
+      "EvalPassed": 59,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 19,
+      "NetValueUSD": -6400
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Month End Close Agent",
+      "Team": "Financial Planning & Close",
+      "Function": "Finance",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 19300,
+      "CostUSD": 11100,
+      "BudgetUSD": 8500,
+      "HoursSaved": 143,
+      "ActiveUsers": 16,
+      "LicensedUsers": 43,
+      "EvalRuns": 84,
+      "EvalPassed": 74,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 119,
+      "NetValueUSD": 8200
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Variance Analysis Agent",
+      "Team": "Financial Planning & Close",
+      "Function": "Finance",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 6500,
+      "CostUSD": 5500,
+      "BudgetUSD": 4200,
+      "HoursSaved": 48,
+      "ActiveUsers": 8,
+      "LicensedUsers": 22,
+      "EvalRuns": 42,
+      "EvalPassed": 36,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 79,
+      "NetValueUSD": 1000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Invoice Matching Agent",
+      "Team": "Accounts Receivable",
+      "Function": "Finance",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 6400,
+      "CostUSD": 4400,
+      "BudgetUSD": 3500,
+      "HoursSaved": 46,
+      "ActiveUsers": 6,
+      "LicensedUsers": 18,
+      "EvalRuns": 27,
+      "EvalPassed": 24,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 59,
+      "NetValueUSD": 2000
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Collections Agent",
+      "Team": "Accounts Receivable",
+      "Function": "Finance",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 3200,
+      "CostUSD": 4400,
+      "BudgetUSD": 3400,
+      "HoursSaved": 23,
+      "ActiveUsers": 5,
+      "LicensedUsers": 17,
+      "EvalRuns": 27,
+      "EvalPassed": 24,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 39,
+      "NetValueUSD": -1200
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Microsoft 365 Copilot",
+      "Function": "Customer",
+      "InPortfolio": "No",
+      "GrossValueUSD": 345900,
+      "CostUSD": 31000,
+      "NetValueUSD": 314900,
+      "BudgetUSD": 32700,
+      "HoursSaved": 3020,
+      "ActiveUsers": 498,
+      "LicensedUsers": 600,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 579,
+      "Team": "Microsoft 365 Copilot"
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Microsoft 365 Copilot",
+      "Function": "Eng & IT",
+      "InPortfolio": "No",
+      "GrossValueUSD": 167600,
+      "CostUSD": 35600,
+      "NetValueUSD": 132000,
+      "BudgetUSD": 37600,
+      "HoursSaved": 2640,
+      "ActiveUsers": 576,
+      "LicensedUsers": 700,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 579,
+      "Team": "Microsoft 365 Copilot"
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Microsoft 365 Copilot",
+      "Function": "Sales",
+      "InPortfolio": "No",
+      "GrossValueUSD": 155000,
+      "CostUSD": 20000,
+      "NetValueUSD": 135000,
+      "BudgetUSD": 21000,
+      "HoursSaved": 1200,
+      "ActiveUsers": 310,
+      "LicensedUsers": 400,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 579,
+      "Team": "Microsoft 365 Copilot"
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Microsoft 365 Copilot",
+      "Function": "Operations",
+      "InPortfolio": "No",
+      "GrossValueUSD": 119000,
+      "CostUSD": 11000,
+      "NetValueUSD": 108000,
+      "BudgetUSD": 12000,
+      "HoursSaved": 630,
+      "ActiveUsers": 178,
+      "LicensedUsers": 215,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 579,
+      "Team": "Microsoft 365 Copilot"
+    },
+    {
+      "Month": "2026-08",
+      "Agent": "Microsoft 365 Copilot",
+      "Function": "Finance",
+      "InPortfolio": "No",
+      "GrossValueUSD": 128000,
+      "CostUSD": 6000,
+      "NetValueUSD": 122000,
+      "BudgetUSD": 6000,
+      "HoursSaved": 450,
+      "ActiveUsers": 39,
+      "LicensedUsers": 100,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 579,
+      "Team": "Microsoft 365 Copilot"
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Case Triage Agent",
+      "Team": "Customer Service",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 65000,
+      "CostUSD": 11300,
+      "BudgetUSD": 12400,
+      "HoursSaved": 1333,
+      "ActiveUsers": 176,
+      "LicensedUsers": 200,
+      "EvalRuns": 300,
+      "EvalPassed": 296,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 420,
+      "NetValueUSD": 53700
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Order Status Agent",
+      "Team": "Customer Service",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 52000,
+      "CostUSD": 7500,
+      "BudgetUSD": 8200,
+      "HoursSaved": 1067,
+      "ActiveUsers": 132,
+      "LicensedUsers": 150,
+      "EvalRuns": 200,
+      "EvalPassed": 197,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 380,
+      "NetValueUSD": 44500
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Customer Self Service Agent",
+      "Team": "Customer Service",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 39000,
+      "CostUSD": 11200,
+      "BudgetUSD": 12400,
+      "HoursSaved": 800,
+      "ActiveUsers": 132,
+      "LicensedUsers": 150,
+      "EvalRuns": 200,
+      "EvalPassed": 197,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 260,
+      "NetValueUSD": 27800
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Device Troubleshooting Agent",
+      "Team": "Product Support",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 59000,
+      "CostUSD": 7700,
+      "BudgetUSD": 8600,
+      "HoursSaved": 1050,
+      "ActiveUsers": 125,
+      "LicensedUsers": 150,
+      "EvalRuns": 250,
+      "EvalPassed": 235,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 300,
+      "NetValueUSD": 51300
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Driver & BIOS Advisor",
+      "Team": "Product Support",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 35400,
+      "CostUSD": 5200,
+      "BudgetUSD": 5700,
+      "HoursSaved": 630,
+      "ActiveUsers": 63,
+      "LicensedUsers": 75,
+      "EvalRuns": 167,
+      "EvalPassed": 157,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 240,
+      "NetValueUSD": 30200
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Knowledge Article Agent",
+      "Team": "Product Support",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 23600,
+      "CostUSD": 5100,
+      "BudgetUSD": 5700,
+      "HoursSaved": 420,
+      "ActiveUsers": 62,
+      "LicensedUsers": 75,
+      "EvalRuns": 83,
+      "EvalPassed": 78,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 190,
+      "NetValueUSD": 18500
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Warranty Entitlement Agent",
+      "Team": "Warranty & Returns",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 33000,
+      "CostUSD": 5200,
+      "BudgetUSD": 6000,
+      "HoursSaved": 540,
+      "ActiveUsers": 66,
+      "LicensedUsers": 84,
+      "EvalRuns": 150,
+      "EvalPassed": 143,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 170,
+      "NetValueUSD": 27800
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "RMA Processing Agent",
+      "Team": "Warranty & Returns",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 22000,
+      "CostUSD": 7800,
+      "BudgetUSD": 6000,
+      "HoursSaved": 360,
+      "ActiveUsers": 44,
+      "LicensedUsers": 56,
+      "EvalRuns": 150,
+      "EvalPassed": 142,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 120,
+      "NetValueUSD": 14200
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Field Dispatch Agent",
+      "Team": "Field Services",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4000,
+      "BudgetUSD": 5000,
+      "HoursSaved": 0,
+      "ActiveUsers": 20,
+      "LicensedUsers": 30,
+      "EvalRuns": 50,
+      "EvalPassed": 46,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 48,
+      "NetValueUSD": -4000
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Field Engineer Copilot",
+      "Team": "Field Services",
+      "Function": "Customer",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4000,
+      "BudgetUSD": 5000,
+      "HoursSaved": 0,
+      "ActiveUsers": 20,
+      "LicensedUsers": 30,
+      "EvalRuns": 50,
+      "EvalPassed": 45,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 40,
+      "NetValueUSD": -4000
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Ticket Triage Agent",
+      "Team": "IT Service Desk",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 84500,
+      "CostUSD": 14400,
+      "BudgetUSD": 17200,
+      "HoursSaved": 1289,
+      "ActiveUsers": 113,
+      "LicensedUsers": 150,
+      "EvalRuns": 386,
+      "EvalPassed": 368,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 365,
+      "NetValueUSD": 70100
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Password & Access Agent",
+      "Team": "IT Service Desk",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 63300,
+      "CostUSD": 7200,
+      "BudgetUSD": 11400,
+      "HoursSaved": 967,
+      "ActiveUsers": 112,
+      "LicensedUsers": 150,
+      "EvalRuns": 257,
+      "EvalPassed": 246,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 330,
+      "NetValueUSD": 56100
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "IT Knowledge Agent",
+      "Team": "IT Service Desk",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 42200,
+      "CostUSD": 14400,
+      "BudgetUSD": 11400,
+      "HoursSaved": 644,
+      "ActiveUsers": 75,
+      "LicensedUsers": 100,
+      "EvalRuns": 257,
+      "EvalPassed": 246,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 210,
+      "NetValueUSD": 27800
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Developer Copilot",
+      "Team": "Software Engineering",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 88900,
+      "CostUSD": 26500,
+      "BudgetUSD": 20300,
+      "HoursSaved": 1389,
+      "ActiveUsers": 69,
+      "LicensedUsers": 107,
+      "EvalRuns": 300,
+      "EvalPassed": 281,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 540,
+      "NetValueUSD": 62400
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Code Review Agent",
+      "Team": "Software Engineering",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 35600,
+      "CostUSD": 10600,
+      "BudgetUSD": 10100,
+      "HoursSaved": 556,
+      "ActiveUsers": 46,
+      "LicensedUsers": 72,
+      "EvalRuns": 200,
+      "EvalPassed": 187,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 220,
+      "NetValueUSD": 25000
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Test Generation Agent",
+      "Team": "Software Engineering",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 35500,
+      "CostUSD": 7900,
+      "BudgetUSD": 7600,
+      "HoursSaved": 555,
+      "ActiveUsers": 35,
+      "LicensedUsers": 71,
+      "EvalRuns": 200,
+      "EvalPassed": 187,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 150,
+      "NetValueUSD": 27600
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Incident Response Agent",
+      "Team": "DevOps & SRE",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 49800,
+      "CostUSD": 9300,
+      "BudgetUSD": 9300,
+      "HoursSaved": 660,
+      "ActiveUsers": 42,
+      "LicensedUsers": 60,
+      "EvalRuns": 225,
+      "EvalPassed": 210,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 200,
+      "NetValueUSD": 40500
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Release Readiness Agent",
+      "Team": "DevOps & SRE",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 33200,
+      "CostUSD": 4700,
+      "BudgetUSD": 4700,
+      "HoursSaved": 440,
+      "ActiveUsers": 28,
+      "LicensedUsers": 40,
+      "EvalRuns": 225,
+      "EvalPassed": 210,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 130,
+      "NetValueUSD": 28500
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Device Telemetry Agent",
+      "Team": "Device Engineering",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4000,
+      "BudgetUSD": 4000,
+      "HoursSaved": 0,
+      "ActiveUsers": 14,
+      "LicensedUsers": 25,
+      "EvalRuns": 75,
+      "EvalPassed": 73,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 44,
+      "NetValueUSD": -4000
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Firmware Validation Agent",
+      "Team": "Device Engineering",
+      "Function": "Eng & IT",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4000,
+      "BudgetUSD": 4000,
+      "HoursSaved": 0,
+      "ActiveUsers": 13,
+      "LicensedUsers": 25,
+      "EvalRuns": 75,
+      "EvalPassed": 72,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 38,
+      "NetValueUSD": -4000
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Account Research Agent",
+      "Team": "Sales",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 45000,
+      "CostUSD": 7200,
+      "BudgetUSD": 8000,
+      "HoursSaved": 343,
+      "ActiveUsers": 26,
+      "LicensedUsers": 48,
+      "EvalRuns": 80,
+      "EvalPassed": 75,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 240,
+      "NetValueUSD": 37800
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Opportunity Insights Agent",
+      "Team": "Sales",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 45000,
+      "CostUSD": 7200,
+      "BudgetUSD": 8000,
+      "HoursSaved": 343,
+      "ActiveUsers": 21,
+      "LicensedUsers": 48,
+      "EvalRuns": 80,
+      "EvalPassed": 74,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 200,
+      "NetValueUSD": 37800
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Quote Assistant Agent",
+      "Team": "Sales",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 15000,
+      "CostUSD": 3600,
+      "BudgetUSD": 4000,
+      "HoursSaved": 114,
+      "ActiveUsers": 13,
+      "LicensedUsers": 24,
+      "EvalRuns": 40,
+      "EvalPassed": 37,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 110,
+      "NetValueUSD": 11400
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "RFP Response Agent",
+      "Team": "Bids & Proposals",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 39000,
+      "CostUSD": 12800,
+      "BudgetUSD": 10000,
+      "HoursSaved": 338,
+      "ActiveUsers": 27,
+      "LicensedUsers": 53,
+      "EvalRuns": 100,
+      "EvalPassed": 86,
+      "PolicyIncidents": 2,
+      "DaysInProduction": 180,
+      "NetValueUSD": 26200
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Compliance Matrix Agent",
+      "Team": "Bids & Proposals",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 13000,
+      "CostUSD": 4200,
+      "BudgetUSD": 5000,
+      "HoursSaved": 112,
+      "ActiveUsers": 13,
+      "LicensedUsers": 27,
+      "EvalRuns": 50,
+      "EvalPassed": 43,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 95,
+      "NetValueUSD": 8800
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Partner Enablement Agent",
+      "Team": "Channel & Partners",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 34900,
+      "CostUSD": 8700,
+      "BudgetUSD": 8700,
+      "HoursSaved": 330,
+      "ActiveUsers": 23,
+      "LicensedUsers": 40,
+      "EvalRuns": 67,
+      "EvalPassed": 61,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 120,
+      "NetValueUSD": 26200
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Deal Registration Agent",
+      "Team": "Channel & Partners",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 23200,
+      "CostUSD": 4400,
+      "BudgetUSD": 4300,
+      "HoursSaved": 220,
+      "ActiveUsers": 11,
+      "LicensedUsers": 20,
+      "EvalRuns": 33,
+      "EvalPassed": 31,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 90,
+      "NetValueUSD": 18800
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Campaign Content Agent",
+      "Team": "Marketing",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 3500,
+      "BudgetUSD": 3500,
+      "HoursSaved": 0,
+      "ActiveUsers": 5,
+      "LicensedUsers": 20,
+      "EvalRuns": 25,
+      "EvalPassed": 19,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 36,
+      "NetValueUSD": -3500
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Product Copy Agent",
+      "Team": "Marketing",
+      "Function": "Sales",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 3500,
+      "BudgetUSD": 3500,
+      "HoursSaved": 0,
+      "ActiveUsers": 5,
+      "LicensedUsers": 20,
+      "EvalRuns": 25,
+      "EvalPassed": 19,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 35,
+      "NetValueUSD": -3500
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Supplier Risk Agent",
+      "Team": "Supply Chain",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 26700,
+      "CostUSD": 4600,
+      "BudgetUSD": 5200,
+      "HoursSaved": 355,
+      "ActiveUsers": 36,
+      "LicensedUsers": 42,
+      "EvalRuns": 75,
+      "EvalPassed": 71,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 160,
+      "NetValueUSD": 22100
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Inventory Optimization Agent",
+      "Team": "Supply Chain",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 44600,
+      "CostUSD": 4600,
+      "BudgetUSD": 5100,
+      "HoursSaved": 591,
+      "ActiveUsers": 36,
+      "LicensedUsers": 42,
+      "EvalRuns": 75,
+      "EvalPassed": 71,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 140,
+      "NetValueUSD": 40000
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Logistics Tracking Agent",
+      "Team": "Supply Chain",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 17800,
+      "CostUSD": 2300,
+      "BudgetUSD": 2600,
+      "HoursSaved": 236,
+      "ActiveUsers": 24,
+      "LicensedUsers": 28,
+      "EvalRuns": 50,
+      "EvalPassed": 47,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 120,
+      "NetValueUSD": 15500
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Order Promising Agent",
+      "Team": "Supply Chain",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 8900,
+      "CostUSD": 4500,
+      "BudgetUSD": 5100,
+      "HoursSaved": 118,
+      "ActiveUsers": 24,
+      "LicensedUsers": 28,
+      "EvalRuns": 50,
+      "EvalPassed": 47,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 75,
+      "NetValueUSD": 4400
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Demand Sensing Agent",
+      "Team": "Planning",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 44600,
+      "CostUSD": 6700,
+      "BudgetUSD": 7500,
+      "HoursSaved": 780,
+      "ActiveUsers": 66,
+      "LicensedUsers": 72,
+      "EvalRuns": 100,
+      "EvalPassed": 93,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 210,
+      "NetValueUSD": 37900
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "S&OP Planning Agent",
+      "Team": "Planning",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 29800,
+      "CostUSD": 6700,
+      "BudgetUSD": 7500,
+      "HoursSaved": 520,
+      "ActiveUsers": 44,
+      "LicensedUsers": 48,
+      "EvalRuns": 100,
+      "EvalPassed": 93,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 160,
+      "NetValueUSD": 23100
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Purchase Request Agent",
+      "Team": "Procurement",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4900,
+      "BudgetUSD": 6000,
+      "HoursSaved": 0,
+      "ActiveUsers": 20,
+      "LicensedUsers": 25,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 38,
+      "NetValueUSD": -4900
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Contract Review Agent",
+      "Team": "Procurement",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 4900,
+      "BudgetUSD": 6000,
+      "HoursSaved": 0,
+      "ActiveUsers": 20,
+      "LicensedUsers": 25,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 42,
+      "NetValueUSD": -4900
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Line Inspection Agent",
+      "Team": "Manufacturing Quality",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 7800,
+      "BudgetUSD": 10000,
+      "HoursSaved": 0,
+      "ActiveUsers": 37,
+      "LicensedUsers": 38,
+      "EvalRuns": 75,
+      "EvalPassed": 67,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 55,
+      "NetValueUSD": -7800
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Defect Root Cause Agent",
+      "Team": "Manufacturing Quality",
+      "Function": "Operations",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 0,
+      "CostUSD": 7700,
+      "BudgetUSD": 10000,
+      "HoursSaved": 0,
+      "ActiveUsers": 36,
+      "LicensedUsers": 37,
+      "EvalRuns": 75,
+      "EvalPassed": 66,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 50,
+      "NetValueUSD": -7700
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Month End Close Agent",
+      "Team": "Financial Planning & Close",
+      "Function": "Finance",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 22500,
+      "CostUSD": 11500,
+      "BudgetUSD": 8700,
+      "HoursSaved": 165,
+      "ActiveUsers": 19,
+      "LicensedUsers": 43,
+      "EvalRuns": 93,
+      "EvalPassed": 83,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 150,
+      "NetValueUSD": 11000
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Variance Analysis Agent",
+      "Team": "Financial Planning & Close",
+      "Function": "Finance",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 7500,
+      "CostUSD": 5700,
+      "BudgetUSD": 4300,
+      "HoursSaved": 55,
+      "ActiveUsers": 9,
+      "LicensedUsers": 22,
+      "EvalRuns": 47,
+      "EvalPassed": 41,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 110,
+      "NetValueUSD": 1800
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Invoice Matching Agent",
+      "Team": "Accounts Receivable",
+      "Function": "Finance",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 7500,
+      "CostUSD": 4500,
+      "BudgetUSD": 3500,
+      "HoursSaved": 53,
+      "ActiveUsers": 7,
+      "LicensedUsers": 18,
+      "EvalRuns": 30,
+      "EvalPassed": 27,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 90,
+      "NetValueUSD": 3000
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Collections Agent",
+      "Team": "Accounts Receivable",
+      "Function": "Finance",
+      "InPortfolio": "Yes",
+      "GrossValueUSD": 3700,
+      "CostUSD": 4500,
+      "BudgetUSD": 3500,
+      "HoursSaved": 27,
+      "ActiveUsers": 6,
+      "LicensedUsers": 17,
+      "EvalRuns": 30,
+      "EvalPassed": 27,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 70,
+      "NetValueUSD": -800
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Microsoft 365 Copilot",
+      "Function": "Customer",
+      "InPortfolio": "No",
+      "GrossValueUSD": 391000,
+      "CostUSD": 31000,
+      "NetValueUSD": 360000,
+      "BudgetUSD": 33000,
+      "HoursSaved": 3200,
+      "ActiveUsers": 528,
+      "LicensedUsers": 600,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 610,
+      "Team": "Microsoft 365 Copilot"
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Microsoft 365 Copilot",
+      "Function": "Eng & IT",
+      "InPortfolio": "No",
+      "GrossValueUSD": 186000,
+      "CostUSD": 36000,
+      "NetValueUSD": 150000,
+      "BudgetUSD": 38000,
+      "HoursSaved": 2900,
+      "ActiveUsers": 602,
+      "LicensedUsers": 700,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 610,
+      "Team": "Microsoft 365 Copilot"
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Microsoft 365 Copilot",
+      "Function": "Sales",
+      "InPortfolio": "No",
+      "GrossValueUSD": 170000,
+      "CostUSD": 20000,
+      "NetValueUSD": 150000,
+      "BudgetUSD": 21000,
+      "HoursSaved": 1300,
+      "ActiveUsers": 320,
+      "LicensedUsers": 400,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 610,
+      "Team": "Microsoft 365 Copilot"
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Microsoft 365 Copilot",
+      "Function": "Operations",
+      "InPortfolio": "No",
+      "GrossValueUSD": 133300,
+      "CostUSD": 11000,
+      "NetValueUSD": 122300,
+      "BudgetUSD": 12000,
+      "HoursSaved": 700,
+      "ActiveUsers": 182,
+      "LicensedUsers": 215,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 610,
+      "Team": "Microsoft 365 Copilot"
+    },
+    {
+      "Month": "2026-09",
+      "Agent": "Microsoft 365 Copilot",
+      "Function": "Finance",
+      "InPortfolio": "No",
+      "GrossValueUSD": 141000,
+      "CostUSD": 6000,
+      "NetValueUSD": 135000,
+      "BudgetUSD": 6000,
+      "HoursSaved": 500,
+      "ActiveUsers": 41,
+      "LicensedUsers": 100,
+      "EvalRuns": 0,
+      "EvalPassed": 0,
+      "PolicyIncidents": 0,
+      "DaysInProduction": 610,
+      "Team": "Microsoft 365 Copilot"
+    }
+  ],
+  "costs": [
+    {
+      "Month": "2026-08",
+      "Factor": "Licences",
+      "SubFactor": "Licences",
+      "CostUSD": 166000,
+      "BudgetUSD": 170000
+    },
+    {
+      "Month": "2026-08",
+      "Factor": "Consumption",
+      "SubFactor": "Engineering tokens",
+      "CostUSD": 52000,
+      "BudgetUSD": 58000
+    },
+    {
+      "Month": "2026-08",
+      "Factor": "Consumption",
+      "SubFactor": "Other tokens",
+      "CostUSD": 39500,
+      "BudgetUSD": 39000
+    },
+    {
+      "Month": "2026-08",
+      "Factor": "Platform",
+      "SubFactor": "Platform",
+      "CostUSD": 72000,
+      "BudgetUSD": 75000
+    },
+    {
+      "Month": "2026-08",
+      "Factor": "Build and run",
+      "SubFactor": "Build and run",
+      "CostUSD": 48700,
+      "BudgetUSD": 51200
+    },
+    {
+      "Month": "2026-08",
+      "Factor": "Enablement",
+      "SubFactor": "Enablement",
+      "CostUSD": 21000,
+      "BudgetUSD": 24000
+    },
+    {
+      "Month": "2026-09",
+      "Factor": "Licences",
+      "SubFactor": "Licences",
+      "CostUSD": 168000,
+      "BudgetUSD": 170000
+    },
+    {
+      "Month": "2026-09",
+      "Factor": "Consumption",
+      "SubFactor": "Engineering tokens",
+      "CostUSD": 55200,
+      "BudgetUSD": 60000
+    },
+    {
+      "Month": "2026-09",
+      "Factor": "Consumption",
+      "SubFactor": "Other tokens",
+      "CostUSD": 40800,
+      "BudgetUSD": 40000
+    },
+    {
+      "Month": "2026-09",
+      "Factor": "Platform",
+      "SubFactor": "Platform",
+      "CostUSD": 72000,
+      "BudgetUSD": 75000
+    },
+    {
+      "Month": "2026-09",
+      "Factor": "Build and run",
+      "SubFactor": "Build and run",
+      "CostUSD": 52000,
+      "BudgetUSD": 55000
+    },
+    {
+      "Month": "2026-09",
+      "Factor": "Enablement",
+      "SubFactor": "Enablement",
+      "CostUSD": 24000,
+      "BudgetUSD": 25000
+    }
+  ],
+  "seats": [
+    [
+      "Customer",
+      "Copilot Studio",
+      0,
+      123
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      1,
+      111
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      2,
+      106
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      3,
+      121
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      4,
+      111
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      5,
+      139
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      6,
+      129
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      7,
+      7
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      8,
+      4
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      10,
+      7
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      11,
+      7
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      12,
+      7
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      13,
+      3
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      14,
+      7
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      15,
+      7
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      16,
+      7
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      17,
+      5
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      18,
+      4
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      19,
+      9
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      20,
+      7
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      21,
+      7
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      22,
+      5
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      23,
+      3
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      24,
+      5
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      25,
+      4
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      26,
+      7
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      27,
+      7
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      28,
+      6
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      31,
+      2
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      36,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      40,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      47,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      51,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      52,
+      2
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      56,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      57,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      58,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      59,
+      2
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      67,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      68,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      72,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      74,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      79,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      82,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      84,
+      3
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      86,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      88,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      92,
+      2
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      93,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      94,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      99,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      100,
+      2
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      101,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      102,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      103,
+      1
+    ],
+    [
+      "Customer",
+      "Copilot Studio",
+      104,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      0,
+      68
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      1,
+      68
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      2,
+      79
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      3,
+      69
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      4,
+      75
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      5,
+      83
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      6,
+      86
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      7,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      8,
+      3
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      9,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      10,
+      4
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      11,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      12,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      14,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      15,
+      4
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      16,
+      3
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      17,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      18,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      19,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      20,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      21,
+      3
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      22,
+      3
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      23,
+      5
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      24,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      25,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      26,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      27,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      28,
+      3
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      39,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      42,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      50,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      51,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      53,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      55,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      63,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      65,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      76,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      78,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      81,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      85,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      88,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      89,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      96,
+      2
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      97,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      100,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      101,
+      1
+    ],
+    [
+      "Customer",
+      "M365 Copilot",
+      106,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      0,
+      86
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      1,
+      74
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      2,
+      82
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      3,
+      92
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      4,
+      81
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      5,
+      71
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      6,
+      61
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      7,
+      11
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      8,
+      11
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      9,
+      12
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      10,
+      9
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      11,
+      7
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      12,
+      8
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      13,
+      8
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      14,
+      10
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      15,
+      11
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      16,
+      4
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      17,
+      6
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      18,
+      9
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      19,
+      5
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      20,
+      4
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      21,
+      10
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      22,
+      10
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      23,
+      8
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      24,
+      14
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      25,
+      12
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      26,
+      13
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      27,
+      8
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      28,
+      13
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      31,
+      2
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      32,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      33,
+      2
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      34,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      36,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      40,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      41,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      43,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      44,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      45,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      46,
+      2
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      47,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      55,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      57,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      58,
+      3
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      59,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      60,
+      2
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      61,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      63,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      69,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      71,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      75,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      78,
+      2
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      79,
+      3
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      80,
+      2
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      81,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      83,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      84,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      85,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      86,
+      3
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      89,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      94,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      96,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      97,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      99,
+      1
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      100,
+      2
+    ],
+    [
+      "Eng & IT",
+      "Copilot Studio",
+      101,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      0,
+      90
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      1,
+      82
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      2,
+      80
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      3,
+      93
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      4,
+      91
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      5,
+      72
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      6,
+      94
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      7,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      8,
+      5
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      9,
+      6
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      10,
+      3
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      12,
+      3
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      13,
+      3
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      14,
+      4
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      15,
+      7
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      16,
+      4
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      17,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      18,
+      2
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      19,
+      2
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      20,
+      2
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      21,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      23,
+      3
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      24,
+      7
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      25,
+      3
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      26,
+      3
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      27,
+      4
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      28,
+      4
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      31,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      33,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      36,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      39,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      41,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      43,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      47,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      48,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      50,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      55,
+      2
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      58,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      60,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      67,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      69,
+      2
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      73,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      77,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      78,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      81,
+      2
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      83,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      87,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      92,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      94,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      95,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      98,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      104,
+      1
+    ],
+    [
+      "Eng & IT",
+      "M365 Copilot",
+      106,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      0,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      2,
+      8
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      3,
+      4
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      4,
+      10
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      5,
+      5
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      6,
+      12
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      9,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      10,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      11,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      14,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      15,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      18,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      20,
+      3
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      25,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      27,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      28,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      31,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      35,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      37,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      41,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      42,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      44,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      49,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      50,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      51,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      52,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      55,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      56,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      57,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      59,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      60,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      65,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      69,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      72,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      74,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      81,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      82,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      83,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      84,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      85,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      86,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      88,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      89,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      90,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      91,
+      2
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      94,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      99,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      100,
+      3
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      101,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      105,
+      1
+    ],
+    [
+      "Finance",
+      "Copilot Studio",
+      107,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      0,
+      6
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      1,
+      5
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      2,
+      5
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      3,
+      5
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      4,
+      6
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      5,
+      8
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      6,
+      6
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      7,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      8,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      9,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      10,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      11,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      13,
+      2
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      15,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      17,
+      2
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      20,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      24,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      26,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      28,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      33,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      34,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      35,
+      2
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      36,
+      2
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      37,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      42,
+      3
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      44,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      46,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      50,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      53,
+      2
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      54,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      55,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      56,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      58,
+      4
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      59,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      61,
+      2
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      62,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      70,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      72,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      73,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      75,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      81,
+      2
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      85,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      93,
+      2
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      95,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      96,
+      2
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      100,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      102,
+      2
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      103,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      104,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      105,
+      1
+    ],
+    [
+      "Finance",
+      "M365 Copilot",
+      107,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      0,
+      61
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      1,
+      44
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      2,
+      43
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      3,
+      37
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      4,
+      43
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      5,
+      56
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      6,
+      59
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      8,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      9,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      10,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      11,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      13,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      14,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      15,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      16,
+      2
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      17,
+      2
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      18,
+      3
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      20,
+      2
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      21,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      23,
+      3
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      24,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      27,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      35,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      39,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      45,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      55,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      63,
+      2
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      73,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      75,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      79,
+      2
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      81,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      82,
+      2
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      89,
+      2
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      96,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      98,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      101,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      106,
+      1
+    ],
+    [
+      "Operations",
+      "Copilot Studio",
+      107,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      0,
+      29
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      1,
+      34
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      2,
+      24
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      3,
+      24
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      4,
+      23
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      5,
+      24
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      6,
+      24
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      8,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      9,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      10,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      12,
+      2
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      13,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      14,
+      2
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      18,
+      2
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      19,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      20,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      21,
+      2
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      22,
+      3
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      24,
+      2
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      25,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      28,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      65,
+      2
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      73,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      80,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      83,
+      2
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      84,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      87,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      95,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      97,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      101,
+      1
+    ],
+    [
+      "Operations",
+      "M365 Copilot",
+      102,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      0,
+      22
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      1,
+      19
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      2,
+      23
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      3,
+      15
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      4,
+      22
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      5,
+      24
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      6,
+      19
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      7,
+      11
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      8,
+      4
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      9,
+      2
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      10,
+      4
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      11,
+      5
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      12,
+      4
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      13,
+      7
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      14,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      15,
+      5
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      16,
+      4
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      17,
+      8
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      18,
+      9
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      19,
+      4
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      20,
+      4
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      21,
+      12
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      22,
+      5
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      23,
+      7
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      24,
+      3
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      25,
+      5
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      26,
+      5
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      27,
+      11
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      28,
+      6
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      32,
+      2
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      33,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      36,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      41,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      43,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      47,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      49,
+      2
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      50,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      56,
+      2
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      60,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      62,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      66,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      77,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      80,
+      2
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      83,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      84,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      86,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      87,
+      3
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      88,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      98,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      99,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      100,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      102,
+      1
+    ],
+    [
+      "Sales",
+      "Copilot Studio",
+      107,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      0,
+      54
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      1,
+      41
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      2,
+      39
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      3,
+      56
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      4,
+      48
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      5,
+      45
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      6,
+      37
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      7,
+      4
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      8,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      9,
+      4
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      10,
+      3
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      11,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      12,
+      4
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      13,
+      2
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      14,
+      3
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      15,
+      2
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      16,
+      3
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      17,
+      2
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      18,
+      3
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      19,
+      4
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      22,
+      5
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      23,
+      2
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      24,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      25,
+      2
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      26,
+      3
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      27,
+      5
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      28,
+      6
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      31,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      37,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      41,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      47,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      51,
+      2
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      67,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      76,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      81,
+      3
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      82,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      85,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      87,
+      2
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      88,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      91,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      92,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      97,
+      1
+    ],
+    [
+      "Sales",
+      "M365 Copilot",
+      101,
+      1
+    ]
+  ]
+}

@@ -1,0 +1,226 @@
+import React, { useState, useEffect } from 'react';
+import {
+  LayoutDashboard,
+  TableProperties,
+  PieChart,
+  Users,
+  Settings,
+  HelpCircle,
+  TrendingUp,
+  Cpu
+} from 'lucide-react';
+import { Header } from './components/Header';
+import { ExecutiveSummaryTab } from './components/ExecutiveSummaryTab';
+import { AgentScorecardTab } from './components/AgentScorecardTab';
+import { CostBudgetTab } from './components/CostBudgetTab';
+import { SeatsAdoptionTab } from './components/SeatsAdoptionTab';
+import { AdminTab } from './components/AdminTab';
+import { AgentDetailModal } from './components/AgentDetailModal';
+import {
+  fetchSummary,
+  fetchByFunction,
+  fetchCostBreakdown,
+  fetchTrend,
+  fetchWhereToAct,
+  fetchAgents,
+  fetchSeats,
+  fetchThresholds
+} from './api';
+import {
+  SummaryKPI,
+  FunctionSummary,
+  CostBreakdownItem,
+  TrendMonth,
+  AgentScorecardItem,
+  SeatInventorySummary,
+  UserProfile
+} from './types';
+
+export const App: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'summary' | 'scorecard' | 'costs' | 'seats' | 'admin'>('summary');
+  const [currentMonth, setCurrentMonth] = useState<string>('2026-09');
+  const [selectedFunction, setSelectedFunction] = useState<string>('');
+  const [currentUser, setCurrentUser] = useState<UserProfile>({
+    email: 'cxo@wct.com',
+    display_name: 'Chief Executive Officer',
+    role: 'cxo',
+    function_name: null
+  });
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [summary, setSummary] = useState<SummaryKPI | null>(null);
+  const [byFunction, setByFunction] = useState<FunctionSummary[]>([]);
+  const [costBreakdown, setCostBreakdown] = useState<CostBreakdownItem[]>([]);
+  const [trend, setTrend] = useState<TrendMonth[]>([]);
+  const [whereToAct, setWhereToAct] = useState<AgentScorecardItem[]>([]);
+  const [agents, setAgents] = useState<AgentScorecardItem[]>([]);
+  const [seats, setSeats] = useState<SeatInventorySummary | null>(null);
+  const [thresholds, setThresholds] = useState<any>(null);
+
+  const [selectedAgent, setSelectedAgent] = useState<AgentScorecardItem | null>(null);
+  const [scorecardActionFilter, setScorecardActionFilter] = useState<string>('');
+
+  // Load dashboard data
+  const loadDashboardData = async () => {
+    setIsLoading(true);
+    try {
+      const effFunc = currentUser.role === 'function_head' ? (currentUser.function_name || '') : selectedFunction;
+      
+      const [sumData, funcData, costData, trendData, actData, agentList, seatData, thresh] = await Promise.all([
+        fetchSummary(currentMonth, effFunc).catch(() => null),
+        fetchByFunction(currentMonth).catch(() => []),
+        fetchCostBreakdown(currentMonth).catch(() => []),
+        fetchTrend(effFunc).catch(() => []),
+        fetchWhereToAct(currentMonth, effFunc).catch(() => []),
+        fetchAgents({ month: currentMonth, function: effFunc }).catch(() => []),
+        fetchSeats(effFunc).catch(() => null),
+        fetchThresholds().catch(() => null)
+      ]);
+
+      if (sumData) setSummary(sumData);
+      setByFunction(funcData);
+      setCostBreakdown(costData);
+      setTrend(trendData);
+      setWhereToAct(actData);
+      setAgents(agentList);
+      if (seatData) setSeats(seatData);
+      if (thresh) setThresholds(thresh);
+    } catch (e) {
+      console.error('Error loading cockpit data:', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [currentMonth, selectedFunction, currentUser]);
+
+  const handleFilterAction = (action: string) => {
+    setScorecardActionFilter(action);
+    setActiveTab('scorecard');
+  };
+
+  return (
+    <div className="app-container">
+      {/* Executive Header */}
+      <Header
+        currentMonth={currentMonth}
+        onMonthChange={setCurrentMonth}
+        selectedFunction={selectedFunction}
+        onFunctionChange={setSelectedFunction}
+        user={currentUser}
+        onUserChange={setCurrentUser}
+        onRefresh={loadDashboardData}
+        isLoading={isLoading}
+      />
+
+      {/* Main Tab Navigation */}
+      <div style={{
+        background: 'rgba(8, 13, 26, 0.6)',
+        borderBottom: '1px solid var(--border-subtle)',
+        padding: '0 32px'
+      }}>
+        <div style={{
+          maxWidth: 1600,
+          margin: '0 auto',
+          display: 'flex',
+          gap: 8,
+          overflowX: 'auto',
+          padding: '8px 0'
+        }}>
+          <button
+            className={`tab-button ${activeTab === 'summary' ? 'active' : ''}`}
+            onClick={() => setActiveTab('summary')}
+          >
+            <LayoutDashboard size={16} />
+            Executive Summary
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'scorecard' ? 'active' : ''}`}
+            onClick={() => {
+              setScorecardActionFilter('');
+              setActiveTab('scorecard');
+            }}
+          >
+            <TableProperties size={16} />
+            Agent Scorecard
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'costs' ? 'active' : ''}`}
+            onClick={() => setActiveTab('costs')}
+          >
+            <PieChart size={16} />
+            Cost &amp; Budget
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'seats' ? 'active' : ''}`}
+            onClick={() => setActiveTab('seats')}
+          >
+            <Users size={16} />
+            Seats &amp; Adoption
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'admin' ? 'active' : ''}`}
+            onClick={() => setActiveTab('admin')}
+          >
+            <Settings size={16} />
+            Admin &amp; Config
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <main className="main-content">
+        {activeTab === 'summary' && (
+          <ExecutiveSummaryTab
+            summary={summary}
+            byFunction={byFunction}
+            costBreakdown={costBreakdown}
+            trend={trend}
+            whereToAct={whereToAct}
+            onSelectAgent={setSelectedAgent}
+            onFilterAction={handleFilterAction}
+          />
+        )}
+
+        {activeTab === 'scorecard' && (
+          <AgentScorecardTab
+            agents={agents}
+            onSelectAgent={setSelectedAgent}
+            initialActionFilter={scorecardActionFilter}
+          />
+        )}
+
+        {activeTab === 'costs' && (
+          <CostBudgetTab
+            costBreakdown={costBreakdown}
+            agents={agents}
+          />
+        )}
+
+        {activeTab === 'seats' && (
+          <SeatsAdoptionTab
+            seats={seats}
+            onCostPerSeatChange={(cost) => {
+              fetchSeats(selectedFunction, cost).then(res => setSeats(res)).catch(() => {});
+            }}
+          />
+        )}
+
+        {activeTab === 'admin' && (
+          <AdminTab
+            initialThresholds={thresholds}
+            onThresholdsUpdated={loadDashboardData}
+          />
+        )}
+      </main>
+
+      {/* Agent Detail Inspection Modal */}
+      <AgentDetailModal
+        agent={selectedAgent}
+        onClose={() => setSelectedAgent(null)}
+      />
+    </div>
+  );
+};

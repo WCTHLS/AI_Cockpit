@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL 16 ──────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: wct-postgres
+    environment:
+      POSTGRES_DB: wct_cockpit
+      POSTGRES_USER: wct
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wct_dev_2026}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/01_init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wct -d wct_cockpit"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ── FastAPI Backend ────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wct-api
+    environment:
+      DATABASE_URL: postgresql+asyncpg://wct:${POSTGRES_PASSWORD:-wct_dev_2026}@postgres:5432/wct_cockpit
+      DATABASE_URL_SYNC: postgresql://wct:${POSTGRES_PASSWORD:-wct_dev_2026}@postgres:5432/wct_cockpit
+      JWT_SECRET: ${JWT_SECRET:-wct-dev-secret-change-in-prod}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # ── Vite React Frontend (dev) ──────────────────────────────────
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: wct-web
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_URL: http://localhost:8000
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  pgdata:
