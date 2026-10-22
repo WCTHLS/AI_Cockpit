@@ -176,9 +176,9 @@ export const App: React.FC = () => {
           <ExecutiveSummaryTab
             summary={summary}
             byFunction={byFunction}
-            costBreakdown={costBreakdown}
-            trend={trend}
-            whereToAct={whereToAct}
+            agents={agents}
+            currentMonth={currentMonth}
+            selectedFunction={selectedFunction}
             onSelectAgent={setSelectedAgent}
             onFilterAction={handleFilterAction}
             theme={theme}

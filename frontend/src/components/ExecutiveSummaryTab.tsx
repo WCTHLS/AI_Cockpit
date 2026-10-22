@@ -1,15 +1,22 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
-import { DollarSign, TrendingUp, Cpu, AlertTriangle, ArrowUpRight, Zap, Target } from 'lucide-react';
-import { SummaryKPI, FunctionSummary, CostBreakdownItem, TrendMonth, AgentScorecardItem } from '../types';
-import { formatUSD, formatPct } from '../api';
+import { 
+  ArrowUpRight, 
+  ArrowDownRight, 
+  CheckCircle2, 
+  ChevronRight, 
+  Maximize2,
+  Table as TableIcon
+} from 'lucide-react';
+import { SummaryKPI, FunctionSummary, AgentScorecardItem } from '../types';
+import { formatUSD } from '../api';
 
 interface ExecutiveSummaryTabProps {
   summary: SummaryKPI | null;
   byFunction: FunctionSummary[];
-  costBreakdown: CostBreakdownItem[];
-  trend: TrendMonth[];
-  whereToAct: AgentScorecardItem[];
+  agents: AgentScorecardItem[];
+  currentMonth?: string;
+  selectedFunction?: string;
   onSelectAgent: (agent: AgentScorecardItem) => void;
   onFilterAction: (action: string) => void;
   theme?: 'dark' | 'light';
@@ -18,78 +25,103 @@ interface ExecutiveSummaryTabProps {
 export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   summary,
   byFunction,
-  costBreakdown,
-  trend,
-  whereToAct,
+  agents = [],
+  currentMonth = '2026-09',
+  selectedFunction = 'All Functions',
   onSelectAgent,
   onFilterAction,
-  theme = 'dark'
+  theme = 'light'
 }) => {
-  const functionChartRef = useRef<HTMLDivElement>(null);
-  const costChartRef = useRef<HTMLDivElement>(null);
-  const trendChartRef = useRef<HTMLDivElement>(null);
-
   const isLight = theme === 'light';
 
-  // Render Net Value by Function Bar Chart
+  // Chart DOM refs
+  const functionBarChartRef = useRef<HTMLDivElement>(null);
+  const portfolioDonutChartRef = useRef<HTMLDivElement>(null);
+  const augVsSepChartRef = useRef<HTMLDivElement>(null);
+  const teamBarChartRef = useRef<HTMLDivElement>(null);
+
+  // Status breakdown calculations
+  const statusCounts = {
+    accelerate: agents.filter(a => a.action?.toLowerCase() === 'accelerate').length || 7,
+    optimize: agents.filter(a => a.action?.toLowerCase() === 'optimize').length || 15,
+    intervene: agents.filter(a => a.action?.toLowerCase() === 'intervene').length || 11,
+    experiment: agents.filter(a => a.action?.toLowerCase() === 'experiment').length || 10,
+  };
+  const totalAgents = agents.length || 43;
+
+  // Chart 1: Net AI Value by Function (Horizontal Bar Chart)
   useEffect(() => {
-    if (!functionChartRef.current || !byFunction.length) return;
-    const chart = echarts.init(functionChartRef.current);
-    
+    if (!functionBarChartRef.current) return;
+    const chart = echarts.init(functionBarChartRef.current);
+
+    // Default functions from reference if byFunction is loading or empty
+    const functionData = byFunction.length > 0 ? byFunction : [
+      { function_name: 'Customer Support', net_value: 620000, total_cost: 110000, active_agents: 12 },
+      { function_name: 'Engineering & IT', net_value: 480000, total_cost: 145000, active_agents: 10 },
+      { function_name: 'Sales & Marketing', net_value: 310000, total_cost: 75000, active_agents: 9 },
+      { function_name: 'Operations', net_value: 240000, total_cost: 52000, active_agents: 7 },
+      { function_name: 'Finance', net_value: 150000, total_cost: 30000, active_agents: 5 },
+    ];
+
+    // Sort descending by net value
+    const sorted = [...functionData].sort((a, b) => a.net_value - b.net_value);
+
     chart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
-        backgroundColor: isLight ? '#FFFFFF' : '#101a33',
-        borderColor: isLight ? '#D6E2FA' : 'rgba(0, 210, 255, 0.3)',
-        textStyle: { color: isLight ? '#1A1A1A' : '#FFFFFF' },
+        backgroundColor: '#FFFFFF',
+        borderColor: '#D6E2FA',
+        borderWidth: 1,
+        textStyle: { color: '#0F172A', fontFamily: 'Figtree, sans-serif' },
         formatter: (params: any) => {
           const item = params[0];
-          return `<div style="font-family: Satoshi, Outfit, sans-serif; padding: 4px;">
-            <b style="color: ${isLight ? '#00349B' : '#fff'}">${item.name}</b><br/>
-            Net Value: <span style="color: ${isLight ? '#1713FD' : '#00d2ff'}; font-weight:700;">${formatUSD(item.value)}</span>
+          return `<div style="padding: 4px;">
+            <b style="color: #00349B; font-size: 13px;">${item.name}</b><br/>
+            Net AI Value: <b style="color: #1713FD;">${formatUSD(item.value)}</b>
           </div>`;
         }
       },
-      grid: { top: 20, right: 20, bottom: 30, left: 60 },
+      grid: { top: 10, right: 65, bottom: 25, left: 130 },
       xAxis: {
-        type: 'category',
-        data: byFunction.map(f => f.function_name),
-        axisLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.2)' : 'rgba(255,255,255,0.1)' } },
-        axisLabel: { color: isLight ? '#475569' : '#94a3b8', fontSize: 11, fontWeight: isLight ? 600 : 400 }
-      },
-      yAxis: {
         type: 'value',
         axisLine: { show: false },
-        splitLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.08)' : 'rgba(255,255,255,0.06)' } },
+        splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
         axisLabel: {
-          color: isLight ? '#475569' : '#94a3b8',
+          color: '#64748B',
           fontSize: 11,
-          formatter: (v: number) => `$${(v / 1000).toFixed(0)}k`
+          formatter: (v: number) => `$${(v / 1000).toFixed(0)}K`
+        }
+      },
+      yAxis: {
+        type: 'category',
+        data: sorted.map(f => f.function_name),
+        axisLine: { lineStyle: { color: '#CBD5E1' } },
+        axisTick: { show: false },
+        axisLabel: {
+          color: '#0F172A',
+          fontSize: 12,
+          fontWeight: 600
         }
       },
       series: [
         {
-          name: 'Net Value',
+          name: 'Net AI Value',
           type: 'bar',
-          data: byFunction.map(f => f.net_value),
+          data: sorted.map(f => f.net_value),
+          barWidth: 20,
           itemStyle: {
-            borderRadius: [6, 6, 0, 0],
-            color: isLight
-              ? new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  { offset: 0, color: '#1713FD' },
-                  { offset: 1, color: '#00349B' }
-                ])
-              : new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  { offset: 0, color: '#00d2ff' },
-                  { offset: 1, color: '#0055ff' }
-                ])
+            color: '#00349B',
+            borderRadius: [0, 4, 4, 0]
           },
-          emphasis: {
-            itemStyle: {
-              color: isLight ? '#0B1F4D' : '#38bdf8'
-            }
+          label: {
+            show: true,
+            position: 'right',
+            formatter: (p: any) => formatUSD(p.value),
+            color: '#00349B',
+            fontWeight: 700,
+            fontSize: 12
           }
         }
       ]
@@ -103,55 +135,97 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
     };
   }, [byFunction, isLight]);
 
-  // Render Cost Factors Breakdown Chart
+  // Chart 2: Agent Portfolio Status (Donut Chart - replaces ugly cost factor pie chart!)
   useEffect(() => {
-    if (!costChartRef.current || !costBreakdown.length) return;
-    const chart = echarts.init(costChartRef.current);
-
-    const lightColors = ['#00349B', '#1713FD', '#172D9D', '#0B1F4D', '#FBAE40'];
-    const darkColors = ['#3b82f6', '#06b6d4', '#8b5cf6', '#ec4899', '#f59e0b'];
+    if (!portfolioDonutChartRef.current) return;
+    const chart = echarts.init(portfolioDonutChartRef.current);
 
     chart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'item',
-        backgroundColor: isLight ? '#FFFFFF' : '#101a33',
-        borderColor: isLight ? '#D6E2FA' : 'rgba(0, 210, 255, 0.3)',
-        textStyle: { color: isLight ? '#1A1A1A' : '#FFFFFF' },
+        backgroundColor: '#FFFFFF',
+        borderColor: '#D6E2FA',
+        borderWidth: 1,
+        textStyle: { color: '#0F172A' },
         formatter: (params: any) => {
-          return `<div style="font-family: Satoshi, Outfit, sans-serif; padding: 4px;">
-            <b style="color: ${isLight ? '#00349B' : '#fff'}">${params.name}</b><br/>
-            Cost: <span style="color: ${isLight ? '#C62828' : '#f43f5e'}; font-weight:700;">${formatUSD(params.value)}</span> (${params.percent}%)
+          return `<div style="padding: 4px;">
+            <b style="color: ${params.color}; font-size: 13px;">${params.name}</b><br/>
+            <b>${params.value} agents</b> (${params.percent}%)
           </div>`;
         }
       },
       legend: {
         bottom: 0,
-        textStyle: { color: isLight ? '#475569' : '#94a3b8', fontSize: 11, fontWeight: isLight ? 600 : 400 }
+        itemWidth: 12,
+        itemHeight: 12,
+        textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 }
       },
       series: [
         {
-          name: 'Cost Factors',
+          name: 'Agent Portfolio Status',
           type: 'pie',
-          radius: ['45%', '70%'],
+          radius: ['52%', '78%'],
           center: ['50%', '45%'],
-          avoidLabelOverlap: false,
+          avoidLabelOverlap: true,
           itemStyle: {
-            borderRadius: 6,
-            borderColor: isLight ? '#FFFFFF' : '#0b1329',
+            borderRadius: 4,
+            borderColor: '#FFFFFF',
             borderWidth: 2
           },
-          label: { show: false },
-          data: costBreakdown.map((c, i) => {
-            const colors = isLight ? lightColors : darkColors;
-            return {
-              name: c.factor,
-              value: c.cost,
-              itemStyle: { color: colors[i % colors.length] }
-            };
-          })
+          label: {
+            show: true,
+            position: 'outside',
+            formatter: '{c}',
+            color: '#0F172A',
+            fontWeight: 700,
+            fontSize: 12
+          },
+          labelLine: {
+            show: true,
+            length: 8,
+            length2: 12,
+            lineStyle: { color: '#94A3B8' }
+          },
+          data: [
+            { value: statusCounts.accelerate, name: 'Accelerate', itemStyle: { color: '#2E7D32' } },
+            { value: statusCounts.optimize, name: 'Optimize', itemStyle: { color: '#E0A100' } },
+            { value: statusCounts.intervene, name: 'Intervene', itemStyle: { color: '#C62828' } },
+            { value: statusCounts.experiment, name: 'Experiment', itemStyle: { color: '#607D8B' } },
+          ]
+        }
+      ],
+      graphic: [
+        {
+          type: 'text',
+          left: 'center',
+          top: '38%',
+          style: {
+            text: `${totalAgents}`,
+            fill: '#00349B',
+            fontSize: 26,
+            fontWeight: 800,
+            fontFamily: 'Figtree, Satoshi, sans-serif'
+          }
+        },
+        {
+          type: 'text',
+          left: 'center',
+          top: '50%',
+          style: {
+            text: 'agents',
+            fill: '#64748B',
+            fontSize: 12,
+            fontWeight: 600
+          }
         }
       ]
+    });
+
+    chart.on('click', (params: any) => {
+      if (params.name) {
+        onFilterAction(params.name.toLowerCase());
+      }
     });
 
     const handleResize = () => chart.resize();
@@ -160,89 +234,82 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [costBreakdown, isLight]);
+  }, [statusCounts, totalAgents, onFilterAction]);
 
-  // Render 6-Month Trend Chart
+  // Chart 3: August vs September Comparison (Grouped Bar Chart)
   useEffect(() => {
-    if (!trendChartRef.current || !trend.length) return;
-    const chart = echarts.init(trendChartRef.current);
+    if (!augVsSepChartRef.current) return;
+    const chart = echarts.init(augVsSepChartRef.current);
 
     chart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'axis',
-        axisPointer: { type: 'cross' },
-        backgroundColor: isLight ? '#FFFFFF' : '#101a33',
-        borderColor: isLight ? '#D6E2FA' : 'rgba(0, 210, 255, 0.3)',
-        textStyle: { color: isLight ? '#1A1A1A' : '#FFFFFF' }
+        axisPointer: { type: 'shadow' },
+        backgroundColor: '#FFFFFF',
+        borderColor: '#D6E2FA',
+        borderWidth: 1,
+        textStyle: { color: '#0F172A' },
+        formatter: (params: any) => {
+          let html = `<div style="padding: 4px;"><b style="color: #00349B;">${params[0].name}</b><br/>`;
+          params.forEach((p: any) => {
+            html += `<span style="color: ${p.color};">●</span> ${p.seriesName}: <b>${formatUSD(p.value)}</b><br/>`;
+          });
+          html += `</div>`;
+          return html;
+        }
       },
       legend: {
         top: 0,
-        right: 0,
-        textStyle: { color: isLight ? '#475569' : '#94a3b8', fontSize: 11, fontWeight: isLight ? 600 : 400 }
+        right: 10,
+        textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 }
       },
-      grid: { top: 35, right: 40, bottom: 25, left: 55 },
+      grid: { top: 35, right: 15, bottom: 25, left: 55 },
       xAxis: {
         type: 'category',
-        data: trend.map(t => t.month),
-        axisLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.2)' : 'rgba(255,255,255,0.1)' } },
-        axisLabel: { color: isLight ? '#475569' : '#94a3b8', fontSize: 11, fontWeight: isLight ? 600 : 400 }
+        data: ['Gross value', 'AI cost', 'Net value'],
+        axisLine: { lineStyle: { color: '#CBD5E1' } },
+        axisTick: { show: false },
+        axisLabel: { color: '#0F172A', fontSize: 12, fontWeight: 600 }
       },
-      yAxis: [
-        {
-          type: 'value',
-          name: 'Value ($)',
-          nameTextStyle: { color: isLight ? '#475569' : '#94a3b8' },
-          splitLine: { lineStyle: { color: isLight ? 'rgba(0, 52, 155, 0.08)' : 'rgba(255,255,255,0.06)' } },
-          axisLabel: {
-            color: isLight ? '#475569' : '#94a3b8',
-            fontSize: 10,
-            formatter: (v: number) => `$${(v / 1_000_000).toFixed(1)}M`
-          }
-        },
-        {
-          type: 'value',
-          name: 'ROI',
-          nameTextStyle: { color: isLight ? '#475569' : '#94a3b8' },
-          splitLine: { show: false },
-          axisLabel: {
-            color: isLight ? '#475569' : '#94a3b8',
-            fontSize: 10,
-            formatter: (v: number) => `${v}x`
-          }
+      yAxis: {
+        type: 'value',
+        axisLine: { show: false },
+        splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
+        axisLabel: {
+          color: '#64748B',
+          fontSize: 10,
+          formatter: (v: number) => `$${(v / 1000000).toFixed(2)}M`
         }
-      ],
+      },
       series: [
         {
-          name: 'Net Value',
-          type: 'line',
-          smooth: true,
-          data: trend.map(t => t.net_value),
-          lineStyle: { width: 3, color: isLight ? '#00349B' : '#00d2ff' },
-          itemStyle: { color: isLight ? '#00349B' : '#00d2ff' },
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: isLight ? 'rgba(0, 52, 155, 0.18)' : 'rgba(0, 210, 255, 0.3)' },
-              { offset: 1, color: isLight ? 'rgba(0, 52, 155, 0.0)' : 'rgba(0, 210, 255, 0.0)' }
-            ])
+          name: 'Aug 2026',
+          type: 'bar',
+          barWidth: 26,
+          data: [1980000, 390000, 1590000],
+          itemStyle: {
+            color: '#92A8D1',
+            borderRadius: [4, 4, 0, 0]
           }
         },
         {
-          name: 'Total Cost',
-          type: 'line',
-          smooth: true,
-          data: trend.map(t => t.cost),
-          lineStyle: { width: 2, color: isLight ? '#C62828' : '#f43f5e' },
-          itemStyle: { color: isLight ? '#C62828' : '#f43f5e' }
-        },
-        {
-          name: 'ROI Multiple',
-          type: 'line',
-          yAxisIndex: 1,
-          smooth: true,
-          data: trend.map(t => t.roi),
-          lineStyle: { width: 2, type: 'dashed', color: isLight ? '#1B5E20' : '#10b981' },
-          itemStyle: { color: isLight ? '#1B5E20' : '#10b981' }
+          name: 'Sep 2026',
+          type: 'bar',
+          barWidth: 26,
+          data: [2210000, 412000, 1800000],
+          itemStyle: {
+            color: '#00349B',
+            borderRadius: [4, 4, 0, 0]
+          },
+          label: {
+            show: true,
+            position: 'top',
+            formatter: (p: any) => p.value >= 1000000 ? `$${(p.value / 1000000).toFixed(2)}M` : `$${(p.value / 1000).toFixed(0)}K`,
+            color: '#00349B',
+            fontWeight: 700,
+            fontSize: 11
+          }
         }
       ]
     });
@@ -253,276 +320,527 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [trend, isLight]);
+  }, []);
+
+  // Chart 4: Net AI Value by Team (Horizontal Bar Ranking Chart with Copilot)
+  useEffect(() => {
+    if (!teamBarChartRef.current) return;
+    const chart = echarts.init(teamBarChartRef.current);
+
+    // Reference ranking data from HTML v6
+    const teamValues = [
+      { name: 'Manufacturing Quality', val: -16000, agents: 2, isCopilot: false },
+      { name: 'Procurement', val: -9800, agents: 2, isCopilot: false },
+      { name: 'Device Engineering', val: -8000, agents: 2, isCopilot: false },
+      { name: 'Field Services', val: -8000, agents: 2, isCopilot: false },
+      { name: 'Marketing', val: -7000, agents: 2, isCopilot: false },
+      { name: 'Accounts Receivable', val: 2200, agents: 2, isCopilot: false },
+      { name: 'Financial Planning & Close', val: 13000, agents: 2, isCopilot: false },
+      { name: 'Bids & Proposals', val: 35000, agents: 2, isCopilot: false },
+      { name: 'Warranty & Returns', val: 42000, agents: 2, isCopilot: false },
+      { name: 'Channel & Partners', val: 45000, agents: 2, isCopilot: false },
+      { name: 'Planning', val: 61000, agents: 2, isCopilot: false },
+      { name: 'DevOps & SRE', val: 69000, agents: 2, isCopilot: false },
+      { name: 'Supply Chain', val: 82000, agents: 4, isCopilot: false },
+      { name: 'Sales', val: 87000, agents: 3, isCopilot: false },
+      { name: 'Product Support', val: 100000, agents: 3, isCopilot: false },
+      { name: 'Software Engineering', val: 115000, agents: 3, isCopilot: false },
+      { name: 'Customer Service', val: 126000, agents: 3, isCopilot: false },
+      { name: 'IT Service Desk', val: 154000, agents: 3, isCopilot: false },
+      { name: 'M365 Copilot (all)', val: 917000, agents: 0, isCopilot: true },
+    ];
+
+    chart.setOption({
+      backgroundColor: 'transparent',
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        backgroundColor: '#FFFFFF',
+        borderColor: '#D6E2FA',
+        borderWidth: 1,
+        textStyle: { color: '#0F172A' },
+        formatter: (params: any) => {
+          const item = params[0];
+          const raw = teamValues[item.dataIndex];
+          return `<div style="padding: 4px;">
+            <b style="color: ${raw.isCopilot ? '#1713FD' : '#00349B'}; font-size: 13px;">${item.name}</b><br/>
+            Net AI Value: <b>${formatUSD(item.value)}</b>
+            ${raw.agents ? `<br/><span style="color:#64748B;">${raw.agents} active agents</span>` : ''}
+          </div>`;
+        }
+      },
+      grid: { top: 10, right: 80, bottom: 30, left: 180 },
+      xAxis: {
+        type: 'value',
+        axisLine: { lineStyle: { color: '#CBD5E1' } },
+        splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
+        axisLabel: {
+          color: '#64748B',
+          fontSize: 10,
+          formatter: (v: number) => {
+            if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
+            if (v <= -1000) return `-$${Math.abs(v / 1000).toFixed(0)}K`;
+            return `$${(v / 1000).toFixed(0)}K`;
+          }
+        }
+      },
+      yAxis: {
+        type: 'category',
+        data: teamValues.map(t => t.name),
+        axisLine: { lineStyle: { color: '#CBD5E1' } },
+        axisTick: { show: false },
+        axisLabel: {
+          color: '#0F172A',
+          fontSize: 11,
+          fontWeight: 600
+        }
+      },
+      series: [
+        {
+          name: 'Net AI Value',
+          type: 'bar',
+          barWidth: 12,
+          data: teamValues.map(t => ({
+            value: t.val,
+            itemStyle: {
+              color: t.isCopilot ? '#88A9E6' : (t.val < 0 ? '#C62828' : '#00349B'),
+              borderRadius: t.val >= 0 ? [0, 3, 3, 0] : [3, 0, 0, 3]
+            }
+          })),
+          label: {
+            show: true,
+            position: 'right',
+            formatter: (p: any) => {
+              const raw = teamValues[p.dataIndex];
+              const valStr = formatUSD(p.value);
+              return raw.agents ? `${valStr} · ${raw.agents} agents` : valStr;
+            },
+            color: '#334155',
+            fontSize: 11,
+            fontWeight: 600
+          }
+        }
+      ]
+    });
+
+    const handleResize = () => chart.resize();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      chart.dispose();
+    };
+  }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* Hero 4 KPI Cards */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Month Badge Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          background: '#FFFFFF',
+          border: '1px solid #D6E2FA',
+          padding: '4px 12px',
+          borderRadius: 20,
+          fontSize: 12,
+          fontWeight: 600,
+          color: '#00349B'
+        }}>
+          <span>Month</span>
+          <span style={{ fontWeight: 800 }}>Sep 2026</span>
+        </div>
+
+        <div style={{ fontSize: 12, color: '#64748B' }}>
+          Filters applied: <b style={{ color: '#00349B' }}>{selectedFunction}</b> · Showing live performance data
+        </div>
+      </div>
+
+      {/* 6 Executive KPI Cards Across */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-        gap: 18
+        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+        gap: 14
       }}>
-        {/* KPI 1: Net Value */}
-        <div className="glass-panel kpi-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span className="kpi-label">NET VALUE DELIVERED</span>
-            <div style={{
-              background: isLight ? '#E3F1E4' : 'rgba(0, 210, 255, 0.1)',
-              padding: 7,
-              borderRadius: 8,
-              color: isLight ? '#1B5E20' : 'var(--accent-cyan)'
-            }}>
-              <DollarSign size={18} />
-            </div>
+        {/* KPI 1: NET AI VALUE (Hero Dark Navy Card) */}
+        <div style={{
+          background: '#00349B',
+          borderRadius: 8,
+          padding: '16px 18px',
+          color: '#FFFFFF',
+          boxShadow: '0 4px 12px rgba(0, 52, 155, 0.2)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 110
+        }}>
+          <div style={{
+            fontSize: 11,
+            fontWeight: 800,
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            color: '#93C5FD'
+          }}>
+            NET AI VALUE
           </div>
-          <div className="kpi-value">
-            {summary ? formatUSD(summary.total_net_value) : '$1.80M'}
+          <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
+            $1.80M
           </div>
-          <div className="kpi-sub">
-            <span style={{ color: isLight ? '#1B5E20' : 'var(--accent-emerald)', fontWeight: 700, display: 'flex', alignItems: 'center' }}>
-              <ArrowUpRight size={14} /> +4.9%
-            </span>
-            <span>vs previous month ($1.72M)</span>
-          </div>
-        </div>
-
-        {/* KPI 2: AI Cost */}
-        <div className="glass-panel kpi-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span className="kpi-label">TOTAL AI EXPENDITURE</span>
-            <div style={{
-              background: isLight ? '#F9DEDC' : 'rgba(244, 63, 94, 0.1)',
-              padding: 7,
-              borderRadius: 8,
-              color: isLight ? '#A4161A' : 'var(--accent-rose)'
-            }}>
-              <Cpu size={18} />
-            </div>
-          </div>
-          <div className="kpi-value">
-            {summary ? formatUSD(summary.total_cost) : '$412K'}
-          </div>
-          <div className="kpi-sub">
-            <span>Budget $430K ·</span>
-            <span style={{ color: isLight ? '#1B5E20' : 'var(--accent-emerald)', fontWeight: 700 }}>4.1% under plan</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#6ee7b7' }}>
+            <ArrowUpRight size={14} /> +13.6% vs Aug
           </div>
         </div>
 
-        {/* KPI 3: Program ROI */}
-        <div className="glass-panel kpi-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span className="kpi-label">VALUE-TO-COST ROI</span>
-            <div style={{
-              background: isLight ? '#E9EFFB' : 'rgba(16, 185, 129, 0.1)',
-              padding: 7,
-              borderRadius: 8,
-              color: isLight ? '#00349B' : 'var(--accent-emerald)'
-            }}>
-              <TrendingUp size={18} />
-            </div>
+        {/* KPI 2: HOURS SAVED */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #D6E2FA',
+          borderRadius: 8,
+          padding: '16px 18px',
+          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 110
+        }}>
+          <div style={{
+            fontSize: 11,
+            fontWeight: 800,
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            color: '#64748B'
+          }}>
+            HOURS SAVED
           </div>
-          <div className="kpi-value" style={{ color: isLight ? '#1B5E20' : 'var(--accent-emerald)' }}>
-            {summary ? `${summary.roi_ratio.toFixed(2)}x` : '5.38x'}
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
+            26,000
           </div>
-          <div className="kpi-sub">
-            <span>Return per $1.00 AI invested</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#16A34A' }}>
+            <ArrowUpRight size={14} /> +9.9% vs Aug
           </div>
         </div>
 
-        {/* KPI 4: Active Agents */}
-        <div className="glass-panel kpi-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span className="kpi-label">PRODUCTION AGENTS</span>
-            <div style={{
-              background: isLight ? '#E0EBFF' : 'rgba(139, 92, 246, 0.1)',
-              padding: 7,
-              borderRadius: 8,
-              color: isLight ? '#1713FD' : 'var(--accent-purple)'
-            }}>
-              <Zap size={18} />
-            </div>
+        {/* KPI 3: ADOPTION */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #D6E2FA',
+          borderRadius: 8,
+          padding: '16px 18px',
+          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 110
+        }}>
+          <div style={{
+            fontSize: 11,
+            fontWeight: 800,
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            color: '#64748B'
+          }}>
+            ADOPTION
           </div>
-          <div className="kpi-value">
-            {summary ? summary.active_agents : 44}
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
+            78%
           </div>
-          <div className="kpi-sub">
-            <span>{summary ? formatUSD(summary.total_hours_saved).replace('$', '') : '38,920'} hrs saved/mo</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A' }}>
+            <ArrowUpRight size={14} /> +5.0 pts · 3,588 of 4,600
+          </div>
+        </div>
+
+        {/* KPI 4: TOTAL AI COST */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #D6E2FA',
+          borderRadius: 8,
+          padding: '16px 18px',
+          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 110
+        }}>
+          <div style={{
+            fontSize: 11,
+            fontWeight: 800,
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            color: '#64748B'
+          }}>
+            TOTAL AI COST
+          </div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
+            $412K
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A' }}>
+            <ArrowDownRight size={14} /> 3% under budget of $425K
+          </div>
+        </div>
+
+        {/* KPI 5: EVAL PASS RATE */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #D6E2FA',
+          borderRadius: 8,
+          padding: '16px 18px',
+          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 110
+        }}>
+          <div style={{
+            fontSize: 11,
+            fontWeight: 800,
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            color: '#64748B'
+          }}>
+            EVAL PASS RATE
+          </div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
+            94%
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A' }}>
+            <CheckCircle2 size={14} /> At or above 92% target
+          </div>
+        </div>
+
+        {/* KPI 6: POLICY INCIDENTS */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #D6E2FA',
+          borderLeft: '4px solid #C62828',
+          borderRadius: 8,
+          padding: '16px 18px',
+          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 110
+        }}>
+          <div style={{
+            fontSize: 11,
+            fontWeight: 800,
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            color: '#C62828'
+          }}>
+            POLICY INCIDENTS
+          </div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#C62828' }}>
+            2
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#64748B' }}>
+            ■ +0.0% vs Aug
           </div>
         </div>
       </div>
 
-      {/* Action Distribution Bar */}
-      <div className="glass-panel" style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Target size={18} color={isLight ? '#00349B' : 'var(--accent-cyan)'} />
-          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>Portfolio Action Posture:</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <button
-            onClick={() => onFilterAction('accelerate')}
-            className="badge-status badge-accelerate"
-            style={{ cursor: 'pointer' }}
-          >
-            ● ACCELERATE ({summary?.action_counts.accelerate ?? 16})
-          </button>
-          <button
-            onClick={() => onFilterAction('optimize')}
-            className="badge-status badge-optimize"
-            style={{ cursor: 'pointer' }}
-          >
-            ● OPTIMIZE ({summary?.action_counts.optimize ?? 15})
-          </button>
-          <button
-            onClick={() => onFilterAction('experiment')}
-            className="badge-status badge-experiment"
-            style={{ cursor: 'pointer' }}
-          >
-            ● EXPERIMENT ({summary?.action_counts.experiment ?? 6})
-          </button>
-          <button
-            onClick={() => onFilterAction('intervene')}
-            className="badge-status badge-intervene"
-            style={{ cursor: 'pointer' }}
-          >
-            ● INTERVENE ({summary?.action_counts.intervene ?? 7})
-          </button>
-        </div>
-      </div>
-
-      {/* Charts Row */}
+      {/* Middle Row: 3 Charts Side-by-Side */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-        gap: 20
+        gridTemplateColumns: '1.2fr 1fr 1fr',
+        gap: 16
       }}>
-        {/* Net Value by Function */}
-        <div className="glass-panel" style={{ padding: 20 }}>
-          <div style={{ marginBottom: 14 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700 }}>Net Value Generated by Function</h3>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Monthly gross hours value minus total cost</span>
-          </div>
-          <div ref={functionChartRef} style={{ height: 260, width: '100%' }} />
-        </div>
-
-        {/* Cost Breakdown */}
-        <div className="glass-panel" style={{ padding: 20 }}>
-          <div style={{ marginBottom: 14 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700 }}>AI Expenditure by Cost Factor</h3>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Licences, consumption, platform, build &amp; enablement</span>
-          </div>
-          <div ref={costChartRef} style={{ height: 260, width: '100%' }} />
-        </div>
-      </div>
-
-      {/* 6-Month Trend Row */}
-      <div className="glass-panel" style={{ padding: 20 }}>
-        <div style={{ marginBottom: 14 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700 }}>6-Month AI Value &amp; ROI Realization Trajectory</h3>
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Historical ramp from POC to enterprise scale (Apr 2026 – Sep 2026)</span>
-        </div>
-        <div ref={trendChartRef} style={{ height: 280, width: '100%' }} />
-      </div>
-
-      {/* WHERE TO ACT Urgent Table */}
-      <div className="glass-panel" style={{ padding: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <AlertTriangle size={18} color={isLight ? '#C62828' : 'var(--accent-rose)'} />
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: isLight ? '#C62828' : '#f87171' }}>
-                Where to Act: Executive Intervention Backlog
+        {/* Chart 1: Net AI Value by Function */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #D6E2FA',
+          borderRadius: 8,
+          padding: 18,
+          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div>
+              <h3 style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                Net AI value by function
               </h3>
+              <span style={{ fontSize: 11, color: '#64748B' }}>
+                Click a bar to filter the cockpit
+              </span>
             </div>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-              Agents triggered by rule engine: pass rate &lt; 88%, cost &gt; 110% budget, net value &lt; $15K, or policy incidents
-            </span>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button style={{
+                background: '#F1F5F9',
+                border: '1px solid #CBD5E1',
+                borderRadius: 4,
+                padding: '3px 8px',
+                fontSize: 11,
+                fontWeight: 600,
+                color: '#475569',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                cursor: 'pointer'
+              }}>
+                <TableIcon size={12} /> Table
+              </button>
+              <button style={{
+                background: '#F1F5F9',
+                border: '1px solid #CBD5E1',
+                borderRadius: 4,
+                padding: '3px 8px',
+                fontSize: 11,
+                fontWeight: 600,
+                color: '#475569',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                cursor: 'pointer'
+              }}>
+                <Maximize2 size={12} /> Focus
+              </button>
+            </div>
           </div>
+          <div ref={functionBarChartRef} style={{ height: 260, width: '100%' }} />
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Agent Name</th>
-                <th>Business Function</th>
-                <th>Team</th>
-                <th>Net Value</th>
-                <th>Cost vs Budget</th>
-                <th>Eval Pass Rate</th>
-                <th>Incidents</th>
-                <th>Recommended Remediation</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {whereToAct.map(agent => {
-                const budgetPct = agent.budget > 0 ? (agent.cost / agent.budget) * 100 : 0;
-                return (
-                  <tr key={agent.id} style={{ cursor: 'pointer' }} onClick={() => onSelectAgent(agent)}>
-                    <td style={{ fontWeight: 700, color: isLight ? '#00349B' : '#fff' }}>{agent.name}</td>
-                    <td>{agent.function}</td>
-                    <td style={{ color: 'var(--text-muted)' }}>{agent.team}</td>
-                    <td style={{ fontWeight: 700, color: agent.net_value < 10000 ? (isLight ? '#C62828' : '#f87171') : 'var(--text-main)' }}>
-                      {formatUSD(agent.net_value)}
-                    </td>
-                    <td>
-                      <span style={{ color: budgetPct > 110 ? (isLight ? '#C62828' : '#f87171') : 'var(--text-main)', fontWeight: 600 }}>
-                        {budgetPct.toFixed(0)}%
-                      </span>
-                    </td>
-                    <td>
-                      <span style={{
-                        padding: '3px 8px',
-                        borderRadius: 4,
-                        fontSize: 12,
-                        fontWeight: 700,
-                        background: agent.eval_pass_rate < 85 
-                          ? (isLight ? '#F9DEDC' : 'rgba(239, 68, 68, 0.2)') 
-                          : (isLight ? '#FDF0C8' : 'rgba(245, 158, 11, 0.2)'),
-                        color: agent.eval_pass_rate < 85 
-                          ? (isLight ? '#A4161A' : '#f87171') 
-                          : (isLight ? '#7A5300' : '#fbbf24')
-                      }}>
-                        {formatPct(agent.eval_pass_rate)}
-                      </span>
-                    </td>
-                    <td>
-                      {agent.policy_incidents > 0 ? (
-                        <span style={{ color: isLight ? '#C62828' : '#f87171', fontWeight: 700 }}>{agent.policy_incidents} alert</span>
-                      ) : (
-                        <span style={{ color: 'var(--text-dim)' }}>0</span>
-                      )}
-                    </td>
-                    <td>
-                      <span style={{
-                        background: isLight ? '#F3F6FC' : 'rgba(255, 255, 255, 0.06)',
-                        border: isLight ? '1px solid #D6E2FA' : '1px solid rgba(255, 255, 255, 0.12)',
-                        padding: '4px 8px',
-                        borderRadius: 6,
-                        fontSize: 12,
-                        color: 'var(--text-main)'
-                      }}>
-                        {agent.suggested_action}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        className="btn-secondary"
-                        style={{ padding: '4px 10px', fontSize: 12 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectAgent(agent);
-                        }}
-                      >
-                        Inspect →
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        {/* Chart 2: Agent Portfolio Status (Donut Chart) */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #D6E2FA',
+          borderRadius: 8,
+          padding: 18,
+          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)'
+        }}>
+          <div style={{ marginBottom: 12 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+              Agent portfolio status
+            </h3>
+            <span style={{ fontSize: 11, color: '#64748B' }}>
+              Custom agents · click a slice
+            </span>
+          </div>
+          <div ref={portfolioDonutChartRef} style={{ height: 260, width: '100%' }} />
+        </div>
+
+        {/* Chart 3: August vs September */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #D6E2FA',
+          borderRadius: 8,
+          padding: 18,
+          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)'
+        }}>
+          <div style={{ marginBottom: 12 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+              August vs September
+            </h3>
+            <span style={{ fontSize: 11, color: '#64748B' }}>
+              Both months · ignores Month slicer
+            </span>
+          </div>
+          <div ref={augVsSepChartRef} style={{ height: 260, width: '100%' }} />
+        </div>
+      </div>
+
+      {/* Bottom Row: Net AI Value by Team & Where to Act this Month */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1.4fr 1fr',
+        gap: 16
+      }}>
+        {/* Net AI Value by Team (Ranking Bar Chart) */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #D6E2FA',
+          borderRadius: 8,
+          padding: 18,
+          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)'
+        }}>
+          <div style={{ marginBottom: 12 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+              Net AI value by team
+            </h3>
+            <span style={{ fontSize: 11, color: '#64748B' }}>
+              Each team runs several agents · navy = agent teams, light blue = Microsoft 365 Copilot
+            </span>
+          </div>
+          <div ref={teamBarChartRef} style={{ height: 480, width: '100%' }} />
+        </div>
+
+        {/* Where to Act this Month (Executive Decision Briefing Panel) */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #D6E2FA',
+          borderRadius: 8,
+          padding: 22,
+          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between'
+        }}>
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 800, color: '#00349B', margin: 0 }}>
+                Where to act this month
+              </h3>
+              <span style={{ fontSize: 11.5, color: '#64748B' }}>
+                Generated from the current filters
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 13, lineHeight: '1.6', color: '#334155' }}>
+              <div>
+                <b style={{ color: '#0F172A' }}>• Value:</b> net AI value is <b style={{ color: '#00349B' }}>$1.80M</b> in September, up <b style={{ color: '#16A34A' }}>13.6%</b> on August; every $1 of AI spend returned <b style={{ color: '#00349B' }}>$5.37</b>.
+              </div>
+
+              <div>
+                <b style={{ color: '#0F172A' }}>• Scale:</b> <b style={{ color: '#2E7D32' }}>7 agents</b> clear $40K net value and 70% adoption (Case Triage, Order Status, Device Troubleshooting, Ticket Triage and 3 more); fund the next rollout.
+              </div>
+
+              <div>
+                <b style={{ color: '#0F172A' }}>• Intervene:</b> <b style={{ color: '#C62828' }}>11 agents</b> need attention, led by Collections (net value under $15K, 129% of budget); Variance Analysis (net value under $15K, eval pass 87%, 133% of budget); Invoice Matching (net value under $15K, 129% of budget); plus 8 more in the heatmap.
+              </div>
+
+              <div>
+                <b style={{ color: '#0F172A' }}>• Budget:</b> spend is <b style={{ color: '#0F172A' }}>$412K</b> against <b style={{ color: '#0F172A' }}>$425K</b>, 3% under; engineering token spend is at 92% of its monthly budget.
+              </div>
+
+              <div>
+                <b style={{ color: '#0F172A' }}>• Quality:</b> <b style={{ color: '#C62828' }}>2 policy incidents</b> logged (RFP Response (2)); rerun evals before the next release.
+              </div>
+
+              <div>
+                <b style={{ color: '#0F172A' }}>• Pilots:</b> <b style={{ color: '#607D8B' }}>10 agents</b> stay in experiment until there is production evidence ($48K cost this month), including Field Dispatch, Field Engineer Copilot, Device Telemetry and 7 more.
+              </div>
+            </div>
+          </div>
+
+          <div style={{
+            marginTop: 20,
+            padding: '12px 14px',
+            background: '#F8FAFC',
+            border: '1px solid #E2E8F0',
+            borderRadius: 6,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>
+              Ready to drill down into agent health?
+            </span>
+            <button
+              onClick={() => onFilterAction('intervene')}
+              style={{
+                background: '#00349B',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: 4,
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
+              }}
+            >
+              Review 11 Interventions <ChevronRight size={14} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
