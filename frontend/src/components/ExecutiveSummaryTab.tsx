@@ -88,21 +88,34 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   const totalAgents = summary?.active_agents ?? (agents.length || 43);
 
   // Dynamic values based on custom enterprise configurator or summary prop
-  const displayNetValue = customNetValue != null
-    ? formatUSD(customNetValue)
-    : (summary?.total_net_value != null ? formatUSD(summary.total_net_value) : '$1.80M');
+  const currentNetValNum = customNetValue != null ? customNetValue : (summary?.total_net_value || 1800000);
+  const currentCostNum = customTotalCost != null ? customTotalCost : (summary?.total_cost || 412000);
+  const currentHoursNum = summary?.total_hours_saved || 26000;
+
+  const displayNetValue = formatUSD(currentNetValNum);
   const displayGrossValue = customGrossValue != null
     ? formatUSD(customGrossValue)
     : (summary?.total_gross_value != null ? formatUSD(summary.total_gross_value) : '$2.21M');
-  const displayCost = customTotalCost != null
-    ? formatUSD(customTotalCost)
-    : (summary?.total_cost != null ? formatUSD(summary.total_cost) : '$412K');
+  const displayCost = formatUSD(currentCostNum);
   const displayRoi = customRoi != null
     ? `${customRoi.toFixed(2)}x ROI`
     : (summary?.roi_ratio != null ? `${summary.roi_ratio.toFixed(2)}x ROI` : '5.37x ROI');
-  const displayHours = summary?.total_hours_saved != null ? summary.total_hours_saved.toLocaleString() : '26,000';
-  const fteCount = summary?.total_hours_saved != null ? Math.round(summary.total_hours_saved / 160) : 162;
+  const displayHours = currentHoursNum.toLocaleString();
+  const fteCount = Math.round(currentHoursNum / 160);
   const displayFtes = `~${fteCount} FTEs`;
+
+  // Dynamic Delta Calculations vs August and Budget
+  const augNetValBenchmark = 1590000;
+  const netDeltaPct = ((currentNetValNum - augNetValBenchmark) / augNetValBenchmark) * 100;
+  const isNetPositive = netDeltaPct >= 0;
+
+  const costBudgetCap = 425000;
+  const costDiff = currentCostNum - costBudgetCap;
+  const isCostUnderBudget = currentCostNum <= costBudgetCap;
+  const costVariancePct = Math.abs((costDiff / costBudgetCap) * 100);
+
+  const augHoursBenchmark = 23650;
+  const hoursDeltaPct = ((currentHoursNum - augHoursBenchmark) / augHoursBenchmark) * 100;
 
   // Pre-configured diagnostic database for agents highlighted in executive brief
   const diagnosticProfiles: Record<string, RemediationAgentInfo> = {
@@ -475,7 +488,11 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           name: 'Sep 2026',
           type: 'bar',
           barWidth: 26,
-          data: [2210000, 412000, 1800000],
+          data: [
+            customGrossValue != null ? customGrossValue : 2210000,
+            currentCostNum,
+            currentNetValNum
+          ],
           itemStyle: {
             color: '#00349B',
             borderRadius: [4, 4, 0, 0]
@@ -498,7 +515,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, []);
+  }, [customGrossValue, currentCostNum, currentNetValNum]);
 
   // Chart 4: Net AI Value by Team (Horizontal Bar Ranking Chart with Copilot)
   useEffect(() => {
@@ -606,7 +623,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, []);
+  }, [customGrossValue, currentCostNum, currentNetValNum]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -852,8 +869,17 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </svg>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#6EE7B7', marginTop: 6 }}>
-            <ArrowUpRight size={14} /> +13.6% vs Aug ($1.59M)
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            fontSize: 11.5,
+            fontWeight: 700,
+            color: isNetPositive ? '#6EE7B7' : '#FCA5A5',
+            marginTop: 6
+          }}>
+            {isNetPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+            <span>{isNetPositive ? '+' : ''}{netDeltaPct.toFixed(1)}% vs Aug ($1.59M)</span>
           </div>
         </div>
 
@@ -913,7 +939,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#16A34A', marginTop: 6 }}>
-            <ArrowUpRight size={14} /> +9.9% vs Aug (23.6K)
+            <ArrowUpRight size={14} /> +{hoursDeltaPct.toFixed(1)}% vs Aug (23.6K)
           </div>
         </div>
 
@@ -1032,8 +1058,21 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </svg>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A', marginTop: 6 }}>
-            <ArrowDownRight size={14} /> 3% under budget
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            fontSize: 11.5,
+            fontWeight: 700,
+            color: isCostUnderBudget ? '#16A34A' : '#DC2626',
+            marginTop: 6
+          }}>
+            {isCostUnderBudget ? <ArrowDownRight size={14} /> : <ArrowUpRight size={14} />}
+            <span>
+              {isCostUnderBudget 
+                ? `${costVariancePct.toFixed(0)}% under budget`
+                : `${costVariancePct.toFixed(0)}% OVER budget (${formatUSD(costDiff)} overrun)`}
+            </span>
           </div>
         </div>
 

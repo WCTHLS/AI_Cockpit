@@ -33,6 +33,25 @@ import {
   UserProfile
 } from './types';
 
+const DEFAULT_SUBSCRIPTION_CONFIG: SubscriptionConfig = {
+  m365CopilotPrice: 30.0,
+  copilotStudioPackPrice: 200.0,
+  copilotStudioIncludedMsgs: 25000,
+  githubCopilotPrice: 19.0,
+  inputTokenPricePerMillion: 2.50,
+  outputTokenPricePerMillion: 10.00
+};
+
+const DEFAULT_LABOR_CONFIG: LaborRateConfig = {
+  engineering: 95.0,
+  finance: 80.0,
+  operations: 65.0,
+  sales: 85.0,
+  customerSupport: 60.0,
+  clinical: 90.0,
+  monthlyFteHours: 160
+};
+
 export const App: React.FC = () => {
   // Default to WCT Executive Light Theme to match v6 reference design
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -56,52 +75,20 @@ export const App: React.FC = () => {
   const [subscriptionConfig, setSubscriptionConfig] = useState<SubscriptionConfig>(() => {
     try {
       const saved = localStorage.getItem('wct_subscription_config');
-      return saved ? JSON.parse(saved) : {
-        m365CopilotPrice: 30.0,
-        copilotStudioPackPrice: 200.0,
-        copilotStudioIncludedMsgs: 25000,
-        githubCopilotPrice: 19.0,
-        inputTokenPricePerMillion: 2.50,
-        outputTokenPricePerMillion: 10.00
-      };
+      return saved ? JSON.parse(saved) : DEFAULT_SUBSCRIPTION_CONFIG;
     } catch {
-      return {
-        m365CopilotPrice: 30.0,
-        copilotStudioPackPrice: 200.0,
-        copilotStudioIncludedMsgs: 25000,
-        githubCopilotPrice: 19.0,
-        inputTokenPricePerMillion: 2.50,
-        outputTokenPricePerMillion: 10.00
-      };
+      return DEFAULT_SUBSCRIPTION_CONFIG;
     }
   });
 
   const [laborConfig, setLaborConfig] = useState<LaborRateConfig>(() => {
     try {
       const saved = localStorage.getItem('wct_labor_config');
-      return saved ? JSON.parse(saved) : {
-        engineering: 95.0,
-        finance: 80.0,
-        operations: 65.0,
-        sales: 85.0,
-        customerSupport: 60.0,
-        clinical: 90.0,
-        monthlyFteHours: 160
-      };
+      return saved ? JSON.parse(saved) : DEFAULT_LABOR_CONFIG;
     } catch {
-      return {
-        engineering: 95.0,
-        finance: 80.0,
-        operations: 65.0,
-        sales: 85.0,
-        customerSupport: 60.0,
-        clinical: 90.0,
-        monthlyFteHours: 160
-      };
+      return DEFAULT_LABOR_CONFIG;
     }
   });
-
-
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [summary, setSummary] = useState<SummaryKPI | null>(null);
@@ -112,6 +99,9 @@ export const App: React.FC = () => {
   const [agents, setAgents] = useState<AgentScorecardItem[]>([]);
   const [seats, setSeats] = useState<SeatInventorySummary | null>(null);
   const [thresholds, setThresholds] = useState<any>(null);
+
+  const [selectedAgent, setSelectedAgent] = useState<AgentScorecardItem | null>(null);
+  const [scorecardActionFilter, setScorecardActionFilter] = useState<string>('');
 
   // Dynamic portfolio valuation calculation reacting live to custom settings
   const blendedWage = (
@@ -132,9 +122,6 @@ export const App: React.FC = () => {
   const dynamicNetValue = dynamicGrossValue - dynamicTotalCost;
   const dynamicRoiMultiplier = dynamicTotalCost > 0 ? (dynamicGrossValue / dynamicTotalCost) : 0;
 
-  const [selectedAgent, setSelectedAgent] = useState<AgentScorecardItem | null>(null);
-  const [scorecardActionFilter, setScorecardActionFilter] = useState<string>('');
-
   // Sync theme to root DOM node
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -145,59 +132,6 @@ export const App: React.FC = () => {
   const loadDashboardData = async () => {
     setIsLoading(true);
     try {
-      const effFunc = currentUser.role === 'function_head' ? (currentUser.function_name || '') : selectedFunction;
-
-  // Enterprise Subscription and Labor Config state
-  const [subscriptionConfig, setSubscriptionConfig] = useState<SubscriptionConfig>(() => {
-    try {
-      const saved = localStorage.getItem('wct_subscription_config');
-      return saved ? JSON.parse(saved) : {
-        m365CopilotPrice: 30.0,
-        copilotStudioPackPrice: 200.0,
-        copilotStudioIncludedMsgs: 25000,
-        githubCopilotPrice: 19.0,
-        inputTokenPricePerMillion: 2.50,
-        outputTokenPricePerMillion: 10.00
-      };
-    } catch {
-      return {
-        m365CopilotPrice: 30.0,
-        copilotStudioPackPrice: 200.0,
-        copilotStudioIncludedMsgs: 25000,
-        githubCopilotPrice: 19.0,
-        inputTokenPricePerMillion: 2.50,
-        outputTokenPricePerMillion: 10.00
-      };
-    }
-  });
-
-  const [laborConfig, setLaborConfig] = useState<LaborRateConfig>(() => {
-    try {
-      const saved = localStorage.getItem('wct_labor_config');
-      return saved ? JSON.parse(saved) : {
-        engineering: 95.0,
-        finance: 80.0,
-        operations: 65.0,
-        sales: 85.0,
-        customerSupport: 60.0,
-        clinical: 90.0,
-        monthlyFteHours: 160
-      };
-    } catch {
-      return {
-        engineering: 95.0,
-        finance: 80.0,
-        operations: 65.0,
-        sales: 85.0,
-        customerSupport: 60.0,
-        clinical: 90.0,
-        monthlyFteHours: 160
-      };
-    }
-  });
-
-
-      
       const [sumData, funcData, costData, trendData, actData, agentList, seatData, thresh] = await Promise.all([
         fetchSummary(currentMonth, effFunc).catch(() => null),
         fetchByFunction(currentMonth).catch(() => []),
