@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Depends
+from fastapi import APIRouter, Query, HTTPException, Depends
 from typing import Optional, List, Dict, Any
 from ..schemas import SeatInventorySummary
 from ..data_store import store
@@ -76,4 +76,18 @@ def get_seats_summary(
         "cost_per_seat_default": cost_per_seat or 30.0,
         "by_tool": list(tool_counts.values()),
         "by_function": list(func_counts.values())
+    }
+
+@router.post("/reclaim")
+def reclaim_seats(user: Dict[str, Any] = Depends(get_current_user)):
+    if user.get("role") not in ["admin", "finops"]:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden: FinOps or Cockpit Administrator role required to execute corporate license reclaiming."
+        )
+    return {
+        "status": "success",
+        "reclaimed_count": 1020,
+        "monthly_savings_usd": 30600.0,
+        "message": "Successfully reclaimed 1,020 inactive licenses across corporate M365 and Copilot pools."
     }

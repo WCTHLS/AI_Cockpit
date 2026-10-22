@@ -14,8 +14,10 @@ import {
   Sliders,
   DollarSign,
   ShieldCheck,
-  RotateCcw
+  RotateCcw,
+  Lock
 } from 'lucide-react';
+import { UserProfile } from '../types';
 import { SeatInventorySummary } from '../types';
 import { formatUSD, formatPct } from '../api';
 
@@ -25,6 +27,7 @@ interface SeatsAdoptionTabProps {
   customCostPerSeat?: number;
   onCostPerSeatChange?: (cost: number) => void;
   theme?: 'dark' | 'light';
+  user?: UserProfile;
 }
 
 interface FunctionSeatActivity {

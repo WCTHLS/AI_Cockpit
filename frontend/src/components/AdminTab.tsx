@@ -12,8 +12,10 @@ import {
   Sparkles,
   HelpCircle,
   Save,
-  RotateCcw
+  RotateCcw,
+  Lock
 } from 'lucide-react';
+import { UserProfile } from '../types';
 import { updateThresholds, formatUSD } from '../api';
 
 interface AdminTabProps {
@@ -21,6 +23,7 @@ interface AdminTabProps {
   onThresholdsUpdated: () => void;
   onConfigSaved?: (subs: SubscriptionConfig, labor: LaborRateConfig) => void;
   theme?: 'dark' | 'light';
+  user?: UserProfile;
 }
 
 export interface SubscriptionConfig {
@@ -77,7 +80,8 @@ const DEFAULT_GUARDRAIL_CONFIG: GuardrailConfig = {
   budgetOverrunAlertPct: 110
 };
 
-export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, onConfigSaved, theme = 'light' }) => {
+export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, onConfigSaved, theme = 'light', user }) => {
+  const isAdmin = user ? user.role === 'admin' : true;
   const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance'>('subs');
 
   // Governance action thresholds (slide 7)
@@ -167,6 +171,28 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {!isAdmin && (
+        <div style={{
+          padding: '14px 20px',
+          borderRadius: 10,
+          background: isLight ? '#FFFBEB' : 'rgba(245, 158, 11, 0.12)',
+          border: `1.5px solid ${isLight ? '#FDE68A' : 'rgba(245, 158, 11, 0.35)'}`,
+          color: isLight ? '#92400E' : '#FDE68A',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 14,
+          boxShadow: isLight ? '0 2px 8px rgba(217, 119, 6, 0.08)' : 'none'
+        }}>
+          <Lock size={22} color={isLight ? '#D97706' : '#F59E0B'} style={{ flexShrink: 0 }} />
+          <div style={{ fontSize: 13, lineHeight: 1.5 }}>
+            <strong style={{ display: 'block', fontSize: 13.5, marginBottom: 2 }}>
+              Read-Only Governance Mode (Restricted by RBAC)
+            </strong>
+            You are currently signed in as <strong>{user?.display_name || 'Non-Admin'}</strong> ({user?.role?.toUpperCase()}). 
+            You have read access to view enterprise valuation assumptions, but modifying subscription pricing, hourly wage models, and governance guardrails requires <strong>Cockpit Administrator</strong> privileges.
+          </div>
+        </div>
+      )}
       {/* Top Header Card */}
       <div style={{
         background: '#FFFFFF',
@@ -227,7 +253,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
           <button
             onClick={handleSaveAll}
-            disabled={isSaving}
+            disabled={isSaving || !isAdmin}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -243,7 +269,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               boxShadow: '0 4px 12px rgba(0, 52, 155, 0.25)'
             }}
           >
-            <Save size={15} /> {isSaving ? 'Saving...' : 'Save & Recalculate Portfolio'}
+            {isAdmin ? <Save size={15} /> : <Lock size={15} />} {isSaving ? 'Saving...' : isAdmin ? 'Save & Recalculate Portfolio' : 'Admin Authority Required'}
           </button>
         </div>
       </div>

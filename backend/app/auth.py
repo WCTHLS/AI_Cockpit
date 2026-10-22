@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
 from jose import jwt, JWTError
-from fastapi import HTTPException, status, Depends
+from fastapi import HTTPException, status, Depends, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from .config import settings
 
@@ -47,16 +47,28 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
 
-def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> Dict[str, Any]:
-    if not credentials:
-        # Default fallback to CXO demo user for seamless local evaluation
-        return DEMO_USERS["cxo@wct.com"]
-    token = credentials.credentials
-    try:
-        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            return DEMO_USERS["cxo@wct.com"]
-        return DEMO_USERS.get(email, DEMO_USERS["cxo@wct.com"])
-    except JWTError:
-        return DEMO_USERS["cxo@wct.com"]
+def get_current_user(request: Request, credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> Dict[str, Any]:
+    if credentials and credentials.credentials:
+        token = credentials.credentials
+        try:
+            payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM])
+            email: str = payload.get("sub")
+            if email and email.lower() in DEMO_USERS:
+                return DEMO_USERS[email.lower()]
+            elif email:
+                return {
+                    "email": email,
+                    "display_name": email.split("@")[0].capitalize(),
+                    "role": payload.get("role", "cxo"),
+                    "function_name": payload.get("function_name"),
+                    "team_name": None
+                }
+        except JWTError:
+            pass
+
+    # Header fallback
+    user_email = request.headers.get("x-user-email")
+    if user_email and user_email.lower() in DEMO_USERS:
+        return DEMO_USERS[user_email.lower()]
+
+    return DEMO_USERS["cxo@wct.com"]

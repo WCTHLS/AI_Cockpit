@@ -14,6 +14,8 @@ def get_thresholds(user: Dict[str, Any] = Depends(get_current_user)):
 
 @router.put("/thresholds", response_model=ThresholdConfig)
 def update_thresholds(req: ThresholdConfig, user: Dict[str, Any] = Depends(get_current_user)):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Forbidden: Admin role required to modify governance thresholds.")
     store.thresholds = req.model_dump()
     return store.thresholds
 
@@ -23,6 +25,8 @@ async def upload_csv(
     dataset_type: str = "agents",  # "agents", "costs", or "seats"
     user: Dict[str, Any] = Depends(get_current_user)
 ):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Forbidden: Admin role required to upload datasets.")
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are accepted.")
         

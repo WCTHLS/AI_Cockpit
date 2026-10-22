@@ -1,4 +1,4 @@
-import { SummaryKPI, FunctionSummary, CostBreakdownItem, TrendMonth, AgentScorecardItem, SeatInventorySummary } from './types';
+import { SummaryKPI, FunctionSummary, CostBreakdownItem, TrendMonth, AgentScorecardItem, SeatInventorySummary, UserProfile } from './types';
 
 const API_BASE = '/api/v1';
 
@@ -17,12 +17,52 @@ export function formatPct(val: number): string {
   return `${val.toFixed(1)}%`;
 }
 
+export function getAuthHeaders(): Record<string, string> {
+  const token = localStorage.getItem('wct_auth_token');
+  const userJson = localStorage.getItem('wct_user');
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json'
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  if (userJson) {
+    try {
+      const u = JSON.parse(userJson);
+      if (u.email) headers['X-User-Email'] = u.email;
+    } catch {}
+  }
+  return headers;
+}
+
+export async function loginUser(email: string, password: string = 'demo'): Promise<{ token: string; user: UserProfile }> {
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: email, password })
+  });
+  if (!res.ok) throw new Error('Authentication failed');
+  const data = await res.json();
+  const token = data.access_token;
+  const user: UserProfile = {
+    email: data.user.email,
+    display_name: data.user.display_name,
+    role: data.user.role,
+    function_name: data.user.function_name
+  };
+  localStorage.setItem('wct_auth_token', token);
+  localStorage.setItem('wct_user', JSON.stringify(user));
+  return { token, user };
+}
+
 export async function fetchSummary(month?: string, functionName?: string): Promise<SummaryKPI> {
   const params = new URLSearchParams();
   if (month) params.append('month', month);
   if (functionName) params.append('function', functionName);
   
-  const res = await fetch(`${API_BASE}/summary?${params.toString()}`);
+  const res = await fetch(`${API_BASE}/summary?${params.toString()}`, {
+    headers: getAuthHeaders()
+  });
   if (!res.ok) throw new Error('Failed to fetch summary');
   return res.json();
 }
@@ -30,7 +70,9 @@ export async function fetchSummary(month?: string, functionName?: string): Promi
 export async function fetchByFunction(month?: string): Promise<FunctionSummary[]> {
   const params = new URLSearchParams();
   if (month) params.append('month', month);
-  const res = await fetch(`${API_BASE}/summary/by-function?${params.toString()}`);
+  const res = await fetch(`${API_BASE}/summary/by-function?${params.toString()}`, {
+    headers: getAuthHeaders()
+  });
   if (!res.ok) throw new Error('Failed to fetch by-function');
   return res.json();
 }
@@ -38,7 +80,9 @@ export async function fetchByFunction(month?: string): Promise<FunctionSummary[]
 export async function fetchCostBreakdown(month?: string): Promise<CostBreakdownItem[]> {
   const params = new URLSearchParams();
   if (month) params.append('month', month);
-  const res = await fetch(`${API_BASE}/summary/cost-breakdown?${params.toString()}`);
+  const res = await fetch(`${API_BASE}/summary/cost-breakdown?${params.toString()}`, {
+    headers: getAuthHeaders()
+  });
   if (!res.ok) throw new Error('Failed to fetch cost breakdown');
   return res.json();
 }
@@ -46,7 +90,9 @@ export async function fetchCostBreakdown(month?: string): Promise<CostBreakdownI
 export async function fetchTrend(functionName?: string): Promise<TrendMonth[]> {
   const params = new URLSearchParams();
   if (functionName) params.append('function', functionName);
-  const res = await fetch(`${API_BASE}/summary/trend?${params.toString()}`);
+  const res = await fetch(`${API_BASE}/summary/trend?${params.toString()}`, {
+    headers: getAuthHeaders()
+  });
   if (!res.ok) throw new Error('Failed to fetch trend');
   return res.json();
 }
@@ -55,7 +101,9 @@ export async function fetchWhereToAct(month?: string, functionName?: string): Pr
   const params = new URLSearchParams();
   if (month) params.append('month', month);
   if (functionName) params.append('function', functionName);
-  const res = await fetch(`${API_BASE}/summary/where-to-act?${params.toString()}`);
+  const res = await fetch(`${API_BASE}/summary/where-to-act?${params.toString()}`, {
+    headers: getAuthHeaders()
+  });
   if (!res.ok) throw new Error('Failed to fetch where-to-act');
   return res.json();
 }
@@ -76,7 +124,9 @@ export async function fetchAgents(params: {
   if (params.sort_by) q.append('sort_by', params.sort_by);
   if (params.sort_order) q.append('sort_order', params.sort_order);
 
-  const res = await fetch(`${API_BASE}/agents?${q.toString()}`);
+  const res = await fetch(`${API_BASE}/agents?${q.toString()}`, {
+    headers: getAuthHeaders()
+  });
   if (!res.ok) throw new Error('Failed to fetch agents');
   return res.json();
 }
@@ -85,13 +135,29 @@ export async function fetchSeats(functionName?: string, costPerSeat?: number): P
   const params = new URLSearchParams();
   if (functionName) params.append('function', functionName);
   if (costPerSeat) params.append('cost_per_seat', costPerSeat.toString());
-  const res = await fetch(`${API_BASE}/seats?${params.toString()}`);
+  const res = await fetch(`${API_BASE}/seats?${params.toString()}`, {
+    headers: getAuthHeaders()
+  });
   if (!res.ok) throw new Error('Failed to fetch seats');
   return res.json();
 }
 
+export async function reclaimSeatsApi(): Promise<{ status: string; reclaimed_count: number; monthly_savings_usd: number; message: string }> {
+  const res = await fetch(`${API_BASE}/seats/reclaim`, {
+    method: 'POST',
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to reclaim seats');
+  }
+  return res.json();
+}
+
 export async function fetchThresholds(): Promise<any> {
-  const res = await fetch(`${API_BASE}/admin/thresholds`);
+  const res = await fetch(`${API_BASE}/admin/thresholds`, {
+    headers: getAuthHeaders()
+  });
   if (!res.ok) throw new Error('Failed to fetch thresholds');
   return res.json();
 }
@@ -99,9 +165,12 @@ export async function fetchThresholds(): Promise<any> {
 export async function updateThresholds(config: any): Promise<any> {
   const res = await fetch(`${API_BASE}/admin/thresholds`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify(config)
   });
-  if (!res.ok) throw new Error('Failed to update thresholds');
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to update thresholds');
+  }
   return res.json();
 }

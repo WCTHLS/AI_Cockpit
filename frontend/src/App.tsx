@@ -4,7 +4,8 @@ import {
   TableProperties,
   PieChart,
   Users,
-  Settings
+  Settings,
+  Lock
 } from 'lucide-react';
 import { Header } from './components/Header';
 import { ExecutiveSummaryTab } from './components/ExecutiveSummaryTab';
@@ -13,6 +14,7 @@ import { CostBudgetTab } from './components/CostBudgetTab';
 import { SeatsAdoptionTab } from './components/SeatsAdoptionTab';
 import { AdminTab, SubscriptionConfig, LaborRateConfig } from './components/AdminTab';
 import { AgentDetailModal } from './components/AgentDetailModal';
+import { LoginPage } from './components/LoginPage';
 import {
   fetchSummary,
   fetchByFunction,
@@ -21,7 +23,8 @@ import {
   fetchWhereToAct,
   fetchAgents,
   fetchSeats,
-  fetchThresholds
+  fetchThresholds,
+  loginUser
 } from './api';
 import {
   SummaryKPI,
@@ -62,14 +65,33 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'summary' | 'scorecard' | 'costs' | 'seats' | 'admin'>('summary');
   const [currentMonth, setCurrentMonth] = useState<string>('2026-09');
   const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [currentUser, setCurrentUser] = useState<UserProfile>({
-    email: 'cxo@wct.com',
-    display_name: 'Chief Executive Officer',
-    role: 'cxo',
-    function_name: null
+
+  const [currentUser, setCurrentUser] = useState<UserProfile>(() => {
+    try {
+      const saved = localStorage.getItem('wct_user');
+      return saved ? JSON.parse(saved) : {
+        email: 'cxo@wct.com',
+        display_name: 'Chief Executive Officer',
+        role: 'cxo',
+        function_name: null
+      };
+    } catch {
+      return {
+        email: 'cxo@wct.com',
+        display_name: 'Chief Executive Officer',
+        role: 'cxo',
+        function_name: null
+      };
+    }
   });
 
-  const effFunc = currentUser.role === 'function_head' ? (currentUser.function_name || '') : selectedFunction;
+  // Track session authentication
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return !!localStorage.getItem('wct_auth_token') || !!localStorage.getItem('wct_user');
+  });
+
+  // Department scoping: function_head is locked to their department (e.g. Eng & IT)
+  const effFunc = currentUser.role === 'function_head' ? (currentUser.function_name || 'Eng & IT') : selectedFunction;
 
   // Enterprise Subscription and Labor Config state
   const [subscriptionConfig, setSubscriptionConfig] = useState<SubscriptionConfig>(() => {
@@ -128,7 +150,7 @@ export const App: React.FC = () => {
     localStorage.setItem('wct_cockpit_theme', theme);
   }, [theme]);
 
-  // Load dashboard data
+  // Load dashboard data scoped to role and function
   const loadDashboardData = async () => {
     setIsLoading(true);
     try {
@@ -138,54 +160,101 @@ export const App: React.FC = () => {
         fetchCostBreakdown(currentMonth).catch(() => []),
         fetchTrend(effFunc).catch(() => []),
         fetchWhereToAct(currentMonth, effFunc).catch(() => []),
-        fetchAgents({ month: currentMonth, function: effFunc }).catch(() => []),
-        fetchSeats(effFunc).catch(() => null),
+        fetchAgents({
+          month: currentMonth,
+          function: effFunc,
+          action: scorecardActionFilter
+        }).catch(() => []),
+        fetchSeats(effFunc, subscriptionConfig.m365CopilotPrice).catch(() => null),
         fetchThresholds().catch(() => null)
       ]);
 
-      if (sumData) setSummary(sumData);
+      setSummary(sumData);
       setByFunction(funcData);
       setCostBreakdown(costData);
       setTrend(trendData);
       setWhereToAct(actData);
       setAgents(agentList);
-      if (seatData) setSeats(seatData);
-      if (thresh) setThresholds(thresh);
-    } catch (e) {
-      console.error('Error loading cockpit data:', e);
+      setSeats(seatData);
+      setThresholds(thresh);
+    } catch (err) {
+      console.error('Error fetching Cockpit dashboard telemetry:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    loadDashboardData();
-  }, [currentMonth, selectedFunction, currentUser]);
+    if (isAuthenticated) {
+      loadDashboardData();
+    }
+  }, [currentMonth, selectedFunction, currentUser, scorecardActionFilter, isAuthenticated]);
 
   const handleFilterAction = (action: string) => {
     setScorecardActionFilter(action);
     setActiveTab('scorecard');
   };
 
+  const handleUserChange = async (newUser: UserProfile) => {
+    setCurrentUser(newUser);
+    localStorage.setItem('wct_user', JSON.stringify(newUser));
+    if (newUser.role === 'function_head') {
+      setSelectedFunction(newUser.function_name || 'Eng & IT');
+    } else {
+      setSelectedFunction('');
+    }
+    // Attempt silent background token refresh for seamless RBAC API verification
+    try {
+      await loginUser(newUser.email, 'demo');
+    } catch {}
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('wct_auth_token');
+    localStorage.removeItem('wct_user');
+    setIsAuthenticated(false);
+  };
+
+  // If unauthenticated, render the full Enterprise Sign-in experience
+  if (!isAuthenticated) {
+    return (
+      <LoginPage
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+          if (user.role === 'function_head') {
+            setSelectedFunction(user.function_name || 'Eng & IT');
+          } else {
+            setSelectedFunction('');
+          }
+        }}
+        theme={theme}
+      />
+    );
+  }
+
+  const isLight = theme === 'light';
+
   return (
-    <div className="app-container" data-theme={theme}>
-      {/* Executive Header */}
+    <div className="cockpit-container">
+      {/* Global Header */}
       <Header
         currentMonth={currentMonth}
         onMonthChange={setCurrentMonth}
-        selectedFunction={selectedFunction}
+        selectedFunction={effFunc}
         onFunctionChange={setSelectedFunction}
         user={currentUser}
-        onUserChange={setCurrentUser}
+        onUserChange={handleUserChange}
+        onLogout={handleLogout}
         onRefresh={loadDashboardData}
         isLoading={isLoading}
         theme={theme}
         onThemeChange={setTheme}
       />
 
-      {/* Main Tab Navigation */}
-      <div className="nav-tabs-wrapper">
-        <div className="nav-tabs-container">
+      {/* Navigation Tabs */}
+      <div className="tab-nav-wrapper">
+        <div className="tab-nav">
           <button
             className={`tab-button ${activeTab === 'summary' ? 'active' : ''}`}
             onClick={() => setActiveTab('summary')}
@@ -217,7 +286,7 @@ export const App: React.FC = () => {
             <Users size={16} />
             Seats &amp; Adoption
           </button>
-          <button
+                    <button
             className={`tab-button ${activeTab === 'admin' ? 'active' : ''}`}
             onClick={() => setActiveTab('admin')}
           >
@@ -277,6 +346,7 @@ export const App: React.FC = () => {
               fetchSeats(effFunc, cost).then(res => setSeats(res)).catch(() => {});
             }}
             theme={theme}
+            user={currentUser}
           />
         )}
 
@@ -289,6 +359,7 @@ export const App: React.FC = () => {
               setLaborConfig(labor);
             }}
             theme={theme}
+            user={currentUser}
           />
         )}
       </main>
