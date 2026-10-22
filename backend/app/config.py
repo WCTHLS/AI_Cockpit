@@ -13,11 +13,15 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 1 day
     
-    POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
-    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "wct_dev_2026")
-    POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "localhost")
-    POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
-    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "wct_cockpit")
+    # SQLite Database Configuration
+    SQLITE_DB_PATH: str = os.getenv(
+        "SQLITE_DB_PATH",
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "db", "cockpit.db"))
+    )
+    DATABASE_URL: str = os.getenv(
+        "DATABASE_URL",
+        f"sqlite:///{os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'db', 'cockpit.db'))}"
+    )
     
     CORS_ORIGINS: Union[list[str], str] = [
         "http://localhost:5173",
