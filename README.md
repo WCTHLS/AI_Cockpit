@@ -12,7 +12,7 @@ The WCT AI Value Cockpit is structured as a high-velocity, role-based telemetry 
 ```mermaid
 graph TD
     A[Enterprise Telemetry & Signals] --> B[FastAPI Business Engine]
-    B --> C[PostgreSQL 16 Mart & Aggregations]
+    B --> C[SQLite Database & Aggregations]
     B --> D[Action Rule Decision Tree]
     D --> E[Accelerate / Optimize / Experiment / Intervene]
     E --> F[Vite + React + ECharts Cockpit UI]
@@ -21,8 +21,8 @@ graph TD
 ### Core Stack
 - **Frontend**: Vite 5 + React 18 + TypeScript + Apache ECharts + Vanilla CSS Design System
 - **Backend API**: FastAPI (Python 3.12) + Pydantic v2 + JWT Role-Based Auth
-- **Database**: PostgreSQL 16 with precomputed analytical views and trigger cascades
-- **Infrastructure**: Docker Compose with containerized health checks
+- **Database**: SQLite with precomputed analytical view (`v_agent_scorecard_monthly`) and WAL mode
+- **Infrastructure**: Docker Compose with lightweight zero-external-db setup
 
 ---
 
@@ -63,13 +63,13 @@ graph TD
 git clone https://github.com/WCTHLS/AI_Cockpit.git
 cd AI_Cockpit
 
-# Start PostgreSQL, FastAPI backend, and Vite frontend
+# Start FastAPI backend and Vite frontend
 docker compose up --build
 ```
 
 - **Cockpit Frontend**: [http://localhost:5173](http://localhost:5173)
 - **FastAPI OpenAPI Swagger**: [http://localhost:8000/api/v1/docs](http://localhost:8000/api/v1/docs)
-- **PostgreSQL Database**: `localhost:5432` (`wct_cockpit`)
+- **SQLite Database**: `backend/db/cockpit.db` (auto-initialized from `backend/db/init.sql`)
 
 ---
 

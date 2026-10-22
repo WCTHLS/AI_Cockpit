@@ -1,8 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+from contextlib import asynccontextmanager
 from .config import settings
+from .database import init_db
 from .routers import auth, summary, agents, costs, seats, admin, telemetry, ingest
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize SQLite database schema and seed data if empty
+    init_db(seed_if_empty=True)
+    yield
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -11,6 +19,7 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url=f"{settings.API_V1_STR}/docs",
     redoc_url=f"{settings.API_V1_STR}/redoc",
+    lifespan=lifespan,
 )
 
 # CORS configuration
