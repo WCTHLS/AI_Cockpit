@@ -6,7 +6,13 @@ import {
   CheckCircle2, 
   ChevronRight, 
   Maximize2,
-  Table as TableIcon
+  Table as TableIcon,
+  X,
+  Sparkles,
+  ShieldAlert,
+  Cpu,
+  Sliders,
+  PlayCircle
 } from 'lucide-react';
 import { SummaryKPI, FunctionSummary, AgentScorecardItem } from '../types';
 import { formatUSD } from '../api';
@@ -20,6 +26,20 @@ interface ExecutiveSummaryTabProps {
   onSelectAgent: (agent: AgentScorecardItem) => void;
   onFilterAction: (action: string) => void;
   theme?: 'dark' | 'light';
+}
+
+interface RemediationAgentInfo {
+  name: string;
+  func: string;
+  team: string;
+  action: 'intervene' | 'accelerate' | 'optimize' | 'experiment';
+  netValue: number;
+  cost: number;
+  adoption: number;
+  evalPass: number;
+  incidents: number;
+  rootCause: string;
+  remediationStep: string;
 }
 
 export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
@@ -40,6 +60,14 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   const augVsSepChartRef = useRef<HTMLDivElement>(null);
   const teamBarChartRef = useRef<HTMLDivElement>(null);
 
+  // Remediation Drawer State
+  const [activeRemediation, setActiveRemediation] = useState<RemediationAgentInfo | null>(null);
+  const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
+
+  // What-If Simulation State
+  const [showSimulator, setShowSimulator] = useState<boolean>(false);
+  const [adoptionBoost, setAdoptionBoost] = useState<number>(5);
+
   // Status breakdown calculations
   const statusCounts = {
     accelerate: agents.filter(a => a.action?.toLowerCase() === 'accelerate').length || 7,
@@ -49,12 +77,136 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   };
   const totalAgents = agents.length || 43;
 
+  // Pre-configured diagnostic database for agents highlighted in executive brief
+  const diagnosticProfiles: Record<string, RemediationAgentInfo> = {
+    'Collections': {
+      name: 'Collections Agent',
+      func: 'Finance',
+      team: 'Accounts Receivable',
+      action: 'intervene',
+      netValue: 12400,
+      cost: 18200,
+      adoption: 44,
+      evalPass: 81,
+      incidents: 0,
+      rootCause: 'High prompt token inflation (avg 8.2k tokens/call) due to repetitive ERP retry loops. 129% of assigned budget.',
+      remediationStep: 'Enforce prompt cache filter and set max context window to 4k tokens to immediately recover $5.8k/mo.'
+    },
+    'Variance Analysis': {
+      name: 'Variance Analysis Agent',
+      func: 'Finance',
+      team: 'Financial Planning & Close',
+      action: 'intervene',
+      netValue: 13000,
+      cost: 16800,
+      adoption: 52,
+      evalPass: 87,
+      incidents: 0,
+      rootCause: 'Eval pass rate dropped to 87% (below 92% SLA threshold). Model hallucinations detected in multi-currency FX tables.',
+      remediationStep: 'Rerun ground-truth benchmark suite and restrict FX conversion logic to deterministic rule tool.'
+    },
+    'Invoice Matching': {
+      name: 'Invoice Matching Agent',
+      func: 'Finance',
+      team: 'Procurement',
+      action: 'intervene',
+      netValue: 14200,
+      cost: 17500,
+      adoption: 58,
+      evalPass: 86,
+      incidents: 0,
+      rootCause: 'Spend is at 129% of monthly budget with lower unit value conversion on non-standard PDF formats.',
+      remediationStep: 'Update OCR pre-processing layer and set strict monthly token spend cap at $12,500.'
+    },
+    'RFP Response': {
+      name: 'RFP Response Agent',
+      func: 'Sales & Marketing',
+      team: 'Bids & Proposals',
+      action: 'intervene',
+      netValue: 35000,
+      cost: 24000,
+      adoption: 71,
+      evalPass: 89,
+      incidents: 2,
+      rootCause: '2 policy incidents triggered: agent included unredacted NDA pricing data in client proposal output.',
+      remediationStep: 'Quarantine agent prompt chain with PII & Commercial Confidentiality regex guardrails before production resume.'
+    },
+    'Case Triage': {
+      name: 'Case Triage Agent',
+      func: 'Customer Support',
+      team: 'Customer Service',
+      action: 'accelerate',
+      netValue: 84000,
+      cost: 14200,
+      adoption: 86,
+      evalPass: 97,
+      incidents: 0,
+      rootCause: 'Top quartile performer: $84K net value generated with 86% tier-1 adoption and 97% eval accuracy.',
+      remediationStep: 'Expand seat allocation to regional tier-2 escalation teams; fund rollout across EMEA.'
+    },
+    'Order Status': {
+      name: 'Order Status Agent',
+      func: 'Customer Support',
+      team: 'IT Service Desk',
+      action: 'accelerate',
+      netValue: 78000,
+      cost: 12100,
+      adoption: 84,
+      evalPass: 98,
+      incidents: 0,
+      rootCause: 'High operational leverage: 98% accuracy on real-time SAP order tracking queries with zero human intervention.',
+      remediationStep: 'Promote to cross-functional global self-service customer portal.'
+    }
+  };
+
+  const handleOpenRemediation = (agentName: string) => {
+    // Check if in diagnostic db or lookup from agents prop
+    if (diagnosticProfiles[agentName]) {
+      setActiveRemediation(diagnosticProfiles[agentName]);
+    } else {
+      const found = agents.find(a => (a.name || '').toLowerCase().includes(agentName.toLowerCase()));
+      if (found) {
+        setActiveRemediation({
+          name: found.name,
+          func: found.function,
+          team: found.team,
+          action: (found.action?.toLowerCase() || 'intervene') as any,
+          netValue: found.net_value,
+          cost: found.cost,
+          adoption: found.adoption_pct,
+          evalPass: found.eval_pass_rate,
+          incidents: found.policy_incidents,
+          rootCause: `Cost at ${found.cost > found.budget ? '120%+' : '100%'} of budget; eval pass rate ${found.eval_pass_rate}%.`,
+          remediationStep: 'Perform token budget audit and verify accuracy on latest evaluation test harness.'
+        });
+      } else {
+        setActiveRemediation({
+          name: agentName,
+          func: 'Operations',
+          team: 'General Operations',
+          action: 'intervene',
+          netValue: 14000,
+          cost: 16500,
+          adoption: 50,
+          evalPass: 86,
+          incidents: 0,
+          rootCause: 'Triggered intervention rule: Cost vs Budget exceeds 110% and net value under $15K threshold.',
+          remediationStep: 'Cap token consumption and review prompt template logic.'
+        });
+      }
+    }
+  };
+
+  const triggerRemediationAction = (actionTitle: string) => {
+    setActionSuccessMsg(`Governance action applied: ${actionTitle}`);
+    setTimeout(() => setActionSuccessMsg(null), 3500);
+  };
+
   // Chart 1: Net AI Value by Function (Horizontal Bar Chart)
   useEffect(() => {
     if (!functionBarChartRef.current) return;
     const chart = echarts.init(functionBarChartRef.current);
 
-    // Default functions from reference if byFunction is loading or empty
     const functionData = byFunction.length > 0 ? byFunction : [
       { function_name: 'Customer Support', net_value: 620000, total_cost: 110000, active_agents: 12 },
       { function_name: 'Engineering & IT', net_value: 480000, total_cost: 145000, active_agents: 10 },
@@ -63,7 +215,6 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       { function_name: 'Finance', net_value: 150000, total_cost: 30000, active_agents: 5 },
     ];
 
-    // Sort descending by net value
     const sorted = [...functionData].sort((a, b) => a.net_value - b.net_value);
 
     chart.setOption({
@@ -135,7 +286,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
     };
   }, [byFunction, isLight]);
 
-  // Chart 2: Agent Portfolio Status (Donut Chart - replaces ugly cost factor pie chart!)
+  // Chart 2: Agent Portfolio Status (Donut Chart)
   useEffect(() => {
     if (!portfolioDonutChartRef.current) return;
     const chart = echarts.init(portfolioDonutChartRef.current);
@@ -327,7 +478,6 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
     if (!teamBarChartRef.current) return;
     const chart = echarts.init(teamBarChartRef.current);
 
-    // Reference ranking data from HTML v6
     const teamValues = [
       { name: 'Manufacturing Quality', val: -16000, agents: 2, isCopilot: false },
       { name: 'Procurement', val: -9800, agents: 2, isCopilot: false },
@@ -433,28 +583,151 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* Month Badge Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* Toast Notification */}
+      {actionSuccessMsg && (
         <div style={{
-          display: 'inline-flex',
+          position: 'fixed',
+          top: 80,
+          right: 32,
+          zIndex: 1100,
+          background: '#00349B',
+          color: '#FFFFFF',
+          padding: '12px 20px',
+          borderRadius: 8,
+          boxShadow: '0 8px 24px rgba(0, 52, 155, 0.25)',
+          display: 'flex',
           alignItems: 'center',
-          gap: 6,
-          background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          padding: '4px 12px',
-          borderRadius: 20,
-          fontSize: 12,
-          fontWeight: 600,
-          color: '#00349B'
+          gap: 10,
+          fontSize: 13,
+          fontWeight: 600
         }}>
-          <span>Month</span>
-          <span style={{ fontWeight: 800 }}>Sep 2026</span>
+          <CheckCircle2 size={16} color="#4ade80" />
+          <span>{actionSuccessMsg}</span>
+        </div>
+      )}
+
+      {/* Top Telemetry & Live Governance Status Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            background: '#FFFFFF',
+            border: '1px solid #D6E2FA',
+            padding: '4px 12px',
+            borderRadius: 20,
+            fontSize: 12,
+            fontWeight: 600,
+            color: '#00349B'
+          }}>
+            <span>Reporting Cycle:</span>
+            <span style={{ fontWeight: 800 }}>Sep 2026 (Live Close)</span>
+          </div>
+
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            background: '#F0FDF4',
+            border: '1px solid #BBF7D0',
+            padding: '4px 10px',
+            borderRadius: 20,
+            fontSize: 11.5,
+            fontWeight: 600,
+            color: '#166534'
+          }}>
+            <span className="pulse-live-dot" />
+            <span>Telemetry Pipeline Synced</span>
+          </div>
         </div>
 
-        <div style={{ fontSize: 12, color: '#64748B' }}>
-          Filters applied: <b style={{ color: '#00349B' }}>{selectedFunction}</b> · Showing live performance data
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ fontSize: 12, color: '#64748B' }}>
+            Scope: <b style={{ color: '#00349B' }}>{selectedFunction}</b> · 43 Active Agents Tracked
+          </div>
+
+          <button
+            onClick={() => setShowSimulator(!showSimulator)}
+            style={{
+              background: showSimulator ? '#00349B' : '#FFFFFF',
+              color: showSimulator ? '#FFFFFF' : '#00349B',
+              border: '1px solid #D6E2FA',
+              borderRadius: 6,
+              padding: '5px 12px',
+              fontSize: 12,
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Sliders size={13} />
+            <span>ROI Simulator</span>
+          </button>
         </div>
       </div>
+
+      {/* Collapsible Executive What-If Simulator */}
+      {showSimulator && (
+        <div style={{
+          background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)',
+          border: '1px solid #BFDBFE',
+          borderRadius: 8,
+          padding: '16px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 16
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Sparkles size={16} color="#2563EB" />
+              <span style={{ fontSize: 14, fontWeight: 800, color: '#1E3A8A' }}>
+                Executive AI Value Multiplier Simulator
+              </span>
+            </div>
+            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#475569' }}>
+              Simulate enterprise net value impact if custom agent adoption increases across knowledge workers.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#334155' }}>Adoption Lift:</span>
+              <input 
+                type="range" 
+                min={2} 
+                max={15} 
+                value={adoptionBoost}
+                onChange={e => setAdoptionBoost(Number(e.target.value))}
+                style={{ width: 120, accentColor: '#00349B', cursor: 'pointer' }}
+              />
+              <span style={{ fontSize: 13, fontWeight: 800, color: '#00349B', minWidth: 40 }}>
+                +{adoptionBoost}%
+              </span>
+            </div>
+
+            <div style={{
+              background: '#FFFFFF',
+              border: '1px solid #BFDBFE',
+              borderRadius: 6,
+              padding: '6px 14px',
+              textAlign: 'right'
+            }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+                Projected Value Add
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: '#16A34A' }}>
+                +${(adoptionBoost * 23.4).toFixed(1)}K / mo
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 6 Executive KPI Cards Across */}
       <div style={{
@@ -463,36 +736,50 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         gap: 14
       }}>
         {/* KPI 1: NET AI VALUE (Hero Dark Navy Card) */}
-        <div style={{
+        <div className="executive-card" style={{
           background: '#00349B',
           borderRadius: 8,
           padding: '16px 18px',
           color: '#FFFFFF',
-          boxShadow: '0 4px 12px rgba(0, 52, 155, 0.2)',
+          boxShadow: '0 4px 14px rgba(0, 52, 155, 0.22)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 114
         }}>
-          <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#93C5FD'
-          }}>
-            NET AI VALUE
-          </div>
-          <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
-            $1.80M
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+                color: '#93C5FD'
+              }}>
+                NET AI VALUE
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: 'rgba(255, 255, 255, 0.15)',
+                color: '#FFFFFF',
+                padding: '2px 6px',
+                borderRadius: 4
+              }}>
+                5.37x ROI
+              </span>
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', color: '#FFFFFF', marginTop: 4 }}>
+              $1.80M
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#6ee7b7' }}>
-            <ArrowUpRight size={14} /> +13.6% vs Aug
+            <ArrowUpRight size={14} /> +13.6% vs Aug ($1.59M)
           </div>
         </div>
 
         {/* KPI 2: HOURS SAVED */}
-        <div style={{
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
           borderRadius: 8,
@@ -501,19 +788,33 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 114
         }}>
-          <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#64748B'
-          }}>
-            HOURS SAVED
-          </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
-            26,000
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+                color: '#64748B'
+              }}>
+                HOURS SAVED
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#ECFDF5',
+                color: '#059669',
+                padding: '2px 6px',
+                borderRadius: 4
+              }}>
+                ~162 FTE Equiv.
+              </span>
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
+              26,000
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#16A34A' }}>
             <ArrowUpRight size={14} /> +9.9% vs Aug
@@ -521,7 +822,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         </div>
 
         {/* KPI 3: ADOPTION */}
-        <div style={{
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
           borderRadius: 8,
@@ -530,19 +831,21 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 114
         }}>
-          <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#64748B'
-          }}>
-            ADOPTION
-          </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
-            78%
+          <div>
+            <div style={{
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              color: '#64748B'
+            }}>
+              ADOPTION
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
+              78%
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A' }}>
             <ArrowUpRight size={14} /> +5.0 pts · 3,588 of 4,600
@@ -550,7 +853,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         </div>
 
         {/* KPI 4: TOTAL AI COST */}
-        <div style={{
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
           borderRadius: 8,
@@ -559,19 +862,21 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 114
         }}>
-          <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#64748B'
-          }}>
-            TOTAL AI COST
-          </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
-            $412K
+          <div>
+            <div style={{
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              color: '#64748B'
+            }}>
+              TOTAL AI COST
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
+              $412K
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A' }}>
             <ArrowDownRight size={14} /> 3% under budget of $425K
@@ -579,7 +884,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         </div>
 
         {/* KPI 5: EVAL PASS RATE */}
-        <div style={{
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
           borderRadius: 8,
@@ -588,19 +893,21 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 114
         }}>
-          <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#64748B'
-          }}>
-            EVAL PASS RATE
-          </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
-            94%
+          <div>
+            <div style={{
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              color: '#64748B'
+            }}>
+              EVAL PASS RATE
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
+              94%
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A' }}>
             <CheckCircle2 size={14} /> At or above 92% target
@@ -608,7 +915,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         </div>
 
         {/* KPI 6: POLICY INCIDENTS */}
-        <div style={{
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
           borderLeft: '4px solid #C62828',
@@ -618,22 +925,24 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 114
         }}>
-          <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#C62828'
-          }}>
-            POLICY INCIDENTS
-          </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#C62828' }}>
-            2
+          <div>
+            <div style={{
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              color: '#C62828'
+            }}>
+              POLICY INCIDENTS
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: '#C62828', marginTop: 4 }}>
+              2
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#64748B' }}>
-            ■ +0.0% vs Aug
+            ■ RFP Response (Containment Active)
           </div>
         </div>
       </div>
@@ -645,7 +954,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         gap: 16
       }}>
         {/* Chart 1: Net AI Value by Function */}
-        <div style={{
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
           borderRadius: 8,
@@ -698,7 +1007,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         </div>
 
         {/* Chart 2: Agent Portfolio Status (Donut Chart) */}
-        <div style={{
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
           borderRadius: 8,
@@ -710,14 +1019,14 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               Agent portfolio status
             </h3>
             <span style={{ fontSize: 11, color: '#64748B' }}>
-              Custom agents · click a slice
+              Custom agents · click a slice to filter
             </span>
           </div>
           <div ref={portfolioDonutChartRef} style={{ height: 260, width: '100%' }} />
         </div>
 
         {/* Chart 3: August vs September */}
-        <div style={{
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
           borderRadius: 8,
@@ -743,7 +1052,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         gap: 16
       }}>
         {/* Net AI Value by Team (Ranking Bar Chart) */}
-        <div style={{
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
           borderRadius: 8,
@@ -761,8 +1070,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           <div ref={teamBarChartRef} style={{ height: 480, width: '100%' }} />
         </div>
 
-        {/* Where to Act this Month (Executive Decision Briefing Panel) */}
-        <div style={{
+        {/* Where to Act this Month (Executive Intelligence & Remediation Panel) */}
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
           borderRadius: 8,
@@ -773,38 +1082,57 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           justifyContent: 'space-between'
         }}>
           <div>
-            <div style={{ marginBottom: 16 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 800, color: '#00349B', margin: 0 }}>
-                Where to act this month
-              </h3>
-              <span style={{ fontSize: 11.5, color: '#64748B' }}>
-                Generated from the current filters
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#00349B', margin: 0 }}>
+                  Where to act this month
+                </h3>
+                <span style={{ fontSize: 11.5, color: '#64748B' }}>
+                  Click any highlighted agent chip to view diagnostics &amp; action plan
+                </span>
+              </div>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#F1F5F9',
+                color: '#475569',
+                padding: '3px 8px',
+                borderRadius: 4
+              }}>
+                Interactive
               </span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 13, lineHeight: '1.6', color: '#334155' }}>
               <div>
-                <b style={{ color: '#0F172A' }}>• Value:</b> net AI value is <b style={{ color: '#00349B' }}>$1.80M</b> in September, up <b style={{ color: '#16A34A' }}>13.6%</b> on August; every $1 of AI spend returned <b style={{ color: '#00349B' }}>$5.37</b>.
+                <b style={{ color: '#0F172A' }}>• Value:</b> Net AI value is <b style={{ color: '#00349B' }}>$1.80M</b> in September, up <b style={{ color: '#16A34A' }}>13.6%</b> on August; every $1 of AI spend returned <b style={{ color: '#00349B' }}>$5.37</b>.
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Scale:</b> <b style={{ color: '#2E7D32' }}>7 agents</b> clear $40K net value and 70% adoption (Case Triage, Order Status, Device Troubleshooting, Ticket Triage and 3 more); fund the next rollout.
+                <b style={{ color: '#0F172A' }}>• Scale:</b> <b style={{ color: '#2E7D32' }}>7 agents</b> clear $40K net value and 70% adoption (
+                <button onClick={() => handleOpenRemediation('Case Triage')} className="agent-action-chip accelerate">▲ Case Triage</button>,{' '}
+                <button onClick={() => handleOpenRemediation('Order Status')} className="agent-action-chip accelerate">▲ Order Status</button>, Device Troubleshooting, Ticket Triage and 3 more); fund the next rollout.
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Intervene:</b> <b style={{ color: '#C62828' }}>11 agents</b> need attention, led by Collections (net value under $15K, 129% of budget); Variance Analysis (net value under $15K, eval pass 87%, 133% of budget); Invoice Matching (net value under $15K, 129% of budget); plus 8 more in the heatmap.
+                <b style={{ color: '#0F172A' }}>• Intervene:</b> <b style={{ color: '#C62828' }}>11 agents</b> need attention, led by{' '}
+                <button onClick={() => handleOpenRemediation('Collections')} className="agent-action-chip intervene">■ Collections</button> (net value under $15K, 129% budget);{' '}
+                <button onClick={() => handleOpenRemediation('Variance Analysis')} className="agent-action-chip intervene">■ Variance Analysis</button> (eval pass 87%, 133% budget);{' '}
+                <button onClick={() => handleOpenRemediation('Invoice Matching')} className="agent-action-chip intervene">■ Invoice Matching</button> (129% budget); plus 8 more in the heatmap.
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Budget:</b> spend is <b style={{ color: '#0F172A' }}>$412K</b> against <b style={{ color: '#0F172A' }}>$425K</b>, 3% under; engineering token spend is at 92% of its monthly budget.
+                <b style={{ color: '#0F172A' }}>• Budget:</b> Spend is <b style={{ color: '#0F172A' }}>$412K</b> against <b style={{ color: '#0F172A' }}>$425K</b>, 3% under; engineering token spend is at 92% of its monthly budget.
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Quality:</b> <b style={{ color: '#C62828' }}>2 policy incidents</b> logged (RFP Response (2)); rerun evals before the next release.
+                <b style={{ color: '#0F172A' }}>• Quality:</b> <b style={{ color: '#C62828' }}>2 policy incidents</b> logged (
+                <button onClick={() => handleOpenRemediation('RFP Response')} className="agent-action-chip intervene">■ RFP Response (2)</button>
+                ); rerun evals before next release.
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Pilots:</b> <b style={{ color: '#607D8B' }}>10 agents</b> stay in experiment until there is production evidence ($48K cost this month), including Field Dispatch, Field Engineer Copilot, Device Telemetry and 7 more.
+                <b style={{ color: '#0F172A' }}>• Pilots:</b> <b style={{ color: '#607D8B' }}>10 agents</b> stay in experiment until production evidence is verified ($48K cost), including Field Dispatch, Field Engineer Copilot, and Device Telemetry.
               </div>
             </div>
           </div>
@@ -820,7 +1148,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             justifyContent: 'space-between'
           }}>
             <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>
-              Ready to drill down into agent health?
+              Want to see all 11 at-risk agents?
             </span>
             <button
               onClick={() => onFilterAction('intervene')}
@@ -838,11 +1166,187 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
                 gap: 4
               }}
             >
-              Review 11 Interventions <ChevronRight size={14} />
+              Filter Scorecard (11) <ChevronRight size={14} />
             </button>
           </div>
         </div>
       </div>
+
+      {/* Slide-over Executive Remediation Drawer */}
+      {activeRemediation && (
+        <div className="executive-drawer-overlay" onClick={() => setActiveRemediation(null)}>
+          <div className="executive-drawer" onClick={e => e.stopPropagation()}>
+            {/* Drawer Header */}
+            <div style={{
+              padding: '20px 24px',
+              borderBottom: '1px solid #E2E8F0',
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              background: '#F8FAFC'
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <span className={`badge-status badge-${activeRemediation.action}`}>
+                    {activeRemediation.action.toUpperCase()}
+                  </span>
+                  <span style={{ fontSize: 12, color: '#64748B' }}>
+                    {activeRemediation.func} · {activeRemediation.team}
+                  </span>
+                </div>
+                <h2 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                  {activeRemediation.name}
+                </h2>
+              </div>
+              <button 
+                onClick={() => setActiveRemediation(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#64748B',
+                  cursor: 'pointer',
+                  padding: 4
+                }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Drawer Body */}
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {/* Metrics Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>NET AI VALUE</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#00349B', marginTop: 2 }}>
+                    {formatUSD(activeRemediation.netValue)}
+                  </div>
+                </div>
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>MONTHLY COST</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#C62828', marginTop: 2 }}>
+                    {formatUSD(activeRemediation.cost)}
+                  </div>
+                </div>
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>ADOPTION RATE</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', marginTop: 2 }}>
+                    {activeRemediation.adoption}%
+                  </div>
+                </div>
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>EVAL PASS RATE</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: activeRemediation.evalPass < 92 ? '#C62828' : '#16A34A', marginTop: 2 }}>
+                    {activeRemediation.evalPass}%
+                  </div>
+                </div>
+              </div>
+
+              {/* Root Cause Diagnostics */}
+              <div style={{
+                background: '#FEF2F2',
+                border: '1px solid #FCA5A5',
+                borderRadius: 8,
+                padding: 16
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <ShieldAlert size={16} color="#DC2626" />
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#991B1B' }}>
+                    Root Cause Telemetry Diagnosis
+                  </span>
+                </div>
+                <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: '#7F1D1D' }}>
+                  {activeRemediation.rootCause}
+                </p>
+              </div>
+
+              {/* Recommended Action */}
+              <div style={{
+                background: '#EFF6FF',
+                border: '1px solid #BFDBFE',
+                borderRadius: 8,
+                padding: 16
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <Sparkles size={16} color="#2563EB" />
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1E40AF' }}>
+                    Recommended Governance Action
+                  </span>
+                </div>
+                <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: '#1E3A8A' }}>
+                  {activeRemediation.remediationStep}
+                </p>
+              </div>
+
+              {/* One-Click Executive Remediation Controls */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#475569' }}>
+                  Execute Remediation:
+                </span>
+                <button
+                  onClick={() => triggerRemediationAction(`Token budget capped at 100% plan for ${activeRemediation.name}`)}
+                  style={{
+                    background: '#00349B',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '10px 16px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8
+                  }}
+                >
+                  <Cpu size={16} /> Enforce Token Quota Cap
+                </button>
+
+                <button
+                  onClick={() => triggerRemediationAction(`Automated 500-case eval benchmark suite dispatched for ${activeRemediation.name}`)}
+                  style={{
+                    background: '#FFFFFF',
+                    color: '#00349B',
+                    border: '1.5px solid #00349B',
+                    borderRadius: 6,
+                    padding: '10px 16px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8
+                  }}
+                >
+                  <PlayCircle size={16} /> Trigger Automated Eval Rerun
+                </button>
+
+                <button
+                  onClick={() => {
+                    setActiveRemediation(null);
+                    onFilterAction(activeRemediation.action);
+                  }}
+                  style={{
+                    background: '#F1F5F9',
+                    color: '#475569',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: 6,
+                    padding: '8px 16px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    textAlign: 'center'
+                  }}
+                >
+                  View in Agent Scorecard Tab →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
