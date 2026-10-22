@@ -61,40 +61,34 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Brand / Cockpit Title */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{
-            width: 42,
-            height: 42,
-            borderRadius: 10,
-            background: isLight 
-              ? '#FFFFFF' 
-              : 'linear-gradient(135deg, #00d2ff 0%, #0051ff 100%)',
+            width: 38,
+            height: 38,
+            borderRadius: 8,
+            background: 'linear-gradient(135deg, #00349B 0%, #1713FD 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: isLight ? '0 4px 14px rgba(0,0,0,0.15)' : '0 0 20px rgba(0, 210, 255, 0.4)',
-            border: isLight ? '1.5px solid #D6E2FA' : 'none'
+            boxShadow: '0 4px 14px rgba(0, 52, 155, 0.25)',
           }}>
-            <Activity color={isLight ? '#00349B' : '#fff'} size={24} strokeWidth={2.6} />
+            <Activity color="#fff" size={20} strokeWidth={2.6} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{
                 fontFamily: 'var(--font-heading)',
                 fontWeight: 800,
-                fontSize: 20,
+                fontSize: 18,
                 letterSpacing: '-0.02em',
-                background: 'var(--header-title-gradient)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: isLight ? '#FFFFFF' : 'transparent',
-                color: '#fff'
+                color: isLight ? '#0F172A' : '#FFFFFF'
               }}>
-                WCT | AI Value &amp; Performance Cockpit
+                WCT <span style={{ color: '#00349B', fontWeight: 300 }}>//</span> AI Performance Cockpit
               </span>
               <span style={{
                 fontSize: 10,
                 fontWeight: 700,
-                background: isLight ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 210, 255, 0.15)',
-                color: isLight ? '#FFFFFF' : 'var(--accent-cyan)',
-                border: isLight ? '1px solid rgba(255, 255, 255, 0.4)' : '1px solid rgba(0, 210, 255, 0.3)',
+                background: isLight ? '#EFF6FF' : 'rgba(0, 210, 255, 0.15)',
+                color: isLight ? '#00349B' : 'var(--accent-cyan)',
+                border: isLight ? '1px solid #BFDBFE' : '1px solid rgba(0, 210, 255, 0.3)',
                 padding: '2px 7px',
                 borderRadius: 4,
                 textTransform: 'uppercase',
@@ -103,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
                 Enterprise Live
               </span>
             </div>
-            <div style={{ fontSize: 12.5, color: 'var(--header-sub-text)' }}>
+            <div style={{ fontSize: 12, color: isLight ? '#64748B' : 'var(--header-sub-text)' }}>
               Autonomous Agent Portfolio · Financial Exposure &amp; Labor Capacity Intelligence
             </div>
           </div>

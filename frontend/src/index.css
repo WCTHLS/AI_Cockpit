@@ -111,73 +111,73 @@
   --font-heading: 'Satoshi', 'Outfit', sans-serif;
   --font-body: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* WCT Executive Light Palette (from WCT_AI_Value_Interactive_v6.html#cockpit) */
+  /* WCT Modern Enterprise SaaS Palette (Linear / Stripe aesthetic) */
   --navy: #00349B;
-  --navy-deep: #0B1F4D;
+  --navy-deep: #0A2540;
   --indigo: #172D9D;
   --electric: #1713FD;
   --surface: #FFFFFF;
-  --card: #F3F6FC;
-  --tint: #D6E2FA;
-  --tint-strong: #BFD0FF;
-  --ink: #1A1A1A;
-  --ink-soft: #333333;
-  --muted: #475569;
+  --card: #FFFFFF;
+  --tint: #E2E8F0;
+  --tint-strong: #CBD5E1;
+  --ink: #0F172A;
+  --ink-soft: #334155;
+  --muted: #64748B;
   --on-navy: #FFFFFF;
-  --on-navy-muted: #D6E2FA;
-  --amber: #FBAE40;
+  --on-navy-muted: #E2E8F0;
+  --amber: #D97706;
 
   /* Base App & Surface */
-  --bg-app: #F7F9FD;
+  --bg-app: #F8FAFC;
   --bg-app-gradient: none;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #F0F4FC;
+  --bg-card-hover: #F8FAFC;
   --bg-card-solid: #FFFFFF;
   --bg-input: #FFFFFF;
-  --bg-subtle: #F3F6FC;
-  --border-subtle: #D6E2FA;
+  --bg-subtle: #F1F5F9;
+  --border-subtle: #E2E8F0;
   --border-active: #00349B;
 
   /* Accents */
-  --accent-cyan: #00349B;
-  --accent-blue: #1713FD;
-  --accent-purple: #172D9D;
-  --accent-emerald: #1B5E20;
-  --accent-amber: #A16207;
-  --accent-rose: #C62828;
+  --accent-cyan: #0284C7;
+  --accent-blue: #00349B;
+  --accent-purple: #4F46E5;
+  --accent-emerald: #059669;
+  --accent-amber: #D97706;
+  --accent-rose: #DC2626;
 
   /* Typography Colors */
-  --text-main: #1A1A1A;
-  --text-muted: #475569;
-  --text-dim: #64748B;
-  --text-heading: #00349B;
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+  --text-dim: #94A3B8;
+  --text-heading: #0F172A;
 
-  /* Header & Navigation (.ck-hd in reference) */
-  --header-bg: #00349B;
-  --header-border: #0B1F4D;
-  --header-title-gradient: linear-gradient(90deg, #FFFFFF, #E0EBFF);
-  --header-sub-text: #D6E2FA;
+  /* Header & Navigation */
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --header-border: #E2E8F0;
+  --header-title-gradient: none;
+  --header-sub-text: #64748B;
   --header-btn-bg: #FFFFFF;
-  --header-btn-border: #D6E2FA;
-  --header-btn-text: #00349B;
-  --header-btn-active-bg: #1713FD;
-  --header-btn-active-border: #1713FD;
+  --header-btn-border: #E2E8F0;
+  --header-btn-text: #0F172A;
+  --header-btn-active-bg: #00349B;
+  --header-btn-active-border: #00349B;
   --header-btn-active-text: #FFFFFF;
-  --nav-bar-bg: #FFFFFF;
-  --nav-bar-border: #D6E2FA;
-  --tab-color: #475569;
+  --nav-bar-bg: rgba(255, 255, 255, 0.92);
+  --nav-bar-border: #E2E8F0;
+  --tab-color: #64748B;
   --tab-hover-color: #00349B;
-  --tab-hover-bg: #F3F6FC;
+  --tab-hover-bg: #F1F5F9;
   --tab-active-color: #00349B;
-  --tab-active-bg: #F3F6FC;
-  --tab-active-border: #D6E2FA;
-  --tab-active-shadow: none;
-  --tab-active-border-bottom: 3px solid #1713FD;
+  --tab-active-bg: #EFF6FF;
+  --tab-active-border: #BFDBFE;
+  --tab-active-shadow: 0 1px 3px rgba(0, 52, 155, 0.08);
+  --tab-active-border-bottom: 2px solid #00349B;
 
-  /* Status Badges (.spill / .rag in reference) */
-  --status-acc-bg: #E3F1E4;
-  --status-acc-text: #1B5E20;
-  --status-acc-border: #C8E6C9;
+  /* Status Badges */
+  --status-acc-bg: #ECFDF5;
+  --status-acc-text: #065F46;
+  --status-acc-border: #A7F3D0;
 
   --status-opt-bg: #FDF0C8;
   --status-opt-text: #7A5300;
