@@ -22,6 +22,8 @@ interface CostBudgetTabProps {
   costBreakdown: CostBreakdownItem[];
   agents: AgentScorecardItem[];
   selectedFunction?: string;
+  customTotalCost?: number;
+  customLicenseCost?: number;
   theme?: 'dark' | 'light';
 }
 
@@ -41,15 +43,19 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
   costBreakdown = [], 
   agents = [], 
   selectedFunction = '',
+  customTotalCost,
+  customLicenseCost,
   theme = 'light' 
 }) => {
   const isLight = theme === 'light';
   const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
   const effectiveAgents = isScoped ? agents.filter(a => a.function === selectedFunction) : agents;
 
-  const totalActualCost = isScoped 
-    ? effectiveAgents.reduce((s, a) => s + (a.cost || 0), 0)
-    : 412000;
+  const totalActualCost = customTotalCost != null
+    ? customTotalCost
+    : (isScoped 
+        ? effectiveAgents.reduce((s, a) => s + (a.cost || 0), 0)
+        : 412000);
   const totalBudget = isScoped 
     ? effectiveAgents.reduce((s, a) => s + (a.budget || a.cost || 0), 0)
     : 425000;
@@ -70,7 +76,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
   const factorData: CostFactorDetail[] = [
     {
       name: 'Licences',
-      actual: 168000,
+      actual: customLicenseCost != null ? customLicenseCost : 168000,
       budget: 170000,
       pctOfBudget: 99,
       pctOfTotal: 41,

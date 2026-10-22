@@ -11,7 +11,7 @@ import { ExecutiveSummaryTab } from './components/ExecutiveSummaryTab';
 import { AgentScorecardTab } from './components/AgentScorecardTab';
 import { CostBudgetTab } from './components/CostBudgetTab';
 import { SeatsAdoptionTab } from './components/SeatsAdoptionTab';
-import { AdminTab } from './components/AdminTab';
+import { AdminTab, SubscriptionConfig, LaborRateConfig } from './components/AdminTab';
 import { AgentDetailModal } from './components/AgentDetailModal';
 import {
   fetchSummary,
@@ -52,6 +52,57 @@ export const App: React.FC = () => {
 
   const effFunc = currentUser.role === 'function_head' ? (currentUser.function_name || '') : selectedFunction;
 
+  // Enterprise Subscription and Labor Config state
+  const [subscriptionConfig, setSubscriptionConfig] = useState<SubscriptionConfig>(() => {
+    try {
+      const saved = localStorage.getItem('wct_subscription_config');
+      return saved ? JSON.parse(saved) : {
+        m365CopilotPrice: 30.0,
+        copilotStudioPackPrice: 200.0,
+        copilotStudioIncludedMsgs: 25000,
+        githubCopilotPrice: 19.0,
+        inputTokenPricePerMillion: 2.50,
+        outputTokenPricePerMillion: 10.00
+      };
+    } catch {
+      return {
+        m365CopilotPrice: 30.0,
+        copilotStudioPackPrice: 200.0,
+        copilotStudioIncludedMsgs: 25000,
+        githubCopilotPrice: 19.0,
+        inputTokenPricePerMillion: 2.50,
+        outputTokenPricePerMillion: 10.00
+      };
+    }
+  });
+
+  const [laborConfig, setLaborConfig] = useState<LaborRateConfig>(() => {
+    try {
+      const saved = localStorage.getItem('wct_labor_config');
+      return saved ? JSON.parse(saved) : {
+        engineering: 95.0,
+        finance: 80.0,
+        operations: 65.0,
+        sales: 85.0,
+        customerSupport: 60.0,
+        clinical: 90.0,
+        monthlyFteHours: 160
+      };
+    } catch {
+      return {
+        engineering: 95.0,
+        finance: 80.0,
+        operations: 65.0,
+        sales: 85.0,
+        customerSupport: 60.0,
+        clinical: 90.0,
+        monthlyFteHours: 160
+      };
+    }
+  });
+
+
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [summary, setSummary] = useState<SummaryKPI | null>(null);
   const [byFunction, setByFunction] = useState<FunctionSummary[]>([]);
@@ -61,6 +112,25 @@ export const App: React.FC = () => {
   const [agents, setAgents] = useState<AgentScorecardItem[]>([]);
   const [seats, setSeats] = useState<SeatInventorySummary | null>(null);
   const [thresholds, setThresholds] = useState<any>(null);
+
+  // Dynamic portfolio valuation calculation reacting live to custom settings
+  const blendedWage = (
+    (laborConfig.engineering || 95) * 0.40 +
+    (laborConfig.operations || 65) * 0.30 +
+    (laborConfig.finance || 80) * 0.15 +
+    (laborConfig.sales || 85) * 0.15
+  );
+
+  const totalHours = summary?.total_hours_saved || 26000;
+  const dynamicGrossValue = totalHours * blendedWage;
+  
+  // Non-license costs: Platform ($72k) + Tokens ($96k) + Build ($52k) + Enablement ($24k) = $244k
+  const baseNonLicense = 244000;
+  const pooledSeatCount = seats?.total_licensed_seats || 4600;
+  const dynamicLicenseCost = (pooledSeatCount * (subscriptionConfig.m365CopilotPrice || 30)) + (120 * (subscriptionConfig.copilotStudioPackPrice || 200));
+  const dynamicTotalCost = baseNonLicense + dynamicLicenseCost;
+  const dynamicNetValue = dynamicGrossValue - dynamicTotalCost;
+  const dynamicRoiMultiplier = dynamicTotalCost > 0 ? (dynamicGrossValue / dynamicTotalCost) : 0;
 
   const [selectedAgent, setSelectedAgent] = useState<AgentScorecardItem | null>(null);
   const [scorecardActionFilter, setScorecardActionFilter] = useState<string>('');
@@ -76,6 +146,57 @@ export const App: React.FC = () => {
     setIsLoading(true);
     try {
       const effFunc = currentUser.role === 'function_head' ? (currentUser.function_name || '') : selectedFunction;
+
+  // Enterprise Subscription and Labor Config state
+  const [subscriptionConfig, setSubscriptionConfig] = useState<SubscriptionConfig>(() => {
+    try {
+      const saved = localStorage.getItem('wct_subscription_config');
+      return saved ? JSON.parse(saved) : {
+        m365CopilotPrice: 30.0,
+        copilotStudioPackPrice: 200.0,
+        copilotStudioIncludedMsgs: 25000,
+        githubCopilotPrice: 19.0,
+        inputTokenPricePerMillion: 2.50,
+        outputTokenPricePerMillion: 10.00
+      };
+    } catch {
+      return {
+        m365CopilotPrice: 30.0,
+        copilotStudioPackPrice: 200.0,
+        copilotStudioIncludedMsgs: 25000,
+        githubCopilotPrice: 19.0,
+        inputTokenPricePerMillion: 2.50,
+        outputTokenPricePerMillion: 10.00
+      };
+    }
+  });
+
+  const [laborConfig, setLaborConfig] = useState<LaborRateConfig>(() => {
+    try {
+      const saved = localStorage.getItem('wct_labor_config');
+      return saved ? JSON.parse(saved) : {
+        engineering: 95.0,
+        finance: 80.0,
+        operations: 65.0,
+        sales: 85.0,
+        customerSupport: 60.0,
+        clinical: 90.0,
+        monthlyFteHours: 160
+      };
+    } catch {
+      return {
+        engineering: 95.0,
+        finance: 80.0,
+        operations: 65.0,
+        sales: 85.0,
+        customerSupport: 60.0,
+        clinical: 90.0,
+        monthlyFteHours: 160
+      };
+    }
+  });
+
+
       
       const [sumData, funcData, costData, trendData, actData, agentList, seatData, thresh] = await Promise.all([
         fetchSummary(currentMonth, effFunc).catch(() => null),
@@ -181,6 +302,10 @@ export const App: React.FC = () => {
             agents={agents}
             currentMonth={currentMonth}
             selectedFunction={effFunc}
+            customNetValue={dynamicNetValue}
+            customTotalCost={dynamicTotalCost}
+            customGrossValue={dynamicGrossValue}
+            customRoi={dynamicRoiMultiplier}
             onSelectAgent={setSelectedAgent}
             onFilterAction={handleFilterAction}
             theme={theme}
@@ -202,6 +327,8 @@ export const App: React.FC = () => {
             costBreakdown={costBreakdown}
             agents={agents}
             selectedFunction={effFunc}
+            customTotalCost={dynamicTotalCost}
+            customLicenseCost={dynamicLicenseCost}
             theme={theme}
           />
         )}
@@ -210,7 +337,9 @@ export const App: React.FC = () => {
           <SeatsAdoptionTab
             seats={seats}
             selectedFunction={effFunc}
+            customCostPerSeat={subscriptionConfig.m365CopilotPrice}
             onCostPerSeatChange={(cost) => {
+              setSubscriptionConfig({ ...subscriptionConfig, m365CopilotPrice: cost });
               fetchSeats(effFunc, cost).then(res => setSeats(res)).catch(() => {});
             }}
             theme={theme}
@@ -221,6 +350,10 @@ export const App: React.FC = () => {
           <AdminTab
             initialThresholds={thresholds}
             onThresholdsUpdated={loadDashboardData}
+            onConfigSaved={(subs, labor) => {
+              setSubscriptionConfig(subs);
+              setLaborConfig(labor);
+            }}
             theme={theme}
           />
         )}

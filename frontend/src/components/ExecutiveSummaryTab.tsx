@@ -23,6 +23,10 @@ interface ExecutiveSummaryTabProps {
   agents: AgentScorecardItem[];
   currentMonth?: string;
   selectedFunction?: string;
+  customNetValue?: number;
+  customTotalCost?: number;
+  customGrossValue?: number;
+  customRoi?: number;
   onSelectAgent: (agent: AgentScorecardItem) => void;
   onFilterAction: (action: string) => void;
   theme?: 'dark' | 'light';
@@ -48,6 +52,10 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   agents = [],
   currentMonth = '2026-09',
   selectedFunction = 'All Functions',
+  customNetValue,
+  customTotalCost,
+  customGrossValue,
+  customRoi,
   onSelectAgent,
   onFilterAction,
   theme = 'light'
@@ -79,11 +87,19 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   };
   const totalAgents = summary?.active_agents ?? (agents.length || 43);
 
-  // Dynamic values based on summary prop (falling back to full portfolio defaults)
-  const displayNetValue = summary?.total_net_value != null ? formatUSD(summary.total_net_value) : '$1.80M';
-  const displayGrossValue = summary?.total_gross_value != null ? formatUSD(summary.total_gross_value) : '$2.21M';
-  const displayCost = summary?.total_cost != null ? formatUSD(summary.total_cost) : '$412K';
-  const displayRoi = summary?.roi_ratio != null ? `${summary.roi_ratio.toFixed(2)}x ROI` : '5.37x ROI';
+  // Dynamic values based on custom enterprise configurator or summary prop
+  const displayNetValue = customNetValue != null
+    ? formatUSD(customNetValue)
+    : (summary?.total_net_value != null ? formatUSD(summary.total_net_value) : '$1.80M');
+  const displayGrossValue = customGrossValue != null
+    ? formatUSD(customGrossValue)
+    : (summary?.total_gross_value != null ? formatUSD(summary.total_gross_value) : '$2.21M');
+  const displayCost = customTotalCost != null
+    ? formatUSD(customTotalCost)
+    : (summary?.total_cost != null ? formatUSD(summary.total_cost) : '$412K');
+  const displayRoi = customRoi != null
+    ? `${customRoi.toFixed(2)}x ROI`
+    : (summary?.roi_ratio != null ? `${summary.roi_ratio.toFixed(2)}x ROI` : '5.37x ROI');
   const displayHours = summary?.total_hours_saved != null ? summary.total_hours_saved.toLocaleString() : '26,000';
   const fteCount = summary?.total_hours_saved != null ? Math.round(summary.total_hours_saved / 160) : 162;
   const displayFtes = `~${fteCount} FTEs`;

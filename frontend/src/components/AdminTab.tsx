@@ -19,6 +19,7 @@ import { updateThresholds, formatUSD } from '../api';
 interface AdminTabProps {
   initialThresholds: any;
   onThresholdsUpdated: () => void;
+  onConfigSaved?: (subs: SubscriptionConfig, labor: LaborRateConfig) => void;
   theme?: 'dark' | 'light';
 }
 
@@ -76,7 +77,7 @@ const DEFAULT_GUARDRAIL_CONFIG: GuardrailConfig = {
   budgetOverrunAlertPct: 110
 };
 
-export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, theme = 'light' }) => {
+export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, onConfigSaved, theme = 'light' }) => {
   const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance'>('subs');
 
   // Governance action thresholds (slide 7)
@@ -121,11 +122,18 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     laborRates.sales * 0.15
   );
 
+  // Dynamic cost calculation based on tuned subscription parameters
+  // Non-license costs = $244,000 (Platform $72K + Tokens $96K + Build & Run $52K + Enablement $24K)
+  const baseNonLicenseCosts = 244000;
+  const pooledSeats = 4600;
+  // Dynamic license expenditure = pooledSeats * m365CopilotPrice + Studio capacity packs
+  const simulatedLicenseCost = (pooledSeats * (subscriptions.m365CopilotPrice || 30)) + (120 * (subscriptions.copilotStudioPackPrice || 200));
+  const dynamicTotalCost = baseNonLicenseCosts + simulatedLicenseCost;
+
   const baselineHoursSaved = 26000;
   const simulatedGrossValue = baselineHoursSaved * blendedHourlyRate;
-  const baselineTotalCost = 412000;
-  const simulatedNetValue = simulatedGrossValue - baselineTotalCost;
-  const simulatedRoiMultiplier = simulatedGrossValue / (baselineTotalCost || 1);
+  const simulatedNetValue = simulatedGrossValue - dynamicTotalCost;
+  const simulatedRoiMultiplier = dynamicTotalCost > 0 ? (simulatedGrossValue / dynamicTotalCost) : 0;
   const simulatedFtesUnlocked = baselineHoursSaved / (laborRates.monthlyFteHours || 160);
 
   const handleSaveAll = async () => {
@@ -137,6 +145,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
       if (updateThresholds) {
         await updateThresholds(thresholds).catch(() => {});
+      }
+      if (onConfigSaved) {
+        onConfigSaved(subscriptions, laborRates);
       }
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
@@ -324,7 +335,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               {formatUSD(simulatedNetValue)}
             </div>
             <div style={{ fontSize: 11, color: '#CBD5E1', marginTop: 2 }}>
-              Gross Value - {formatUSD(baselineTotalCost)} Cost
+              Gross Value - {formatUSD(dynamicTotalCost)} Cost
             </div>
           </div>
 

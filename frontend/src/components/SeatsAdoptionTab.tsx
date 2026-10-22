@@ -22,6 +22,7 @@ import { formatUSD, formatPct } from '../api';
 interface SeatsAdoptionTabProps {
   seats: SeatInventorySummary | null;
   selectedFunction?: string;
+  customCostPerSeat?: number;
   onCostPerSeatChange?: (cost: number) => void;
   theme?: 'dark' | 'light';
 }
@@ -39,14 +40,21 @@ interface FunctionSeatActivity {
 export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ 
   seats, 
   selectedFunction = '',
+  customCostPerSeat = 30,
   onCostPerSeatChange, 
   theme = 'light' 
 }) => {
   const isLight = theme === 'light';
   const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
 
-  // Cost per seat slider state
-  const [seatCost, setSeatCost] = useState<number>(30);
+  // Cost per seat slider state - initialized from custom enterprise config
+  const [seatCost, setSeatCost] = useState<number>(customCostPerSeat || 30);
+
+  useEffect(() => {
+    if (customCostPerSeat && customCostPerSeat !== seatCost) {
+      setSeatCost(customCostPerSeat);
+    }
+  }, [customCostPerSeat]);
   const [actionToast, setActionToast] = useState<string | null>(null);
 
   // Chart DOM refs
