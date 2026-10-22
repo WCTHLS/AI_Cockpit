@@ -12,7 +12,8 @@ import {
   ShieldAlert,
   Cpu,
   Sliders,
-  PlayCircle
+  PlayCircle,
+  Printer
 } from 'lucide-react';
 import { SummaryKPI, FunctionSummary, AgentScorecardItem } from '../types';
 import { formatUSD } from '../api';
@@ -87,26 +88,39 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   };
   const totalAgents = summary?.active_agents ?? (agents.length || 43);
 
+  // Month-aware historical vs live close detection
+  const isAug = currentMonth === '2026-08';
+
   // Dynamic values based on custom enterprise configurator or summary prop
-  const currentNetValNum = customNetValue != null ? customNetValue : (summary?.total_net_value || 1800000);
-  const currentCostNum = customTotalCost != null ? customTotalCost : (summary?.total_cost || 412000);
-  const currentHoursNum = summary?.total_hours_saved || 26000;
+  const currentNetValNum = isAug 
+    ? (summary?.total_net_value || 1590000) 
+    : (customNetValue != null ? customNetValue : (summary?.total_net_value || 1800000));
+
+  const currentCostNum = isAug
+    ? (summary?.total_cost || 388000)
+    : (customTotalCost != null ? customTotalCost : (summary?.total_cost || 412000));
+
+  const currentHoursNum = isAug
+    ? (summary?.total_hours_saved || 23650)
+    : (summary?.total_hours_saved || 26000);
 
   const displayNetValue = formatUSD(currentNetValNum);
-  const displayGrossValue = customGrossValue != null
-    ? formatUSD(customGrossValue)
-    : (summary?.total_gross_value != null ? formatUSD(summary.total_gross_value) : '$2.21M');
+  const displayGrossValue = isAug
+    ? '$1.98M'
+    : (customGrossValue != null ? formatUSD(customGrossValue) : (summary?.total_gross_value != null ? formatUSD(summary.total_gross_value) : '$2.21M'));
+
   const displayCost = formatUSD(currentCostNum);
-  const displayRoi = customRoi != null
-    ? `${customRoi.toFixed(2)}x ROI`
-    : (summary?.roi_ratio != null ? `${summary.roi_ratio.toFixed(2)}x ROI` : '5.37x ROI');
+  const displayRoi = isAug
+    ? '5.10x ROI'
+    : (customRoi != null ? `${customRoi.toFixed(2)}x ROI` : (summary?.roi_ratio != null ? `${summary.roi_ratio.toFixed(2)}x ROI` : '5.37x ROI'));
+
   const displayHours = currentHoursNum.toLocaleString();
   const fteCount = Math.round(currentHoursNum / 160);
   const displayFtes = `~${fteCount} FTEs`;
 
-  // Dynamic Delta Calculations vs August and Budget
+  // Dynamic Delta Calculations vs Prior Month and Budget
   const augNetValBenchmark = 1590000;
-  const netDeltaPct = ((currentNetValNum - augNetValBenchmark) / augNetValBenchmark) * 100;
+  const netDeltaPct = isAug ? 11.8 : (((currentNetValNum - augNetValBenchmark) / augNetValBenchmark) * 100);
   const isNetPositive = netDeltaPct >= 0;
 
   const costBudgetCap = 425000;
@@ -115,7 +129,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   const costVariancePct = Math.abs((costDiff / costBudgetCap) * 100);
 
   const augHoursBenchmark = 23650;
-  const hoursDeltaPct = ((currentHoursNum - augHoursBenchmark) / augHoursBenchmark) * 100;
+  const hoursDeltaPct = isAug ? 8.2 : (((currentHoursNum - augHoursBenchmark) / augHoursBenchmark) * 100);
 
   // Pre-configured diagnostic database for agents highlighted in executive brief
   const diagnosticProfiles: Record<string, RemediationAgentInfo> = {
@@ -197,6 +211,10 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       rootCause: 'High operational leverage: 98% accuracy on real-time SAP order tracking queries with zero human intervention.',
       remediationStep: 'Promote to cross-functional global self-service customer portal.'
     }
+  };
+
+  const handleExportBrief = () => {
+    window.print();
   };
 
   const handleOpenRemediation = (agentName: string) => {
@@ -666,7 +684,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             color: '#00349B'
           }}>
             <span>Reporting Cycle:</span>
-            <span style={{ fontWeight: 800 }}>Sep 2026 (Live Close)</span>
+            {isAug ? <span style={{ fontWeight: 800 }}>Aug 2026 (Historical Close)</span> : <span style={{ fontWeight: 800 }}>Sep 2026 (Live Close)</span>}
           </div>
 
           <div style={{
@@ -710,6 +728,29 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           >
             <Sliders size={13} />
             <span>ROI Simulator</span>
+          </button>
+
+          <button
+            onClick={handleExportBrief}
+            title="Export 1-Page Board Executive Brief (PDF / Print)"
+            style={{
+              background: '#00349B',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: 6,
+              padding: '6px 14px',
+              fontSize: 12,
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(0, 52, 155, 0.2)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Printer size={13} />
+            <span>Export Executive Brief (PDF)</span>
           </button>
         </div>
       </div>
@@ -879,7 +920,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             marginTop: 6
           }}>
             {isNetPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-            <span>{isNetPositive ? '+' : ''}{netDeltaPct.toFixed(1)}% vs Aug ($1.59M)</span>
+            <span>{isAug ? '+11.8% vs Jul ($1.42M)' : `${isNetPositive ? '+' : ''}${netDeltaPct.toFixed(1)}% vs Aug ($1.59M)`}</span>
           </div>
         </div>
 
@@ -939,7 +980,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#16A34A', marginTop: 6 }}>
-            <ArrowUpRight size={14} /> +{hoursDeltaPct.toFixed(1)}% vs Aug (23.6K)
+            <ArrowUpRight size={14} /> {isAug ? '+8.2% vs Jul (21.8K)' : `+${hoursDeltaPct.toFixed(1)}% vs Aug (23.6K)`}
           </div>
         </div>
 
@@ -985,7 +1026,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
                 padding: '2px 7px',
                 borderRadius: 12
               }}>
-                3,588 / 4,600
+                {isAug ? '3,358 / 4,600' : '3,588 / 4,600'}
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
@@ -999,7 +1040,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A', marginTop: 6 }}>
-            <ArrowUpRight size={14} /> +5.0 pts vs Aug
+            <ArrowUpRight size={14} /> {isAug ? '+4.0 pts vs Jul' : '+5.0 pts vs Aug'}
           </div>
         </div>
 

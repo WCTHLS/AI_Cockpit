@@ -663,3 +663,35 @@ h1, h2, h3, h4, .font-heading {
   to { opacity: 1; }
 }
 
+
+
+/* Print / Executive Brief PDF Export Styling */
+@media print {
+  @page {
+    size: landscape;
+    margin: 10mm 8mm;
+  }
+  body {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  header,
+  .nav-tabs-wrapper,
+  button,
+  .btn-primary,
+  .btn-secondary {
+    display: none !important;
+  }
+  .main-content {
+    padding: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  .executive-card {
+    box-shadow: none !important;
+    border: 1px solid #CBD5E1 !important;
+    break-inside: avoid;
+  }
+}
