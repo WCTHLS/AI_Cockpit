@@ -21,6 +21,7 @@ import { formatUSD, formatPct } from '../api';
 
 interface SeatsAdoptionTabProps {
   seats: SeatInventorySummary | null;
+  selectedFunction?: string;
   onCostPerSeatChange?: (cost: number) => void;
   theme?: 'dark' | 'light';
 }
@@ -37,10 +38,12 @@ interface FunctionSeatActivity {
 
 export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({ 
   seats, 
+  selectedFunction = '',
   onCostPerSeatChange, 
   theme = 'light' 
 }) => {
   const isLight = theme === 'light';
+  const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
 
   // Cost per seat slider state
   const [seatCost, setSeatCost] = useState<number>(30);
@@ -360,6 +363,31 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
           Seat data reflects active directory telemetry · Active &lt; 7 days · Idle ≥ 30 days
         </div>
       </div>
+
+      {/* Scoped Function Seat Banner */}
+      {isScoped && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: '#EFF6FF',
+          border: '1.5px solid #BFDBFE',
+          padding: '10px 16px',
+          borderRadius: 10,
+          color: '#1E40AF',
+          fontSize: 13,
+          fontWeight: 600
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ background: '#00349B', color: '#FFFFFF', padding: '2px 8px', borderRadius: 12, fontSize: 11, fontWeight: 800 }}>
+              FUNCTION SEATS ACTIVE
+            </span>
+            <span>
+              Seat allocation and adoption audit scoped to <b>{selectedFunction}</b> ({total.toLocaleString()} total seats · {active.toLocaleString()} active · {idle.toLocaleString()} idle)
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Top 5 FinOps Seat KPI Cards */}
       <div style={{

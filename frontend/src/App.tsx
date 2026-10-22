@@ -50,6 +50,8 @@ export const App: React.FC = () => {
     function_name: null
   });
 
+  const effFunc = currentUser.role === 'function_head' ? (currentUser.function_name || '') : selectedFunction;
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [summary, setSummary] = useState<SummaryKPI | null>(null);
   const [byFunction, setByFunction] = useState<FunctionSummary[]>([]);
@@ -178,7 +180,7 @@ export const App: React.FC = () => {
             byFunction={byFunction}
             agents={agents}
             currentMonth={currentMonth}
-            selectedFunction={selectedFunction}
+            selectedFunction={effFunc}
             onSelectAgent={setSelectedAgent}
             onFilterAction={handleFilterAction}
             theme={theme}
@@ -190,6 +192,7 @@ export const App: React.FC = () => {
             agents={agents}
             onSelectAgent={setSelectedAgent}
             initialActionFilter={scorecardActionFilter}
+            selectedFunction={effFunc}
             theme={theme}
           />
         )}
@@ -198,6 +201,7 @@ export const App: React.FC = () => {
           <CostBudgetTab
             costBreakdown={costBreakdown}
             agents={agents}
+            selectedFunction={effFunc}
             theme={theme}
           />
         )}
@@ -205,8 +209,9 @@ export const App: React.FC = () => {
         {activeTab === 'seats' && (
           <SeatsAdoptionTab
             seats={seats}
+            selectedFunction={effFunc}
             onCostPerSeatChange={(cost) => {
-              fetchSeats(selectedFunction, cost).then(res => setSeats(res)).catch(() => {});
+              fetchSeats(effFunc, cost).then(res => setSeats(res)).catch(() => {});
             }}
             theme={theme}
           />

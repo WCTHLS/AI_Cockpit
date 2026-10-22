@@ -68,14 +68,25 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   const [showSimulator, setShowSimulator] = useState<boolean>(false);
   const [adoptionBoost, setAdoptionBoost] = useState<number>(5);
 
+  const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
+
   // Status breakdown calculations
   const statusCounts = {
-    accelerate: agents.filter(a => a.action?.toLowerCase() === 'accelerate').length || 7,
-    optimize: agents.filter(a => a.action?.toLowerCase() === 'optimize').length || 15,
-    intervene: agents.filter(a => a.action?.toLowerCase() === 'intervene').length || 11,
-    experiment: agents.filter(a => a.action?.toLowerCase() === 'experiment').length || 10,
+    accelerate: summary?.action_counts?.accelerate ?? (agents.filter(a => a.action?.toLowerCase() === 'accelerate').length || 7),
+    optimize: summary?.action_counts?.optimize ?? (agents.filter(a => a.action?.toLowerCase() === 'optimize').length || 15),
+    intervene: summary?.action_counts?.intervene ?? (agents.filter(a => a.action?.toLowerCase() === 'intervene').length || 11),
+    experiment: summary?.action_counts?.experiment ?? (agents.filter(a => a.action?.toLowerCase() === 'experiment').length || 10),
   };
-  const totalAgents = agents.length || 43;
+  const totalAgents = summary?.active_agents ?? (agents.length || 43);
+
+  // Dynamic values based on summary prop (falling back to full portfolio defaults)
+  const displayNetValue = summary?.total_net_value != null ? formatUSD(summary.total_net_value) : '$1.80M';
+  const displayGrossValue = summary?.total_gross_value != null ? formatUSD(summary.total_gross_value) : '$2.21M';
+  const displayCost = summary?.total_cost != null ? formatUSD(summary.total_cost) : '$412K';
+  const displayRoi = summary?.roi_ratio != null ? `${summary.roi_ratio.toFixed(2)}x ROI` : '5.37x ROI';
+  const displayHours = summary?.total_hours_saved != null ? summary.total_hours_saved.toLocaleString() : '26,000';
+  const fteCount = summary?.total_hours_saved != null ? Math.round(summary.total_hours_saved / 160) : 162;
+  const displayFtes = `~${fteCount} FTEs`;
 
   // Pre-configured diagnostic database for agents highlighted in executive brief
   const diagnosticProfiles: Record<string, RemediationAgentInfo> = {
@@ -729,6 +740,31 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         </div>
       )}
 
+      {/* Scoped Function Indicator Banner */}
+      {isScoped && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: '#EFF6FF',
+          border: '1.5px solid #BFDBFE',
+          padding: '10px 16px',
+          borderRadius: 10,
+          color: '#1E40AF',
+          fontSize: 13,
+          fontWeight: 600
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ background: '#00349B', color: '#FFFFFF', padding: '2px 8px', borderRadius: 12, fontSize: 11, fontWeight: 800 }}>
+              FUNCTION SCOPE ACTIVE
+            </span>
+            <span>
+              Executive cockpit filtered to <b>{selectedFunction}</b> ({totalAgents} active agents · {displayNetValue} Net Value · {displayRoi})
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* 6 Executive KPI Cards Across */}
       <div style={{
         display: 'grid',
@@ -779,12 +815,12 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
                 borderRadius: 12,
                 border: '1px solid rgba(255, 255, 255, 0.25)'
               }}>
-                5.37x ROI
+                {displayRoi}
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
               <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.03em', color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
-                $1.80M
+                {displayNetValue}
               </div>
               {/* Mini Sparkline SVG */}
               <svg width="68" height="24" viewBox="0 0 68 24" fill="none" style={{ marginBottom: 4 }}>
@@ -847,12 +883,12 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
                 padding: '2px 7px',
                 borderRadius: 12
               }}>
-                ~162 FTEs
+                {displayFtes}
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
               <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
-                26,000
+                {displayHours}
               </div>
               <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
                 <path d="M2 17 L16 14 L30 15 L44 9 L58 4" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -972,7 +1008,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
               <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
-                $412K
+                {displayCost}
               </div>
               <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
                 <path d="M2 7 L16 9 L30 11 L44 14 L58 13" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

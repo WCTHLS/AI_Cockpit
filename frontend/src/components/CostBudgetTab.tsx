@@ -21,6 +21,7 @@ import { formatUSD, formatPct } from '../api';
 interface CostBudgetTabProps {
   costBreakdown: CostBreakdownItem[];
   agents: AgentScorecardItem[];
+  selectedFunction?: string;
   theme?: 'dark' | 'light';
 }
 
@@ -39,9 +40,22 @@ interface CostFactorDetail {
 export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({ 
   costBreakdown = [], 
   agents = [], 
+  selectedFunction = '',
   theme = 'light' 
 }) => {
   const isLight = theme === 'light';
+  const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
+  const effectiveAgents = isScoped ? agents.filter(a => a.function === selectedFunction) : agents;
+
+  const totalActualCost = isScoped 
+    ? effectiveAgents.reduce((s, a) => s + (a.cost || 0), 0)
+    : 412000;
+  const totalBudget = isScoped 
+    ? effectiveAgents.reduce((s, a) => s + (a.budget || a.cost || 0), 0)
+    : 425000;
+  const budgetVariance = totalBudget - totalActualCost;
+  const grossVal = effectiveAgents.reduce((s, a) => s + (a.gross_value || 0), 0);
+  const valuePerDollar = totalActualCost > 0 ? (grossVal / totalActualCost) : 5.37;
 
   // Chart DOM refs
   const factorBulletChartRef = useRef<HTMLDivElement>(null);
@@ -557,6 +571,31 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         </div>
       </div>
 
+      {/* Scoped Function FinOps Banner */}
+      {isScoped && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: '#EFF6FF',
+          border: '1.5px solid #BFDBFE',
+          padding: '10px 16px',
+          borderRadius: 10,
+          color: '#1E40AF',
+          fontSize: 13,
+          fontWeight: 600
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ background: '#00349B', color: '#FFFFFF', padding: '2px 8px', borderRadius: 12, fontSize: 11, fontWeight: 800 }}>
+              FUNCTION SPEND SCOPED
+            </span>
+            <span>
+              FinOps tracking filtered to <b>{selectedFunction}</b> ({effectiveAgents.length} agents · {formatUSD(totalActualCost)} spend)
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Top 5 FinOps KPI Cards */}
       <div style={{
         display: 'grid',
@@ -612,7 +651,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
               <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
-                $412K
+                {formatUSD(totalActualCost)}
               </div>
               <svg width="56" height="20" viewBox="0 0 56 20" fill="none" style={{ marginBottom: 4 }}>
                 <path d="M2 14 L14 11 L28 12 L42 8 L54 6" stroke="#38BDF8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -672,7 +711,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
               <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#059669', fontFamily: 'Outfit, sans-serif' }}>
-                $13K
+                {formatUSD(Math.abs(budgetVariance))}
               </div>
               <span style={{ fontSize: 11, fontWeight: 700, color: '#059669', background: '#D1FAE5', padding: '2px 6px', borderRadius: 4, marginBottom: 4 }}>
                 Under Target
@@ -731,7 +770,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
               <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#00349B', fontFamily: 'Outfit, sans-serif' }}>
-                $5.37
+                ${valuePerDollar.toFixed(2)}
               </div>
               <svg width="56" height="20" viewBox="0 0 56 20" fill="none" style={{ marginBottom: 4 }}>
                 <path d="M2 15 L14 12 L28 9 L42 6 L54 3" stroke="#00349B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

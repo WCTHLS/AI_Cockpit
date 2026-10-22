@@ -24,6 +24,7 @@ interface AgentScorecardTabProps {
   agents: AgentScorecardItem[];
   onSelectAgent: (agent: AgentScorecardItem) => void;
   initialActionFilter?: string;
+  selectedFunction?: string;
   theme?: 'dark' | 'light';
 }
 
@@ -51,8 +52,13 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
   agents,
   onSelectAgent,
   initialActionFilter = '',
+  selectedFunction = '',
   theme = 'light'
 }) => {
+  const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
+  const scopedAgents = isScoped 
+    ? agents.filter(a => a.function === selectedFunction) 
+    : agents;
   const [selectedStatus, setSelectedStatus] = useState<string>(initialActionFilter ? initialActionFilter.toLowerCase() : '');
   const [collapsedFunctions, setCollapsedFunctions] = useState<Set<string>>(new Set());
   const [collapsedTeams, setCollapsedTeams] = useState<Set<string>>(new Set());
@@ -78,14 +84,14 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
   // Group agents by status for the top 4 status cards
   const statusGroups = {
-    accelerate: agents.filter(a => a.action?.toLowerCase() === 'accelerate'),
-    optimize: agents.filter(a => a.action?.toLowerCase() === 'optimize'),
-    intervene: agents.filter(a => a.action?.toLowerCase() === 'intervene'),
-    experiment: agents.filter(a => a.action?.toLowerCase() === 'experiment'),
+    accelerate: scopedAgents.filter(a => a.action?.toLowerCase() === 'accelerate'),
+    optimize: scopedAgents.filter(a => a.action?.toLowerCase() === 'optimize'),
+    intervene: scopedAgents.filter(a => a.action?.toLowerCase() === 'intervene'),
+    experiment: scopedAgents.filter(a => a.action?.toLowerCase() === 'experiment'),
   };
 
   // Filter agents by status, search query, and productivity filter
-  const activeAgents = agents.filter(a => {
+  const activeAgents = scopedAgents.filter(a => {
     // 1. Status Filter (from top cards)
     if (selectedStatus && a.action?.toLowerCase() !== selectedStatus) return false;
 
@@ -441,7 +447,8 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 12, color: '#64748B' }}>
-            Enterprise Estate: <b style={{ color: '#00349B' }}>{agents.length} Custom Agents Active</b>
+            Enterprise Estate: <b style={{ color: '#00349B' }}>{scopedAgents.length} Custom Agents Active</b>
+            {isScoped && <span style={{ marginLeft: 6, color: '#1E40AF', fontWeight: 700 }}>(in {selectedFunction})</span>}
           </span>
         </div>
       </div>
