@@ -253,8 +253,8 @@ export const App: React.FC = () => {
       />
 
       {/* Navigation Tabs */}
-      <div className="tab-nav-wrapper">
-        <div className="tab-nav">
+      <div className="nav-tabs-wrapper">
+        <div className="nav-tabs-container">
           <button
             className={`tab-button ${activeTab === 'summary' ? 'active' : ''}`}
             onClick={() => setActiveTab('summary')}
