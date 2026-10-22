@@ -13,6 +13,7 @@ import { CostBudgetTab } from './components/CostBudgetTab';
 import { SeatsAdoptionTab } from './components/SeatsAdoptionTab';
 import { AdminTab } from './components/AdminTab';
 import { AgentDetailModal } from './components/AgentDetailModal';
+import { IngestModal } from './components/IngestModal';
 import {
   fetchSummary,
   fetchByFunction,
@@ -34,9 +35,10 @@ import {
 } from './types';
 
 export const App: React.FC = () => {
+  // Default to WCT Executive Light Theme to match v6 reference design
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = localStorage.getItem('wct_cockpit_theme');
-    return saved === 'light' || saved === 'dark' ? saved : 'dark';
+    return saved === 'dark' ? 'dark' : 'light';
   });
 
   const [activeTab, setActiveTab] = useState<'summary' | 'scorecard' | 'costs' | 'seats' | 'admin'>('summary');
@@ -50,6 +52,7 @@ export const App: React.FC = () => {
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isIngestOpen, setIsIngestOpen] = useState<boolean>(false);
   const [summary, setSummary] = useState<SummaryKPI | null>(null);
   const [byFunction, setByFunction] = useState<FunctionSummary[]>([]);
   const [costBreakdown, setCostBreakdown] = useState<CostBreakdownItem[]>([]);
@@ -120,6 +123,7 @@ export const App: React.FC = () => {
         user={currentUser}
         onUserChange={setCurrentUser}
         onRefresh={loadDashboardData}
+        onOpenIngestModal={() => setIsIngestOpen(true)}
         isLoading={isLoading}
         theme={theme}
         onThemeChange={setTheme}
@@ -224,6 +228,14 @@ export const App: React.FC = () => {
       <AgentDetailModal
         agent={selectedAgent}
         onClose={() => setSelectedAgent(null)}
+        theme={theme}
+      />
+
+      {/* Spreadsheet Ingestion Modal */}
+      <IngestModal
+        isOpen={isIngestOpen}
+        onClose={() => setIsIngestOpen(false)}
+        onSuccess={loadDashboardData}
         theme={theme}
       />
     </div>

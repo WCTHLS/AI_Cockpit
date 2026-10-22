@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, RefreshCw, Sun, Moon } from 'lucide-react';
+import { Activity, RefreshCw, Sun, Moon, UploadCloud } from 'lucide-react';
 import { UserProfile } from '../types';
 
 interface HeaderProps {
@@ -10,6 +10,7 @@ interface HeaderProps {
   user: UserProfile;
   onUserChange: (user: UserProfile) => void;
   onRefresh: () => void;
+  onOpenIngestModal: () => void;
   isLoading: boolean;
   theme: 'dark' | 'light';
   onThemeChange: (theme: 'dark' | 'light') => void;
@@ -32,6 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
   user,
   onUserChange,
   onRefresh,
+  onOpenIngestModal,
   isLoading,
   theme,
   onThemeChange
@@ -87,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({
                 WebkitTextFillColor: isLight ? '#FFFFFF' : 'transparent',
                 color: '#fff'
               }}>
-                CXO AI Agents Cockpit
+                WCT | AI Value &amp; Performance Cockpit
               </span>
               <span style={{
                 fontSize: 10,
@@ -100,17 +102,17 @@ export const Header: React.FC<HeaderProps> = ({
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em'
               }}>
-                MVP v1.0
+                Enterprise Live
               </span>
             </div>
             <div style={{ fontSize: 12.5, color: 'var(--header-sub-text)' }}>
-              How much value the AI estate is producing, what it costs, and where to act.
+              Autonomous Agent Portfolio · Financial Exposure &amp; Labor Capacity Intelligence
             </div>
           </div>
         </div>
 
         {/* Global Controls & Scoping */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           {/* Month Segmented Toggle */}
           <div style={{
             display: 'flex',
@@ -209,6 +211,30 @@ export const Header: React.FC<HeaderProps> = ({
               ))}
             </select>
           </div>
+
+          {/* Ingest Usage Sheet Button */}
+          <button
+            onClick={onOpenIngestModal}
+            title="Upload employee agent usage spreadsheet to dynamically calculate productivity and ROI"
+            style={{
+              background: isLight ? '#00349B' : 'rgba(0, 210, 255, 0.15)',
+              border: isLight ? '1.5px solid #00349B' : '1px solid rgba(0, 210, 255, 0.4)',
+              borderRadius: 'var(--radius-pill)',
+              padding: '6px 14px',
+              color: '#FFFFFF',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 7,
+              fontSize: 12.5,
+              fontWeight: 700,
+              boxShadow: isLight ? '0 2px 8px rgba(0, 52, 155, 0.2)' : '0 0 12px rgba(0, 210, 255, 0.2)',
+              transition: 'all 0.2s'
+            }}
+          >
+            <UploadCloud size={14} />
+            <span>Ingest Usage</span>
+          </button>
 
           {/* Theme Toggle (Dark / Light) */}
           <div
