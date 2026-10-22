@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, RefreshCw, Sun, Moon, UploadCloud } from 'lucide-react';
+import { Activity, RefreshCw, Sun, Moon } from 'lucide-react';
 import { UserProfile } from '../types';
 
 interface HeaderProps {
@@ -10,7 +10,6 @@ interface HeaderProps {
   user: UserProfile;
   onUserChange: (user: UserProfile) => void;
   onRefresh: () => void;
-  onOpenIngestModal: () => void;
   isLoading: boolean;
   theme: 'dark' | 'light';
   onThemeChange: (theme: 'dark' | 'light') => void;
@@ -33,7 +32,6 @@ export const Header: React.FC<HeaderProps> = ({
   user,
   onUserChange,
   onRefresh,
-  onOpenIngestModal,
   isLoading,
   theme,
   onThemeChange
@@ -211,30 +209,6 @@ export const Header: React.FC<HeaderProps> = ({
               ))}
             </select>
           </div>
-
-          {/* Ingest Usage Sheet Button */}
-          <button
-            onClick={onOpenIngestModal}
-            title="Upload employee agent usage spreadsheet to dynamically calculate productivity and ROI"
-            style={{
-              background: isLight ? '#00349B' : 'rgba(0, 210, 255, 0.15)',
-              border: isLight ? '1.5px solid #00349B' : '1px solid rgba(0, 210, 255, 0.4)',
-              borderRadius: 'var(--radius-pill)',
-              padding: '6px 14px',
-              color: '#FFFFFF',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 7,
-              fontSize: 12.5,
-              fontWeight: 700,
-              boxShadow: isLight ? '0 2px 8px rgba(0, 52, 155, 0.2)' : '0 0 12px rgba(0, 210, 255, 0.2)',
-              transition: 'all 0.2s'
-            }}
-          >
-            <UploadCloud size={14} />
-            <span>Ingest Usage</span>
-          </button>
 
           {/* Theme Toggle (Dark / Light) */}
           <div
