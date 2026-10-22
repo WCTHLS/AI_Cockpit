@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
-import { ChevronDown, ChevronRight, Layers, Users, Maximize2, Table } from 'lucide-react';
+import { 
+  ChevronDown, 
+  ChevronRight, 
+  Layers, 
+  Users, 
+  Maximize2, 
+  Table, 
+  Search, 
+  SlidersHorizontal,
+  X,
+  Sparkles,
+  ShieldAlert,
+  Clock,
+  TrendingUp,
+  Cpu,
+  CheckCircle2
+} from 'lucide-react';
 import { AgentScorecardItem } from '../types';
 import { formatUSD, formatPct } from '../api';
 
@@ -42,6 +58,13 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
   const [collapsedTeams, setCollapsedTeams] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'all' | 'teams' | 'functions'>('all');
 
+  // Search and Productivity Quick Filter State
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [productivityFilter, setProductivityFilter] = useState<'all' | 'top-drivers' | 'intervene' | 'budget-overrun' | 'high-adopt'>('all');
+
+  // Agent Telemetry Profile Drawer State
+  const [inspectAgent, setInspectAgent] = useState<AgentScorecardItem | null>(null);
+
   const scatterChartRef = useRef<HTMLDivElement>(null);
   const evalChartRef = useRef<HTMLDivElement>(null);
 
@@ -61,10 +84,36 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
     experiment: agents.filter(a => a.action?.toLowerCase() === 'experiment'),
   };
 
-  // Filter agents by status if selected
-  const activeAgents = selectedStatus 
-    ? agents.filter(a => a.action?.toLowerCase() === selectedStatus)
-    : agents;
+  // Filter agents by status, search query, and productivity filter
+  const activeAgents = agents.filter(a => {
+    // 1. Status Filter (from top cards)
+    if (selectedStatus && a.action?.toLowerCase() !== selectedStatus) return false;
+
+    // 2. Search Query
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      const matchName = (a.name || '').toLowerCase().includes(q);
+      const matchTeam = (a.team || '').toLowerCase().includes(q);
+      const matchFunc = (a.function || '').toLowerCase().includes(q);
+      if (!matchName && !matchTeam && !matchFunc) return false;
+    }
+
+    // 3. Productivity Quick Filter
+    if (productivityFilter === 'top-drivers') {
+      return (a.net_value || 0) >= 40000;
+    }
+    if (productivityFilter === 'intervene') {
+      return a.action?.toLowerCase() === 'intervene';
+    }
+    if (productivityFilter === 'budget-overrun') {
+      return a.budget ? a.cost > a.budget : false;
+    }
+    if (productivityFilter === 'high-adopt') {
+      return (a.adoption_pct || 0) >= 70;
+    }
+
+    return true;
+  });
 
   // Hierarchical Grouping: Function -> Team -> Agents
   const functionsList = Array.from(new Set(activeAgents.map(a => a.function))).sort();
@@ -150,7 +199,6 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
       setCollapsedTeams(new Set());
     } else if (mode === 'teams') {
       setCollapsedFunctions(new Set());
-      // Collapse all teams so only teams are visible
       const allTeamKeys = new Set<string>();
       hierarchicalData.forEach(f => f.teams.forEach(t => allTeamKeys.add(`${f.functionName}|${t.teamName}`)));
       setCollapsedTeams(allTeamKeys);
@@ -196,6 +244,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             <div style="display:flex; justify-content:space-between; gap:16px;"><span>Net value:</span><b>${formatUSD(raw.net_value)}</b></div>
             <div style="display:flex; justify-content:space-between; gap:16px;"><span>Adoption:</span><b>${formatPct(raw.adoption_pct)}</b></div>
             <div style="display:flex; justify-content:space-between; gap:16px;"><span>Cost:</span><b>${formatUSD(raw.cost)}</b></div>
+            <div style="color: #1713FD; font-size: 11px; margin-top: 4px; font-weight: 600;">Click to view full agent telemetry →</div>
           </div>`;
         }
       },
@@ -264,87 +313,98 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
       ]
     });
 
+    chart.on('click', (params: any) => {
+      if (params.data?.raw) {
+        setInspectAgent(params.data.raw);
+      }
+    });
+
     const handleResize = () => chart.resize();
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [agents, isLight]);
+  }, [agents]);
 
   // Render Eval Pass Rate by Team Lollipop Chart
   useEffect(() => {
-    if (!evalChartRef.current || !agents.length) return;
+    if (!evalChartRef.current || !hierarchicalData.length) return;
     const chart = echarts.init(evalChartRef.current);
 
-    // Group teams and calculate average eval pass rate
-    const teamMap: Record<string, { totalPass: number; count: number }> = {};
-    agents.forEach(a => {
-      if (!teamMap[a.team]) teamMap[a.team] = { totalPass: 0, count: 0 };
-      teamMap[a.team].totalPass += (a.eval_pass_rate || 90);
-      teamMap[a.team].count += 1;
+    const teamEvals: { team: string; passRate: number; color: string }[] = [];
+    hierarchicalData.forEach(func => {
+      func.teams.forEach(t => {
+        const rate = Math.round(t.avgEvalPass);
+        const color = rate >= 92 ? '#2E7D32' : rate >= 88 ? '#E0A100' : '#C62828';
+        teamEvals.push({ team: t.teamName, passRate: rate, color });
+      });
     });
 
-    const teamEntries = Object.entries(teamMap)
-      .map(([team, val]) => ({
-        team,
-        passRate: Math.round(val.totalPass / (val.count || 1))
-      }))
-      .sort((a, b) => a.passRate - b.passRate); // Ascending for horizontal chart
-
-    const yCategories = teamEntries.map(t => t.team);
-    const passValues = teamEntries.map(t => t.passRate);
+    teamEvals.sort((a, b) => a.passRate - b.passRate);
 
     chart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
-        trigger: 'item',
+        trigger: 'axis',
+        axisPointer: { type: 'line' },
         backgroundColor: '#FFFFFF',
         borderColor: '#D6E2FA',
         textStyle: { color: '#1A1A1A', fontSize: 12 },
-        formatter: (params: any) => `<b>${params.name}</b><br/>Eval Pass Rate: <b>${params.value}%</b>`
+        formatter: (params: any) => {
+          const item = params[0];
+          return `<div style="padding: 4px;">
+            <b>${item.name}</b><br/>
+            Eval Pass Rate: <b style="color: ${item.color};">${item.value}%</b>
+          </div>`;
+        }
       },
-      grid: { left: 140, right: 30, top: 30, bottom: 25 },
+      grid: { left: 160, right: 60, top: 20, bottom: 30 },
       xAxis: {
         type: 'value',
         min: 80,
         max: 100,
         axisLabel: { formatter: '{value}%', color: '#475569', fontSize: 11 },
-        splitLine: { lineStyle: { color: '#E6ECF8' } },
-        axisLine: { lineStyle: { color: '#BFD0FF' } }
+        splitLine: { lineStyle: { color: '#E6ECF8' } }
       },
       yAxis: {
         type: 'category',
-        data: yCategories,
+        data: teamEvals.map(t => t.team),
         axisLabel: { color: '#1A1A1A', fontSize: 11.5, fontWeight: 500 },
-        axisLine: { show: false },
+        axisLine: { lineStyle: { color: '#BFD0FF' } },
         axisTick: { show: false }
       },
       series: [
         {
+          name: 'Stem',
+          type: 'bar',
+          barWidth: 2,
+          data: teamEvals.map(t => ({
+            value: t.passRate,
+            itemStyle: { color: '#CBD5E1' }
+          }))
+        },
+        {
           name: 'Eval Pass Rate',
           type: 'scatter',
-          symbolSize: 18,
-          data: passValues.map((v, i) => ({
-            value: v,
-            itemStyle: {
-              color: v >= 92 ? '#2E7D32' : v >= 88 ? '#E0A100' : '#C62828'
-            },
-            label: {
-              show: true,
-              formatter: '{@[0]}%',
-              position: 'right',
-              color: '#1A1A1A',
-              fontSize: 10.5,
-              fontWeight: 600
-            }
+          symbolSize: 10,
+          data: teamEvals.map(t => ({
+            value: t.passRate,
+            itemStyle: { color: t.color }
           })),
+          label: {
+            show: true,
+            position: 'right',
+            formatter: '{@[0]}%',
+            fontSize: 10.5,
+            color: '#475569'
+          },
           markLine: {
             silent: true,
             symbol: 'none',
             data: [
-              { xAxis: 88, lineStyle: { type: 'dashed', color: '#C62828', width: 1.2 }, label: { formatter: '88%', position: 'start', color: '#C62828', fontSize: 10 } },
-              { xAxis: 92, lineStyle: { type: 'solid', color: '#2E7D32', width: 1.2 }, label: { formatter: '92% target', position: 'start', color: '#2E7D32', fontSize: 10 } }
+              { xAxis: 88, lineStyle: { type: 'dashed', color: '#C62828' }, label: { formatter: '88% SLA', color: '#C62828', fontSize: 10 } },
+              { xAxis: 92, lineStyle: { type: 'dashed', color: '#2E7D32' }, label: { formatter: '92% Target', color: '#2E7D32', fontSize: 10 } }
             ]
           }
         }
@@ -357,30 +417,54 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [agents, isLight]);
+  }, [hierarchicalData]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* 4 Governance Action Status Cards */}
+      {/* Month Subtitle Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          background: '#FFFFFF',
+          border: '1.5px solid #D6E2FA',
+          padding: '4px 14px',
+          borderRadius: 20,
+          fontSize: 12.5,
+          fontWeight: 600,
+          color: '#00349B'
+        }}>
+          <span>Reporting Month:</span>
+          <span style={{ fontWeight: 800 }}>Sep 2026 (Live Close)</span>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 12, color: '#64748B' }}>
+            Enterprise Estate: <b style={{ color: '#00349B' }}>{agents.length} Custom Agents Active</b>
+          </span>
+        </div>
+      </div>
+
+      {/* Top 4 Governance Action Summary Cards */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-        gap: 14
+        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+        gap: 16
       }}>
         {(['accelerate', 'optimize', 'intervene', 'experiment'] as const).map(statusKey => {
           const cfg = STATUS_CONFIG[statusKey];
-          const group = statusGroups[statusKey];
+          const group = statusGroups[statusKey] || [];
           const isSelected = selectedStatus === statusKey;
-          const isDim = selectedStatus !== '' && !isSelected;
+          const isDim = selectedStatus && !isSelected;
 
-          const namesSnippet = group.length > 0
-            ? group.slice(0, 4).map(a => a.name.replace(' Agent', '')).join(' · ') + (group.length > 4 ? ` +${group.length - 4} more` : '')
-            : 'No agents currently in this state';
+          const namesSnippet = group.map(a => a.name).slice(0, 3).join(' · ') + (group.length > 3 ? ` +${group.length - 3} more` : '');
 
           return (
             <div
               key={statusKey}
               onClick={() => setSelectedStatus(isSelected ? '' : statusKey)}
+              className="executive-card"
               style={{
                 background: '#FFFFFF',
                 border: `1.5px solid ${isSelected ? '#00349B' : '#D6E2FA'}`,
@@ -444,7 +528,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
         padding: '18px 22px',
         boxShadow: '0 4px 16px rgba(0, 52, 155, 0.08)'
       }}>
-        {/* Table Header Controls */}
+        {/* Table Header & Controls Bar */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -465,7 +549,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
               AI portfolio heatmap by business function
             </h4>
             <div style={{ fontSize: 12.5, color: '#475569', marginTop: 2 }}>
-              Each business function runs several teams, and each team runs several agents · agents are rated on value, adoption, cost and quality · click a row to expand or collapse
+              Each business function runs several teams, and each team runs several agents · agents are rated on value, adoption, cost and quality · click any row to inspect deep-dive telemetry
             </div>
           </div>
 
@@ -479,7 +563,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                 border: '1px solid #D6E2FA',
                 borderRadius: 20,
                 padding: '5px 14px',
-                fontSize: 12.5,
+                fontSize: 12,
                 fontWeight: 700,
                 cursor: 'pointer'
               }}
@@ -494,7 +578,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                 border: '1px solid #D6E2FA',
                 borderRadius: 20,
                 padding: '5px 14px',
-                fontSize: 12.5,
+                fontSize: 12,
                 fontWeight: 700,
                 cursor: 'pointer'
               }}
@@ -509,7 +593,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                 border: '1px solid #D6E2FA',
                 borderRadius: 20,
                 padding: '5px 14px',
-                fontSize: 12.5,
+                fontSize: 12,
                 fontWeight: 700,
                 cursor: 'pointer'
               }}
@@ -519,288 +603,436 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           </div>
         </div>
 
+        {/* Productivity Search & Triage Filter Bar */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 12,
+          padding: '10px 14px',
+          background: '#F8FAFD',
+          border: '1px solid #E2E8F0',
+          borderRadius: 8,
+          marginBottom: 16
+        }}>
+          {/* Search Box */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: '#FFFFFF',
+            border: '1px solid #CBD5E1',
+            borderRadius: 6,
+            padding: '6px 12px',
+            minWidth: 260
+          }}>
+            <Search size={14} color="#64748B" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search agent, team, or capability..."
+              style={{
+                border: 'none',
+                outline: 'none',
+                fontSize: 12,
+                width: '100%',
+                background: 'transparent',
+                color: '#0F172A'
+              }}
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: 0 }}
+              >
+                <X size={13} />
+              </button>
+            )}
+          </div>
+
+          {/* Productivity Quick Chips */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 11.5, fontWeight: 700, color: '#475569' }}>Quick Triage:</span>
+            
+            <button
+              onClick={() => setProductivityFilter('all')}
+              style={{
+                background: productivityFilter === 'all' ? '#00349B' : '#FFFFFF',
+                color: productivityFilter === 'all' ? '#FFFFFF' : '#475569',
+                border: '1px solid #D6E2FA',
+                borderRadius: 4,
+                padding: '4px 10px',
+                fontSize: 11.5,
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              All ({agents.length})
+            </button>
+
+            <button
+              onClick={() => setProductivityFilter('top-drivers')}
+              style={{
+                background: productivityFilter === 'top-drivers' ? '#166534' : '#FFFFFF',
+                color: productivityFilter === 'top-drivers' ? '#FFFFFF' : '#166534',
+                border: '1px solid #BBF7D0',
+                borderRadius: 4,
+                padding: '4px 10px',
+                fontSize: 11.5,
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
+              }}
+            >
+              🚀 Top Value Drivers ($40K+)
+            </button>
+
+            <button
+              onClick={() => setProductivityFilter('intervene')}
+              style={{
+                background: productivityFilter === 'intervene' ? '#991B1B' : '#FFFFFF',
+                color: productivityFilter === 'intervene' ? '#FFFFFF' : '#991B1B',
+                border: '1px solid #FECACA',
+                borderRadius: 4,
+                padding: '4px 10px',
+                fontSize: 11.5,
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
+              }}
+            >
+              ⚠️ Needs Intervention ({statusGroups.intervene.length})
+            </button>
+
+            <button
+              onClick={() => setProductivityFilter('budget-overrun')}
+              style={{
+                background: productivityFilter === 'budget-overrun' ? '#7C2D12' : '#FFFFFF',
+                color: productivityFilter === 'budget-overrun' ? '#FFFFFF' : '#7C2D12',
+                border: '1px solid #FED7AA',
+                borderRadius: 4,
+                padding: '4px 10px',
+                fontSize: 11.5,
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              💸 Budget Overrun
+            </button>
+
+            <button
+              onClick={() => setProductivityFilter('high-adopt')}
+              style={{
+                background: productivityFilter === 'high-adopt' ? '#1E3A8A' : '#FFFFFF',
+                color: productivityFilter === 'high-adopt' ? '#FFFFFF' : '#1E3A8A',
+                border: '1px solid #BFDBFE',
+                borderRadius: 4,
+                padding: '4px 10px',
+                fontSize: 11.5,
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              👥 High Adoption (≥70%)
+            </button>
+          </div>
+        </div>
+
         {/* Tree Table */}
         <div style={{ overflowX: 'auto' }}>
-          <table style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            fontSize: 13,
-            fontFamily: 'Figtree, sans-serif'
-          }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'Satoshi, Figtree, sans-serif' }}>
             <thead>
-              <tr style={{ background: '#00349B', color: '#FFFFFF' }}>
-                <th style={{ textAlign: 'left', padding: '12px 14px', fontSize: 12.5, fontWeight: 700 }}>
-                  Business function / team / agent
-                </th>
-                <th style={{ textAlign: 'right', padding: '12px 12px', fontSize: 12.5, fontWeight: 700 }}>Net value / mo ▼</th>
-                <th style={{ textAlign: 'right', padding: '12px 12px', fontSize: 12.5, fontWeight: 700 }}>Adoption</th>
-                <th style={{ textAlign: 'right', padding: '12px 12px', fontSize: 12.5, fontWeight: 700 }}>Cost vs budget</th>
-                <th style={{ textAlign: 'right', padding: '12px 12px', fontSize: 12.5, fontWeight: 700 }}>Eval pass</th>
-                <th style={{ textAlign: 'right', padding: '12px 12px', fontSize: 12.5, fontWeight: 700 }}>Hours saved</th>
-                <th style={{ textAlign: 'center', padding: '12px 10px', fontSize: 12.5, fontWeight: 700 }}>Incidents</th>
-                <th style={{ textAlign: 'center', padding: '12px 10px', fontSize: 12.5, fontWeight: 700 }}>Days in prod</th>
-                <th style={{ textAlign: 'left', padding: '12px 14px', fontSize: 12.5, fontWeight: 700 }}>Status</th>
+              <tr style={{ background: '#00349B', color: '#FFFFFF', textAlign: 'left', fontSize: 12, fontWeight: 700 }}>
+                <th style={{ padding: '10px 14px' }}>Business function / team / agent</th>
+                <th style={{ textAlign: 'right', padding: '10px 12px' }}>Net value / mo ▼</th>
+                <th style={{ textAlign: 'right', padding: '10px 12px' }}>Adoption</th>
+                <th style={{ textAlign: 'right', padding: '10px 12px' }}>Cost vs budget</th>
+                <th style={{ textAlign: 'right', padding: '10px 12px' }}>Eval pass</th>
+                <th style={{ textAlign: 'right', padding: '10px 12px' }}>Hours saved</th>
+                <th style={{ textAlign: 'center', padding: '10px 10px' }}>Incidents</th>
+                <th style={{ textAlign: 'center', padding: '10px 10px' }}>Days in prod</th>
+                <th style={{ padding: '10px 14px' }}>Status</th>
               </tr>
             </thead>
             <tbody>
-              {hierarchicalData.map(func => {
-                const isFuncCollapsed = collapsedFunctions.has(func.functionName);
+              {hierarchicalData.length === 0 ? (
+                <tr>
+                  <td colSpan={9} style={{ textAlign: 'center', padding: '32px', color: '#64748B' }}>
+                    No agents match current filter criteria.
+                  </td>
+                </tr>
+              ) : (
+                hierarchicalData.map(func => {
+                  const isFuncCollapsed = collapsedFunctions.has(func.functionName);
 
-                return (
-                  <React.Fragment key={func.functionName}>
-                    {/* Function Row */}
-                    <tr
-                      onClick={() => toggleFunction(func.functionName)}
-                      style={{
-                        background: '#EEF4FF',
-                        borderBottom: '1px solid #D6E2FA',
-                        cursor: 'pointer',
-                        fontWeight: 700
-                      }}
-                    >
-                      <td style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span style={{
-                          width: 18,
-                          height: 18,
-                          borderRadius: 4,
-                          background: '#00349B',
-                          color: '#FFFFFF',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 11
-                        }}>
-                          {isFuncCollapsed ? '+' : '−'}
-                        </span>
-                        <div>
-                          <span style={{ fontSize: 14.5, color: '#00349B' }}>{func.functionName}</span>
+                  return (
+                    <React.Fragment key={func.functionName}>
+                      {/* Function Row */}
+                      <tr
+                        onClick={() => toggleFunction(func.functionName)}
+                        style={{
+                          background: '#EEF4FF',
+                          borderBottom: '1px solid #D6E2FA',
+                          cursor: 'pointer',
+                          fontWeight: 700
+                        }}
+                      >
+                        <td style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
                           <span style={{
-                            marginLeft: 8,
-                            fontSize: 11,
-                            background: '#D6E2FA',
-                            color: '#00349B',
-                            padding: '2px 8px',
-                            borderRadius: 12
+                            width: 18,
+                            height: 18,
+                            borderRadius: 4,
+                            background: '#00349B',
+                            color: '#FFFFFF',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 11
                           }}>
-                            {func.agentCount} agents
+                            {isFuncCollapsed ? '+' : '−'}
                           </span>
-                          <span style={{
-                            marginLeft: 6,
-                            fontSize: 11,
-                            background: '#FFFFFF',
-                            color: '#475569',
-                            border: '1px solid #D6E2FA',
-                            padding: '2px 8px',
-                            borderRadius: 12
-                          }}>
-                            {func.teamCount} teams
-                          </span>
-                          {!isFuncCollapsed && (
-                            <div style={{ fontSize: 11, color: '#64748B', fontWeight: 500, marginTop: 2 }}>
-                              {func.teams.map(t => `${t.teamName} (${t.agents.length})`).join(' · ')}
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '10px 12px', color: '#00349B', fontWeight: 800 }}>
-                        {formatUSD(func.totalNetValue)}
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A' }}>
-                        {formatPct(func.avgAdoption)}
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A' }}>
-                        {formatPct(func.costVsBudget)}
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A' }}>
-                        {formatPct(func.avgEvalPass)}
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A' }}>
-                        {Math.round(func.totalHoursSaved).toLocaleString()}
-                      </td>
-                      <td style={{ textAlign: 'center', padding: '10px 10px', color: '#1A1A1A' }}>
-                        {func.totalIncidents}
-                      </td>
-                      <td style={{ textAlign: 'center', padding: '10px 10px', color: '#94a3b8' }}>—</td>
-                      <td style={{ padding: '10px 14px' }}>
-                        <div style={{ display: 'flex', gap: 6, fontSize: 11 }}>
-                          {func.statusCounts.accelerate > 0 && <span style={{ color: '#2E7D32', fontWeight: 700 }}>▲ {func.statusCounts.accelerate}</span>}
-                          {func.statusCounts.optimize > 0 && <span style={{ color: '#E0A100', fontWeight: 700 }}>◆ {func.statusCounts.optimize}</span>}
-                          {func.statusCounts.intervene > 0 && <span style={{ color: '#C62828', fontWeight: 700 }}>■ {func.statusCounts.intervene}</span>}
-                          {func.statusCounts.experiment > 0 && <span style={{ color: '#607D8B', fontWeight: 700 }}>● {func.statusCounts.experiment}</span>}
-                        </div>
-                      </td>
-                    </tr>
-
-                    {/* Team Sub-Rows */}
-                    {!isFuncCollapsed && func.teams.map(team => {
-                      const tKey = `${func.functionName}|${team.teamName}`;
-                      const isTeamCollapsed = collapsedTeams.has(tKey);
-
-                      return (
-                        <React.Fragment key={tKey}>
-                          <tr
-                            onClick={() => toggleTeam(tKey)}
-                            style={{
-                              background: '#F8FAFD',
-                              borderBottom: '1px solid #E6ECF8',
-                              cursor: 'pointer',
-                              fontWeight: 600
-                            }}
-                          >
-                            <td style={{ padding: '8px 14px 8px 36px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <span style={{
-                                width: 16,
-                                height: 16,
-                                borderRadius: 3,
-                                background: '#D6E2FA',
-                                color: '#00349B',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifySelf: 'center',
-                                fontSize: 10,
-                                textAlign: 'center'
-                              }}>
-                                {isTeamCollapsed ? '+' : '−'}
-                              </span>
-                              <span style={{ color: '#1A1A1A', fontSize: 13.5 }}>{team.teamName}</span>
-                              <span style={{
-                                fontSize: 10.5,
-                                background: '#FFFFFF',
-                                border: '1px solid #D6E2FA',
-                                color: '#64748B',
-                                padding: '1px 6px',
-                                borderRadius: 10
-                              }}>
-                                {team.agents.length} agents
-                              </span>
-                            </td>
-                            <td style={{ textAlign: 'right', padding: '8px 12px', color: '#00349B', fontWeight: 700 }}>
-                              {formatUSD(team.totalNetValue)}
-                            </td>
-                            <td style={{ textAlign: 'right', padding: '8px 12px' }}>{formatPct(team.avgAdoption)}</td>
-                            <td style={{ textAlign: 'right', padding: '8px 12px' }}>{formatPct(team.costVsBudget)}</td>
-                            <td style={{ textAlign: 'right', padding: '8px 12px' }}>{formatPct(team.avgEvalPass)}</td>
-                            <td style={{ textAlign: 'right', padding: '8px 12px' }}>{Math.round(team.totalHoursSaved).toLocaleString()}</td>
-                            <td style={{ textAlign: 'center', padding: '8px 10px' }}>{team.totalIncidents}</td>
-                            <td style={{ textAlign: 'center', padding: '8px 10px', color: '#94a3b8' }}>—</td>
-                            <td style={{ padding: '8px 14px' }}>
-                              <div style={{ display: 'flex', gap: 6, fontSize: 11 }}>
-                                {team.statusCounts.accelerate > 0 && <span style={{ color: '#2E7D32', fontWeight: 700 }}>▲ {team.statusCounts.accelerate}</span>}
-                                {team.statusCounts.optimize > 0 && <span style={{ color: '#E0A100', fontWeight: 700 }}>◆ {team.statusCounts.optimize}</span>}
-                                {team.statusCounts.intervene > 0 && <span style={{ color: '#C62828', fontWeight: 700 }}>■ {team.statusCounts.intervene}</span>}
-                                {team.statusCounts.experiment > 0 && <span style={{ color: '#607D8B', fontWeight: 700 }}>● {team.statusCounts.experiment}</span>}
+                          <div>
+                            <span style={{ fontSize: 14.5, color: '#00349B' }}>{func.functionName}</span>
+                            <span style={{
+                              marginLeft: 8,
+                              fontSize: 11,
+                              background: '#D6E2FA',
+                              color: '#00349B',
+                              padding: '2px 8px',
+                              borderRadius: 12
+                            }}>
+                              {func.agentCount} agents
+                            </span>
+                            <span style={{
+                              marginLeft: 6,
+                              fontSize: 11,
+                              background: '#FFFFFF',
+                              color: '#475569',
+                              border: '1px solid #D6E2FA',
+                              padding: '2px 8px',
+                              borderRadius: 12
+                            }}>
+                              {func.teamCount} teams
+                            </span>
+                            <span style={{
+                              marginLeft: 6,
+                              fontSize: 11,
+                              background: '#ECFDF5',
+                              color: '#065F46',
+                              border: '1px solid #A7F3D0',
+                              padding: '2px 8px',
+                              borderRadius: 12,
+                              fontWeight: 700
+                            }}>
+                              ~{Math.round(func.totalHoursSaved / 160)} FTEs Unlocked
+                            </span>
+                            {!isFuncCollapsed && (
+                              <div style={{ fontSize: 11, color: '#64748B', fontWeight: 500, marginTop: 2 }}>
+                                {func.teams.map(t => `${t.teamName} (${t.agents.length})`).join(' · ')}
                               </div>
-                            </td>
-                          </tr>
+                            )}
+                          </div>
+                        </td>
+                        <td style={{ textAlign: 'right', padding: '10px 12px', color: '#00349B', fontWeight: 800 }}>
+                          {formatUSD(func.totalNetValue)}
+                        </td>
+                        <td style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A' }}>
+                          {formatPct(func.avgAdoption)}
+                        </td>
+                        <td style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A' }}>
+                          {formatPct(func.costVsBudget)}
+                        </td>
+                        <td style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A' }}>
+                          {formatPct(func.avgEvalPass)}
+                        </td>
+                        <td style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A' }}>
+                          {Math.round(func.totalHoursSaved).toLocaleString()}
+                        </td>
+                        <td style={{ textAlign: 'center', padding: '10px 10px', color: '#1A1A1A' }}>
+                          {func.totalIncidents}
+                        </td>
+                        <td style={{ textAlign: 'center', padding: '10px 10px', color: '#94a3b8' }}>—</td>
+                        <td style={{ padding: '10px 14px' }}>
+                          <div style={{ display: 'flex', gap: 6, fontSize: 11 }}>
+                            {func.statusCounts.accelerate > 0 && <span style={{ color: '#2E7D32', fontWeight: 700 }}>▲ {func.statusCounts.accelerate}</span>}
+                            {func.statusCounts.optimize > 0 && <span style={{ color: '#E0A100', fontWeight: 700 }}>◆ {func.statusCounts.optimize}</span>}
+                            {func.statusCounts.intervene > 0 && <span style={{ color: '#C62828', fontWeight: 700 }}>■ {func.statusCounts.intervene}</span>}
+                            {func.statusCounts.experiment > 0 && <span style={{ color: '#607D8B', fontWeight: 700 }}>● {func.statusCounts.experiment}</span>}
+                          </div>
+                        </td>
+                      </tr>
 
-                          {/* Agent Leaf Rows */}
-                          {!isTeamCollapsed && team.agents.map(agent => {
-                            const status = agent.action?.toLowerCase() || 'optimize';
-                            const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.optimize;
-                            const ragNet = getRagNet(agent.net_value);
-                            const ragAdopt = getRagAdopt(agent.adoption_pct / 100);
-                            const ragCvb = getRagCvb(agent.cost / (agent.budget || agent.cost || 1));
-                            const ragEval = getRagEval(agent.eval_pass_rate / 100);
+                      {/* Team Sub-Rows */}
+                      {!isFuncCollapsed && func.teams.map(team => {
+                        const tKey = `${func.functionName}|${team.teamName}`;
+                        const isTeamCollapsed = collapsedTeams.has(tKey);
 
-                            const ragDot = (ragType: string) => {
-                              const color = ragType === 'g' ? '#2E7D32' : ragType === 'a' ? '#E0A100' : '#C62828';
-                              return <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: color, marginRight: 5 }} />;
-                            };
+                        return (
+                          <React.Fragment key={tKey}>
+                            <tr
+                              onClick={() => toggleTeam(tKey)}
+                              style={{
+                                background: '#F8FAFD',
+                                borderBottom: '1px solid #E6ECF8',
+                                cursor: 'pointer',
+                                fontWeight: 600
+                              }}
+                            >
+                              <td style={{ padding: '8px 14px 8px 36px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <span style={{
+                                  width: 16,
+                                  height: 16,
+                                  borderRadius: 3,
+                                  background: '#D6E2FA',
+                                  color: '#00349B',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: 10,
+                                  textAlign: 'center'
+                                }}>
+                                  {isTeamCollapsed ? '+' : '−'}
+                                </span>
+                                <span style={{ color: '#1A1A1A', fontSize: 13.5 }}>{team.teamName}</span>
+                                <span style={{
+                                  fontSize: 10.5,
+                                  background: '#FFFFFF',
+                                  border: '1px solid #D6E2FA',
+                                  color: '#64748B',
+                                  padding: '1px 6px',
+                                  borderRadius: 10
+                                }}>
+                                  {team.agents.length} agents
+                                </span>
+                              </td>
+                              <td style={{ textAlign: 'right', padding: '8px 12px', color: '#00349B', fontWeight: 700 }}>
+                                {formatUSD(team.totalNetValue)}
+                              </td>
+                              <td style={{ textAlign: 'right', padding: '8px 12px' }}>{formatPct(team.avgAdoption)}</td>
+                              <td style={{ textAlign: 'right', padding: '8px 12px' }}>{formatPct(team.costVsBudget)}</td>
+                              <td style={{ textAlign: 'right', padding: '8px 12px' }}>{formatPct(team.avgEvalPass)}</td>
+                              <td style={{ textAlign: 'right', padding: '8px 12px' }}>{Math.round(team.totalHoursSaved).toLocaleString()}</td>
+                              <td style={{ textAlign: 'center', padding: '8px 10px' }}>{team.totalIncidents}</td>
+                              <td style={{ textAlign: 'center', padding: '8px 10px', color: '#94a3b8' }}>—</td>
+                              <td style={{ padding: '8px 14px' }}>
+                                <div style={{ display: 'flex', gap: 6, fontSize: 11 }}>
+                                  {team.statusCounts.accelerate > 0 && <span style={{ color: '#2E7D32', fontWeight: 700 }}>▲ {team.statusCounts.accelerate}</span>}
+                                  {team.statusCounts.optimize > 0 && <span style={{ color: '#E0A100', fontWeight: 700 }}>◆ {team.statusCounts.optimize}</span>}
+                                  {team.statusCounts.intervene > 0 && <span style={{ color: '#C62828', fontWeight: 700 }}>■ {team.statusCounts.intervene}</span>}
+                                  {team.statusCounts.experiment > 0 && <span style={{ color: '#607D8B', fontWeight: 700 }}>● {team.statusCounts.experiment}</span>}
+                                </div>
+                              </td>
+                            </tr>
 
-                            return (
-                              <tr
-                                key={agent.id}
-                                onClick={() => onSelectAgent(agent)}
-                                style={{
-                                  borderBottom: '1px solid #F1F4F9',
-                                  cursor: 'pointer',
-                                  transition: 'background 0.15s'
-                                }}
-                                onMouseEnter={e => e.currentTarget.style.background = '#F3F6FC'}
-                                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                              >
-                                <td style={{ padding: '7px 14px 7px 64px', color: '#1A1A1A', fontSize: 13 }}>
-                                  {agent.name}
-                                </td>
-                                <td style={{ textAlign: 'right', padding: '7px 12px', fontWeight: 600 }}>
-                                  {ragDot(ragNet)}
-                                  <span>{formatUSD(agent.net_value)}</span>
-                                </td>
-                                <td style={{ textAlign: 'right', padding: '7px 12px' }}>
-                                  {ragDot(ragAdopt)}
-                                  <span>{formatPct(agent.adoption_pct)}</span>
-                                </td>
-                                <td style={{ textAlign: 'right', padding: '7px 12px' }}>
-                                  {ragDot(ragCvb)}
-                                  <span>{formatPct(agent.budget ? (agent.cost / agent.budget) * 100 : 100)}</span>
-                                </td>
-                                <td style={{ textAlign: 'right', padding: '7px 12px' }}>
-                                  {ragDot(ragEval)}
-                                  <span>{formatPct(agent.eval_pass_rate)}</span>
-                                </td>
-                                <td style={{ textAlign: 'right', padding: '7px 12px', color: '#475569' }}>
-                                  {Math.round(agent.hours_saved || 0).toLocaleString()}
-                                </td>
-                                <td style={{ textAlign: 'center', padding: '7px 10px', color: '#475569' }}>
-                                  {agent.policy_incidents || 0}
-                                </td>
-                                <td style={{ textAlign: 'center', padding: '7px 10px', color: '#64748B', fontSize: 12 }}>
-                                  {agent.days_in_production || 0}
-                                </td>
-                                <td style={{ padding: '7px 14px' }}>
-                                  <span style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 4,
-                                    background: cfg.bgLight,
-                                    color: cfg.textLight,
-                                    border: `1px solid ${cfg.color}33`,
-                                    borderRadius: 14,
-                                    padding: '2px 9px',
-                                    fontSize: 11,
-                                    fontWeight: 700,
-                                    textTransform: 'capitalize'
-                                  }}>
-                                    <span>{cfg.icon}</span>
-                                    <span>{status}</span>
-                                  </span>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </React.Fragment>
-                      );
-                    })}
-                  </React.Fragment>
-                );
-              })}
+                            {/* Agent Leaf Rows */}
+                            {!isTeamCollapsed && team.agents.map(agent => {
+                              const status = agent.action?.toLowerCase() || 'optimize';
+                              const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.optimize;
+                              const ragNet = getRagNet(agent.net_value);
+                              const ragAdopt = getRagAdopt(agent.adoption_pct / 100);
+                              const ragCvb = getRagCvb(agent.cost / (agent.budget || agent.cost || 1));
+                              const ragEval = getRagEval(agent.eval_pass_rate / 100);
+
+                              const ragDot = (ragType: string) => {
+                                const color = ragType === 'g' ? '#2E7D32' : ragType === 'a' ? '#E0A100' : '#C62828';
+                                return <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: color, marginRight: 5 }} />;
+                              };
+
+                              return (
+                                <tr
+                                  key={agent.id}
+                                  onClick={() => {
+                                    setInspectAgent(agent);
+                                    onSelectAgent(agent);
+                                  }}
+                                  style={{
+                                    borderBottom: '1px solid #F1F4F9',
+                                    cursor: 'pointer',
+                                    transition: 'background 0.15s'
+                                  }}
+                                  onMouseEnter={e => e.currentTarget.style.background = '#F3F6FC'}
+                                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                >
+                                  <td style={{ padding: '7px 14px 7px 64px', color: '#1A1A1A', fontSize: 13, fontWeight: 500 }}>
+                                    <span style={{ color: '#00349B', marginRight: 4 }}>•</span> {agent.name}
+                                  </td>
+                                  <td style={{ textAlign: 'right', padding: '7px 12px', fontWeight: 600 }}>
+                                    {ragDot(ragNet)}
+                                    <span>{formatUSD(agent.net_value)}</span>
+                                  </td>
+                                  <td style={{ textAlign: 'right', padding: '7px 12px' }}>
+                                    {ragDot(ragAdopt)}
+                                    <span>{formatPct(agent.adoption_pct)}</span>
+                                  </td>
+                                  <td style={{ textAlign: 'right', padding: '7px 12px' }}>
+                                    {ragDot(ragCvb)}
+                                    <span>{formatPct(agent.budget ? (agent.cost / agent.budget) * 100 : 100)}</span>
+                                  </td>
+                                  <td style={{ textAlign: 'right', padding: '7px 12px' }}>
+                                    {ragDot(ragEval)}
+                                    <span>{formatPct(agent.eval_pass_rate)}</span>
+                                  </td>
+                                  <td style={{ textAlign: 'right', padding: '7px 12px', color: '#475569' }}>
+                                    {Math.round(agent.hours_saved || 0).toLocaleString()}
+                                  </td>
+                                  <td style={{ textAlign: 'center', padding: '7px 10px', color: agent.policy_incidents ? '#C62828' : '#475569', fontWeight: agent.policy_incidents ? 700 : 400 }}>
+                                    {agent.policy_incidents || 0}
+                                  </td>
+                                  <td style={{ textAlign: 'center', padding: '7px 10px', color: '#475569' }}>
+                                    {(agent as any).days_in_production || 180}
+                                  </td>
+                                  <td style={{ padding: '7px 14px' }}>
+                                    <span style={{
+                                      fontSize: 11,
+                                      fontWeight: 700,
+                                      color: cfg.color,
+                                      background: cfg.bgLight,
+                                      padding: '2px 8px',
+                                      borderRadius: 4,
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: 4
+                                    }}>
+                                      <span>{cfg.icon}</span>
+                                      <span>{cfg.label.charAt(0) + cfg.label.slice(1).toLowerCase()}</span>
+                                    </span>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </React.Fragment>
+                        );
+                      })}
+                    </React.Fragment>
+                  );
+                })
+              )}
             </tbody>
-
-            {/* Total Footer */}
             <tfoot>
-              <tr style={{
-                background: '#F0F4FC',
-                borderTop: '2px solid #00349B',
-                fontWeight: 800,
-                color: '#00349B',
-                fontSize: 13
-              }}>
+              {/* Grand Total Row */}
+              <tr style={{ background: '#F8FAFD', borderTop: '2px solid #00349B', fontWeight: 800, color: '#00349B', fontSize: 13 }}>
                 <td style={{ padding: '12px 14px' }}>
-                  Total · {hierarchicalData.length} functions · {totalTeams} teams · {activeAgents.length} agents
+                  Total · {functionsList.length} functions · {totalTeams} teams · {activeAgents.length} agents
                 </td>
                 <td style={{ textAlign: 'right', padding: '12px 12px' }}>{formatUSD(totalNetValue)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 12px' }}>{formatPct(avgTotalAdoption)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 12px' }}>{formatPct(avgTotalCostBudget)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 12px' }}>{formatPct(avgTotalEvalPass)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 12px' }}>{Math.round(totalHoursSaved).toLocaleString()}</td>
-                <td style={{ textAlign: 'center', padding: '12px 10px' }}>{totalIncidents}</td>
-                <td style={{ textAlign: 'center', padding: '12px 10px' }}>—</td>
+                <td style={{ textAlign: 'right', padding: '12px 12px', color: '#1A1A1A' }}>{formatPct(avgTotalAdoption)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 12px', color: '#1A1A1A' }}>{formatPct(avgTotalCostBudget)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 12px', color: '#1A1A1A' }}>{formatPct(avgTotalEvalPass)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 12px', color: '#1A1A1A' }}>{Math.round(totalHoursSaved).toLocaleString()}</td>
+                <td style={{ textAlign: 'center', padding: '12px 10px', color: '#1A1A1A' }}>{totalIncidents}</td>
+                <td style={{ textAlign: 'center', padding: '12px 10px', color: '#94a3b8' }}>—</td>
                 <td style={{ padding: '12px 14px' }}>
-                  <div style={{ display: 'flex', gap: 6, fontSize: 11.5 }}>
-                    <span style={{ color: '#2E7D32' }}>▲ {statusGroups.accelerate.length}</span>
-                    <span style={{ color: '#E0A100' }}>◆ {statusGroups.optimize.length}</span>
-                    <span style={{ color: '#C62828' }}>■ {statusGroups.intervene.length}</span>
-                    <span style={{ color: '#607D8B' }}>● {statusGroups.experiment.length}</span>
+                  <div style={{ display: 'flex', gap: 6, fontSize: 11 }}>
+                    <span style={{ color: '#2E7D32' }}>▲ {activeAgents.filter(a => a.action?.toLowerCase() === 'accelerate').length}</span>
+                    <span style={{ color: '#E0A100' }}>◆ {activeAgents.filter(a => a.action?.toLowerCase() === 'optimize').length}</span>
+                    <span style={{ color: '#C62828' }}>■ {activeAgents.filter(a => a.action?.toLowerCase() === 'intervene').length}</span>
+                    <span style={{ color: '#607D8B' }}>● {activeAgents.filter(a => a.action?.toLowerCase() === 'experiment').length}</span>
                   </div>
                 </td>
               </tr>
@@ -808,79 +1040,257 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           </table>
         </div>
 
-        {/* Legend & Threshold Note */}
+        {/* Legend and Threshold Notes */}
         <div style={{
+          marginTop: 16,
+          paddingTop: 12,
+          borderTop: '1px solid #E6ECF8',
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 12,
-          padding: '12px 4px 6px 4px',
-          borderTop: '1px solid #D6E2FA',
-          marginTop: 10,
-          fontSize: 12,
-          color: '#475569'
+          flexDirection: 'column',
+          gap: 6,
+          fontSize: 11.5,
+          color: '#64748B'
         }}>
-          <div style={{ display: 'flex', gap: 16 }}>
-            <span><span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: '#2E7D32', marginRight: 5 }} />On target</span>
-            <span><span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: '#E0A100', marginRight: 5 }} />Watch</span>
-            <span><span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: '#C62828', marginRight: 5 }} />Off target</span>
-            <span style={{ color: '#94a3b8' }}>"-" means no evals run yet</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <span><span style={{ color: '#2E7D32', fontWeight: 700 }}>●</span> On target</span>
+            <span><span style={{ color: '#E0A100', fontWeight: 700 }}>●</span> Watch</span>
+            <span><span style={{ color: '#C62828', fontWeight: 700 }}>●</span> Off target</span>
+            <span>'—' means no evals run yet / aggregated total</span>
           </div>
-          <div style={{ fontSize: 11.5, color: '#64748B', maxWidth: 880, lineHeight: 1.4 }}>
-            Thresholds per agent: value green ≥ $40K, red &lt; $15K · adoption green ≥ 70% · cost green ≤ 100% of budget, red &gt; 110% · eval pass target 92%, red &lt; 88% · Experiment = under 60 days in production. Rules are applied in order: Experiment → Intervene → Accelerate → Optimize.
+          <div>
+            Thresholds per agent: value green ≥ $40K, red &lt; $15K · adoption green ≥ 70% · cost green ≤ 100% of budget, red &gt; 110% · eval pass target 92%, red &lt; 88% · Experiment = under 60 days in production. Rules applied in order: Experiment → Intervene → Accelerate → Optimize.
           </div>
         </div>
       </div>
 
-      {/* Two Side-by-Side Analytics Charts (Value vs Adoption + Eval Pass Rate) */}
+      {/* Two Side-by-Side Analytics Charts */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '1.4fr 1fr',
-        gap: 16
+        gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))',
+        gap: 18
       }}>
-        {/* Left Chart: Value vs Adoption (Scatter) */}
-        <div style={{
+        {/* Value vs Adoption Scatter Chart */}
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1.5px solid #D6E2FA',
           borderRadius: 12,
-          padding: '16px 18px',
+          padding: '18px 20px',
           boxShadow: '0 4px 16px rgba(0, 52, 155, 0.08)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-            <div>
-              <h4 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#00349B', fontFamily: 'Satoshi, sans-serif' }}>
-                Value vs adoption
-              </h4>
-              <div style={{ fontSize: 12, color: '#64748B', marginTop: 1 }}>
-                One bubble per agent · size = monthly cost · dashed lines = Accelerate thresholds · hover for names
-              </div>
+          <div style={{ marginBottom: 12 }}>
+            <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#00349B', fontFamily: 'Satoshi, sans-serif' }}>
+              Value vs adoption
+            </h4>
+            <div style={{ fontSize: 12, color: '#64748B' }}>
+              One bubble per agent · size = monthly cost · dashed lines = Accelerate thresholds · click any bubble to inspect
             </div>
           </div>
-          <div ref={scatterChartRef} style={{ width: '100%', height: 420 }} />
+          <div ref={scatterChartRef} style={{ height: 380, width: '100%' }} />
         </div>
 
-        {/* Right Chart: Eval Pass Rate by Team (Lollipop) */}
-        <div style={{
+        {/* Eval Pass Rate by Team Lollipop Chart */}
+        <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1.5px solid #D6E2FA',
           borderRadius: 12,
-          padding: '16px 18px',
+          padding: '18px 20px',
           boxShadow: '0 4px 16px rgba(0, 52, 155, 0.08)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-            <div>
-              <h4 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#00349B', fontFamily: 'Satoshi, sans-serif' }}>
-                Eval pass rate by team
-              </h4>
-              <div style={{ fontSize: 12, color: '#64748B', marginTop: 1 }}>
-                Axis starts at 80% · below 88% triggers Intervene · hover for each agent
+          <div style={{ marginBottom: 12 }}>
+            <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#00349B', fontFamily: 'Satoshi, sans-serif' }}>
+              Eval pass rate by team
+            </h4>
+            <div style={{ fontSize: 12, color: '#64748B' }}>
+              Axis starts at 80% · below 88% triggers Intervene · hover for each team average
+            </div>
+          </div>
+          <div ref={evalChartRef} style={{ height: 380, width: '100%' }} />
+        </div>
+      </div>
+
+      {/* Slide-over Agent Telemetry Profile Drawer */}
+      {inspectAgent && (
+        <div className="executive-drawer-overlay" onClick={() => setInspectAgent(null)}>
+          <div className="executive-drawer" onClick={e => e.stopPropagation()}>
+            {/* Drawer Header */}
+            <div style={{
+              padding: '20px 24px',
+              borderBottom: '1px solid #E2E8F0',
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              background: '#F8FAFC'
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <span className={`badge-status badge-${inspectAgent.action?.toLowerCase() || 'optimize'}`}>
+                    {(inspectAgent.action || 'OPTIMIZE').toUpperCase()}
+                  </span>
+                  <span style={{ fontSize: 12, color: '#64748B' }}>
+                    {inspectAgent.function} · {inspectAgent.team}
+                  </span>
+                </div>
+                <h2 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                  {inspectAgent.name}
+                </h2>
+                <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>
+                  Production Age: <b>{(inspectAgent as any).days_in_production || 180} days</b> · Tier-1 Agent
+                </div>
+              </div>
+              <button 
+                onClick={() => setInspectAgent(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#64748B',
+                  cursor: 'pointer',
+                  padding: 4
+                }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Drawer Body */}
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {/* Productivity & Labor Savings Card */}
+              <div style={{
+                background: 'linear-gradient(135deg, #EEF4FF 0%, #E0EAFF 100%)',
+                border: '1px solid #BFDBFE',
+                borderRadius: 8,
+                padding: 16
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <Clock size={16} color="#00349B" />
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#00349B' }}>
+                    Productivity Impact &amp; Labor Capacity
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 8 }}>
+                  <div>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: '#00349B' }}>
+                      {Math.round(inspectAgent.hours_saved || 0).toLocaleString()} hrs / mo
+                    </div>
+                    <div style={{ fontSize: 12, color: '#475569' }}>
+                      Workforce time returned to core strategic operations
+                    </div>
+                  </div>
+                  <div style={{
+                    background: '#FFFFFF',
+                    border: '1px solid #93C5FD',
+                    padding: '4px 10px',
+                    borderRadius: 6,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: '#00349B'
+                  }}>
+                    ~{((inspectAgent.hours_saved || 0) / 160).toFixed(1)} FTE Equiv.
+                  </div>
+                </div>
+              </div>
+
+              {/* Metrics Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>NET AI VALUE</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#00349B', marginTop: 2 }}>
+                    {formatUSD(inspectAgent.net_value)}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
+                    Gross: {formatUSD(inspectAgent.gross_value || inspectAgent.net_value + inspectAgent.cost)}
+                  </div>
+                </div>
+
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>COST VS BUDGET</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: inspectAgent.budget && inspectAgent.cost > inspectAgent.budget ? '#C62828' : '#0F172A', marginTop: 2 }}>
+                    {formatUSD(inspectAgent.cost)}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
+                    Budget: {formatUSD(inspectAgent.budget || inspectAgent.cost)}
+                  </div>
+                </div>
+
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>WORKFORCE ADOPTION</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', marginTop: 2 }}>
+                    {inspectAgent.adoption_pct}%
+                  </div>
+                  <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
+                    {inspectAgent.active_users || Math.round((inspectAgent.adoption_pct / 100) * 320)} of {inspectAgent.licensed_users || 320} users
+                  </div>
+                </div>
+
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>EVAL PASS RATE</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: inspectAgent.eval_pass_rate < 92 ? '#C62828' : '#16A34A', marginTop: 2 }}>
+                    {inspectAgent.eval_pass_rate}%
+                  </div>
+                  <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
+                    Target: 92% SLA threshold
+                  </div>
+                </div>
+              </div>
+
+              {/* Governance & Action Guidance */}
+              <div style={{
+                background: inspectAgent.action?.toLowerCase() === 'accelerate' ? '#F0FDF4' :
+                            inspectAgent.action?.toLowerCase() === 'intervene' ? '#FEF2F2' : '#F8FAFC',
+                border: `1px solid ${
+                  inspectAgent.action?.toLowerCase() === 'accelerate' ? '#BBF7D0' :
+                  inspectAgent.action?.toLowerCase() === 'intervene' ? '#FECACA' : '#E2E8F0'
+                }`,
+                borderRadius: 8,
+                padding: 16
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <Sparkles size={16} color={
+                    inspectAgent.action?.toLowerCase() === 'accelerate' ? '#16A34A' :
+                    inspectAgent.action?.toLowerCase() === 'intervene' ? '#DC2626' : '#00349B'
+                  } />
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>
+                    Governance Decision Guidance
+                  </span>
+                </div>
+                <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: '#334155' }}>
+                  {inspectAgent.action?.toLowerCase() === 'accelerate' && (
+                    'High-yield productivity winner. Cleared both $40K net value and 70% adoption thresholds with strong eval accuracy. Recommended action: Authorize immediate license expansion to adjacent departments.'
+                  )}
+                  {inspectAgent.action?.toLowerCase() === 'intervene' && (
+                    'Action required. Agent triggers governance thresholds with costs exceeding budget or eval accuracy under 88% SLA. Recommended action: Audit prompt tokens, enforce prompt caching, and rerun the automated eval harness.'
+                  )}
+                  {inspectAgent.action?.toLowerCase() === 'experiment' && (
+                    'Pilot phase (< 60 days in production). Model undergoing early validation. Recommended action: Establish baseline accuracy benchmarks before opening general company rollout.'
+                  )}
+                  {inspectAgent.action?.toLowerCase() === 'optimize' && (
+                    'Stable production performance. Solid adoption and positive value return. Recommended action: Continue prompt optimization and periodic eval checks.'
+                  )}
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <button
+                  onClick={() => setInspectAgent(null)}
+                  style={{
+                    background: '#00349B',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '10px 16px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    textAlign: 'center'
+                  }}
+                >
+                  Close Telemetry Inspector
+                </button>
               </div>
             </div>
           </div>
-          <div ref={evalChartRef} style={{ width: '100%', height: 420 }} />
         </div>
-      </div>
+      )}
     </div>
   );
 };
