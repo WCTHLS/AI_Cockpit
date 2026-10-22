@@ -69,7 +69,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
   const [productivityFilter, setProductivityFilter] = useState<'all' | 'top-drivers' | 'intervene' | 'budget-overrun' | 'high-adopt'>('all');
 
   // Agent Telemetry Profile Drawer State
-  const [inspectAgent, setInspectAgent] = useState<AgentScorecardItem | null>(null);
+  
 
   const scatterChartRef = useRef<HTMLDivElement>(null);
   const evalChartRef = useRef<HTMLDivElement>(null);
@@ -321,7 +321,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
     chart.on('click', (params: any) => {
       if (params.data?.raw) {
-        setInspectAgent(params.data.raw);
+        onSelectAgent(params.data.raw);
       }
     });
 
@@ -534,7 +534,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                     key={a.id}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setInspectAgent(a);
+                      onSelectAgent(a);
                     }}
                     style={{
                       fontSize: 11,
@@ -992,7 +992,6 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                 <tr
                                   key={agent.id}
                                   onClick={() => {
-                                    setInspectAgent(agent);
                                     onSelectAgent(agent);
                                   }}
                                   style={{
@@ -1152,189 +1151,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
         </div>
       </div>
 
-      {/* Slide-over Agent Telemetry Profile Drawer */}
-      {inspectAgent && (
-        <div className="executive-drawer-overlay" onClick={() => setInspectAgent(null)}>
-          <div className="executive-drawer" onClick={e => e.stopPropagation()}>
-            {/* Drawer Header */}
-            <div style={{
-              padding: '20px 24px',
-              borderBottom: '1px solid #E2E8F0',
-              display: 'flex',
-              alignItems: 'flex-start',
-              justifyContent: 'space-between',
-              background: '#F8FAFC'
-            }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  <span className={`badge-status badge-${inspectAgent.action?.toLowerCase() || 'optimize'}`}>
-                    {(inspectAgent.action || 'OPTIMIZE').toUpperCase()}
-                  </span>
-                  <span style={{ fontSize: 12, color: '#64748B' }}>
-                    {inspectAgent.function} · {inspectAgent.team}
-                  </span>
-                </div>
-                <h2 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                  {inspectAgent.name}
-                </h2>
-                <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>
-                  Production Age: <b>{(inspectAgent as any).days_in_production || 180} days</b> · Tier-1 Agent
-                </div>
-              </div>
-              <button 
-                onClick={() => setInspectAgent(null)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#64748B',
-                  cursor: 'pointer',
-                  padding: 4
-                }}
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* Drawer Body */}
-            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-              {/* Productivity & Labor Savings Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #EEF4FF 0%, #E0EAFF 100%)',
-                border: '1px solid #BFDBFE',
-                borderRadius: 8,
-                padding: 16
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                  <Clock size={16} color="#00349B" />
-                  <span style={{ fontSize: 13, fontWeight: 800, color: '#00349B' }}>
-                    Productivity Impact &amp; Labor Capacity
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 8 }}>
-                  <div>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: '#00349B' }}>
-                      {Math.round(inspectAgent.hours_saved || 0).toLocaleString()} hrs / mo
-                    </div>
-                    <div style={{ fontSize: 12, color: '#475569' }}>
-                      Workforce time returned to core strategic operations
-                    </div>
-                  </div>
-                  <div style={{
-                    background: '#FFFFFF',
-                    border: '1px solid #93C5FD',
-                    padding: '4px 10px',
-                    borderRadius: 6,
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: '#00349B'
-                  }}>
-                    ~{((inspectAgent.hours_saved || 0) / 160).toFixed(1)} FTE Equiv.
-                  </div>
-                </div>
-              </div>
-
-              {/* Metrics Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>NET AI VALUE</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: '#00349B', marginTop: 2 }}>
-                    {formatUSD(inspectAgent.net_value)}
-                  </div>
-                  <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
-                    Gross: {formatUSD(inspectAgent.gross_value || inspectAgent.net_value + inspectAgent.cost)}
-                  </div>
-                </div>
-
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>COST VS BUDGET</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: inspectAgent.budget && inspectAgent.cost > inspectAgent.budget ? '#C62828' : '#0F172A', marginTop: 2 }}>
-                    {formatUSD(inspectAgent.cost)}
-                  </div>
-                  <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
-                    Budget: {formatUSD(inspectAgent.budget || inspectAgent.cost)}
-                  </div>
-                </div>
-
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>WORKFORCE ADOPTION</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', marginTop: 2 }}>
-                    {inspectAgent.adoption_pct}%
-                  </div>
-                  <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
-                    {inspectAgent.active_users || Math.round((inspectAgent.adoption_pct / 100) * 320)} of {inspectAgent.licensed_users || 320} users
-                  </div>
-                </div>
-
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: 12, borderRadius: 6 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>EVAL PASS RATE</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: inspectAgent.eval_pass_rate < 92 ? '#C62828' : '#16A34A', marginTop: 2 }}>
-                    {inspectAgent.eval_pass_rate}%
-                  </div>
-                  <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
-                    Target: 92% SLA threshold
-                  </div>
-                </div>
-              </div>
-
-              {/* Governance & Action Guidance */}
-              <div style={{
-                background: inspectAgent.action?.toLowerCase() === 'accelerate' ? '#F0FDF4' :
-                            inspectAgent.action?.toLowerCase() === 'intervene' ? '#FEF2F2' : '#F8FAFC',
-                border: `1px solid ${
-                  inspectAgent.action?.toLowerCase() === 'accelerate' ? '#BBF7D0' :
-                  inspectAgent.action?.toLowerCase() === 'intervene' ? '#FECACA' : '#E2E8F0'
-                }`,
-                borderRadius: 8,
-                padding: 16
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                  <Sparkles size={16} color={
-                    inspectAgent.action?.toLowerCase() === 'accelerate' ? '#16A34A' :
-                    inspectAgent.action?.toLowerCase() === 'intervene' ? '#DC2626' : '#00349B'
-                  } />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>
-                    Governance Decision Guidance
-                  </span>
-                </div>
-                <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: '#334155' }}>
-                  {inspectAgent.action?.toLowerCase() === 'accelerate' && (
-                    'High-yield productivity winner. Cleared both $40K net value and 70% adoption thresholds with strong eval accuracy. Recommended action: Authorize immediate license expansion to adjacent departments.'
-                  )}
-                  {inspectAgent.action?.toLowerCase() === 'intervene' && (
-                    'Action required. Agent triggers governance thresholds with costs exceeding budget or eval accuracy under 88% SLA. Recommended action: Audit prompt tokens, enforce prompt caching, and rerun the automated eval harness.'
-                  )}
-                  {inspectAgent.action?.toLowerCase() === 'experiment' && (
-                    'Pilot phase (< 60 days in production). Model undergoing early validation. Recommended action: Establish baseline accuracy benchmarks before opening general company rollout.'
-                  )}
-                  {inspectAgent.action?.toLowerCase() === 'optimize' && (
-                    'Stable production performance. Solid adoption and positive value return. Recommended action: Continue prompt optimization and periodic eval checks.'
-                  )}
-                </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <button
-                  onClick={() => setInspectAgent(null)}
-                  style={{
-                    background: '#00349B',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: 6,
-                    padding: '10px 16px',
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    textAlign: 'center'
-                  }}
-                >
-                  Close Telemetry Inspector
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 };

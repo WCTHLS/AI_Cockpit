@@ -11,7 +11,7 @@ import {
   Zap, 
   CheckCircle2, 
   Sparkles,
-  ArrowRight,
+  Clock,
   ShieldCheck
 } from 'lucide-react';
 import { AgentScorecardItem } from '../types';
@@ -23,7 +23,7 @@ interface AgentDetailModalProps {
   theme?: 'dark' | 'light';
 }
 
-export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClose, theme = 'dark' }) => {
+export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClose, theme = 'light' }) => {
   if (!agent) return null;
 
   const isLight = theme === 'light';
@@ -32,7 +32,7 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
   const [activeRemediation, setActiveRemediation] = useState<string | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const [remediationSuccess, setRemediationSuccess] = useState<string | null>(null);
-  const [agentStatus, setAgentStatus] = useState<string>(agent.action);
+  const [agentStatus, setAgentStatus] = useState<string>(agent.action || 'optimize');
 
   const handleExecuteRemediation = (actionKey: string, successMessage: string) => {
     setIsExecuting(true);
@@ -51,466 +51,405 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: isLight ? 'rgba(11, 31, 77, 0.55)' : 'rgba(4, 7, 18, 0.88)',
-      backdropFilter: isLight ? 'none' : 'blur(8px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-      padding: 20
-    }}
-    onClick={onClose}
-    >
-      <div style={{
-        background: isLight ? '#FFFFFF' : 'rgba(16, 26, 51, 0.98)',
-        border: isLight ? '2px solid #00349B' : '1px solid rgba(0, 210, 255, 0.3)',
-        borderRadius: 16,
-        maxWidth: 780,
-        width: '100%',
-        boxShadow: isLight ? '0 16px 40px rgba(0, 52, 155, 0.2)' : '0 20px 50px rgba(0,0,0,0.6)',
-        padding: 28,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 20,
-        maxHeight: '92vh',
-        overflowY: 'auto'
-      }}
-      onClick={e => e.stopPropagation()}
+    <div className="executive-drawer-overlay" onClick={onClose}>
+      <div 
+        className="executive-drawer"
+        style={{
+          width: 560,
+          background: isLight ? '#FFFFFF' : '#0B132B',
+          color: isLight ? '#0F172A' : '#F8FAFC',
+          borderLeft: isLight ? '1.5px solid #CBD5E1' : '1px solid #1E293B'
+        }}
+        onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        {/* Drawer Header */}
+        <div style={{
+          padding: '20px 24px',
+          borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          background: isLight ? '#F8FAFC' : '#070D1E'
+        }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: isLight ? '#00349B' : '#fff', margin: 0 }}>
-                {agent.name}
-              </h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
               <span className={`badge-status badge-${agentStatus}`} style={{ textTransform: 'uppercase', fontWeight: 800 }}>
                 {agentStatus}
               </span>
+              <span style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8' }}>
+                {agent.function} • {agent.team}
+              </span>
             </div>
-            <p style={{ fontSize: 13, color: isLight ? '#64748B' : 'var(--text-muted)', marginTop: 4, margin: '4px 0 0 0' }}>
-              {agent.team} • {agent.function} • {agent.days_in_production} days in production
-            </p>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC', margin: 0 }}>
+              {agent.name}
+            </h2>
+            <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8', marginTop: 3 }}>
+              Production Age: <b>{(agent as any).days_in_production || 180} days</b> • Tier-1 Enterprise Agent
+            </div>
           </div>
-          <button
+          <button 
             onClick={onClose}
+            title="Close Drawer"
             style={{
-              background: isLight ? '#F3F6FC' : 'rgba(255, 255, 255, 0.08)',
-              border: isLight ? '1px solid #D6E2FA' : 'none',
-              color: isLight ? '#00349B' : 'var(--text-muted)',
-              borderRadius: 8,
-              padding: 6,
-              cursor: 'pointer'
+              background: 'none',
+              border: 'none',
+              color: isLight ? '#64748B' : '#94A3B8',
+              cursor: 'pointer',
+              padding: 4,
+              borderRadius: 6
             }}
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* 4 Quick Metric Tiles */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-          gap: 12
-        }}>
+        {/* Drawer Body */}
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 18, overflowY: 'auto' }}>
+          {/* Productivity Impact & Labor Capacity Card */}
           <div style={{
-            background: isLight ? '#F8FAFC' : 'rgba(0,0,0,0.3)',
-            border: isLight ? '1px solid #E2E8F0' : 'none',
-            padding: 14,
-            borderRadius: 10
+            background: isLight 
+              ? 'linear-gradient(135deg, #EEF4FF 0%, #E0EAFF 100%)' 
+              : 'linear-gradient(135deg, #0F1E3D 0%, #071530 100%)',
+            border: isLight ? '1px solid #BFDBFE' : '1px solid #1E3A8A',
+            borderRadius: 10,
+            padding: 16
           }}>
-            <span style={{ fontSize: 11, color: isLight ? '#475569' : 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>
-              Monthly Net Value
-            </span>
-            <div style={{ fontSize: 20, fontWeight: 800, color: isLight ? '#00349B' : '#00d2ff', marginTop: 4 }}>
-              {formatUSD(agent.net_value)}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <Clock size={16} color={isLight ? '#00349B' : '#60A5FA'} />
+              <span style={{ fontSize: 13, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA' }}>
+                Productivity Impact &amp; Labor Capacity
+              </span>
             </div>
-          </div>
-          <div style={{
-            background: isLight ? '#F8FAFC' : 'rgba(0,0,0,0.3)',
-            border: isLight ? '1px solid #E2E8F0' : 'none',
-            padding: 14,
-            borderRadius: 10
-          }}>
-            <span style={{ fontSize: 11, color: isLight ? '#475569' : 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>
-              Hours Saved
-            </span>
-            <div style={{ fontSize: 20, fontWeight: 800, color: isLight ? '#0F172A' : '#fff', marginTop: 4 }}>
-              {agent.hours_saved.toLocaleString()}h
-            </div>
-          </div>
-          <div style={{
-            background: isLight ? '#F8FAFC' : 'rgba(0,0,0,0.3)',
-            border: isLight ? '1px solid #E2E8F0' : 'none',
-            padding: 14,
-            borderRadius: 10
-          }}>
-            <span style={{ fontSize: 11, color: isLight ? '#475569' : 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>
-              Incurred Cost
-            </span>
-            <div style={{ fontSize: 20, fontWeight: 800, color: isLight ? '#C62828' : '#f43f5e', marginTop: 4 }}>
-              {formatUSD(agent.cost)}
-            </div>
-          </div>
-          <div style={{
-            background: isLight ? '#F8FAFC' : 'rgba(0,0,0,0.3)',
-            border: isLight ? '1px solid #E2E8F0' : 'none',
-            padding: 14,
-            borderRadius: 10
-          }}>
-            <span style={{ fontSize: 11, color: isLight ? '#475569' : 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>
-              Adoption Rate
-            </span>
-            <div style={{ fontSize: 20, fontWeight: 800, color: isLight ? '#16A34A' : '#10b981', marginTop: 4 }}>
-              {agent.adoption_pct}%
-            </div>
-          </div>
-        </div>
-
-        {/* Quality & Telemetry Section */}
-        <div style={{
-          background: isLight ? '#F8FAFC' : 'rgba(0,0,0,0.2)',
-          padding: 18,
-          borderRadius: 12,
-          border: isLight ? '1px solid #E2E8F0' : '1px solid var(--border-subtle)'
-        }}>
-          <h4 style={{ fontSize: 14, fontWeight: 800, marginBottom: 12, color: isLight ? '#00349B' : 'var(--accent-cyan)', margin: '0 0 12px 0' }}>
-            Evaluation &amp; Governance Telemetry
-          </h4>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <div>
-              <span style={{ fontSize: 12, color: isLight ? '#64748B' : 'var(--text-muted)' }}>Automated Eval Runs / Passed:</span>
-              <div style={{ fontSize: 15, fontWeight: 700, color: isLight ? '#0F172A' : 'var(--text-main)', marginTop: 2 }}>
-                {agent.eval_passed} / {agent.eval_runs} ({formatPct(agent.eval_pass_rate)})
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 8 }}>
+              <div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: isLight ? '#00349B' : '#93C5FD' }}>
+                  {Math.round(agent.hours_saved || 0).toLocaleString()} hrs / mo
+                </div>
+                <div style={{ fontSize: 12, color: isLight ? '#475569' : '#94A3B8' }}>
+                  Workforce time returned to core strategic operations
+                </div>
+              </div>
+              <div style={{
+                background: isLight ? '#FFFFFF' : '#0B132B',
+                border: isLight ? '1px solid #93C5FD' : '1px solid #1E3A8A',
+                padding: '4px 10px',
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 700,
+                color: isLight ? '#00349B' : '#60A5FA'
+              }}>
+                ~{((agent.hours_saved || 0) / 160).toFixed(1)} FTE Equiv.
               </div>
             </div>
-            <div>
-              <span style={{ fontSize: 12, color: isLight ? '#64748B' : 'var(--text-muted)' }}>Policy &amp; Safety Incidents:</span>
+          </div>
+
+          {/* Metrics Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{
+              background: isLight ? '#F8FAFC' : '#0F172A',
+              border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+              padding: 12,
+              borderRadius: 8
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#64748B' : '#94A3B8' }}>NET AI VALUE</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: isLight ? '#00349B' : '#38BDF8', marginTop: 2 }}>
+                {formatUSD(agent.net_value)}
+              </div>
+              <div style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>
+                Gross: {formatUSD(agent.gross_value || (agent.net_value + agent.cost))}
+              </div>
+            </div>
+
+            <div style={{
+              background: isLight ? '#F8FAFC' : '#0F172A',
+              border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+              padding: 12,
+              borderRadius: 8
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#64748B' : '#94A3B8' }}>COST VS BUDGET</div>
               <div style={{
-                fontSize: 15,
-                fontWeight: 700,
-                color: agent.policy_incidents > 0 ? (isLight ? '#C62828' : '#f87171') : (isLight ? '#16A34A' : '#34d399'),
+                fontSize: 18,
+                fontWeight: 800,
+                color: agent.budget && agent.cost > agent.budget ? (isLight ? '#C62828' : '#F87171') : (isLight ? '#0F172A' : '#F8FAFC'),
                 marginTop: 2
               }}>
-                {agent.policy_incidents} logged {agent.policy_incidents > 0 ? '(Active Watch)' : '(Zero Violations)'}
+                {formatUSD(agent.cost)}
+              </div>
+              <div style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>
+                Budget: {formatUSD(agent.budget || agent.cost)} ({agent.budget ? ((agent.cost / agent.budget) * 100).toFixed(0) : 100}%)
               </div>
             </div>
-            <div>
-              <span style={{ fontSize: 12, color: isLight ? '#64748B' : 'var(--text-muted)' }}>Active Users vs Licensed:</span>
-              <div style={{ fontSize: 15, fontWeight: 700, color: isLight ? '#0F172A' : 'var(--text-main)', marginTop: 2 }}>
-                {agent.active_users} active / {agent.licensed_users} licensed
-              </div>
-            </div>
-            <div>
-              <span style={{ fontSize: 12, color: isLight ? '#64748B' : 'var(--text-muted)' }}>Allocated Budget Plan:</span>
-              <div style={{ fontSize: 15, fontWeight: 700, color: isLight ? '#0F172A' : 'var(--text-main)', marginTop: 2 }}>
-                {formatUSD(agent.budget)} ({((agent.cost / agent.budget) * 100).toFixed(0)}% consumed)
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Diagnosis & Suggested Action Posture */}
-        <div style={{
-          background: isIntervene 
-            ? (isLight ? '#FEF2F2' : 'rgba(239, 68, 68, 0.1)') 
-            : (isLight ? '#EFF6FF' : 'rgba(0, 210, 255, 0.08)'),
-          border: `1.5px solid ${isIntervene ? (isLight ? '#FECACA' : 'rgba(239, 68, 68, 0.35)') : (isLight ? '#BFDBFE' : 'rgba(0, 210, 255, 0.25)')}`,
-          padding: 16,
-          borderRadius: 10
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            {isIntervene ? (
-              <AlertTriangle size={18} color={isLight ? '#DC2626' : '#f87171'} />
-            ) : (
-              <CheckCircle size={18} color={isLight ? '#00349B' : 'var(--accent-cyan)'} />
-            )}
-            <b style={{ color: isIntervene ? (isLight ? '#DC2626' : '#f87171') : (isLight ? '#00349B' : 'var(--accent-cyan)') }}>
-              {isIntervene ? 'Action Required: Intervention Governance Protocol' : 'Action Posture Guidance'}
-            </b>
-          </div>
-          <p style={{ fontSize: 13, color: isLight ? '#334155' : 'var(--text-main)', margin: '4px 0 0 0', lineHeight: 1.45 }}>
-            {agent.suggested_action || (isIntervene ? 'Eval pass rate has dipped below the 88% threshold with token overages. Executive intervention recommended.' : 'Performance is within target operational and financial bounds.')}
-          </p>
-        </div>
+            <div style={{
+              background: isLight ? '#F8FAFC' : '#0F172A',
+              border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+              padding: 12,
+              borderRadius: 8
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#64748B' : '#94A3B8' }}>WORKFORCE ADOPTION</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC', marginTop: 2 }}>
+                {agent.adoption_pct}%
+              </div>
+              <div style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>
+                {agent.active_users || 0} of {agent.licensed_users || 200} licensed
+              </div>
+            </div>
 
-        {/* ACTIVE REMEDIATION ACTIONS CONSOLE */}
-        <div style={{
-          background: isLight ? '#FFFFFF' : '#0B132B',
-          border: isLight ? '1.5px solid #CBD5E1' : '1px solid #1E293B',
-          borderRadius: 12,
-          padding: 18,
-          boxShadow: isLight ? '0 4px 12px rgba(0,0,0,0.03)' : 'none'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              background: isLight ? '#F8FAFC' : '#0F172A',
+              border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+              padding: 12,
+              borderRadius: 8
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#64748B' : '#94A3B8' }}>EVAL PASS RATE</div>
               <div style={{
-                width: 28,
-                height: 28,
-                borderRadius: 6,
-                background: isIntervene ? '#FEE2E2' : '#EFF6FF',
-                color: isIntervene ? '#DC2626' : '#00349B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+                fontSize: 18,
+                fontWeight: 800,
+                color: agent.eval_pass_rate < 92 ? (isLight ? '#C62828' : '#F87171') : (isLight ? '#16A34A' : '#34D399'),
+                marginTop: 2
               }}>
-                <ShieldAlert size={16} />
+                {agent.eval_pass_rate}%
               </div>
-              <div>
-                <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC' }}>
-                  One-Click Governance Remediation Console
-                </h4>
-                <div style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8' }}>
-                  Execute automated operational guardrails directly from the Executive Cockpit
+              <div style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>
+                {agent.eval_passed || 296} / {agent.eval_runs || 300} passed
+              </div>
+            </div>
+          </div>
+
+          {/* Governance & Action Guidance */}
+          <div style={{
+            background: isIntervene ? (isLight ? '#FEF2F2' : '#450A0A') : (isLight ? '#F0FDF4' : '#064E3B'),
+            border: `1px solid ${isIntervene ? (isLight ? '#FECACA' : '#7F1D1D') : (isLight ? '#BBF7D0' : '#065F46')}`,
+            borderRadius: 8,
+            padding: 14
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              {isIntervene ? (
+                <AlertTriangle size={16} color={isLight ? '#DC2626' : '#F87171'} />
+              ) : (
+                <CheckCircle size={16} color={isLight ? '#16A34A' : '#34D399'} />
+              )}
+              <span style={{ fontSize: 13, fontWeight: 700, color: isIntervene ? (isLight ? '#DC2626' : '#F87171') : (isLight ? '#16A34A' : '#34D399') }}>
+                Governance Decision Guidance
+              </span>
+            </div>
+            <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.45, color: isLight ? '#334155' : '#E2E8F0' }}>
+              {agent.suggested_action || (isIntervene ? 'Action required. Agent triggers governance thresholds with costs exceeding budget or eval accuracy under 88% SLA.' : 'Stable production performance. Solid adoption and positive value return. Continue periodic eval checks.')}
+            </p>
+          </div>
+
+          {/* ACTIVE REMEDIATION ACTIONS CONSOLE */}
+          <div style={{
+            background: isLight ? '#FFFFFF' : '#0B132B',
+            border: isLight ? '1.5px solid #CBD5E1' : '1px solid #1E293B',
+            borderRadius: 10,
+            padding: 16
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <ShieldAlert size={16} color={isIntervene ? '#DC2626' : '#00349B'} />
+                <div>
+                  <h4 style={{ margin: 0, fontSize: 13.5, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC' }}>
+                    One-Click Governance Remediation Console
+                  </h4>
                 </div>
               </div>
+
+              {agentStatus !== (agent.action || 'optimize') && (
+                <span style={{
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                  padding: '2px 7px',
+                  borderRadius: 4,
+                  background: '#ECFDF5',
+                  color: '#059669',
+                  border: '1px solid #A7F3D0'
+                }}>
+                  Applied
+                </span>
+              )}
             </div>
 
-            {agentStatus !== agent.action && (
-              <span style={{
-                fontSize: 11,
-                fontWeight: 700,
-                padding: '3px 8px',
+            {remediationSuccess && (
+              <div style={{
+                padding: '10px 12px',
                 borderRadius: 6,
                 background: '#ECFDF5',
-                color: '#059669',
-                border: '1px solid #A7F3D0'
+                border: '1px solid #A7F3D0',
+                color: '#065F46',
+                fontSize: 12,
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                marginBottom: 12
               }}>
-                Remediation Applied
-              </span>
+                <CheckCircle2 size={15} color="#059669" style={{ flexShrink: 0 }} />
+                <span>{remediationSuccess}</span>
+              </div>
+            )}
+
+            {isIntervene ? (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <button
+                  onClick={() => handleExecuteRemediation(
+                    'quarantine',
+                    `🛡️ Quarantined: ${agent.name} traffic routed to supervisor queue.`
+                  )}
+                  disabled={isExecuting || agentStatus === 'quarantined'}
+                  style={{
+                    background: isLight ? '#FEF2F2' : '#450A0A',
+                    border: isLight ? '1px solid #FECACA' : '1px solid #7F1D1D',
+                    color: isLight ? '#DC2626' : '#FCA5A5',
+                    borderRadius: 6,
+                    padding: '10px 12px',
+                    textAlign: 'left',
+                    cursor: isExecuting || agentStatus === 'quarantined' ? 'not-allowed' : 'pointer',
+                    opacity: agentStatus === 'quarantined' ? 0.6 : 1
+                  }}
+                >
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>
+                    {agentStatus === 'quarantined' ? 'Quarantined' : 'Quarantine Agent'}
+                  </div>
+                  <div style={{ fontSize: 10.5, color: isLight ? '#991B1B' : '#F87171', marginTop: 2 }}>
+                    Halt customer traffic immediately
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleExecuteRemediation(
+                    'rollback',
+                    `⏪ Rolled Back: ${agent.name} reverted to v2.3 prompt baseline.`
+                  )}
+                  disabled={isExecuting || agentStatus === 'optimize'}
+                  style={{
+                    background: isLight ? '#F0FDF4' : '#064E3B',
+                    border: isLight ? '1px solid #BBF7D0' : '1px solid #065F46',
+                    color: isLight ? '#166534' : '#6EE7B7',
+                    borderRadius: 6,
+                    padding: '10px 12px',
+                    textAlign: 'left',
+                    cursor: isExecuting ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>Rollback to v2.3</div>
+                  <div style={{ fontSize: 10.5, color: isLight ? '#14532D' : '#34D399', marginTop: 2 }}>
+                    Revert to last validated prompt
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleExecuteRemediation(
+                    'spend_cap',
+                    `🛑 Hard Cap: $15K/mo spend cap enforced on ${agent.name}.`
+                  )}
+                  disabled={isExecuting}
+                  style={{
+                    background: isLight ? '#FFFBEB' : '#451A03',
+                    border: isLight ? '1px solid #FDE68A' : '1px solid #78350F',
+                    color: isLight ? '#B45309' : '#FCD34D',
+                    borderRadius: 6,
+                    padding: '10px 12px',
+                    textAlign: 'left',
+                    cursor: isExecuting ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>Hard Spend Cap</div>
+                  <div style={{ fontSize: 10.5, color: isLight ? '#78350F' : '#FBBF24', marginTop: 2 }}>
+                    Cap monthly spend to $15K
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleExecuteRemediation(
+                    'jira',
+                    `📨 Incident Filed: Ticket #AI-892 sent to ${agent.team} Lead.`
+                  )}
+                  disabled={isExecuting}
+                  style={{
+                    background: isLight ? '#EFF6FF' : '#172554',
+                    border: isLight ? '1px solid #BFDBFE' : '1px solid #1E40AF',
+                    color: isLight ? '#1D4ED8' : '#93C5FD',
+                    borderRadius: 6,
+                    padding: '10px 12px',
+                    textAlign: 'left',
+                    cursor: isExecuting ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>File P0 Jira Bug</div>
+                  <div style={{ fontSize: 10.5, color: isLight ? '#1E3A8A' : '#60A5FA', marginTop: 2 }}>
+                    Notify engineering team lead
+                  </div>
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <button
+                  onClick={() => handleExecuteRemediation(
+                    'promote',
+                    `🚀 Promoted: ${agent.name} approved for company-wide deployment.`
+                  )}
+                  disabled={isExecuting || agentStatus === 'accelerate'}
+                  style={{
+                    background: isLight ? '#F0FDF4' : '#064E3B',
+                    border: isLight ? '1px solid #BBF7D0' : '1px solid #065F46',
+                    color: isLight ? '#166534' : '#6EE7B7',
+                    borderRadius: 6,
+                    padding: '10px 12px',
+                    textAlign: 'left',
+                    cursor: isExecuting ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>Promote to Accelerate</div>
+                  <div style={{ fontSize: 10.5, color: isLight ? '#14532D' : '#34D399', marginTop: 2 }}>
+                    Expand to enterprise rollout
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleExecuteRemediation(
+                    'scale_gpu',
+                    `⚡ Scaled: Dedicated inference cache allocated to ${agent.name}.`
+                  )}
+                  disabled={isExecuting}
+                  style={{
+                    background: isLight ? '#EFF6FF' : '#172554',
+                    border: isLight ? '1px solid #BFDBFE' : '1px solid #1E40AF',
+                    color: isLight ? '#1D4ED8' : '#93C5FD',
+                    borderRadius: 6,
+                    padding: '10px 12px',
+                    textAlign: 'left',
+                    cursor: isExecuting ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>Scale GPU Cache</div>
+                  <div style={{ fontSize: 10.5, color: isLight ? '#1E3A8A' : '#60A5FA', marginTop: 2 }}>
+                    Accelerate inference latency by 45%
+                  </div>
+                </button>
+              </div>
             )}
           </div>
 
-          {remediationSuccess && (
-            <div style={{
-              padding: '12px 14px',
-              borderRadius: 8,
-              background: '#ECFDF5',
-              border: '1px solid #A7F3D0',
-              color: '#065F46',
-              fontSize: 12.5,
-              fontWeight: 600,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              marginBottom: 12
-            }}>
-              <CheckCircle2 size={16} color="#059669" style={{ flexShrink: 0 }} />
-              <span>{remediationSuccess}</span>
-            </div>
-          )}
-
-          {isIntervene ? (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              {/* Action 1: Quarantine */}
-              <button
-                onClick={() => handleExecuteRemediation(
-                  'quarantine',
-                  `🛡️ Agent Quarantined: ${agent.name} traffic safely routed to human supervisor queue. Safety incident contained.`
-                )}
-                disabled={isExecuting || agentStatus === 'quarantined'}
-                style={{
-                  background: isLight ? '#FEF2F2' : '#450A0A',
-                  border: isLight ? '1.5px solid #FECACA' : '1px solid #7F1D1D',
-                  color: isLight ? '#DC2626' : '#FCA5A5',
-                  borderRadius: 8,
-                  padding: '12px 14px',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  textAlign: 'left',
-                  cursor: isExecuting || agentStatus === 'quarantined' ? 'not-allowed' : 'pointer',
-                  opacity: agentStatus === 'quarantined' ? 0.6 : 1,
-                  transition: 'transform 0.1s ease'
-                }}
-              >
-                <PauseCircle size={18} style={{ flexShrink: 0, marginTop: 2 }} />
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>
-                    {agentStatus === 'quarantined' ? 'Agent Quarantined' : 'Quarantine Agent'}
-                  </div>
-                  <div style={{ fontSize: 11, color: isLight ? '#7F1D1D' : '#F87171', marginTop: 2 }}>
-                    Temporarily halt customer-facing traffic and reroute calls to human supervisor review.
-                  </div>
-                </div>
-              </button>
-
-              {/* Action 2: Rollback Prompt */}
-              <button
-                onClick={() => handleExecuteRemediation(
-                  'rollback',
-                  `⏪ Prompt Rolled Back: ${agent.name} reverted to v2.3 stable baseline. Eval pass rate projected to recover to 94.2%.`
-                )}
-                disabled={isExecuting || agentStatus === 'optimize'}
-                style={{
-                  background: isLight ? '#F0FDF4' : '#064E3B',
-                  border: isLight ? '1.5px solid #BBF7D0' : '1px solid #065F46',
-                  color: isLight ? '#166534' : '#6EE7B7',
-                  borderRadius: 8,
-                  padding: '12px 14px',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  textAlign: 'left',
-                  cursor: isExecuting ? 'not-allowed' : 'pointer',
-                  transition: 'transform 0.1s ease'
-                }}
-              >
-                <RotateCcw size={18} style={{ flexShrink: 0, marginTop: 2 }} />
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>Rollback Prompt to v2.3</div>
-                  <div style={{ fontSize: 11, color: isLight ? '#14532D' : '#34D399', marginTop: 2 }}>
-                    Instantly revert prompt to last week's validated baseline benchmark (94.6% pass rate).
-                  </div>
-                </div>
-              </button>
-
-              {/* Action 3: Enforce Token Cap */}
-              <button
-                onClick={() => handleExecuteRemediation(
-                  'spend_cap',
-                  `🛑 Spend Cap Enforced: Hard cap of $15,000/mo applied to ${agent.name}. Overrun halted.`
-                )}
-                disabled={isExecuting}
-                style={{
-                  background: isLight ? '#FFFBEB' : '#451A03',
-                  border: isLight ? '1.5px solid #FDE68A' : '1px solid #78350F',
-                  color: isLight ? '#B45309' : '#FCD34D',
-                  borderRadius: 8,
-                  padding: '12px 14px',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  textAlign: 'left',
-                  cursor: isExecuting ? 'not-allowed' : 'pointer',
-                  transition: 'transform 0.1s ease'
-                }}
-              >
-                <DollarSign size={18} style={{ flexShrink: 0, marginTop: 2 }} />
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>Enforce Hard Spend Cap</div>
-                  <div style={{ fontSize: 11, color: isLight ? '#78350F' : '#FBBF24', marginTop: 2 }}>
-                    Lock monthly token burn to $15,000 to immediately halt budget variance.
-                  </div>
-                </div>
-              </button>
-
-              {/* Action 4: Jira / DevOps Alert */}
-              <button
-                onClick={() => handleExecuteRemediation(
-                  'jira',
-                  `📨 Incident Dispatched: High-priority Jira ticket #AI-892 filed to ${agent.team} Engineering Lead.`
-                )}
-                disabled={isExecuting}
-                style={{
-                  background: isLight ? '#EFF6FF' : '#172554',
-                  border: isLight ? '1.5px solid #BFDBFE' : '1px solid #1E40AF',
-                  color: isLight ? '#1D4ED8' : '#93C5FD',
-                  borderRadius: 8,
-                  padding: '12px 14px',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  textAlign: 'left',
-                  cursor: isExecuting ? 'not-allowed' : 'pointer',
-                  transition: 'transform 0.1s ease'
-                }}
-              >
-                <Send size={18} style={{ flexShrink: 0, marginTop: 2 }} />
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>File P0 Jira Incident</div>
-                  <div style={{ fontSize: 11, color: isLight ? '#1E3A8A' : '#60A5FA', marginTop: 2 }}>
-                    Dispatch automated alert and audit package to the team's engineering lead.
-                  </div>
-                </div>
-              </button>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              {/* Positive Actions for Good Agents */}
-              <button
-                onClick={() => handleExecuteRemediation(
-                  'promote',
-                  `🚀 Tier Promoted: ${agent.name} approved for enterprise-wide rollout (Accelerate Tier).`
-                )}
-                disabled={isExecuting || agentStatus === 'accelerate'}
-                style={{
-                  background: isLight ? '#F0FDF4' : '#064E3B',
-                  border: isLight ? '1.5px solid #BBF7D0' : '1px solid #065F46',
-                  color: isLight ? '#166534' : '#6EE7B7',
-                  borderRadius: 8,
-                  padding: '12px 14px',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  textAlign: 'left',
-                  cursor: isExecuting ? 'not-allowed' : 'pointer'
-                }}
-              >
-                <Sparkles size={18} style={{ flexShrink: 0, marginTop: 2 }} />
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>Promote to Accelerate Tier</div>
-                  <div style={{ fontSize: 11, color: isLight ? '#14532D' : '#34D399', marginTop: 2 }}>
-                    Certify agent as high-performing and allocate expansion capital for company-wide deployment.
-                  </div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleExecuteRemediation(
-                  'scale_gpu',
-                  `⚡ Capacity Scaled: Dedicated H100 inference cache allocated to ${agent.name}. Latency down 45%.`
-                )}
-                disabled={isExecuting}
-                style={{
-                  background: isLight ? '#EFF6FF' : '#172554',
-                  border: isLight ? '1.5px solid #BFDBFE' : '1px solid #1E40AF',
-                  color: isLight ? '#1D4ED8' : '#93C5FD',
-                  borderRadius: 8,
-                  padding: '12px 14px',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  textAlign: 'left',
-                  cursor: isExecuting ? 'not-allowed' : 'pointer'
-                }}
-              >
-                <Zap size={18} style={{ flexShrink: 0, marginTop: 2 }} />
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>Scale GPU Inference Cache</div>
-                  <div style={{ fontSize: 11, color: isLight ? '#1E3A8A' : '#60A5FA', marginTop: 2 }}>
-                    Provision dedicated cache tier to accelerate token latency by 45% during peak hours.
-                  </div>
-                </div>
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
-          <button
-            onClick={onClose}
-            style={{
-              background: isLight ? '#00349B' : '#0284C7',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: 8,
-              padding: '9px 20px',
-              fontSize: 13,
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(0, 52, 155, 0.2)'
-            }}
-          >
-            Done
-          </button>
+          {/* Close Action */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+            <button
+              onClick={onClose}
+              style={{
+                background: '#00349B',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: 6,
+                padding: '10px 24px',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+                width: '100%'
+              }}
+            >
+              Close Telemetry Inspector
+            </button>
+          </div>
         </div>
       </div>
     </div>
