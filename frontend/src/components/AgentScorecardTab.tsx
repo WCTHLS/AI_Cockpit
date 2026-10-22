@@ -458,8 +458,6 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           const isSelected = selectedStatus === statusKey;
           const isDim = selectedStatus && !isSelected;
 
-          const namesSnippet = group.map(a => a.name).slice(0, 3).join(' · ') + (group.length > 3 ? ` +${group.length - 3} more` : '');
-
           return (
             <div
               key={statusKey}
@@ -467,53 +465,92 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
               className="executive-card"
               style={{
                 background: '#FFFFFF',
-                border: `1.5px solid ${isSelected ? '#00349B' : '#D6E2FA'}`,
-                borderLeft: `5px solid ${cfg.color}`,
+                border: isSelected ? '1.5px solid #00349B' : '1px solid #E2E8F0',
                 borderRadius: 12,
                 padding: '16px 18px',
                 cursor: 'pointer',
                 boxShadow: isSelected 
-                  ? '0 12px 30px rgba(0, 52, 155, 0.18)' 
-                  : '0 4px 14px rgba(0, 52, 155, 0.06)',
+                  ? '0 0 0 2px #00349B, 0 12px 28px rgba(0, 52, 155, 0.14)' 
+                  : '0 1px 3px rgba(0,0,0,0.04), 0 6px 18px -4px rgba(0, 52, 155, 0.05)',
                 opacity: isDim ? 0.45 : 1,
-                transition: 'all 0.2s ease',
-                position: 'relative'
+                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                position: 'relative',
+                overflow: 'hidden'
               }}
             >
+              {/* Top Hairline Gradient Accent */}
               <div style={{
-                fontSize: 12,
-                fontWeight: 800,
-                color: cfg.color,
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6
-              }}>
-                <span>{cfg.icon}</span>
-                <span>{cfg.label}</span>
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 3,
+                background: `linear-gradient(90deg, ${cfg.color}, ${cfg.color}66)`,
+                borderRadius: '12px 12px 0 0'
+              }} />
+
+              {/* Status Capsule & Share Badge */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{
+                  fontSize: 11,
+                  fontWeight: 800,
+                  color: cfg.color,
+                  background: cfg.bgLight,
+                  padding: '3px 9px',
+                  borderRadius: 16,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5
+                }}>
+                  <span>{cfg.icon}</span>
+                  <span>{cfg.label}</span>
+                </span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>
+                  {Math.round((group.length / (agents.length || 1)) * 100)}% of estate
+                </span>
               </div>
-              <div style={{
-                fontSize: 32,
-                fontWeight: 800,
-                color: '#00349B',
-                lineHeight: 1.15,
-                margin: '6px 0 4px 0',
-                fontFamily: 'Satoshi, Outfit, sans-serif'
-              }}>
-                {group.length}
+
+              {/* Number and Label */}
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, margin: '8px 0 10px 0' }}>
+                <span style={{ fontSize: 30, fontWeight: 800, color: '#0F172A', fontFamily: 'Outfit, Satoshi, sans-serif' }}>
+                  {group.length}
+                </span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>
+                  Active Agents
+                </span>
               </div>
-              <div style={{
-                fontSize: 12,
-                color: '#64748B',
-                lineHeight: 1.4,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical'
-              }}>
-                {namesSnippet}
+
+              {/* Interactive Agent Micro-Chips */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                {group.slice(0, 3).map(a => (
+                  <span
+                    key={a.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setInspectAgent(a);
+                    }}
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      color: '#334155',
+                      background: '#F1F5F9',
+                      border: '1px solid #E2E8F0',
+                      padding: '2px 7px',
+                      borderRadius: 4,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = '#94A3B8'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = '#E2E8F0'}
+                  >
+                    {a.name}
+                  </span>
+                ))}
+                {group.length > 3 && (
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', padding: '2px 4px' }}>
+                    +{group.length - 3} more
+                  </span>
+                )}
               </div>
             </div>
           );

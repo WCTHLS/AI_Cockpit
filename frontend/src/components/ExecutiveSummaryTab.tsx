@@ -732,27 +732,38 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       {/* 6 Executive KPI Cards Across */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
         gap: 14
       }}>
-        {/* KPI 1: NET AI VALUE (Hero Dark Navy Card) */}
+        {/* KPI 1: NET AI VALUE (Hero Midnight Gradient Card with Sparkline) */}
         <div className="executive-card" style={{
-          background: '#00349B',
-          borderRadius: 8,
+          background: 'linear-gradient(135deg, #0A2540 0%, #00349B 100%)',
+          borderRadius: 12,
           padding: '16px 18px',
           color: '#FFFFFF',
-          boxShadow: '0 4px 14px rgba(0, 52, 155, 0.22)',
+          boxShadow: '0 8px 24px -4px rgba(0, 52, 155, 0.28)',
+          border: '1px solid rgba(255, 255, 255, 0.14)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 114
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #38BDF8, #818CF8)'
+          }} />
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{
                 fontSize: 11,
                 fontWeight: 800,
-                letterSpacing: '0.05em',
+                letterSpacing: '0.06em',
                 textTransform: 'uppercase',
                 color: '#93C5FD'
               }}>
@@ -760,20 +771,36 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </span>
               <span style={{
                 fontSize: 10,
-                fontWeight: 700,
-                background: 'rgba(255, 255, 255, 0.15)',
+                fontWeight: 800,
+                background: 'rgba(255, 255, 255, 0.18)',
+                backdropFilter: 'blur(8px)',
                 color: '#FFFFFF',
-                padding: '2px 6px',
-                borderRadius: 4
+                padding: '2px 7px',
+                borderRadius: 12,
+                border: '1px solid rgba(255, 255, 255, 0.25)'
               }}>
                 5.37x ROI
               </span>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', color: '#FFFFFF', marginTop: 4 }}>
-              $1.80M
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.03em', color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
+                $1.80M
+              </div>
+              {/* Mini Sparkline SVG */}
+              <svg width="68" height="24" viewBox="0 0 68 24" fill="none" style={{ marginBottom: 4 }}>
+                <defs>
+                  <linearGradient id="netValGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                <path d="M2 18 L18 15 L34 11 L50 8 L66 3" stroke="#38BDF8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                <path d="M2 18 L18 15 L34 11 L50 8 L66 3 L66 22 L2 22 Z" fill="url(#netValGrad)" />
+                <circle cx="66" cy="3" r="2.5" fill="#38BDF8" />
+              </svg>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#6ee7b7' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#6EE7B7', marginTop: 6 }}>
             <ArrowUpRight size={14} /> +13.6% vs Aug ($1.59M)
           </div>
         </div>
@@ -781,21 +808,31 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         {/* KPI 2: HOURS SAVED */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderRadius: 8,
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 114
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #10B981, #34D399)'
+          }} />
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{
                 fontSize: 11,
                 fontWeight: 800,
-                letterSpacing: '0.05em',
+                letterSpacing: '0.06em',
                 textTransform: 'uppercase',
                 color: '#64748B'
               }}>
@@ -806,110 +843,204 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
                 fontWeight: 700,
                 background: '#ECFDF5',
                 color: '#059669',
-                padding: '2px 6px',
-                borderRadius: 4
+                border: '1px solid #A7F3D0',
+                padding: '2px 7px',
+                borderRadius: 12
               }}>
-                ~162 FTE Equiv.
+                ~162 FTEs
               </span>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
-              26,000
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+                26,000
+              </div>
+              <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
+                <path d="M2 17 L16 14 L30 15 L44 9 L58 4" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="58" cy="4" r="2.5" fill="#10B981" />
+              </svg>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#16A34A' }}>
-            <ArrowUpRight size={14} /> +9.9% vs Aug
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#16A34A', marginTop: 6 }}>
+            <ArrowUpRight size={14} /> +9.9% vs Aug (23.6K)
           </div>
         </div>
 
         {/* KPI 3: ADOPTION */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderRadius: 8,
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 114
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #00349B, #3B82F6)'
+          }} />
           <div>
-            <div style={{
-              fontSize: 11,
-              fontWeight: 800,
-              letterSpacing: '0.05em',
-              textTransform: 'uppercase',
-              color: '#64748B'
-            }}>
-              ADOPTION
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#64748B'
+              }}>
+                ADOPTION
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#EFF6FF',
+                color: '#00349B',
+                border: '1px solid #BFDBFE',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                3,588 / 4,600
+              </span>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
-              78%
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+                78%
+              </div>
+              <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
+                <path d="M2 18 L16 16 L30 11 L44 8 L58 5" stroke="#00349B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="58" cy="5" r="2.5" fill="#00349B" />
+              </svg>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A' }}>
-            <ArrowUpRight size={14} /> +5.0 pts · 3,588 of 4,600
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A', marginTop: 6 }}>
+            <ArrowUpRight size={14} /> +5.0 pts vs Aug
           </div>
         </div>
 
         {/* KPI 4: TOTAL AI COST */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderRadius: 8,
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 114
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #64748B, #94A3B8)'
+          }} />
           <div>
-            <div style={{
-              fontSize: 11,
-              fontWeight: 800,
-              letterSpacing: '0.05em',
-              textTransform: 'uppercase',
-              color: '#64748B'
-            }}>
-              TOTAL AI COST
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#64748B'
+              }}>
+                TOTAL AI COST
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#F1F5F9',
+                color: '#475569',
+                border: '1px solid #E2E8F0',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                Target $425K
+              </span>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
-              $412K
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+                $412K
+              </div>
+              <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
+                <path d="M2 7 L16 9 L30 11 L44 14 L58 13" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="58" cy="13" r="2.5" fill="#64748B" />
+              </svg>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A' }}>
-            <ArrowDownRight size={14} /> 3% under budget of $425K
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A', marginTop: 6 }}>
+            <ArrowDownRight size={14} /> 3% under budget
           </div>
         </div>
 
         {/* KPI 5: EVAL PASS RATE */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderRadius: 8,
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 114
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #16A34A, #22C55E)'
+          }} />
           <div>
-            <div style={{
-              fontSize: 11,
-              fontWeight: 800,
-              letterSpacing: '0.05em',
-              textTransform: 'uppercase',
-              color: '#64748B'
-            }}>
-              EVAL PASS RATE
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#64748B'
+              }}>
+                EVAL PASS RATE
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#ECFDF5',
+                color: '#059669',
+                border: '1px solid #A7F3D0',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                Target 92%
+              </span>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
-              94%
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+                94%
+              </div>
+              <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
+                <path d="M2 14 L16 11 L30 13 L44 8 L58 5" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="58" cy="5" r="2.5" fill="#16A34A" />
+              </svg>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A', marginTop: 6 }}>
             <CheckCircle2 size={14} /> At or above 92% target
           </div>
         </div>
@@ -917,32 +1048,67 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         {/* KPI 6: POLICY INCIDENTS */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderLeft: '4px solid #C62828',
-          borderRadius: 8,
+          border: '1px solid #FECACA',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(220, 38, 38, 0.08)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 114
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #DC2626, #F87171)'
+          }} />
           <div>
-            <div style={{
-              fontSize: 11,
-              fontWeight: 800,
-              letterSpacing: '0.05em',
-              textTransform: 'uppercase',
-              color: '#C62828'
-            }}>
-              POLICY INCIDENTS
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#DC2626'
+              }}>
+                POLICY INCIDENTS
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#FEF2F2',
+                color: '#DC2626',
+                border: '1px solid #FECACA',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                1 Contained
+              </span>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: '#C62828', marginTop: 4 }}>
-              2
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#DC2626', fontFamily: 'Outfit, sans-serif' }}>
+                2
+              </div>
+              <span style={{
+                fontSize: 10.5,
+                fontWeight: 700,
+                color: '#DC2626',
+                background: '#FEE2E2',
+                padding: '3px 8px',
+                borderRadius: 6,
+                marginBottom: 4
+              }}>
+                Active Watch
+              </span>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#64748B' }}>
-            ■ RFP Response (Containment Active)
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#64748B', marginTop: 6 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#DC2626', display: 'inline-block' }} /> RFP Response (Containment Active)
           </div>
         </div>
       </div>

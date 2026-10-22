@@ -563,61 +563,123 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
         gap: 14
       }}>
-        {/* KPI 1: TOTAL AI COST (Hero Dark Navy Card) */}
+        {/* KPI 1: TOTAL AI COST (Hero Midnight Gradient Card) */}
         <div className="executive-card" style={{
-          background: '#00349B',
-          borderRadius: 8,
+          background: 'linear-gradient(135deg, #0A2540 0%, #00349B 100%)',
+          borderRadius: 12,
           padding: '16px 18px',
           color: '#FFFFFF',
-          boxShadow: '0 4px 14px rgba(0, 52, 155, 0.22)',
+          boxShadow: '0 8px 24px -4px rgba(0, 52, 155, 0.28)',
+          border: '1px solid rgba(255, 255, 255, 0.14)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
           <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#93C5FD'
-          }}>
-            TOTAL AI COST
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #38BDF8, #818CF8)'
+          }} />
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#93C5FD'
+              }}>
+                TOTAL AI COST
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: 'rgba(255, 255, 255, 0.18)',
+                backdropFilter: 'blur(8px)',
+                color: '#FFFFFF',
+                padding: '2px 7px',
+                borderRadius: 12,
+                border: '1px solid rgba(255, 255, 255, 0.25)'
+              }}>
+                Monthly FinOps
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
+                $412K
+              </div>
+              <svg width="56" height="20" viewBox="0 0 56 20" fill="none" style={{ marginBottom: 4 }}>
+                <path d="M2 14 L14 11 L28 12 L42 8 L54 6" stroke="#38BDF8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="54" cy="6" r="2.5" fill="#38BDF8" />
+              </svg>
+            </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
-            $412K
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#93C5FD' }}>
-            <ArrowUpRight size={14} /> +3.2% vs Aug
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#93C5FD', marginTop: 6 }}>
+            <ArrowUpRight size={14} /> +3.2% vs Aug ($399K)
           </div>
         </div>
 
         {/* KPI 2: BUDGET VARIANCE */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderLeft: '4px solid #2E7D32',
-          borderRadius: 8,
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
           <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#2E7D32'
-          }}>
-            BUDGET VARIANCE
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #10B981, #34D399)'
+          }} />
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#64748B'
+              }}>
+                BUDGET VARIANCE
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#ECFDF5',
+                color: '#059669',
+                border: '1px solid #A7F3D0',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                Favorable
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#059669', fontFamily: 'Outfit, sans-serif' }}>
+                $13K
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#059669', background: '#D1FAE5', padding: '2px 6px', borderRadius: 4, marginBottom: 4 }}>
+                Under Target
+              </span>
+            </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
-            $13K
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#16A34A' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#16A34A', marginTop: 6 }}>
             3.1% under budget of $425K
           </div>
         </div>
@@ -625,28 +687,59 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         {/* KPI 3: VALUE PER $1 SPENT */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderRadius: 8,
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
           <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#64748B'
-          }}>
-            VALUE PER $1 SPENT
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #00349B, #3B82F6)'
+          }} />
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#64748B'
+              }}>
+                VALUE PER $1 SPENT
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#EFF6FF',
+                color: '#00349B',
+                border: '1px solid #BFDBFE',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                5.37x Return
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#00349B', fontFamily: 'Outfit, sans-serif' }}>
+                $5.37
+              </div>
+              <svg width="56" height="20" viewBox="0 0 56 20" fill="none" style={{ marginBottom: 4 }}>
+                <path d="M2 15 L14 12 L28 9 L42 6 L54 3" stroke="#00349B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="54" cy="3" r="2.5" fill="#00349B" />
+              </svg>
+            </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#00349B' }}>
-            $5.37
-          </div>
-          <div style={{ fontSize: 11.5, color: '#64748B' }}>
+          <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 6 }}>
             Gross value ÷ cost · prior $4.97
           </div>
         </div>
@@ -654,58 +747,121 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         {/* KPI 4: COST PER HOUR SAVED */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderRadius: 8,
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
           <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#64748B'
-          }}>
-            COST PER HOUR SAVED
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #10B981, #059669)'
+          }} />
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#64748B'
+              }}>
+                COST PER HOUR SAVED
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#ECFDF5',
+                color: '#059669',
+                border: '1px solid #A7F3D0',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                Efficiency
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+                $15.85
+              </div>
+              <svg width="56" height="20" viewBox="0 0 56 20" fill="none" style={{ marginBottom: 4 }}>
+                <path d="M2 5 L14 7 L28 10 L42 12 L54 16" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="54" cy="16" r="2.5" fill="#10B981" />
+              </svg>
+            </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
-            $15.85
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#16A34A' }}>
-            <TrendingDown size={14} /> -6.1% vs Aug
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#16A34A', marginTop: 6 }}>
+            <TrendingDown size={14} /> -6.1% vs Aug ($16.88)
           </div>
         </div>
 
         {/* KPI 5: ENGINEERING TOKENS */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderRadius: 8,
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
           <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#64748B'
-          }}>
-            ENGINEERING TOKENS
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #64748B, #94A3B8)'
+          }} />
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#64748B'
+              }}>
+                ENGINEERING TOKENS
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#F1F5F9',
+                color: '#475569',
+                border: '1px solid #E2E8F0',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                Target $60K
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+                92%
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#475569' }}>
+                $55K spent
+              </span>
+            </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
-            92%
-          </div>
-          <div style={{ fontSize: 11.5, color: '#64748B' }}>
-            of budget · $55K of $60K
+          <div style={{ marginTop: 6 }}>
+            <div style={{ height: 5, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{ width: '92%', height: '100%', background: '#00349B', borderRadius: 3 }} />
+            </div>
           </div>
         </div>
       </div>

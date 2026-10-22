@@ -369,29 +369,61 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
       }}>
         {/* KPI 1: LICENSED SEATS (Hero Dark Navy Card) */}
         <div className="executive-card" style={{
-          background: '#00349B',
-          borderRadius: 8,
+          background: 'linear-gradient(135deg, #0A2540 0%, #00349B 100%)',
+          borderRadius: 12,
           padding: '16px 18px',
           color: '#FFFFFF',
-          boxShadow: '0 4px 14px rgba(0, 52, 155, 0.22)',
+          boxShadow: '0 8px 24px -4px rgba(0, 52, 155, 0.28)',
+          border: '1px solid rgba(255, 255, 255, 0.14)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
           <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#93C5FD'
-          }}>
-            LICENSED SEATS
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #38BDF8, #818CF8)'
+          }} />
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#93C5FD'
+              }}>
+                LICENSED SEATS
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: 'rgba(255, 255, 255, 0.18)',
+                backdropFilter: 'blur(8px)',
+                color: '#FFFFFF',
+                padding: '2px 7px',
+                borderRadius: 12,
+                border: '1px solid rgba(255, 255, 255, 0.25)'
+              }}>
+                Pooled
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
+                {total.toLocaleString()}
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#93C5FD', padding: '2px 6px', background: 'rgba(255,255,255,0.1)', borderRadius: 4, marginBottom: 4 }}>
+                Active Estate
+              </span>
+            </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
-            {total.toLocaleString()}
-          </div>
-          <div style={{ fontSize: 11.5, color: '#93C5FD' }}>
+          <div style={{ fontSize: 11.5, color: '#93C5FD', marginTop: 6 }}>
             Enterprise Pooled Capacity
           </div>
         </div>
@@ -399,29 +431,59 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         {/* KPI 2: ACTIVE SEATS (7 DAYS) */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderLeft: '4px solid #00349B',
-          borderRadius: 8,
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
           <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#00349B'
-          }}>
-            ACTIVE SEATS (7 DAYS)
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #10B981, #34D399)'
+          }} />
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#00349B'
+              }}>
+                ACTIVE SEATS (7 DAYS)
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#ECFDF5',
+                color: '#059669',
+                border: '1px solid #A7F3D0',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                {((active / total) * 100).toFixed(0)}% Utilized
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+                {active.toLocaleString()}
+              </div>
+              <svg width="56" height="20" viewBox="0 0 56 20" fill="none" style={{ marginBottom: 4 }}>
+                <path d="M2 16 L14 13 L28 10 L42 6 L54 3" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="54" cy="3" r="2.5" fill="#10B981" />
+              </svg>
+            </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
-            {active.toLocaleString()}
-          </div>
-          <div style={{ fontSize: 11.5, fontWeight: 700, color: '#16A34A' }}>
+          <div style={{ fontSize: 11.5, fontWeight: 700, color: '#16A34A', marginTop: 6 }}>
             {((active / total) * 100).toFixed(1)}% of seats actively utilized
           </div>
         </div>
@@ -429,90 +491,177 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         {/* KPI 3: LAPSING SEATS (7-29 DAYS) */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderLeft: '4px solid #88A9E6',
-          borderRadius: 8,
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
           <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#475569'
-          }}>
-            LAPSING (7–29 DAYS)
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #64748B, #94A3B8)'
+          }} />
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#475569'
+              }}>
+                LAPSING (7–29 DAYS)
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#F1F5F9',
+                color: '#475569',
+                border: '1px solid #E2E8F0',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                Coaching Nudge
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+                {lapsing.toLocaleString()}
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>
+                {((lapsing / total) * 100).toFixed(1)}%
+              </span>
+            </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
-            {lapsing.toLocaleString()}
-          </div>
-          <div style={{ fontSize: 11.5, color: '#64748B' }}>
-            {((lapsing / total) * 100).toFixed(1)}% · Target for coaching nudges
+          <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 6 }}>
+            Target for proactive coaching nudges
           </div>
         </div>
 
         {/* KPI 4: IDLE SEATS (30+ DAYS) */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderLeft: '4px solid #E0A100',
-          borderRadius: 8,
+          border: '1px solid #FEF3C7',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(217, 119, 6, 0.08)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
           <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#B45309'
-          }}>
-            IDLE SEATS (30+ DAYS)
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #D97706, #FBBF24)'
+          }} />
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#B45309'
+              }}>
+                IDLE SEATS (30+ DAYS)
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#FEF3C7',
+                color: '#B45309',
+                border: '1px solid #FDE68A',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                Reclaimable
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#B45309', fontFamily: 'Outfit, sans-serif' }}>
+                {idle.toLocaleString()}
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#B45309' }}>
+                {((idle / total) * 100).toFixed(1)}%
+              </span>
+            </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#B45309' }}>
-            {idle.toLocaleString()}
-          </div>
-          <div style={{ fontSize: 11.5, fontWeight: 700, color: '#B45309' }}>
-            {((idle / total) * 100).toFixed(1)}% · Direct reclaim target
+          <div style={{ fontSize: 11.5, fontWeight: 700, color: '#B45309', marginTop: 6 }}>
+            Direct 1-click license harvest target
           </div>
         </div>
 
         {/* KPI 5: IDLE SEAT COST */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
-          borderLeft: '4px solid #C62828',
-          borderRadius: 8,
+          border: '1px solid #FECACA',
+          borderRadius: 12,
           padding: '16px 18px',
-          boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(220, 38, 38, 0.08)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 110
+          minHeight: 120,
+          position: 'relative',
+          overflow: 'hidden'
         }}>
           <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#C62828'
-          }}>
-            IDLE SEAT COST
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: 'linear-gradient(90deg, #DC2626, #F87171)'
+          }} />
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#DC2626'
+              }}>
+                IDLE SEAT COST
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                background: '#FEF2F2',
+                color: '#DC2626',
+                border: '1px solid #FECACA',
+                padding: '2px 7px',
+                borderRadius: 12
+              }}>
+                Avoidable
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#DC2626', fontFamily: 'Outfit, sans-serif' }}>
+                {formatUSD(monthlyIdleCost)}
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#DC2626', background: '#FEE2E2', padding: '2px 6px', borderRadius: 4, marginBottom: 4 }}>
+                / month
+              </span>
+            </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#C62828' }}>
-            {formatUSD(monthlyIdleCost)}
-          </div>
-          <div style={{ fontSize: 11.5, color: '#64748B' }}>
-            per month · <b>{formatUSD(annualIdleCost)}</b> / year
+          <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 6 }}>
+            Annualized waste: <b style={{ color: '#DC2626' }}>{formatUSD(annualIdleCost)}</b> / year
           </div>
         </div>
       </div>
