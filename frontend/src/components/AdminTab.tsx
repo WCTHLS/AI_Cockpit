@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Sliders,
   Check,
@@ -12,9 +12,18 @@ import {
   Sparkles,
   HelpCircle,
   Save,
-  RotateCcw
+  RotateCcw,
+  UploadCloud,
+  FileText,
+  Download,
+  AlertCircle,
+  FileSpreadsheet,
+  CheckCircle2,
+  RefreshCw,
+  X
 } from 'lucide-react';
-import { updateThresholds, formatUSD } from '../api';
+import { updateThresholds, formatUSD, uploadTelemetryFile, downloadCsvTemplate } from '../api';
+import { IngestSummary } from '../types';
 
 interface AdminTabProps {
   initialThresholds: any;
@@ -78,7 +87,7 @@ const DEFAULT_GUARDRAIL_CONFIG: GuardrailConfig = {
 };
 
 export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, onConfigSaved, theme = 'light' }) => {
-  const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance'>('subs');
+  const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance' | 'ingestion'>('subs');
 
   // Governance action thresholds (slide 7)
   const [thresholds, setThresholds] = useState<any>(initialThresholds || {
@@ -110,6 +119,76 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Data Ingestion State
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [ingestSummary, setIngestSummary] = useState<IngestSummary | null>(null);
+  const [isDownloadingTemplate, setIsDownloadingTemplate] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileSelect = (file: File) => {
+    const validExts = ['.csv', '.xlsx', '.xls'];
+    const hasValidExt = validExts.some(ext => file.name.toLowerCase().endsWith(ext));
+    if (!hasValidExt) {
+      setUploadError('Invalid file format. Please select a .csv or .xlsx spreadsheet.');
+      setSelectedFile(null);
+      return;
+    }
+    if (file.size > 15 * 1024 * 1024) {
+      setUploadError('File size exceeds the 15MB maximum limit.');
+      setSelectedFile(null);
+      return;
+    }
+    setSelectedFile(file);
+    setUploadError(null);
+    setIngestSummary(null);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelect(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+    setIsUploading(true);
+    setUploadError(null);
+    try {
+      const res = await uploadTelemetryFile(selectedFile);
+      setIngestSummary(res.summary);
+      onThresholdsUpdated(); // Live re-hydrates all tabs in App.tsx!
+    } catch (err: any) {
+      setUploadError(err.message || 'Failed to process and ingest telemetry file.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    setIsDownloadingTemplate(true);
+    try {
+      await downloadCsvTemplate();
+    } catch (err: any) {
+      setUploadError(err.message || 'Failed to download template.');
+    } finally {
+      setIsDownloadingTemplate(false);
+    }
+  };
 
   const isLight = theme === 'light';
 
@@ -450,6 +529,26 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
           }}
         >
           <Zap size={15} /> Governance Action Rules (Slide 7)
+        </button>
+
+        <button
+          onClick={() => setActiveSection('ingestion')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 7,
+            padding: '8px 16px',
+            borderRadius: '8px 8px 0 0',
+            border: 'none',
+            background: activeSection === 'ingestion' ? '#00349B' : 'transparent',
+            color: activeSection === 'ingestion' ? '#FFFFFF' : '#475569',
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          <UploadCloud size={15} /> Telemetry Ingestion (CSV / Excel)
         </button>
       </div>
 
@@ -940,6 +1039,360 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* SECTION 5: DATA INGESTION (CSV / EXCEL) */}
+      {activeSection === 'ingestion' && (
+        <div style={{
+          background: '#FFFFFF',
+          border: '1.5px solid #D6E2FA',
+          borderRadius: 12,
+          padding: 24,
+          boxShadow: '0 4px 16px rgba(0, 52, 155, 0.05)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 20
+        }}>
+          {/* Header & Template Download Bar */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+            gap: 16,
+            borderBottom: '1.5px solid #EEF2F6',
+            paddingBottom: 16
+          }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
+                  background: 'linear-gradient(135deg, #00349B 0%, #0066CC 100%)',
+                  color: '#FFFFFF',
+                  padding: 8,
+                  borderRadius: 8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <UploadCloud size={20} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: '#00349B' }}>
+                    Enterprise Telemetry &amp; Usage Ingestion Gateway
+                  </h3>
+                  <p style={{ margin: '3px 0 0 0', fontSize: 12.5, color: '#64748B' }}>
+                    Ingest raw batch runs or employee execution logs (.csv, .xlsx) to dynamically calculate hours saved, gross value, and portfolio ROI.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={handleDownloadTemplate}
+              disabled={isDownloadingTemplate}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                background: '#F0F7FF',
+                border: '1.5px solid #BAE6FD',
+                borderRadius: 8,
+                padding: '8px 16px',
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#0284C7',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: '0 2px 6px rgba(2, 132, 199, 0.1)'
+              }}
+            >
+              <Download size={15} />
+              {isDownloadingTemplate ? 'Downloading...' : 'Download Sample CSV Template'}
+            </button>
+          </div>
+
+          {/* Error Banner */}
+          {uploadError && (
+            <div style={{
+              background: '#FEF2F2',
+              border: '1.5px solid #FECACA',
+              borderRadius: 8,
+              padding: '12px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              color: '#991B1B',
+              fontSize: 13,
+              fontWeight: 600
+            }}>
+              <AlertCircle size={18} color="#DC2626" />
+              <div style={{ flex: 1 }}>{uploadError}</div>
+              <button
+                onClick={() => setUploadError(null)}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#991B1B' }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
+
+          {/* Interactive Drag & Drop Area */}
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              border: isDragging ? '2px dashed #00349B' : '2px dashed #CBD5E1',
+              background: isDragging ? '#EFF6FF' : '#F8FAFC',
+              borderRadius: 12,
+              padding: '36px 20px',
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              position: 'relative'
+            }}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv, .xlsx, .xls"
+              onChange={e => {
+                if (e.target.files && e.target.files[0]) {
+                  handleFileSelect(e.target.files[0]);
+                }
+              }}
+              style={{ display: 'none' }}
+            />
+
+            <div style={{
+              width: 54,
+              height: 54,
+              borderRadius: '50%',
+              background: isDragging ? '#DBEAFE' : '#E2E8F0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 14px auto',
+              color: isDragging ? '#00349B' : '#475569'
+            }}>
+              <FileSpreadsheet size={28} />
+            </div>
+
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#1E293B' }}>
+              Drag &amp; drop your telemetry file here, or <span style={{ color: '#00349B', textDecoration: 'underline' }}>browse</span>
+            </div>
+            <div style={{ fontSize: 12, color: '#64748B', marginTop: 6 }}>
+              Supported formats: <strong>.csv</strong>, <strong>.xlsx</strong>, <strong>.xls</strong> &bull; Maximum file size: 15 MB
+            </div>
+          </div>
+
+          {/* Selected File Details & Upload Action */}
+          {selectedFile && (
+            <div style={{
+              background: '#F1F5F9',
+              border: '1.5px solid #CBD5E1',
+              borderRadius: 10,
+              padding: '14px 18px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 12
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  background: '#00349B',
+                  color: '#FFFFFF',
+                  padding: 8,
+                  borderRadius: 6,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <FileText size={18} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A' }}>
+                    {selectedFile.name}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#64748B' }}>
+                    {(selectedFile.size / 1024).toFixed(1)} KB &bull; Ready for parsing &amp; recalculation
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <button
+                  onClick={() => {
+                    setSelectedFile(null);
+                    setUploadError(null);
+                  }}
+                  disabled={isUploading}
+                  style={{
+                    background: '#FFFFFF',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: 6,
+                    padding: '8px 14px',
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    color: '#64748B',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleUpload}
+                  disabled={isUploading}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    background: '#00349B',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '8px 20px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: '#FFFFFF',
+                    cursor: isUploading ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 4px 12px rgba(0, 52, 155, 0.25)'
+                  }}
+                >
+                  {isUploading ? (
+                    <>
+                      <RefreshCw size={15} style={{ animation: 'spin 1s linear infinite' }} />
+                      Parsing &amp; Computing...
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud size={15} />
+                      Ingest &amp; Recalculate Portfolio
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Success Summary Impact Card */}
+          {ingestSummary && (
+            <div style={{
+              background: '#F0FDF4',
+              border: '1.5px solid #86EFAC',
+              borderRadius: 12,
+              padding: 20,
+              boxShadow: '0 4px 14px rgba(22, 163, 74, 0.08)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <CheckCircle2 size={20} color="#16A34A" />
+                <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#166534' }}>
+                  Telemetry Ingested Successfully &bull; Cockpit Portfolio Re-hydrated
+                </h4>
+              </div>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                gap: 12,
+                background: '#FFFFFF',
+                borderRadius: 8,
+                padding: 16,
+                border: '1px solid #BBF7D0'
+              }}>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+                    Rows Ingested
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', marginTop: 2 }}>
+                    {ingestSummary.rows_processed}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#16A34A', fontWeight: 600 }}>Parsed cleanly</div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+                    Agents Updated
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#00349B', marginTop: 2 }}>
+                    {ingestSummary.agents_updated.length}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#64748B' }}>Portfolio targets</div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+                    Tasks Completed
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', marginTop: 2 }}>
+                    {ingestSummary.total_tasks_completed.toLocaleString()}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#64748B' }}>AI executions</div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+                    Hours Saved
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#059669', marginTop: 2 }}>
+                    {ingestSummary.hours_saved.toLocaleString()}h
+                  </div>
+                  <div style={{ fontSize: 11, color: '#059669', fontWeight: 600 }}>10m / task avg</div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+                    Gross Value
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#00349B', marginTop: 2 }}>
+                    {formatUSD(ingestSummary.gross_value_usd)}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#64748B' }}>Labor capacity</div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+                    Net Value &amp; ROI
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#16A34A', marginTop: 2 }}>
+                    {formatUSD(ingestSummary.net_value_usd)}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#16A34A', fontWeight: 700 }}>
+                    {ingestSummary.roi_ratio > 0 ? `${ingestSummary.roi_ratio.toFixed(1)}x ROI` : 'Positive'}
+                  </div>
+                </div>
+              </div>
+
+              {ingestSummary.agents_updated.length > 0 && (
+                <div style={{ marginTop: 14 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#166534', marginBottom: 6 }}>
+                    Updated Agents in Portfolio:
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {ingestSummary.agents_updated.map((name, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          background: '#DCFCE7',
+                          border: '1px solid #86EFAC',
+                          color: '#15803D',
+                          fontSize: 11.5,
+                          fontWeight: 700,
+                          padding: '3px 9px',
+                          borderRadius: 20
+                        }}
+                      >
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -56,9 +56,17 @@ async def ingest_usage_sheet(file: UploadFile = File(...)):
     rows = []
     if file.filename.endswith(('.csv', '.txt')):
         text = content.decode('utf-8', errors='ignore')
-        reader = csv.DictReader(io.StringIO(text))
+        reader = csv.DictReader(text.splitlines())
         for r in reader:
-            rows.append({k.strip().lower(): v.strip() for k, v in r.items() if k})
+            if not r:
+                continue
+            clean_row = {
+                str(k).strip().lower(): str(v).strip()
+                for k, v in r.items()
+                if k is not None and v is not None
+            }
+            if clean_row:
+                rows.append(clean_row)
     else:
         # Excel fallback via pandas
         try:

@@ -85,3 +85,22 @@ export interface UserProfile {
   role: 'cxo' | 'function_head' | 'finops' | 'admin';
   function_name?: string | null;
 }
+
+export interface IngestSummary {
+  rows_processed: number;
+  agents_updated: string[];
+  total_tasks_completed: number;
+  total_tokens_consumed: number;
+  hours_saved: number;
+  gross_value_usd: number;
+  cost_usd: number;
+  net_value_usd: number;
+  roi_ratio: number;
+}
+
+export interface IngestResponse {
+  status: string;
+  message: string;
+  summary: IngestSummary;
+}
+
