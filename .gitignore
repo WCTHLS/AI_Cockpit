@@ -45,3 +45,5 @@ pgdata/
 *.swo
 .DS_Store
 Thumbs.db
+
+*.code-workspace

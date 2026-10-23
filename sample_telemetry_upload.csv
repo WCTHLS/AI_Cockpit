@@ -1,0 +1,18 @@
+date,agent_name,department,employee_email,tasks_completed,tokens_used
+2026-09-23,Case Triage Agent,Customer,sarah.jenkins@wct.com,65,32000
+2026-09-23,Order Status Agent,Customer,david.miller@wct.com,40,18500
+2026-09-23,Customer Self Service Agent,Customer,support.rep3@wct.com,50,24000
+2026-09-23,Knowledge Article Agent,Customer,support.lead@wct.com,25,38000
+2026-09-23,Ticket Triage Agent,Eng & IT,alex.chen@wct.com,55,42000
+2026-09-23,Password & Access Agent,Eng & IT,it.helpdesk1@wct.com,70,28000
+2026-09-23,Developer Copilot,Eng & IT,vikram.sharma@wct.com,80,95000
+2026-09-23,Code Review Agent,Eng & IT,priya.patel@wct.com,35,48000
+2026-09-23,Invoice Matching Agent,Finance,elena.rostova@wct.com,45,28000
+2026-09-23,Collections Agent,Finance,marcus.vance@wct.com,30,36000
+2026-09-23,Variance Analysis Agent,Finance,rachel.zane@wct.com,20,45000
+2026-09-23,Demand Sensing Agent,Operations,tom.bradley@wct.com,50,52000
+2026-09-23,Logistics Tracking Agent,Operations,carlos.mendez@wct.com,40,31000
+2026-09-23,Contract Review Agent,Operations,amanda.clark@wct.com,15,64000
+2026-09-23,Account Research Agent,Sales,jason.bourne@wct.com,50,44000
+2026-09-23,RFP Response Agent,Sales,lisa.wong@wct.com,25,72000
+2026-09-23,Campaign Content Agent,Sales,emily.blunt@wct.com,35,51000

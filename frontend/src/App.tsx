@@ -360,6 +360,7 @@ export const App: React.FC = () => {
             }}
             theme={theme}
             user={currentUser}
+            summary={summary}
           />
         )}
       </main>

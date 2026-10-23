@@ -24,7 +24,7 @@ import {
   X
 } from 'lucide-react';
 import { updateThresholds, formatUSD, uploadTelemetryFile, downloadCsvTemplate } from '../api';
-import { UserProfile, IngestSummary } from '../types';
+import { UserProfile, IngestSummary, SummaryKPI } from '../types';
 
 interface AdminTabProps {
   initialThresholds: any;
@@ -32,6 +32,7 @@ interface AdminTabProps {
   onConfigSaved?: (subs: SubscriptionConfig, labor: LaborRateConfig) => void;
   theme?: 'dark' | 'light';
   user?: UserProfile;
+  summary?: SummaryKPI | null;
 }
 
 export interface SubscriptionConfig {
@@ -88,7 +89,7 @@ const DEFAULT_GUARDRAIL_CONFIG: GuardrailConfig = {
   budgetOverrunAlertPct: 110
 };
 
-export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, onConfigSaved, theme = 'light', user }) => {
+export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, onConfigSaved, theme = 'light', user, summary }) => {
   const isAdmin = user ? user.role === 'admin' : true;
   const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance' | 'ingestion'>('subs');
 
@@ -204,19 +205,13 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     laborRates.sales * 0.15
   );
 
-  // Dynamic cost calculation based on tuned subscription parameters
-  // Non-license costs = $244,000 (Platform $72K + Tokens $96K + Build & Run $52K + Enablement $24K)
-  const baseNonLicenseCosts = 244000;
-  const pooledSeats = 4600;
-  // Dynamic license expenditure = pooledSeats * m365CopilotPrice + Studio capacity packs
-  const simulatedLicenseCost = (pooledSeats * (subscriptions.m365CopilotPrice || 30)) + (120 * (subscriptions.copilotStudioPackPrice || 200));
-  const dynamicTotalCost = baseNonLicenseCosts + simulatedLicenseCost;
-
-  const baselineHoursSaved = 26000;
-  const simulatedGrossValue = baselineHoursSaved * blendedHourlyRate;
-  const simulatedNetValue = simulatedGrossValue - dynamicTotalCost;
-  const simulatedRoiMultiplier = dynamicTotalCost > 0 ? (simulatedGrossValue / dynamicTotalCost) : 0;
-  const simulatedFtesUnlocked = baselineHoursSaved / (laborRates.monthlyFteHours || 160);
+  // Live portfolio valuation dynamically connected to actual database summary
+  const dynamicTotalCost = summary?.total_cost || 145913;
+  const baselineHoursSaved = summary?.total_hours_saved || 9875;
+  const simulatedGrossValue = summary?.total_gross_value || (baselineHoursSaved * blendedHourlyRate);
+  const simulatedNetValue = summary?.total_net_value || (simulatedGrossValue - dynamicTotalCost);
+  const simulatedRoiMultiplier = summary?.roi_ratio || (dynamicTotalCost > 0 ? (simulatedGrossValue / dynamicTotalCost) : 0);
+  const simulatedFtesUnlocked = Math.round(baselineHoursSaved / (laborRates.monthlyFteHours || 160));
 
   const handleSaveAll = async () => {
     setIsSaving(true);
@@ -421,7 +416,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#93C5FD', textTransform: 'uppercase' }}>
-              Gross Value (26K hrs)
+              Gross Value ({Math.round(baselineHoursSaved).toLocaleString()} hrs)
             </div>
             <div style={{ fontSize: 26, fontWeight: 800, fontFamily: 'Outfit, sans-serif', marginTop: 3 }}>
               {formatUSD(simulatedGrossValue)}
@@ -1365,7 +1360,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                   <div style={{ fontSize: 20, fontWeight: 800, color: '#059669', marginTop: 2 }}>
                     {ingestSummary.hours_saved.toLocaleString()}h
                   </div>
-                  <div style={{ fontSize: 11, color: '#059669', fontWeight: 600 }}>10m / task avg</div>
+                  <div style={{ fontSize: 11, color: '#059669', fontWeight: 600 }}>Role-weighted avg</div>
                 </div>
 
                 <div>
