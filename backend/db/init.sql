@@ -463,9 +463,9 @@ SELECT
     a.go_live_date,
     CAST(julianday(date(atm.month_start, '+1 month', '-1 day')) - julianday(a.go_live_date) + 1 AS INTEGER)
         AS days_in_prod_at_month_end,
-    COALESCE(u.active_users, 0) AS active_users,
+    COALESCE(NULLIF(u.active_users, 0), s.reported_active_seats, 0) AS active_users,
     s.assigned_seats AS licensed_users,
-    CASE WHEN s.assigned_seats > 0 THEN 100.0 * COALESCE(u.active_users, 0) / s.assigned_seats
+    CASE WHEN s.assigned_seats > 0 THEN 100.0 * COALESCE(NULLIF(u.active_users, 0), s.reported_active_seats, 0) / s.assigned_seats
          ELSE NULL END AS adoption_pct,
     COALESCE(u.tasks_count, 0) AS tasks_count,
     COALESCE(u.input_tokens, 0) AS input_tokens,
@@ -510,7 +510,7 @@ SELECT
       WHEN r.hourly_cost IS NOT NULL
         AND (COALESCE(v.hours_saved,0) * r.hourly_cost - COALESCE(c.total_cost,0)) >= (SELECT numeric_value FROM config_threshold WHERE key='accelerate_net_value_min')
         AND s.assigned_seats > 0
-        AND (100.0 * COALESCE(u.active_users,0) / s.assigned_seats) >= (SELECT numeric_value FROM config_threshold WHERE key='accelerate_adoption_min_pct')
+        AND (100.0 * COALESCE(NULLIF(u.active_users, 0), s.reported_active_seats, 0) / s.assigned_seats) >= (SELECT numeric_value FROM config_threshold WHERE key='accelerate_adoption_min_pct')
         THEN 'Accelerate'
       ELSE 'Optimize'
     END AS action_label,
