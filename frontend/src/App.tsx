@@ -24,7 +24,8 @@ import {
   fetchAgents,
   fetchSeats,
   fetchThresholds,
-  loginUser
+  loginUser,
+  syncClaudeTelemetry
 } from './api';
 import {
   SummaryKPI,
@@ -150,10 +151,13 @@ export const App: React.FC = () => {
     localStorage.setItem('wct_cockpit_theme', theme);
   }, [theme]);
 
-  // Load dashboard data scoped to role and function
-  const loadDashboardData = async () => {
+  // Load dashboard data scoped to role and function (with optional Claude API live sync)
+  const loadDashboardData = async (triggerClaudeSync: boolean = false) => {
     setIsLoading(true);
     try {
+      if (triggerClaudeSync) {
+        await syncClaudeTelemetry().catch((err) => console.log('Auto Claude sync skipped/error:', err));
+      }
       const [sumData, funcData, costData, trendData, actData, agentList, seatData, thresh] = await Promise.all([
         fetchSummary(currentMonth, effFunc).catch(() => null),
         fetchByFunction(currentMonth).catch(() => []),
@@ -246,7 +250,7 @@ export const App: React.FC = () => {
         user={currentUser}
         onUserChange={handleUserChange}
         onLogout={handleLogout}
-        onRefresh={loadDashboardData}
+        onRefresh={() => loadDashboardData(true)}
         isLoading={isLoading}
         theme={theme}
         onThemeChange={setTheme}

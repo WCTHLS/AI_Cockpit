@@ -1,0 +1,4902 @@
+{
+  "data": [
+    {
+      "starting_at": "2026-09-01T00:00:00Z",
+      "ending_at": "2026-09-02T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-02T00:00:00Z",
+      "ending_at": "2026-09-03T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-03T00:00:00Z",
+      "ending_at": "2026-09-04T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-04T00:00:00Z",
+      "ending_at": "2026-09-05T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 382500,
+          "cache_read_input_tokens": 1440000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 99000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 540000,
+          "cache_read_input_tokens": 1845000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 139500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 171000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 414000,
+          "cache_read_input_tokens": 2160000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 126000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 117000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 720000,
+          "cache_read_input_tokens": 2925000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 202500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 189000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 306000,
+          "cache_read_input_tokens": 1305000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 85500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 81000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 945000,
+          "cache_read_input_tokens": 3690000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 261000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 229500
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 441000,
+          "cache_read_input_tokens": 2070000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 139500
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 472500,
+          "cache_read_input_tokens": 1755000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 117000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 130500
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1305000,
+          "cache_read_input_tokens": 5175000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 369000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 351000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 355500,
+          "cache_read_input_tokens": 1530000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 94500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 99000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 319500,
+          "cache_read_input_tokens": 1260000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 81000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85500
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 337500,
+          "cache_read_input_tokens": 1395000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 265500,
+          "cache_read_input_tokens": 1170000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 72000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 72000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 220500,
+          "cache_read_input_tokens": 945000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 58500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 63000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 877500,
+          "cache_read_input_tokens": 3510000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 234000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220500
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 396000,
+          "cache_read_input_tokens": 1890000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 121500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 121500
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 621000,
+          "cache_read_input_tokens": 2430000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 162000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 157500
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 184500,
+          "cache_read_input_tokens": 540000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 40500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 38250
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-05T00:00:00Z",
+      "ending_at": "2026-09-06T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 382500,
+          "cache_read_input_tokens": 1440000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 99000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 540000,
+          "cache_read_input_tokens": 1845000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 139500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 171000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 414000,
+          "cache_read_input_tokens": 2160000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 126000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 117000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 720000,
+          "cache_read_input_tokens": 2925000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 202500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 189000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 306000,
+          "cache_read_input_tokens": 1305000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 85500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 81000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 945000,
+          "cache_read_input_tokens": 3690000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 261000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 229500
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 441000,
+          "cache_read_input_tokens": 2070000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 139500
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 472500,
+          "cache_read_input_tokens": 1755000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 117000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 130500
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1305000,
+          "cache_read_input_tokens": 5175000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 369000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 351000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 355500,
+          "cache_read_input_tokens": 1530000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 94500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 99000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 319500,
+          "cache_read_input_tokens": 1260000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 81000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85500
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 337500,
+          "cache_read_input_tokens": 1395000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 265500,
+          "cache_read_input_tokens": 1170000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 72000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 72000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 220500,
+          "cache_read_input_tokens": 945000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 58500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 63000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 877500,
+          "cache_read_input_tokens": 3510000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 234000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220500
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 396000,
+          "cache_read_input_tokens": 1890000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 121500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 121500
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 621000,
+          "cache_read_input_tokens": 2430000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 162000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 157500
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 184500,
+          "cache_read_input_tokens": 540000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 40500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 38250
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-06T00:00:00Z",
+      "ending_at": "2026-09-07T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-07T00:00:00Z",
+      "ending_at": "2026-09-08T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-08T00:00:00Z",
+      "ending_at": "2026-09-09T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-09T00:00:00Z",
+      "ending_at": "2026-09-10T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-10T00:00:00Z",
+      "ending_at": "2026-09-11T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-11T00:00:00Z",
+      "ending_at": "2026-09-12T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 382500,
+          "cache_read_input_tokens": 1440000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 99000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 540000,
+          "cache_read_input_tokens": 1845000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 139500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 171000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 414000,
+          "cache_read_input_tokens": 2160000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 126000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 117000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 720000,
+          "cache_read_input_tokens": 2925000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 202500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 189000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 306000,
+          "cache_read_input_tokens": 1305000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 85500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 81000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 945000,
+          "cache_read_input_tokens": 3690000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 261000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 229500
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 441000,
+          "cache_read_input_tokens": 2070000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 139500
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 472500,
+          "cache_read_input_tokens": 1755000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 117000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 130500
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1305000,
+          "cache_read_input_tokens": 5175000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 369000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 351000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 355500,
+          "cache_read_input_tokens": 1530000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 94500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 99000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 319500,
+          "cache_read_input_tokens": 1260000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 81000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85500
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 337500,
+          "cache_read_input_tokens": 1395000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 265500,
+          "cache_read_input_tokens": 1170000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 72000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 72000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 220500,
+          "cache_read_input_tokens": 945000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 58500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 63000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 877500,
+          "cache_read_input_tokens": 3510000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 234000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220500
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 396000,
+          "cache_read_input_tokens": 1890000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 121500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 121500
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 621000,
+          "cache_read_input_tokens": 2430000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 162000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 157500
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 184500,
+          "cache_read_input_tokens": 540000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 40500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 38250
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-12T00:00:00Z",
+      "ending_at": "2026-09-13T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 382500,
+          "cache_read_input_tokens": 1440000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 99000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 540000,
+          "cache_read_input_tokens": 1845000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 139500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 171000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 414000,
+          "cache_read_input_tokens": 2160000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 126000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 117000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 720000,
+          "cache_read_input_tokens": 2925000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 202500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 189000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 306000,
+          "cache_read_input_tokens": 1305000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 85500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 81000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 945000,
+          "cache_read_input_tokens": 3690000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 261000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 229500
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 441000,
+          "cache_read_input_tokens": 2070000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 139500
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 472500,
+          "cache_read_input_tokens": 1755000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 117000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 130500
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1305000,
+          "cache_read_input_tokens": 5175000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 369000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 351000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 355500,
+          "cache_read_input_tokens": 1530000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 94500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 99000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 319500,
+          "cache_read_input_tokens": 1260000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 81000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85500
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 337500,
+          "cache_read_input_tokens": 1395000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 265500,
+          "cache_read_input_tokens": 1170000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 72000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 72000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 220500,
+          "cache_read_input_tokens": 945000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 58500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 63000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 877500,
+          "cache_read_input_tokens": 3510000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 234000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220500
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 396000,
+          "cache_read_input_tokens": 1890000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 121500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 121500
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 621000,
+          "cache_read_input_tokens": 2430000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 162000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 157500
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 184500,
+          "cache_read_input_tokens": 540000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 40500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 38250
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-13T00:00:00Z",
+      "ending_at": "2026-09-14T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-14T00:00:00Z",
+      "ending_at": "2026-09-15T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-15T00:00:00Z",
+      "ending_at": "2026-09-16T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-16T00:00:00Z",
+      "ending_at": "2026-09-17T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-17T00:00:00Z",
+      "ending_at": "2026-09-18T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-18T00:00:00Z",
+      "ending_at": "2026-09-19T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 382500,
+          "cache_read_input_tokens": 1440000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 99000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 540000,
+          "cache_read_input_tokens": 1845000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 139500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 171000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 414000,
+          "cache_read_input_tokens": 2160000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 126000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 117000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 720000,
+          "cache_read_input_tokens": 2925000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 202500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 189000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 306000,
+          "cache_read_input_tokens": 1305000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 85500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 81000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 945000,
+          "cache_read_input_tokens": 3690000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 261000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 229500
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 441000,
+          "cache_read_input_tokens": 2070000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 139500
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 472500,
+          "cache_read_input_tokens": 1755000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 117000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 130500
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1305000,
+          "cache_read_input_tokens": 5175000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 369000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 351000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 355500,
+          "cache_read_input_tokens": 1530000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 94500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 99000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 319500,
+          "cache_read_input_tokens": 1260000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 81000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85500
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 337500,
+          "cache_read_input_tokens": 1395000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 265500,
+          "cache_read_input_tokens": 1170000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 72000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 72000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 220500,
+          "cache_read_input_tokens": 945000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 58500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 63000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 877500,
+          "cache_read_input_tokens": 3510000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 234000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220500
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 396000,
+          "cache_read_input_tokens": 1890000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 121500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 121500
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 621000,
+          "cache_read_input_tokens": 2430000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 162000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 157500
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 184500,
+          "cache_read_input_tokens": 540000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 40500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 38250
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-19T00:00:00Z",
+      "ending_at": "2026-09-20T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 382500,
+          "cache_read_input_tokens": 1440000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 99000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 540000,
+          "cache_read_input_tokens": 1845000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 139500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 171000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 414000,
+          "cache_read_input_tokens": 2160000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 126000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 117000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 720000,
+          "cache_read_input_tokens": 2925000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 202500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 189000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 306000,
+          "cache_read_input_tokens": 1305000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 85500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 81000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 945000,
+          "cache_read_input_tokens": 3690000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 261000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 229500
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 441000,
+          "cache_read_input_tokens": 2070000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 139500
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 472500,
+          "cache_read_input_tokens": 1755000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 117000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 130500
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1305000,
+          "cache_read_input_tokens": 5175000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 369000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 351000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 355500,
+          "cache_read_input_tokens": 1530000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 94500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 99000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 319500,
+          "cache_read_input_tokens": 1260000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 81000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85500
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 337500,
+          "cache_read_input_tokens": 1395000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 94500
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 265500,
+          "cache_read_input_tokens": 1170000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 72000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 72000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 220500,
+          "cache_read_input_tokens": 945000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 58500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 63000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 877500,
+          "cache_read_input_tokens": 3510000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 234000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220500
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 396000,
+          "cache_read_input_tokens": 1890000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 121500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 121500
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 621000,
+          "cache_read_input_tokens": 2430000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 162000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 157500
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 184500,
+          "cache_read_input_tokens": 540000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 40500,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 38250
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-20T00:00:00Z",
+      "ending_at": "2026-09-21T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-21T00:00:00Z",
+      "ending_at": "2026-09-22T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-22T00:00:00Z",
+      "ending_at": "2026-09-23T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-23T00:00:00Z",
+      "ending_at": "2026-09-24T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-24T00:00:00Z",
+      "ending_at": "2026-09-25T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 850000,
+          "cache_read_input_tokens": 3200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 220000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1200000,
+          "cache_read_input_tokens": 4100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 310000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 380000
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 920000,
+          "cache_read_input_tokens": 4800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 280000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 260000
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1600000,
+          "cache_read_input_tokens": 6500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 450000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 420000
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 680000,
+          "cache_read_input_tokens": 2900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 190000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 180000
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 2100000,
+          "cache_read_input_tokens": 8200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 580000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 510000
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 980000,
+          "cache_read_input_tokens": 4600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 290000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 310000
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1050000,
+          "cache_read_input_tokens": 3900000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 260000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 290000
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 2900000,
+          "cache_read_input_tokens": 11500000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 820000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 780000
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 790000,
+          "cache_read_input_tokens": 3400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 210000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 220000
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 710000,
+          "cache_read_input_tokens": 2800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 180000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 190000
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 750000,
+          "cache_read_input_tokens": 3100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 200000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 210000
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 590000,
+          "cache_read_input_tokens": 2600000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 160000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 160000
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 490000,
+          "cache_read_input_tokens": 2100000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 130000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 140000
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "model": "claude-3-opus-20240229",
+          "uncached_input_tokens": 1950000,
+          "cache_read_input_tokens": 7800000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 520000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 490000
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 880000,
+          "cache_read_input_tokens": 4200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 270000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 270000
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "model": "claude-3-7-sonnet-20250219",
+          "uncached_input_tokens": 1380000,
+          "cache_read_input_tokens": 5400000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 360000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 350000
+        },
+        {
+          "workspace_id": null,
+          "model": "claude-3-5-haiku-20241022",
+          "uncached_input_tokens": 410000,
+          "cache_read_input_tokens": 1200000,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 90000,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 85000
+        }
+      ]
+    }
+  ],
+  "has_more": false,
+  "next_page": null
+}

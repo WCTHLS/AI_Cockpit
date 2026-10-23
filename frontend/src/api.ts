@@ -1,4 +1,4 @@
-import { SummaryKPI, FunctionSummary, CostBreakdownItem, TrendMonth, AgentScorecardItem, SeatInventorySummary, UserProfile, IngestResponse } from './types';
+import { SummaryKPI, FunctionSummary, CostBreakdownItem, TrendMonth, AgentScorecardItem, SeatInventorySummary, UserProfile, IngestResponse, ClaudeConfig, ClaudeSyncResponse } from './types';
 
 const API_BASE = '/api/v1';
 
@@ -204,3 +204,48 @@ export async function downloadCsvTemplate(): Promise<void> {
   URL.revokeObjectURL(url);
 }
 
+
+export async function fetchClaudeConfig(): Promise<ClaudeConfig> {
+  const res = await fetch(`${API_BASE}/admin/claude/config`, {
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) throw new Error('Failed to fetch Claude configuration');
+  return res.json();
+}
+
+export async function updateClaudeConfig(config: {
+  cost_report_url?: string;
+  usage_report_url?: string;
+  admin_api_key?: string;
+  auto_sync_on_refresh?: boolean;
+}): Promise<{ status: string; message: string }> {
+  const res = await fetch(`${API_BASE}/admin/claude/config`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(config)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to update Claude configuration');
+  }
+  return res.json();
+}
+
+export async function syncClaudeTelemetry(params?: {
+  cost_report_url?: string;
+  usage_report_url?: string;
+  admin_api_key?: string;
+  month?: string;
+  force_local?: boolean;
+}): Promise<ClaudeSyncResponse> {
+  const res = await fetch(`${API_BASE}/admin/claude/sync`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(params || {})
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to sync Claude telemetry');
+  }
+  return res.json();
+}

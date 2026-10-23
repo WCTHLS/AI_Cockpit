@@ -1,0 +1,2310 @@
+{
+  "data": [
+    {
+      "starting_at": "2026-09-01T00:00:00Z",
+      "ending_at": "2026-09-02T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-02T00:00:00Z",
+      "ending_at": "2026-09-03T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-03T00:00:00Z",
+      "ending_at": "2026-09-04T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-04T00:00:00Z",
+      "ending_at": "2026-09-05T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "8325.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "10890.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "7380.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "14445.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "5760.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "18675.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "8640.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "9450.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "26100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "7020.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "6255.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "6660.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "5040.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "4410.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "17280.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "7740.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "12420.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "3825.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-05T00:00:00Z",
+      "ending_at": "2026-09-06T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "8325.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "10890.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "7380.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "14445.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "5760.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "18675.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "8640.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "9450.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "26100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "7020.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "6255.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "6660.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "5040.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "4410.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "17280.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "7740.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "12420.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "3825.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-06T00:00:00Z",
+      "ending_at": "2026-09-07T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-07T00:00:00Z",
+      "ending_at": "2026-09-08T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-08T00:00:00Z",
+      "ending_at": "2026-09-09T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-09T00:00:00Z",
+      "ending_at": "2026-09-10T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-10T00:00:00Z",
+      "ending_at": "2026-09-11T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-11T00:00:00Z",
+      "ending_at": "2026-09-12T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "8325.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "10890.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "7380.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "14445.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "5760.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "18675.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "8640.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "9450.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "26100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "7020.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "6255.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "6660.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "5040.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "4410.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "17280.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "7740.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "12420.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "3825.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-12T00:00:00Z",
+      "ending_at": "2026-09-13T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "8325.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "10890.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "7380.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "14445.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "5760.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "18675.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "8640.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "9450.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "26100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "7020.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "6255.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "6660.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "5040.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "4410.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "17280.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "7740.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "12420.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "3825.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-13T00:00:00Z",
+      "ending_at": "2026-09-14T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-14T00:00:00Z",
+      "ending_at": "2026-09-15T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-15T00:00:00Z",
+      "ending_at": "2026-09-16T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-16T00:00:00Z",
+      "ending_at": "2026-09-17T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-17T00:00:00Z",
+      "ending_at": "2026-09-18T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-18T00:00:00Z",
+      "ending_at": "2026-09-19T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "8325.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "10890.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "7380.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "14445.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "5760.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "18675.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "8640.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "9450.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "26100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "7020.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "6255.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "6660.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "5040.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "4410.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "17280.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "7740.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "12420.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "3825.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-19T00:00:00Z",
+      "ending_at": "2026-09-20T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "8325.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "10890.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "7380.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "14445.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "5760.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "18675.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "8640.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "9450.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "26100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "7020.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "6255.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "6660.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "5040.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "4410.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "17280.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "7740.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "12420.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "3825.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-20T00:00:00Z",
+      "ending_at": "2026-09-21T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-21T00:00:00Z",
+      "ending_at": "2026-09-22T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-22T00:00:00Z",
+      "ending_at": "2026-09-23T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-23T00:00:00Z",
+      "ending_at": "2026-09-24T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    },
+    {
+      "starting_at": "2026-09-24T00:00:00Z",
+      "ending_at": "2026-09-25T00:00:00Z",
+      "results": [
+        {
+          "workspace_id": "wrk_account_research_agent",
+          "amount": "18500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_campaign_content_agent",
+          "amount": "24200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_case_triage_agent",
+          "amount": "16400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_code_review_agent",
+          "amount": "32100.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_collections_agent",
+          "amount": "12800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_contract_review_agent",
+          "amount": "41500.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_customer_self_service_agent",
+          "amount": "19200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_demand_sensing_agent",
+          "amount": "21000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_developer_copilot",
+          "amount": "58000.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_invoice_matching_agent",
+          "amount": "15600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_knowledge_article_agent",
+          "amount": "13900.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_logistics_tracking_agent",
+          "amount": "14800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_order_status_agent",
+          "amount": "11200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_password_access_agent",
+          "amount": "9800.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_rfp_response_agent",
+          "amount": "38400.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_ticket_triage_agent",
+          "amount": "17200.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": "wrk_variance_analysis_agent",
+          "amount": "27600.00",
+          "currency": "USD"
+        },
+        {
+          "workspace_id": null,
+          "amount": "8500.00",
+          "currency": "USD"
+        }
+      ]
+    }
+  ],
+  "has_more": false,
+  "next_page": null
+}

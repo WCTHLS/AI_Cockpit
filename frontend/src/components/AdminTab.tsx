@@ -21,10 +21,18 @@ import {
   FileSpreadsheet,
   CheckCircle2,
   RefreshCw,
-  X
+  X,
+  Server,
+  Link2,
+  Key,
+  Database,
+  Eye,
+  EyeOff,
+  Radio,
+  CheckCircle
 } from 'lucide-react';
-import { updateThresholds, formatUSD, uploadTelemetryFile, downloadCsvTemplate } from '../api';
-import { UserProfile, IngestSummary, SummaryKPI } from '../types';
+import { updateThresholds, formatUSD, uploadTelemetryFile, downloadCsvTemplate, fetchClaudeConfig, updateClaudeConfig, syncClaudeTelemetry, formatPct } from '../api';
+import { UserProfile, IngestSummary, SummaryKPI, ClaudeConfig, ClaudeSyncResponse, ClaudeSyncMetrics } from '../types';
 
 interface AdminTabProps {
   initialThresholds: any;
@@ -91,7 +99,7 @@ const DEFAULT_GUARDRAIL_CONFIG: GuardrailConfig = {
 
 export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, onConfigSaved, theme = 'light', user, summary }) => {
   const isAdmin = user ? user.role === 'admin' : true;
-  const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance' | 'ingestion'>('subs');
+  const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance' | 'ingestion' | 'claude_api'>('subs');
 
   // Governance action thresholds (slide 7)
   const [thresholds, setThresholds] = useState<any>(initialThresholds || {
@@ -120,6 +128,86 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     const saved = localStorage.getItem('wct_guardrail_config');
     return saved ? JSON.parse(saved) : DEFAULT_GUARDRAIL_CONFIG;
   });
+
+  // Claude Enterprise API Sync State
+  const [claudeConfig, setClaudeConfig] = useState<ClaudeConfig | null>(null);
+  const [costReportUrl, setCostReportUrl] = useState<string>('');
+  const [usageReportUrl, setUsageReportUrl] = useState<string>('');
+  const [adminApiKey, setAdminApiKey] = useState<string>('');
+  const [showApiKey, setShowApiKey] = useState<boolean>(false);
+  const [autoSyncOnRefresh, setAutoSyncOnRefresh] = useState<boolean>(true);
+  const [isSyncingClaude, setIsSyncingClaude] = useState<boolean>(false);
+  const [isSavingClaudeConfig, setIsSavingClaudeConfig] = useState<boolean>(false);
+  const [claudeSyncResult, setClaudeSyncResult] = useState<ClaudeSyncResponse | null>(null);
+  const [claudeSyncError, setClaudeSyncError] = useState<string | null>(null);
+  const [claudeConfigSuccess, setClaudeConfigSuccess] = useState<string | null>(null);
+
+  // Load Claude API configuration on mount
+  useEffect(() => {
+    fetchClaudeConfig()
+      .then((cfg) => {
+        setClaudeConfig(cfg);
+        setCostReportUrl(cfg.cost_report_url || '');
+        setUsageReportUrl(cfg.usage_report_url || '');
+        setAutoSyncOnRefresh(cfg.auto_sync_on_refresh);
+        if (cfg.last_sync_metrics) {
+          setClaudeSyncResult({
+            status: cfg.last_sync_status || 'success',
+            synced_at: cfg.last_synced_at || '',
+            source_cost: cfg.last_sync_metrics.source_cost || 'Local Mock',
+            source_usage: cfg.last_sync_metrics.source_usage || 'Local Mock',
+            agents_synced: cfg.last_sync_metrics.agents_synced || 17,
+            metrics: cfg.last_sync_metrics,
+            message: 'Loaded previous Claude Enterprise synchronization metrics'
+          });
+        }
+      })
+      .catch((err) => console.error('Failed to load Claude config:', err));
+  }, []);
+
+  const handleSaveClaudeConfig = async () => {
+    setIsSavingClaudeConfig(true);
+    setClaudeConfigSuccess(null);
+    setClaudeSyncError(null);
+    try {
+      const res = await updateClaudeConfig({
+        cost_report_url: costReportUrl,
+        usage_report_url: usageReportUrl,
+        admin_api_key: adminApiKey,
+        auto_sync_on_refresh: autoSyncOnRefresh
+      });
+      setClaudeConfigSuccess(res.message || 'Claude integration configuration saved!');
+      const updated = await fetchClaudeConfig();
+      setClaudeConfig(updated);
+      setAdminApiKey('');
+      setTimeout(() => setClaudeConfigSuccess(null), 4000);
+    } catch (err: any) {
+      setClaudeSyncError(err.message || 'Failed to save configuration');
+    } finally {
+      setIsSavingClaudeConfig(false);
+    }
+  };
+
+  const handleSyncClaude = async (forceLocal: boolean = false) => {
+    setIsSyncingClaude(true);
+    setClaudeSyncError(null);
+    try {
+      const res = await syncClaudeTelemetry({
+        cost_report_url: costReportUrl,
+        usage_report_url: usageReportUrl,
+        admin_api_key: adminApiKey,
+        force_local: forceLocal
+      });
+      setClaudeSyncResult(res);
+      onThresholdsUpdated();
+      const updated = await fetchClaudeConfig();
+      setClaudeConfig(updated);
+    } catch (err: any) {
+      setClaudeSyncError(err.message || 'Claude synchronization failed');
+    } finally {
+      setIsSyncingClaude(false);
+    }
+  };
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -569,6 +657,37 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
           }}
         >
           <UploadCloud size={15} /> Telemetry Ingestion (CSV / Excel)
+        </button>
+
+        <button
+          onClick={() => setActiveSection('claude_api')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 7,
+            padding: '8px 16px',
+            borderRadius: '8px 8px 0 0',
+            border: 'none',
+            background: activeSection === 'claude_api' ? '#7C3AED' : 'transparent',
+            color: activeSection === 'claude_api' ? '#FFFFFF' : '#475569',
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          <Zap size={15} /> Claude &amp; LLM Sync
+          <span style={{
+            background: activeSection === 'claude_api' ? '#FCD34D' : '#EDE9FE',
+            color: activeSection === 'claude_api' ? '#1E1B4B' : '#7C3AED',
+            fontSize: 10,
+            fontWeight: 800,
+            padding: '2px 6px',
+            borderRadius: 10,
+            marginLeft: 2
+          }}>
+            API
+          </span>
         </button>
       </div>
 
@@ -1415,6 +1534,495 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
           )}
         </div>
       )}
+
+      {/* SECTION 6: CLAUDE & LLM API INTEGRATION */}
+      {activeSection === 'claude_api' && (
+        <div style={{
+          background: '#FFFFFF',
+          border: '1.5px solid #DDD6FE',
+          borderRadius: 12,
+          padding: 24,
+          boxShadow: '0 4px 16px rgba(124, 58, 237, 0.06)'
+        }}>
+          {/* Header Banner */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderBottom: '1px solid #EDE9FE',
+            paddingBottom: 16,
+            marginBottom: 20
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #7C3AED, #A855F7)',
+                color: '#FFFFFF',
+                padding: 10,
+                borderRadius: 10,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)'
+              }}>
+                <Zap size={22} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: 17, fontWeight: 800, color: '#1E1B4B', margin: 0 }}>
+                  Claude Enterprise &amp; Console Live Telemetry Sync
+                </h3>
+                <p style={{ fontSize: 13, color: '#6B7280', margin: '3px 0 0 0' }}>
+                  Live API connector pulling real token consumption, prompt cache savings, and cost reports per agent workspace.
+                </p>
+              </div>
+            </div>
+
+            {/* Status Indicator */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: claudeConfig?.cost_report_url ? '#FAF5FF' : '#F0FDF4',
+              border: `1px solid ${claudeConfig?.cost_report_url ? '#D8B4FE' : '#86EFAC'}`,
+              padding: '6px 14px',
+              borderRadius: 20
+            }}>
+              <span style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: claudeConfig?.cost_report_url ? '#9333EA' : '#16A34A',
+                boxShadow: `0 0 8px ${claudeConfig?.cost_report_url ? '#9333EA' : '#16A34A'}`
+              }} />
+              <span style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: claudeConfig?.cost_report_url ? '#6B21A8' : '#15803D'
+              }}>
+                {claudeConfig?.cost_report_url ? 'Remote Endpoint Connected' : 'Sample Mock Engine Active'}
+              </span>
+            </div>
+          </div>
+
+          {/* Feedback Alerts */}
+          {claudeConfigSuccess && (
+            <div style={{
+              background: '#F0FDF4',
+              border: '1px solid #86EFAC',
+              color: '#166534',
+              borderRadius: 8,
+              padding: '12px 16px',
+              marginBottom: 18,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              fontSize: 13,
+              fontWeight: 600
+            }}>
+              <CheckCircle2 size={16} />
+              <span>{claudeConfigSuccess}</span>
+            </div>
+          )}
+
+          {claudeSyncError && (
+            <div style={{
+              background: '#FEF2F2',
+              border: '1px solid #FCA5A5',
+              color: '#991B1B',
+              borderRadius: 8,
+              padding: '12px 16px',
+              marginBottom: 18,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              fontSize: 13,
+              fontWeight: 600
+            }}>
+              <AlertCircle size={16} />
+              <span>{claudeSyncError}</span>
+            </div>
+          )}
+
+          {/* Configuration Form Card */}
+          <div style={{
+            background: '#FBFBFE',
+            border: '1px solid #E9D5FF',
+            borderRadius: 10,
+            padding: 20,
+            marginBottom: 24
+          }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#4C1D95', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Link2 size={16} />
+              API Endpoints &amp; Authentication Configuration
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+              {/* Cost Report URL */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
+                  Claude Cost Report Endpoint URL:
+                </label>
+                <input
+                  type="text"
+                  value={costReportUrl}
+                  onChange={(e) => setCostReportUrl(e.target.value)}
+                  placeholder="https://.../v1/organizations/cost_report (leave blank for local root mock)"
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 6,
+                    border: '1px solid #CBD5E1',
+                    fontSize: 12.5,
+                    fontFamily: 'monospace',
+                    background: '#FFFFFF'
+                  }}
+                />
+                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
+                  Default fallback: <code style={{ color: '#7C3AED' }}>claude_cost_report_sample.json</code> (Root directory)
+                </div>
+              </div>
+
+              {/* Usage Report URL */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
+                  Claude Usage Report Endpoint URL:
+                </label>
+                <input
+                  type="text"
+                  value={usageReportUrl}
+                  onChange={(e) => setUsageReportUrl(e.target.value)}
+                  placeholder="https://.../v1/organizations/usage_report/messages (leave blank for local mock)"
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 6,
+                    border: '1px solid #CBD5E1',
+                    fontSize: 12.5,
+                    fontFamily: 'monospace',
+                    background: '#FFFFFF'
+                  }}
+                />
+                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
+                  Default fallback: <code style={{ color: '#7C3AED' }}>claude_usage_report_sample.json</code> (Root directory)
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'center' }}>
+              {/* Admin API Key */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
+                  Anthropic Admin API Key (sk-ant-admin01-...):
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showApiKey ? 'text' : 'password'}
+                    value={adminApiKey}
+                    onChange={(e) => setAdminApiKey(e.target.value)}
+                    placeholder={claudeConfig?.has_api_key ? `Configured: ${claudeConfig.admin_api_key_masked}` : 'Enter sk-ant-admin01-...'}
+                    style={{
+                      width: '100%',
+                      padding: '9px 40px 9px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #CBD5E1',
+                      fontSize: 12.5,
+                      fontFamily: 'monospace',
+                      background: '#FFFFFF'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    style={{
+                      position: 'absolute',
+                      right: 10,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: '#6B7280'
+                    }}
+                  >
+                    {showApiKey ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
+                  Key is encrypted and stored locally. Never transmitted to third-party servers.
+                </div>
+              </div>
+
+              {/* Auto Sync Toggle & Save Button */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+                  <input
+                    type="checkbox"
+                    checked={autoSyncOnRefresh}
+                    onChange={(e) => setAutoSyncOnRefresh(e.target.checked)}
+                    style={{ width: 16, height: 16, accentColor: '#7C3AED' }}
+                  />
+                  <span>Auto-sync telemetry whenever dashboard is refreshed</span>
+                </label>
+
+                <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+                  <button
+                    onClick={handleSaveClaudeConfig}
+                    disabled={isSavingClaudeConfig}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      background: '#7C3AED',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: 6,
+                      padding: '8px 16px',
+                      fontSize: 12.5,
+                      fontWeight: 700,
+                      cursor: isSavingClaudeConfig ? 'not-allowed' : 'pointer'
+                    }}
+                  >
+                    <Save size={14} />
+                    {isSavingClaudeConfig ? 'Saving...' : 'Save Configuration'}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setCostReportUrl('');
+                      setUsageReportUrl('');
+                      setAdminApiKey('');
+                    }}
+                    style={{
+                      background: '#FFFFFF',
+                      color: '#6B7280',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: 6,
+                      padding: '8px 14px',
+                      fontSize: 12.5,
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Reset to Local Mock
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Trigger Live Sync Action Banner */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: 'linear-gradient(135deg, #FAF5FF, #F3E8FF)',
+            border: '1.5px solid #C084FC',
+            borderRadius: 10,
+            padding: '16px 20px',
+            marginBottom: 24
+          }}>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: '#581C87' }}>
+                Trigger Telemetry Ingestion &amp; Metric Update
+              </div>
+              <div style={{ fontSize: 12.5, color: '#6B21A8', marginTop: 2 }}>
+                Executes the Anthropic pipeline parser: extracts daily buckets, converts cents to USD, computes prompt cache savings, and recalculates scorecard values.
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={() => handleSyncClaude(true)}
+                disabled={isSyncingClaude}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  background: '#FFFFFF',
+                  color: '#7C3AED',
+                  border: '1px solid #A855F7',
+                  borderRadius: 6,
+                  padding: '9px 15px',
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  cursor: isSyncingClaude ? 'not-allowed' : 'pointer'
+                }}
+              >
+                <Database size={14} />
+                Force Local Sample Mock
+              </button>
+
+              <button
+                onClick={() => handleSyncClaude(false)}
+                disabled={isSyncingClaude}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  background: '#7C3AED',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '9px 20px',
+                  fontSize: 13,
+                  fontWeight: 800,
+                  cursor: isSyncingClaude ? 'not-allowed' : 'pointer',
+                  boxShadow: '0 4px 14px rgba(124, 58, 237, 0.35)'
+                }}
+              >
+                {isSyncingClaude ? (
+                  <>
+                    <RefreshCw size={15} style={{ animation: 'spin 1s linear infinite' }} />
+                    Syncing Telemetry...
+                  </>
+                ) : (
+                  <>
+                    <Zap size={15} />
+                    Sync Claude Telemetry Now
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Live Telemetry Impact Dashboard */}
+          {claudeSyncResult && (
+            <div style={{
+              background: '#FFFFFF',
+              border: '1px solid #E9D5FF',
+              borderRadius: 10,
+              padding: 20
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <CheckCircle2 size={18} color="#16A34A" />
+                  <span style={{ fontSize: 14, fontWeight: 800, color: '#1E1B4B' }}>
+                    Telemetry Synchronization Result
+                  </span>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    padding: '2px 8px',
+                    borderRadius: 12,
+                    background: '#EDE9FE',
+                    color: '#6D28D9'
+                  }}>
+                    {claudeSyncResult.source_cost}
+                  </span>
+                </div>
+
+                <div style={{ fontSize: 12, color: '#6B7280' }}>
+                  Synced at: {new Date(claudeSyncResult.synced_at).toLocaleString()}
+                </div>
+              </div>
+
+              {/* 6 Key Metric Cards */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(6, 1fr)',
+                gap: 12,
+                marginBottom: 20
+              }}>
+                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
+                    Billed API Cost
+                  </div>
+                  <div style={{ fontSize: 19, fontWeight: 800, color: '#7C3AED', marginTop: 2 }}>
+                    {formatUSD(claudeSyncResult.metrics.total_cost_usd)}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#6B7280' }}>From cents parse</div>
+                </div>
+
+                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
+                    Total Tokens
+                  </div>
+                  <div style={{ fontSize: 19, fontWeight: 800, color: '#1E1B4B', marginTop: 2 }}>
+                    {(claudeSyncResult.metrics.total_tokens / 1_000_000).toFixed(1)}M
+                  </div>
+                  <div style={{ fontSize: 11, color: '#6B7280' }}>Combined volume</div>
+                </div>
+
+                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
+                    Cache Savings
+                  </div>
+                  <div style={{ fontSize: 19, fontWeight: 800, color: '#059669', marginTop: 2 }}>
+                    {formatUSD(claudeSyncResult.metrics.prompt_cache_savings_usd)}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#059669', fontWeight: 600 }}>Prompt cache hit</div>
+                </div>
+
+                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
+                    Tasks Derived
+                  </div>
+                  <div style={{ fontSize: 19, fontWeight: 800, color: '#1E1B4B', marginTop: 2 }}>
+                    {claudeSyncResult.metrics.tasks_executed.toLocaleString()}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#6B7280' }}>Workflow turns</div>
+                </div>
+
+                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
+                    Hours Saved
+                  </div>
+                  <div style={{ fontSize: 19, fontWeight: 800, color: '#00349B', marginTop: 2 }}>
+                    {claudeSyncResult.metrics.total_hours_saved.toLocaleString()}h
+                  </div>
+                  <div style={{ fontSize: 11, color: '#00349B', fontWeight: 600 }}>Role benchmark</div>
+                </div>
+
+                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
+                    Net Value Created
+                  </div>
+                  <div style={{ fontSize: 19, fontWeight: 800, color: '#16A34A', marginTop: 2 }}>
+                    {formatUSD(claudeSyncResult.metrics.total_net_value_usd)}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#16A34A', fontWeight: 700 }}>Gross - LLM Cost</div>
+                </div>
+              </div>
+
+              {/* Token Breakdown Bar */}
+              <div style={{
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: 8,
+                padding: '12px 16px',
+                marginBottom: 16
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#334155', marginBottom: 6 }}>
+                  Anthropic Token Cache Breakdown:
+                </div>
+                <div style={{ display: 'flex', gap: 20, fontSize: 12, color: '#475569' }}>
+                  <div>
+                    <span style={{ fontWeight: 600 }}>Uncached Input: </span>
+                    <span style={{ fontFamily: 'monospace' }}>{(claudeSyncResult.metrics.uncached_input_tokens / 1_000_000).toFixed(2)}M</span>
+                  </div>
+                  <div>
+                    <span style={{ fontWeight: 600, color: '#059669' }}>Cache Read (90% discount): </span>
+                    <span style={{ fontFamily: 'monospace', color: '#059669', fontWeight: 700 }}>{(claudeSyncResult.metrics.cache_read_tokens / 1_000_000).toFixed(2)}M</span>
+                  </div>
+                  <div>
+                    <span style={{ fontWeight: 600 }}>Cache Creation (5m/1h): </span>
+                    <span style={{ fontFamily: 'monospace' }}>{(claudeSyncResult.metrics.cache_creation_tokens / 1_000_000).toFixed(2)}M</span>
+                  </div>
+                  <div>
+                    <span style={{ fontWeight: 600 }}>Output Generation: </span>
+                    <span style={{ fontFamily: 'monospace' }}>{(claudeSyncResult.metrics.output_tokens / 1_000_000).toFixed(2)}M</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Synced Agents Count Tag */}
+              <div style={{ fontSize: 12, color: '#6B7280' }}>
+                Synchronized <strong>{claudeSyncResult.agents_synced} agent workspaces</strong> into active SQLite scorecard view.
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
     </div>
   );
 };

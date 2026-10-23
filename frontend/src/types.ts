@@ -104,3 +104,43 @@ export interface IngestResponse {
   summary: IngestSummary;
 }
 
+
+export interface ClaudeSyncMetrics {
+  agents_synced: number;
+  total_cost_usd: number;
+  total_tokens: number;
+  uncached_input_tokens: number;
+  cache_read_tokens: number;
+  cache_creation_tokens: number;
+  output_tokens: number;
+  prompt_cache_savings_usd: number;
+  total_hours_saved: number;
+  total_gross_value_usd: number;
+  total_net_value_usd: number;
+  tasks_executed: number;
+  source_cost: string;
+  source_usage: string;
+  timestamp: string;
+}
+
+export interface ClaudeConfig {
+  cost_report_url: string;
+  usage_report_url: string;
+  has_api_key: boolean;
+  admin_api_key_masked: string;
+  auto_sync_on_refresh: boolean;
+  last_synced_at: string | null;
+  last_sync_status: string;
+  last_sync_metrics: ClaudeSyncMetrics | null;
+}
+
+export interface ClaudeSyncResponse {
+  status: string;
+  synced_at: string;
+  source_cost: string;
+  source_usage: string;
+  agents_synced: number;
+  metrics: ClaudeSyncMetrics;
+  message: string;
+}
+
