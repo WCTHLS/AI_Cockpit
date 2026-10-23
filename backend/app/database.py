@@ -242,6 +242,41 @@ def seed_database(conn: sqlite3.Connection):
                 VALUES (?, ?, ?, ?)
             """, (s[0], s[1], int(s[2]), int(s[3])))
 
+def sync_active_agents(conn: sqlite3.Connection):
+    try:
+        mock_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "mock_data.json"))
+        if not os.path.exists(mock_path):
+            return
+        with open(mock_path, "r", encoding="utf-8") as f:
+            mock_data = json.load(f)
+        active_agent_names = list(set(a.get("Agent") for a in mock_data.get("agents", [])))
+        if not active_agent_names:
+            return
+        cur = conn.cursor()
+        cur.execute("UPDATE ai_agent SET is_active = 0")
+        ph = ",".join("?" for _ in active_agent_names)
+        cur.execute(f"UPDATE ai_agent SET is_active = 1 WHERE name IN ({ph})", active_agent_names)
+        cur.execute("""
+            UPDATE team SET is_active = 0 
+            WHERE id NOT IN (
+                SELECT DISTINCT ta.team_id 
+                FROM team_agent ta
+                JOIN ai_agent a ON a.id = ta.agent_id
+                WHERE a.is_active = 1
+            )
+        """)
+        cur.execute("""
+            UPDATE team SET is_active = 1 
+            WHERE id IN (
+                SELECT DISTINCT ta.team_id 
+                FROM team_agent ta
+                JOIN ai_agent a ON a.id = ta.agent_id
+                WHERE a.is_active = 1
+            )
+        """)
+    except Exception as e:
+        print(f"Warning: error syncing active agents: {e}")
+
 def init_db(seed_if_empty: bool = True):
     db_path = get_db_path()
     init_sql_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "db", "init.sql"))
@@ -259,3 +294,5 @@ def init_db(seed_if_empty: bool = True):
             count = cur.fetchone()[0]
             if count == 0:
                 seed_database(conn)
+            else:
+                sync_active_agents(conn)
