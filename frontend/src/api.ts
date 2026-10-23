@@ -1,4 +1,4 @@
-import { SummaryKPI, FunctionSummary, CostBreakdownItem, TrendMonth, AgentScorecardItem, SeatInventorySummary, UserProfile } from './types';
+import { SummaryKPI, FunctionSummary, CostBreakdownItem, TrendMonth, AgentScorecardItem, SeatInventorySummary, UserProfile, IngestResponse } from './types';
 
 const API_BASE = '/api/v1';
 
@@ -174,3 +174,33 @@ export async function updateThresholds(config: any): Promise<any> {
   }
   return res.json();
 }
+
+export async function uploadTelemetryFile(file: File): Promise<IngestResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch(`${API_BASE}/ingest/excel`, {
+    method: 'POST',
+    body: formData
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'Failed to upload telemetry file' }));
+    throw new Error(err.detail || 'Upload failed');
+  }
+  return res.json();
+}
+
+export async function downloadCsvTemplate(): Promise<void> {
+  const res = await fetch(`${API_BASE}/ingest/template`);
+  if (!res.ok) throw new Error('Failed to download template');
+  const text = await res.text();
+  const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', 'telemetry_sample_template.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
