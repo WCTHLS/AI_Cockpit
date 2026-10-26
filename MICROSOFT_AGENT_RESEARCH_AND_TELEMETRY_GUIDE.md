@@ -143,8 +143,9 @@ Enterprises license developer and knowledge-worker AI primarily through **fixed 
 ### Key Metrics from the Official GitHub Copilot Metrics API:
 * **`copilot_ide_code_completions.total_suggestions_count`**: Total code suggestions shown to developers.
 * **`copilot_ide_code_completions.total_acceptances_count`**: Total code suggestions accepted by developers.
-* **`acceptance_rate`**: 
-  $$\text{Acceptance Rate} = \left( \frac{\text{total\_acceptances\_count}}{\text{total\_suggestions\_count}} \right) \times 100$$
+* **`acceptance_rate`**: Percentage of code recommendations accepted and kept by developers:
+  * **Formula**: `(Total Suggestions Accepted / Total Suggestions Shown) * 100`
+  * *Example*: If Copilot suggests 1,000 code completions and developers accept 280 of them, the Acceptance Rate is **28.0%** (industry benchmark is 25% to 35%).
 * **`total_lines_suggested` vs `total_lines_accepted`**: Volume of code authored by AI and kept by the developer.
 * **`last_activity_at`**: Exact timestamp of last active trigger per employee (used to detect inactive seats and shelfware waste).
 
@@ -154,35 +155,30 @@ Enterprises license developer and knowledge-worker AI primarily through **fixed 
 
 ---
 
-### Step 1: Type 1 (Fixed Seats) — Real Employee Data via Company Admin (Balaji)
-* **What Balaji (Admin) Can Provide**:
-  1. **Direct CSV Export (Instant & Zero Setup)**:
-     * Balaji goes to **Microsoft 365 Admin Center** (`admin.microsoft.com`) -> **Reports** -> **Usage** -> **Microsoft 365 Copilot** -> **Export**.
-     * This provides real employee emails, assigned seats, and activity timestamps across Teams, Word, and Excel.
-  2. **Automated Graph API Sync (Production)**:
-     * Balaji creates an Azure Entra App Registration with `Reports.Read.All` permission and provides `Tenant ID`, `Client ID`, and `Client Secret`.
-* **Value to Leadership**:
-  * Shows real company adoption percentage.
-  * Identifies inactive seats (e.g. 60+ days without usage) to demonstrate immediate dollar savings by deprovisioning unused licenses.
+### Type 1: Fixed Seats — What We Need From Balaji (Admin)
+
+To show real employee adoption and inactive license savings in the dashboard, we only need from Balaji:
+* **Microsoft 365 Copilot Usage CSV Export** from the M365 Admin Center (`admin.microsoft.com -> Reports -> Usage -> Microsoft 365 Copilot -> Export`), **OR**
+* **Azure Entra App Registration credentials** (`Tenant ID`, `Client ID`, `Client Secret`) with `Reports.Read.All` read permission.
+
+*This gives us the real list of licensed company employees, active usage dates, and inactive seats to show immediate cost-optimization savings.*
 
 ---
 
-### Step 2: Type 3 (Custom Agents) — Observability via Azure AI Foundry
+### Type 3: Custom Agents — Live Demonstration via Azure AI Foundry LLM
 
-#### Addressing Telemetry in Custom Agents:
-> *Can we access all telemetry in custom agents because it depends on the code we write?*
+We can build a simple, realistic enterprise agent that connects directly to an Azure AI Foundry / Azure OpenAI LLM resource to demonstrate live employee interactions and real usage metrics in real time:
 
-**Yes, absolutely.** With a custom agent, you have **complete observability control**:
-1. **What Our Code Controls**:
-   * **User Identity**: The authenticated employee (`user_email`).
-   * **Task Context**: The business task category (`Hardware_Triage`, `Access_Provisioning`).
-   * **Handling Time Saved**: Estimated manual baseline duration (e.g. 25 minutes saved per auto-resolved ticket).
-   * **Tool Execution**: Latency, success/failure status of external APIs (ServiceNow, Jira, databases).
-2. **What Azure OpenAI Provides Directly**:
-   * Exact `prompt_tokens` and `completion_tokens`.
-   * Real API latency and raw generation text.
-3. **Audited Cost**:
-   * Real token cost ($2.50/M input, $10.00/M output) + external connector API fees ($0.005) = **Audited Total Cost of Ownership**.
+1. **Live Employee Query Execution**:
+   * The employee interacts with the agent to solve real workplace requests (e.g. IT device troubleshooting, access requests).
+   * The query is processed live by the Azure AI Foundry LLM deployment.
+2. **Real-Time Telemetry Extracted**:
+   * **Employee Attribution**: Captured directly from the authenticated session (`user_email`).
+   * **Exact Token Consumption**: Direct prompt tokens and completion tokens returned by Azure OpenAI.
+   * **Actual Run Cost**: Real financial spend per execution based on Azure model deployment pricing.
+   * **Handling Time Saved**: Standard manual task duration saved by auto-resolving the request (e.g. 25 minutes saved).
+3. **Why This Works Best for Demos**:
+   * It provides 100% verified, live results showing real employee usage without synthetic estimates.
 
 ---
 
