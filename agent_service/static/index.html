@@ -3,25 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lenovo IT Support Sentinel — Autonomous Tier-1 Agent</title>
+  <title>Lenovo Global IT Support Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #00349B;
-      --primary-light: #EBF1FD;
       --primary-hover: #002570;
       --lenovo-red: #E2231A;
       --surface: #FFFFFF;
-      --bg: #F4F6F9;
-      --border: #D6E2FA;
+      --bg: #F8FAFC;
+      --border: #E2E8F0;
       --text-main: #0F172A;
       --text-muted: #64748B;
-      --success: #059669;
-      --success-bg: #ECFDF5;
-      --warning: #D97706;
-      --card-shadow: 0 4px 20px rgba(0, 52, 155, 0.06);
+      --accent-blue: #EFF6FF;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -33,14 +29,16 @@
       flex-direction: column;
       overflow: hidden;
     }
+
+    /* Header */
     header {
       background: #FFFFFF;
-      border-bottom: 1.5px solid var(--border);
-      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
     .header-left { display: flex; align-items: center; gap: 14px; }
     .brand-badge {
@@ -48,37 +46,37 @@
       color: white;
       font-weight: 800;
       font-size: 13px;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 6px;
       letter-spacing: 0.5px;
     }
     .header-title h1 {
       font-size: 16px;
-      font-weight: 800;
-      color: var(--primary);
+      font-weight: 700;
+      color: var(--text-main);
     }
     .header-title p {
       font-size: 12px;
       color: var(--text-muted);
     }
-    .header-right { display: flex; align-items: center; gap: 12px; }
-    .cockpit-link-btn {
-      background: var(--primary-light);
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 13px;
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
+    .header-status {
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
+      gap: 8px;
+      font-size: 12.5px;
+      color: #059669;
+      font-weight: 600;
+      background: #ECFDF5;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid #A7F3D0;
     }
-    .cockpit-link-btn:hover {
-      background: var(--primary);
-      color: white;
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10B981;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
     }
 
     .main-layout {
@@ -92,18 +90,18 @@
     .sidebar {
       width: 320px;
       background: #FFFFFF;
-      border-right: 1.5px solid var(--border);
-      padding: 20px;
+      border-right: 1px solid var(--border);
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 24px;
       overflow-y: auto;
     }
     .user-profile-card {
-      background: var(--primary-light);
-      border: 1px solid var(--border);
+      background: var(--accent-blue);
+      border: 1px solid #DBEAFE;
       border-radius: 12px;
-      padding: 14px;
+      padding: 14px 16px;
     }
     .user-profile-card h4 {
       font-size: 11px;
@@ -111,11 +109,12 @@
       letter-spacing: 0.5px;
       color: var(--primary);
       margin-bottom: 8px;
+      font-weight: 700;
     }
-    .user-meta { display: flex; align-items: center; gap: 10px; }
+    .user-meta { display: flex; align-items: center; gap: 12px; }
     .avatar {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       background: var(--primary);
       color: white;
       font-weight: 700;
@@ -123,55 +122,51 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 14px;
     }
-    .user-info .name { font-weight: 700; font-size: 13px; }
-    .user-info .device { font-size: 11px; color: var(--text-muted); }
+    .user-info .name { font-weight: 700; font-size: 13.5px; }
+    .user-info .device { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
 
     .scenario-section h4 {
       font-size: 12px;
       font-weight: 700;
       color: var(--text-muted);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
     .scenario-pill {
-      background: #F8FAFC;
-      border: 1.5px solid #E2E8F0;
-      padding: 10px 12px;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      font-size: 12.5px;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-size: 13px;
       font-weight: 600;
       color: #334155;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.15s;
+      gap: 10px;
+      transition: all 0.15s ease-in-out;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
     .scenario-pill:hover {
-      background: var(--primary-light);
-      border-color: var(--border);
+      background: var(--accent-blue);
+      border-color: #BFDBFE;
       color: var(--primary);
-      transform: translateX(3px);
+      transform: translateY(-1px);
     }
 
-    .session-stats-card {
+    .help-footer {
       margin-top: auto;
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      border-radius: 10px;
-      padding: 14px;
-    }
-    .stats-row {
-      display: flex;
-      justify-content: space-between;
       font-size: 12px;
-      margin-bottom: 6px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
     }
-    .stats-row:last-child { margin-bottom: 0; }
-    .stats-val { font-weight: 700; color: var(--primary); }
+    .help-footer b { color: var(--text-main); }
 
     /* Chat Area */
     .chat-container {
@@ -183,92 +178,53 @@
     }
     .chat-messages {
       flex: 1;
-      padding: 24px;
+      padding: 28px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 20px;
     }
     .message {
-      max-width: 820px;
+      max-width: 780px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      animation: fadeIn 0.25s ease-in-out;
+      gap: 6px;
+      animation: fadeIn 0.2s ease-in-out;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .message.user { align-self: flex-end; }
     .message.agent { align-self: flex-start; }
 
     .msg-bubble {
-      padding: 14px 18px;
-      border-radius: 12px;
-      font-size: 13.5px;
-      line-height: 1.55;
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.6;
     }
     .message.user .msg-bubble {
       background: var(--primary);
       color: white;
-      border-bottom-right-radius: 2px;
+      border-bottom-right-radius: 4px;
     }
     .message.agent .msg-bubble {
       background: #FFFFFF;
-      border: 1.5px solid var(--border);
+      border: 1px solid var(--border);
       color: var(--text-main);
-      border-bottom-left-radius: 2px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     }
-    .msg-bubble h3 { font-size: 13.5px; color: var(--primary); margin: 10px 0 6px 0; font-weight: 700; }
-    .msg-bubble ul { margin-left: 18px; margin-bottom: 6px; }
-    .msg-bubble code { font-family: 'JetBrains Mono', monospace; background: #EEF2F6; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-
-    /* Telemetry Card on Agent Response */
-    .telemetry-badge-card {
-      background: #F0FDF4;
-      border: 1px solid #BBF7D0;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: center;
-      margin-top: 4px;
-    }
-    .tel-item { display: flex; align-items: center; gap: 6px; }
-    .tel-label { color: #166534; font-weight: 500; }
-    .tel-value { color: #14532D; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
-    .synced-tag {
-      margin-left: auto;
-      background: #DCFCE7;
-      color: #15803D;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 11px;
-    }
-
-    /* Tool execution steps */
-    .tools-trace-box {
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 11.5px;
-      font-family: 'JetBrains Mono', monospace;
-      color: #475569;
-    }
-    .trace-title { font-weight: 700; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-    .trace-step { margin-bottom: 3px; display: flex; justify-content: space-between; }
+    .msg-bubble h3 { font-size: 14px; color: var(--primary); margin: 12px 0 6px 0; font-weight: 700; }
+    .msg-bubble ul { margin-left: 20px; margin-bottom: 8px; }
+    .msg-bubble code { font-family: 'JetBrains Mono', monospace; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; font-size: 12.5px; }
 
     /* Input Bar */
     .chat-input-bar {
       background: #FFFFFF;
-      border-top: 1.5px solid var(--border);
-      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      padding: 18px 28px;
       display: flex;
       gap: 12px;
       align-items: center;
@@ -279,13 +235,13 @@
       background: #F8FAFC;
       border: 1.5px solid #CBD5E1;
       border-radius: 10px;
-      padding: 10px 14px;
+      padding: 12px 16px;
       transition: all 0.2s;
     }
     .input-box:focus-within {
       border-color: var(--primary);
       background: #FFFFFF;
-      box-shadow: 0 0 0 3px rgba(0, 52, 155, 0.1);
+      box-shadow: 0 0 0 3px rgba(0, 52, 155, 0.08);
     }
     .input-box input {
       flex: 1;
@@ -300,16 +256,16 @@
       color: white;
       border: none;
       font-weight: 700;
-      font-size: 13.5px;
-      padding: 10px 20px;
-      border-radius: 8px;
+      font-size: 14px;
+      padding: 12px 24px;
+      border-radius: 10px;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
       transition: all 0.15s;
     }
-    .send-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .send-btn:hover { background: var(--primary-hover); }
     .send-btn:disabled { opacity: 0.6; cursor: not-allowed; }
   </style>
 </head>
@@ -317,16 +273,15 @@
 
   <header>
     <div class="header-left">
-      <span class="brand-badge">LENOVO // IT</span>
+      <span class="brand-badge">LENOVO</span>
       <div class="header-title">
-        <h1>Autonomous IT Service Sentinel (Tier-1 AI Agent)</h1>
-        <p>Enterprise Hardware Triage • Identity Provisioning • ServiceNow Auto-Resolution</p>
+        <h1>Global IT Support Assistant</h1>
+        <p>Hardware Diagnostics • Software & Account Access • Real-time Triage</p>
       </div>
     </div>
-    <div class="header-right">
-      <a href="http://localhost:5173" target="_blank" class="cockpit-link-btn">
-        <span>📊 Open AI Cockpit (Port 5173)</span>
-      </a>
+    <div class="header-status">
+      <span class="status-dot"></span>
+      <span>IT Support Online</span>
     </div>
   </header>
 
@@ -334,7 +289,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="user-profile-card">
-        <h4>Authenticated Employee Identity</h4>
+        <h4>Employee Profile</h4>
         <div class="user-meta">
           <div class="avatar">AS</div>
           <div class="user-info">
@@ -345,38 +300,24 @@
       </div>
 
       <div class="scenario-section">
-        <h4>Quick Enterprise Scenarios</h4>
+        <h4>Common Requests</h4>
         <div class="scenario-pill" onclick="sendPrompt('My ThinkPad Thunderbolt 4 dock won\'t recognize my dual 4K monitors this morning. Screen remains black.')">
-          <span>🖥️</span> Docking Station Dual 4K Detection
+          <span>🖥️</span> External Display / Docking Station
         </div>
         <div class="scenario-pill" onclick="sendPrompt('I need write permission and repo access to GitHub repository WCTHLS/AI_Cockpit for sprint delivery.')">
-          <span>🔑</span> GitHub Production Access Request
+          <span>🔑</span> GitHub Repository Access
         </div>
         <div class="scenario-pill" onclick="sendPrompt('GlobalProtect VPN error: client PKI security certificate expired on Windows 11 machine.')">
-          <span>🛡️</span> VPN Certificate Expiration Reset
+          <span>🛡️</span> VPN Security Certificate Renewal
         </div>
         <div class="scenario-pill" onclick="sendPrompt('Outlook 365 search bar is completely frozen and returns 0 results on recent email queries.')">
-          <span>📧</span> Outlook Indexing Repair
+          <span>📧</span> Outlook Search Repair
         </div>
       </div>
 
-      <div class="session-stats-card">
-        <div class="stats-row">
-          <span>Tickets Resolved:</span>
-          <span class="stats-val" id="ticketCount">0</span>
-        </div>
-        <div class="stats-row">
-          <span>Total Hours Saved:</span>
-          <span class="stats-val" id="totalHoursSaved">0.0 hrs</span>
-        </div>
-        <div class="stats-row">
-          <span>Gross Value Created:</span>
-          <span class="stats-val" id="grossValueTotal">$0.00</span>
-        </div>
-        <div class="stats-row">
-          <span>Live Cockpit Status:</span>
-          <span class="stats-val" style="color: #059669;">Connected</span>
-        </div>
+      <div class="help-footer">
+        <b>Need Urgent Escalation?</b><br>
+        If your device cannot boot, please reach out to the Lenovo Premier Support desk at extension <b>#4357</b>.
       </div>
     </aside>
 
@@ -385,29 +326,25 @@
       <div class="chat-messages" id="chatMessages">
         <div class="message agent">
           <div class="msg-bubble">
-            Hello Aarav! I am the <b>Lenovo Enterprise IT Support Sentinel</b>. 
+            Hello Aarav, I am the <b>Lenovo IT Support Assistant</b>. 
             <br><br>
-            I am connected directly to your ThinkPad hardware diagnostics, corporate Okta identity, and ServiceNow ITSM ticket records. How can I help resolve your issue today?
+            I can help troubleshoot hardware peripherals, configure network & VPN settings, or provision application permissions. What can I help you with today?
           </div>
         </div>
       </div>
 
       <div class="chat-input-bar">
         <div class="input-box">
-          <input type="text" id="userInput" placeholder="Describe your hardware, software, or access issue..." onkeydown="if(event.key === 'Enter') handleSend()" />
+          <input type="text" id="userInput" placeholder="Describe your IT or hardware issue..." onkeydown="if(event.key === 'Enter') handleSend()" />
         </div>
         <button class="send-btn" id="sendBtn" onclick="handleSend()">
-          <span>Run Agent</span> ➔
+          <span>Send</span>
         </button>
       </div>
     </main>
   </div>
 
   <script>
-    let ticketsCount = 0;
-    let accumulatedHours = 0.0;
-    let accumulatedValue = 0.0;
-
     function sendPrompt(promptText) {
       document.getElementById('userInput').value = promptText;
       handleSend();
@@ -431,8 +368,8 @@
       thinkingElem.className = 'message agent';
       thinkingElem.id = thinkingId;
       thinkingElem.innerHTML = `
-        <div class="msg-bubble" style="color: #00349B; font-weight: 600;">
-          ⚡ Agent executing multi-step diagnostic tools & querying hardware asset registry...
+        <div class="msg-bubble" style="color: #64748B;">
+          Checking hardware diagnostics and internal knowledge base...
         </div>
       `;
       document.getElementById('chatMessages').appendChild(thinkingElem);
@@ -450,23 +387,16 @@
         });
 
         const data = await resp.json();
-        document.getElementById(thinkingId).remove();
+        const thinkingNode = document.getElementById(thinkingId);
+        if (thinkingNode) thinkingNode.remove();
 
-        // Format agent response
-        appendAgentResponse(data);
-
-        // Update sidebar tallies
-        ticketsCount += 1;
-        accumulatedHours += data.telemetry.hours_saved;
-        accumulatedValue += data.telemetry.gross_value_usd;
-
-        document.getElementById('ticketCount').innerText = ticketsCount;
-        document.getElementById('totalHoursSaved').innerText = accumulatedHours.toFixed(1) + ' hrs';
-        document.getElementById('grossValueTotal').innerText = '$' + accumulatedValue.toFixed(2);
+        // Format agent response cleanly
+        appendAgentResponse(data.response);
 
       } catch (err) {
-        document.getElementById(thinkingId).remove();
-        appendMessage('agent', 'Error connecting to IT Agent backend. Please check server status.');
+        const thinkingNode = document.getElementById(thinkingId);
+        if (thinkingNode) thinkingNode.remove();
+        appendMessage('agent', 'Sorry, I am having trouble connecting to IT support services. Please try again or submit an incident ticket.');
       } finally {
         sendBtn.disabled = false;
         scrollToBottom();
@@ -481,60 +411,20 @@
       scrollToBottom();
     }
 
-    function appendAgentResponse(data) {
+    function appendAgentResponse(rawText) {
       const container = document.getElementById('chatMessages');
       const msgElem = document.createElement('div');
       msgElem.className = 'message agent';
 
-      // Tool traces HTML
-      let toolTracesHtml = data.tools_executed.map(t => `
-        <div class="trace-step">
-          <span>🛠️ ${t.tool}</span>
-          <span>${t.latency_ms}ms [${t.status}]</span>
-        </div>
-      `).join('');
-
-      // Markdown replacement for bold/bullet points
-      let formattedText = data.response
+      // Clean Markdown parsing for headers, bold, bullets, and inline code
+      let formattedText = rawText
         .replace(/### (.*?)\n/g, '<h3>$1</h3>')
         .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
         .replace(/\*(.*?)\n/g, '<li>$1</li>')
         .replace(/`([^`]+)`/g, '<code>$1</code>')
         .replace(/\n\n/g, '<br><br>');
 
-      msgElem.innerHTML = `
-        <div class="msg-bubble">
-          ${formattedText}
-        </div>
-
-        <div class="tools-trace-box">
-          <div class="trace-title">⚡ Autonomous Tool Calls Executed (${data.tools_executed.length} steps)</div>
-          ${toolTracesHtml}
-        </div>
-
-        <div class="telemetry-badge-card">
-          <div class="tel-item">
-            <span class="tel-label">⏱️ Handling Time Saved:</span>
-            <span class="tel-value">${data.telemetry.handling_time_saved_mins} mins</span>
-          </div>
-          <div class="tel-item">
-            <span class="tel-label">💵 Gross Value:</span>
-            <span class="tel-value">$${data.telemetry.gross_value_usd}</span>
-          </div>
-          <div class="tel-item">
-            <span class="tel-label">🔢 Tokens:</span>
-            <span class="tel-value">${data.telemetry.tokens_in + data.telemetry.tokens_out}</span>
-          </div>
-          <div class="tel-item">
-            <span class="tel-label">💰 Run Cost:</span>
-            <span class="tel-value">$${data.telemetry.cost_usd}</span>
-          </div>
-          <div class="synced-tag">
-            ✓ Pushed to AI Cockpit
-          </div>
-        </div>
-      `;
-
+      msgElem.innerHTML = `<div class="msg-bubble">${formattedText}</div>`;
       container.appendChild(msgElem);
       scrollToBottom();
     }

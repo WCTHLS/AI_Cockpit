@@ -152,21 +152,22 @@ async def chat_handler(payload: ChatRequest):
     gross_value_usd = round(hours_saved * 85.0, 2)
 
     # Formulate friendly, authoritative enterprise response
-    reply_text = f"""Hello **{payload.employee_email.split('@')[0].capitalize()}**, I have reviewed your issue regarding **{sol['title']}**.
+    # Formulate friendly, authoritative enterprise response
+    reply_text = f"""Hello **{payload.employee_email.split('@')[0].capitalize()}**, I have reviewed your request regarding **{sol['title']}**.
 
-### 🛠️ Hardware & Profile Verified
+### Verified Hardware & Profile Details
 * **Registered Asset**: `{asset['model']}` (Serial: `{serial}`)
 * **Connected Peripheral**: `{asset['dock']}`
 * **Warranty Coverage**: `{asset['warranty']}`
 
-### ⚡ Autonomous Diagnostic & Actions Executed:
+### Diagnostic Checks & Troubleshooting Completed
 {chr(10).join(sol['steps'])}
 
-### 🎫 ITSM Ticket Status
-* **ServiceNow Incident**: `#{ticket_id}`
-* **Resolution Status**: `{sol['resolution']}`
+### IT Service Ticket Reference
+* **Ticket Number**: `#{ticket_id}`
+* **Status**: `{sol['resolution']}`
 
-Please reconnect your cable or follow the prompt above. If you still encounter issues, I can instantly escalate this to a dedicated Tier-2 hardware specialist."""
+Please follow the recommendation above. If you still encounter any issues, reply here and I will connect you with a live IT support technician."""
 
     # Post telemetry to AI Cockpit API
     telemetry_payload = {
