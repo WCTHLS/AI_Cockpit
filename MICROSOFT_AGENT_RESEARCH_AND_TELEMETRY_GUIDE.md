@@ -1,216 +1,236 @@
-# Microsoft Enterprise AI Agents & Telemetry Architecture Guide
+# Microsoft Enterprise AI Telemetry & Agent Architecture Guide
+### An Architectural Reference for Enterprise AI Agents, Fixed-Seat Subscriptions, and Telemetry Integration
 
 ---
 
-## Executive Overview
+## Executive Overview & Evidence Framework
 
-This document provides a research-backed reference on how AI agents and fixed-seat licenses operate across the Microsoft enterprise ecosystem. Every API endpoint, payload structure, and credential requirement documented below has been verified against official **Microsoft Learn** and **GitHub REST API** technical specifications.
+This document provides a research-backed reference on how telemetry, usage data, and seat licenses operate across the Microsoft enterprise ecosystem. 
 
-It covers:
-1. **The 4 Primary Agent Pathways in Microsoft**: Capabilities, exact raw API fields returned, administrator access, and authentication requirements.
-2. **Enterprise AI Subscriptions (Fixed Seats)**: GitHub Copilot and Microsoft 365 Copilot pricing, raw API payloads vs. derived dashboard metrics (such as Acceptance Rate and Shelfware Detection).
-3. **Practical Implementation Strategy With Current Resources**:
-   * **Fixed Seats Telemetry**: Ingesting real employee adoption and license efficiency data via Company Admin (Balaji).
-   * **Custom Autonomous Agents**: Code-first telemetry observability using Azure AI Foundry / Azure OpenAI.
-4. **How to Identify Stakeholder GitHub Repositories**: Inspecting repository file trees to instantly categorize declarative, low-code, or code-first architectures.
+To ensure architectural integrity during technical and executive reviews, every metric in this guide is categorized into a **3-Tier Evidence Framework**:
+* **Tier 1 — Raw Documented Platform Telemetry**: Exact properties returned directly by Microsoft and GitHub APIs or database schemas.
+* **Tier 2 — Backend Derived Metrics**: Quantitative indicators calculated by our ingestion pipelines from Tier 1 data (e.g., Code Completion Acceptance Rate, Activity Ratios).
+* **Tier 3 — Business Estimates & Inferred Outcomes**: Business-layer calculations requiring external baselines, rate cards, or policy thresholds (e.g., Estimated Financial Savings, Potential License Optimization).
 
 ---
 
-## 1. The 4 Microsoft Agent Pathways (APIs, Exact Payloads & Admin Setup)
+## 1. The 4 Microsoft Agent Pathways (APIs, Schemas & Admin Setup)
 
 ---
 
-### Pathway 1: Declarative / No-Code Agents (M365 Copilot & Agent Builder)
+### Pathway 1: Declarative / No-Code Agents (Microsoft 365 Copilot)
 *Configuration-driven assistants scoped to SharePoint, OneDrive, and Teams data defined via `declarativeAgent.json`.*
 
-* **How It Works**: Built using natural language or form fields inside Microsoft 365 Copilot Chat, Teams, or SharePoint. It wraps Microsoft 365 Copilot with custom instructions (up to 8,000 characters) and designated corporate data grounding.
-* **Exact Exposed API / Endpoint**:
-  * **Microsoft Graph Usage Reports API**:
-    ```http
-    GET https://graph.microsoft.com/v1.0/reports/getMicrosoft365CopilotUsageUserDetail(period='D30')
-    GET https://graph.microsoft.com/v1.0/reports/getMicrosoft365CopilotUserCountTrend(period='D30')
-    ```
-* **Exact Raw Fields Returned by Microsoft Graph**:
-  * `reportRefreshDate`: Timestamp when the report data was refreshed by Microsoft.
-  * `userPrincipalName`: Authenticated employee email (e.g., `employee@company.com`).
+#### 1. Architectural Reality & Telemetry Scope
+* Declarative agents run inside the Microsoft 365 Copilot execution boundary. 
+* **Critical Scope Boundary**: The Microsoft Graph usage reporting API is an **employee adoption report** for licensed Microsoft 365 Copilot users across Microsoft 365 host applications. It is **not** a per-agent execution trace API. It tracks whether employees are actively using Copilot within Word, Excel, Teams, etc., and records a `copilotAgentLastActivityDate` in Version 2. It does not output conversation transcripts, prompt text, or raw per-agent token counts.
+
+#### 2. Exact API Endpoint & Authentication
+* **Documented Graph Endpoint**:
+  ```http
+  GET https://graph.microsoft.com/v1.0/copilot/reports/getMicrosoft365CopilotUsageUserDetail(period='D28')
+  ```
+  *(Note: Microsoft supports periods `'D7'`, `'D28'`, `'D90'`, and `'D180'` under Version 2; Version 1 supports `'D30'`).*
+* **Response Delivery**: Returns a downloadable CSV by default, or JSON when requested with `$format=application/json`.
+* **Required Permission**: `Reports.Read.All` (Application permission requiring Microsoft Entra Global Admin consent).
+* **Documented Admin Roles**: Global Administrator, AI Administrator, Exchange Administrator, SharePoint Administrator, Teams Administrator, or Reports Reader.
+
+#### 3. Data Schema & Metrics Classification
+* **Tier 1 (Raw API Properties)**:
+  * `reportRefreshDate`: Date when the report dataset was refreshed (e.g., `2026-10-24`).
+  * `userPrincipalName`: Employee email identifier (e.g., `employee@company.com`).
   * `displayName`: Full employee name.
-  * `lastActivityDate`: Date of most recent Copilot interaction across the enterprise.
-  * `copilotChatLastActivityDate`: Last active date in M365 Copilot Chat (Teams / Web).
-  * `microsoftTeamsCopilotLastActivityDate`: Last active date in Teams meetings / chats.
-  * `wordCopilotLastActivityDate`: Last active date inside Microsoft Word.
-  * `excelCopilotLastActivityDate`: Last active date inside Microsoft Excel.
-  * `powerPointCopilotLastActivityDate`: Last active date inside PowerPoint.
-  * `outlookCopilotLastActivityDate`: Last active date inside Outlook email drafting.
-  * `oneNoteCopilotLastActivityDate` & `loopCopilotLastActivityDate`: Activity in OneNote / Loop.
-  * *(Note: Microsoft strictly masks prompt text, conversation content, and raw token usage in M365 Copilot for enterprise compliance).*
-* **Who Has Access**:
-  * Global Admin, Reports Reader, or Usage Summary Reports Reader in Microsoft 365 Admin Center (`admin.microsoft.com`).
-* **Credentials & Permissions Needed**:
-  * Microsoft Entra ID (Azure AD) **App Registration**.
-  * `Tenant ID`, `Client ID`, `Client Secret`.
-  * Application Permission: **`Reports.Read.All`** (requires Admin Consent from Global Admin).
-* **Per-User Granularity & Privacy Caveat**:
-  * **Yes, per employee**: Returns real emails (`userPrincipalName`) **UNLESS** the Microsoft 365 tenant has enabled *"Conceal user, group, and site names in all reports"* in Org Settings. If enabled, the admin must uncheck this setting to view actual employee emails instead of obfuscated GUIDs.
+  * `lastActivityDate`: Date of the employee's most recent interaction with any M365 Copilot feature.
+  * Application-Specific Activity Dates: `copilotChatLastActivityDate`, `microsoftTeamsCopilotLastActivityDate`, `wordCopilotLastActivityDate`, `excelCopilotLastActivityDate`, `powerPointCopilotLastActivityDate`, `outlookCopilotLastActivityDate`, `oneNoteCopilotLastActivityDate`, `loopCopilotLastActivityDate`.
+  * `copilotAgentLastActivityDate` *(Report v2)*: Timestamp of last interaction with any declarative agent.
+* **Tier 2 (Derived Dashboard Metrics)**:
+  * `Active vs. Inactive Licensed Users`: Calculated by evaluating `lastActivityDate` against a chosen observation window (e.g., 14, 28, or 60 days).
+  * `Application Adoption Breakdown`: Percentage of licensed users active in Teams Copilot vs. Excel Copilot vs. Word Copilot.
+* **Privacy & Tenant Masking Caveat**:
+  * If the organization has enabled *"Conceal user, group, and site names in all reports"* under Microsoft 365 Admin Center Org Settings, `userPrincipalName` and `displayName` are returned as anonymized hash strings. The Microsoft 365 Global Admin must disable this setting to display authentic employee emails.
 
 ---
 
 ### Pathway 2: Low-Code Workflow Agents (Microsoft Copilot Studio)
-*Autonomous chatbots and transactional business workflow agents built on Power Platform / Dataverse.*
+*Autonomous chatbots and business workflow agents built on Power Platform and Microsoft Dataverse.*
 
-* **How It Works**: Built on Copilot Studio's visual workflow canvas. Interacts with enterprise software via 1,200+ Power Automate connectors, triggers automated actions, and manages conversational decision trees.
-* **Exact Exposed API / Endpoint**:
-  * **Microsoft Dataverse OData Web API**:
-    ```http
-    GET https://<org-env>.api.crm.dynamics.com/api/data/v9.2/conversationtranscripts
-    GET https://<org-env>.api.crm.dynamics.com/api/data/v9.2/bots
-    ```
-* **Exact Raw Fields Returned by Dataverse (`conversationtranscript` entity)**:
-  * `conversationtranscriptid`: Unique GUID identifier for the conversation session.
-  * `name`: Transcript record title / session label.
-  * `conversationstarttime`: UTC timestamp when the user began the conversation.
-  * `bot_conversationtranscriptid`: Lookup linking the session to the specific Agent in the `bot` entity.
-  * `schematype` & `schemaversion`: Format version of the transcript JSON payload.
-  * `content`: Full conversation transcript stored in JSON format (contains user queries, bot responses, topic trigger tags, and session outcome tags: *Resolved*, *Escalated*, or *Abandoned*).
-  * `metadata`: Session metadata including client platform, participant roles, and batch indices.
-* **Who Has Access**:
-  * Power Platform System Administrator, Environment Admin, or Bot Author in Copilot Studio Portal (`copilotstudio.microsoft.com`).
-* **Credentials & Permissions Needed**:
-  * Entra App Registration added as an **Application User** in Power Platform Admin Center.
-  * Role: `System Customizer` or Read permissions on the `conversationtranscript` table.
-  * `Tenant ID`, `Client ID`, `Client Secret`, and `Dataverse Environment URL`.
-* **Per-User Granularity**:
-  * **Authenticated Internal Sessions**: For bots deployed in Teams or SharePoint with SSO enabled, employee identity (`From.Name`, `From.Id`, user email) is captured in the `content` JSON. Public anonymous bots record anonymous session GUIDs.
+#### 1. Architectural Reality & Telemetry Scope
+* Copilot Studio conversations are logged automatically into Microsoft Dataverse inside the `conversationtranscript` table.
+* **Critical Scope Boundary**: Dataverse transcript records store raw message exchanges and event activities. Business metrics such as resolution status, escalation events, and satisfaction scores **are not top-level table columns**; they must be parsed from the JSON activities inside the `content` field or pulled from session analytics exports.
+
+#### 2. Exact API Endpoint & Authentication
+* **Documented Dataverse Web API Query**:
+  ```http
+  GET https://<org-env>.api.crm.dynamics.com/api/data/v9.2/conversationtranscripts?$select=conversationtranscriptid,name,conversationstarttime,schematype,schemaversion,content,metadata,_bot_conversationtranscriptid_value
+  ```
+* **Required Security Role**: `Bot Transcript Viewer` or `System Administrator` in the Power Platform environment.
+* **Dataverse Ingestion & Retention Rules**:
+  * By default, a Dataverse bulk deletion job removes transcripts older than 30 days unless customized by the administrator.
+  * Transcripts larger than 1 MB are split across multiple records linked by `BatchId` in `metadata`.
+  * Transcripts are not logged for developer environments or Dataverse for Teams.
+
+#### 3. Data Schema & Metrics Classification
+* **Tier 1 (Raw Dataverse Entity Columns)**:
+  * `conversationtranscriptid`: Primary key GUID for the transcript record.
+  * `name`: Transcript record title / session identifier.
+  * `conversationstarttime`: UTC start timestamp of the conversation.
+  * `_bot_conversationtranscriptid_value`: Web API lookup value referencing the Agent GUID in the `bot` entity.
+  * `content`: Memo/text field holding the full conversation activity stream in JSON format.
+  * `metadata`: JSON payload containing Agent ID, Tenant ID, Agent Name, and Batch ID.
+* **Tier 2 (Parsed / Derived Analytics)**:
+  * `Total Conversation Sessions`: Distinct session count aggregated over the reporting timeframe.
+  * `Session Outcomes`: Derived by parsing the `content` JSON for outcome events:
+    * `Resolved`: Bot completed the workflow without human escalation.
+    * `Escalated`: Conversation transferred to a human agent via Omnichannel / ServiceNow.
+    * `Abandon`: User exited the conversation without completion.
+  * `Resolution Rate (%)`: `(Resolved Sessions / Total Evaluated Sessions) * 100`.
+  * `Customer Satisfaction (CSAT)`: Extracted from `content` only when a CSAT survey topic is explicitly triggered and answered by the user.
+* **Identity Attribution Note**:
+  * For internal agents authenticated via Teams or SharePoint with SSO, user identifiers are logged in the activity stream. However, depending on channel configuration, user IDs may be pseudonymized or hashed. Plaintext employee emails require explicit identity propagation in bot variables.
 
 ---
 
 ### Pathway 3: Code-First Custom Agents (Azure AI Foundry / OpenAI / App Insights)
 *Full-stack software agents developed by software engineers in Python or C# deployed to Azure cloud infrastructure.*
 
-* **How It Works**: Built using Semantic Kernel, AutoGen, or custom microservices connecting directly to Azure OpenAI deployments. The application code completely controls prompt orchestration, memory, and external database/API tool executions.
-* **Exact Exposed APIs / Endpoints**:
-  1. **Azure OpenAI Chat Completions API** (Direct Inference Telemetry):
-     * Returned with every model inference execution:
-       ```json
-       "usage": {
-         "prompt_tokens": 128,
-         "completion_tokens": 85,
-         "total_tokens": 213
-       }
-       ```
-  2. **Azure Application Insights REST API (Kusto / KQL Query)**:
-     ```http
-     POST https://api.applicationinsights.io/v1/apps/{app-id}/query
+#### 1. Architectural Reality & Observability Control
+* Custom agents communicate directly with Azure OpenAI model deployments and log execution traces into Azure Application Insights.
+* This pathway provides the **highest level of technical observability**, because engineering controls both the inference interface and application telemetry baggage.
+
+#### 2. Exact API Endpoints & Schemas
+1. **Azure OpenAI Chat Completions API** (Direct Model Telemetry):
+   * Documented usage payload returned on every completion call:
+     ```json
+     "usage": {
+       "prompt_tokens": 128,
+       "completion_tokens": 85,
+       "total_tokens": 213
+     }
      ```
-     * Queries standard tables:
-       * `requests`: Incoming API calls (`duration`, `resultCode`, `success`, `timestamp`).
-       * `dependencies`: Outgoing LLM and tool calls (`target`, `duration`, `resultCode`, `success`).
-       * `customDimensions`: Custom telemetry baggage injected by agent code (`user_email`, `task_category`, `minutes_saved`).
-  3. **Azure Cost Management API**:
+   *(Note: The newer Responses API utilizes `input_tokens` and `output_tokens`).*
+2. **Azure Application Insights REST API** (Logs Query v1):
+   * **Endpoint**:
+     ```http
+     POST https://api.applicationinsights.io/v1/apps/{appId}/query
+     ```
+   * **Schema Context**: Queries tabular telemetry across `requests` (inbound triggers), `dependencies` (outbound LLM/API calls), and `traces`.
+   * `customDimensions` is a dynamic column on these tables used to store application-injected attributes.
+3. **Azure Cost Management Query API**:
+   * **Endpoint**:
      ```http
      POST https://management.azure.com/subscriptions/{subId}/providers/Microsoft.CostManagement/query?api-version=2023-11-01
      ```
-     * Returns: `PreTaxCost`, `UsageQuantity`, `MeterSubCategory` (e.g., `GPT-4o Standard`), `ResourceGroup`.
-* **Who Has Access**:
-  * Azure Subscription Owner, Contributor, or Monitoring Reader on the Resource Group.
-* **Credentials & Permissions Needed**:
-  * Azure Service Principal (Entra App Registration) with `Monitoring Reader` + `Cost Management Reader`.
-  * `Subscription ID`, `Resource Group`, `Tenant ID`, `Client ID`, `Client Secret`.
-* **Per-User Granularity**:
-  * **100% Controllable in Code**: Azure OpenAI does not log end-user identity automatically. Our agent application code explicitly captures the authenticated employee email (`user_email`) from the session and logs it into OpenTelemetry / Application Insights baggage.
+   * **Schema Context**: Returns aggregated billing datasets (`PreTaxCost`, `ResourceGroup`, `Currency`). Cost Management reports billing aggregated by resource, meter, or tag; it does not provide an automatic per-prompt invoice line item.
+
+#### 3. Data Schema & Metrics Classification
+* **Tier 1 (Observed Platform Telemetry)**:
+  * Model Token Usage: `prompt_tokens`, `completion_tokens`, `total_tokens`.
+  * Latency & Execution Health: `duration`, `success`, `resultCode` from `requests` and `dependencies`.
+* **Tier 2 (Application-Instrumented Properties)**:
+  * `user_email`: Authenticated employee email injected into OpenTelemetry baggage by our code.
+  * `task_category`: Business category emitted by application code (e.g., `Hardware_Triage`, `Access_Request`).
+  * `Tool Call Latency`: Latency of third-party API dependencies (e.g., ServiceNow REST calls).
+* **Tier 3 (Calculated Financial & Operational Estimates)**:
+  * `Estimated Model Cost ($)`: Calculated by multiplying observed token counts by Azure rate cards:
+    $$	ext{Estimated Cost} = \left(rac{	ext{prompt\_tokens} 	imes 	ext{Input Rate}}{1,000,000}ight) + \left(rac{	ext{completion\_tokens} 	imes 	ext{Output Rate}}{1,000,000}ight)$$
+  * `Estimated Time Saved`: Calculated by subtracting automated latency from an approved manual baseline duration (e.g., standard 25-minute IT triage baseline).
 
 ---
 
 ### Pathway 4: Governed Data Agents (Microsoft Fabric Data Agents)
 *Specialized analytics agents built over Fabric OneLake, Lakehouses, and Power BI semantic models.*
 
-* **How It Works**: Converts natural language prompts into optimized DAX or SQL queries directly over enterprise data lakes.
-* **Exact Exposed APIs / Endpoints**:
-  1. **Power BI / Fabric Activity Events REST API**:
+#### 1. Architectural Reality & Multi-Source Telemetry
+* Fabric Data Agents query enterprise data estates. Monitoring requires separating **audit events**, **workspace topology**, and **compute capacity consumption** across distinct sources.
+
+#### 2. Exact API Sources & Functions
+1. **Power BI / Fabric Activity Events API (Audit Log)**:
+   * **Endpoint**:
      ```http
      GET https://api.powerbi.com/v1.0/myorg/admin/activityevents?startDateTime='...'&endDateTime='...'
      ```
-  2. **Fabric Capacity REST API**:
+   * **Function**: An audit trail of operations executed across the tenant.
+   * **Documented Fields**: `Activity` (operation name), `UserId` (user UPN), `WorkSpaceName`, `ArtifactName`, `CapacityId`, `CapacityName`, `IsSuccess`.
+   * **Authentication Caveat**: Requires Fabric Administrator role. When authenticated as a Service Principal, admin-consent Power BI permissions must not be configured in Azure Portal.
+2. **Fabric Workspace Metadata API**:
+   * **Endpoint**:
      ```http
      GET https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}
      ```
-* **Exact Raw Fields Returned by Fabric Activity Stream**:
-  * `Activity`: Specific operation executed (e.g., `ExecuteDAXQuery`, `ExploreData`, `ViewReport`).
-  * `UserId`: Full User Principal Name (`employee@company.com`).
-  * `CapacityId` & `CapacityName`: Azure Fabric capacity assigned.
-  * `WorkspaceName` & `ArtifactName`: The specific Lakehouse, Warehouse, or Semantic Model queried.
-  * `ExecutionDuration`: Query processing duration in milliseconds.
-  * `CapacityUnitsConsumed (CU Seconds)`: Processing compute billed against Fabric capacity.
-* **Who Has Access**:
-  * Fabric Capacity Administrator or Workspace Admin.
-* **Credentials & Permissions Needed**:
-  * Entra App Registration with Fabric Admin permission `Tenant.Read.All`.
-* **Per-User Granularity**:
-  * **Yes**: Full user principal names (`UserId: employee@company.com`) are logged in the activity audit stream.
+   * **Function**: Returns workspace configuration (`id`, `displayName`, `capacityId`). It does **not** return Capacity Unit (CU) consumption or query duration.
+3. **Fabric Capacity Consumption Telemetry**:
+   * **Source**: Microsoft Fabric Capacity Metrics App and Fabric capacity usage event streams.
+   * **Data Agent Operation**: Documented as `Operation: "AI Query"`, `Item Kind: "LlmPlugin"`.
+   * **Compute Metric**: Capacity Units (`CU Seconds`) billed against Fabric capacity based on input, cached input, and output processing rates.
 
 ---
 
 ## 2. Enterprise AI Subscriptions (Fixed Seats & Developer Tools)
 
-Enterprises license developer and knowledge-worker AI tools primarily through **fixed seat monthly subscriptions**:
+Enterprises license developer and knowledge-worker AI tools primarily through fixed-seat monthly subscriptions:
 
-| Subscription Tier | Enterprise Price | Telemetry Source API | Key Output Capabilities |
+| Subscription Tier | Enterprise List Price* | Primary Telemetry Source | Core Measurable Telemetry |
 | :--- | :--- | :--- | :--- |
-| **GitHub Copilot Business** | **$19 / user / mo** | GitHub REST API (`/copilot/billing/seats` & `/copilot/metrics/reports/...`) | Code completions in VS Code / JetBrains, seat assignment timestamps, IDE adoption, suggestion counts, acceptance counts. |
+| **GitHub Copilot Business** | **$19 / user / mo** | GitHub REST API (`/billing/seats` & `/copilot/metrics/...`) | Seat assignment dates, last active editor, code completions, acceptance actions, language breakdowns. |
 | **GitHub Copilot Enterprise** | **$39 / user / mo** | GitHub REST API (`/enterprises/{ent}/copilot/...`) | Everything in Business + PR summaries, organization-wide knowledge base indexing, custom code policies. |
-| **Microsoft 365 Copilot** | **$30 / user / mo** | Microsoft Graph Reports API (`getMicrosoft365CopilotUsageUserDetail`) | Active vs. Inactive users, app breakdown (Teams, Word, Excel, Outlook), last active date per employee. |
-| **Microsoft Copilot Studio** | **$200 / tenant / mo** *(25k msgs)* | Dataverse OData Web API (`conversationtranscripts`) | Total sessions, resolved vs escalated sessions, CSAT ratings, full message logs. |
+| **Microsoft 365 Copilot** | **$30 / user / mo** | Microsoft Graph Reports API (`/copilot/reports/...`) | Active vs. Inactive users, application breakdown (Teams, Word, Excel, Outlook), last active date per employee. |
+| **Microsoft Copilot Studio** | **$200 / tenant / mo** *(25k msgs)* | Dataverse OData Web API (`conversationtranscripts`) | Total sessions, parsed resolution/escalation counts, CSAT survey responses, complete conversation logs. |
+
+*\*Pricing Note: Prices represent standard US commercial list pricing. Actual enterprise billing is governed by specific enterprise agreements (EA), regional tiers, and volume licensing discounts.*
 
 ---
 
-### GitHub Copilot Telemetry: Raw API Payloads vs. Derived Metrics
+### GitHub Copilot Telemetry: Raw Schemas vs. Derived Metrics
 
-GitHub Copilot does **not** return a pre-calculated "Acceptance Rate" field in its API response. Instead, GitHub provides **raw interaction counters** across two distinct REST APIs, and client dashboards calculate the derived efficiency metrics.
+GitHub separates seat management from developer code interaction across two distinct API surfaces:
 
-#### 1. GitHub Copilot Seats API (License & Activity Status)
+#### 1. GitHub Copilot Seats API (License & Inactivity Status)
 * **Endpoint**: `GET https://api.github.com/orgs/{org}/copilot/billing/seats`
-* **Exact Raw Fields Returned**:
-  * `total_seats`: Total active seats provisioned for the organization.
-  * `seats[].assignee.login`: Developer GitHub username.
-  * `seats[].assignee.id`: Developer numeric ID.
-  * `seats[].created_at`: Timestamp when the seat license was assigned.
-  * `seats[].last_activity_at`: ISO timestamp of the developer's last active Copilot interaction.
-  * `seats[].last_activity_editor`: Exact editor and extension version (e.g., `vscode/1.94.0/copilot/1.240.0`).
-  * `seats[].plan_type`: License tier (`business` or `enterprise`).
+* **Pagination**: Default 50 records per page (maximum 100).
+* **Tier 1 (Raw API Schema Fields)**:
+  * `total_seats`: Total number of provisioned/billed licenses assigned to the organization.
+  * `seats[].assignee.login`: Developer's GitHub username.
+  * `seats[].assignee.id`: Developer's GitHub numeric ID.
+  * `seats[].created_at`: Timestamp when the license was assigned.
+  * `seats[].last_activity_at`: Timestamp of the developer's last active Copilot trigger.
+  * `seats[].last_activity_editor`: Editor and extension version string (e.g., `vscode/1.94.0/copilot/1.240.0`).
+  * `seats[].plan_type`: Assigned tier (`business` or `enterprise`).
+* **Telemetry Caveat**: `last_activity_at` relies on IDE telemetry being enabled by the developer. If a developer disables telemetry in their IDE, their activity timestamp will not update.
 
-#### 2. GitHub Copilot Usage Metrics Reports API (Code Activity)
+#### 2. GitHub Copilot Usage Metrics API (Code Interaction Activity)
 * **Endpoint**: `GET https://api.github.com/orgs/{org}/copilot/metrics/reports/users-28-day/latest`
-* **Output Format**: Returns signed URLs to compressed **newline-delimited JSON (`.ndjson`)** report files.
-* **Exact Raw Fields Inside the NDJSON File**:
-  * `day`: Activity date (`YYYY-MM-DD`).
+* **Delivery Mechanism**: Returns signed URLs to download daily or 28-day newline-delimited JSON (`.ndjson`) files.
+* **Tier 1 (Raw Fields Inside Documented NDJSON Report)**:
+  * `day`: Reporting activity date (`YYYY-MM-DD`).
   * `user_login`: Developer username.
-  * `code_generation_activity_count` *(or `total_suggestions_count`)*: Total number of code completions suggested by Copilot.
-  * `code_acceptance_activity_count` *(or `total_acceptances_count`)*: Total number of code completions accepted by the developer.
-  * `loc_suggested_to_add_sum` *(or `lines_suggested`)*: Volume of code lines suggested by Copilot.
-  * `loc_added_sum` *(or `lines_accepted`)*: Volume of code lines accepted and retained by the developer.
-  * `totals_by_feature`: Breakdown by surface (`code_completion`, `chat_panel`, `pr_summary`).
-  * `totals_by_language_feature`: Breakdown by programming language (Python, TypeScript, C#, Go).
+  * `code_generation_activity_count`: Number of distinct Copilot suggestion generation events.
+  * `code_acceptance_activity_count`: Number of accepted suggestion events.
+  * `loc_suggested_to_add_sum`: Total lines of code suggested to add (excludes agent edits).
+  * `loc_added_sum`: Total lines of code added to the editor (includes agent/edit-mode changes).
+  * `totals_by_feature`: Array breaking down activity by surface (e.g., `code_completion`, `copilot_app`).
+  * `totals_by_language_feature`: Array breaking down activity by programming language.
 
 #### 3. How Derived Dashboard Metrics Are Calculated
 
-| Dashboard Metric | Formula & Logic | Data Source | Purpose |
+| Dashboard Metric | Formula & Scope | Classification | Strategic Purpose |
 | :--- | :--- | :--- | :--- |
-| **Acceptance Rate (%)** | `(code_acceptance_activity_count / code_generation_activity_count) * 100` | Calculated from Usage Metrics NDJSON | Measures developer trust and code relevance (industry benchmark is 25%–35%). |
-| **Lines Kept Rate (%)** | `(loc_added_sum / loc_suggested_to_add_sum) * 100` | Calculated from Usage Metrics NDJSON | Measures the density of retained AI-generated code. |
-| **Shelfware / Inactive Waste ($)** | If `(Current Date - last_activity_at) > 30 days`: <br> `Wasted Spend = Inactive Seats * $19 (or $39)` | Calculated from Seats API (`last_activity_at`) | Identifies abandoned licenses for immediate reclaim or re-allocation. |
+| **Code Completion Acceptance Rate (%)** | $$\left(rac{\sum 	ext{code\_acceptance\_activity\_count (for code\_completion)}}{\sum 	ext{code\_generation\_activity\_count (for code\_completion)}}ight) 	imes 100$$ | **Tier 2 (Derived)** | Evaluates suggestion relevance specifically for inline completions, preventing distortion from chat or agent-mode events. |
+| **Added-to-Suggested Lines Ratio (%)** | $$\left(rac{	ext{loc\_added\_sum}}{	ext{loc\_suggested\_to\_add\_sum}}ight) 	imes 100$$ | **Tier 2 (Derived)** | Tracks editor code additions relative to completions. *(Note: Not a measure of permanent code retention).* |
+| **Potential Inactive License Savings ($)** | If $(	ext{Current Date} - 	ext{last\_activity\_at}) > 30 	ext{ days}$: <br> $$	ext{Potential Savings} = 	ext{Count}(	ext{Inactive Seats}) 	imes 	ext{Seat Cost}$$ | **Tier 3 (Estimate)** | Flags potentially abandoned seats for internal review and license reclamation. |
 
 ---
 
 ## 3. Practical Implementation Strategy With Our Current Resources
 
-> **Architecture & Ingestion Note**: Based on the raw output metrics received from each telemetry source, we design backend ingestion pipelines that transform, aggregate, and normalize these raw fields into high-level dashboard views (Scorecard, Cost Governance, and Seats & Adoption).
+> **Architecture & Ingestion Note**: Telemetry across all four pathways arrives in different formats (Graph CSV/JSON, Dataverse OData, App Insights KQL, and GitHub NDJSON). Our backend data pipelines extract, normalize, and load these inputs into standardized database schemas to power the executive dashboard.
 
 ---
 
 ### 3.1 Fixed Seats Telemetry: What We Need From Balaji (Admin)
 
-To display authentic employee adoption and identify inactive license cost savings, we only need from Balaji:
+To ingest authentic employee adoption and identify potential inactive license savings, we only need from Balaji:
 * **Option A: Microsoft 365 Copilot Usage CSV Export** from the M365 Admin Center (`admin.microsoft.com -> Reports -> Usage -> Microsoft 365 Copilot -> Export`), **OR**
-* **Option B: Azure Entra App Registration credentials** (`Tenant ID`, `Client ID`, `Client Secret`) with `Reports.Read.All` read permission.
+* **Option B: Azure Entra App Registration credentials** (`Tenant ID`, `Client ID`, `Client Secret`) with `Reports.Read.All` application permission.
 
 *This provides the authentic list of licensed company employees, active usage dates, and inactive seats to quantify immediate cost-optimization savings.*
 
@@ -218,18 +238,17 @@ To display authentic employee adoption and identify inactive license cost saving
 
 ### 3.2 Custom Autonomous Agents: Live Demonstration via Azure AI Foundry
 
-We can build a simple, realistic enterprise agent that connects directly to an Azure AI Foundry / Azure OpenAI LLM resource to demonstrate live employee interactions and real usage metrics in real time:
+We demonstrate code-first agent observability in real time using our dedicated Azure OpenAI model deployment:
 
 1. **Live Employee Query Execution**:
-   * The employee interacts with the agent to solve real workplace requests (e.g. IT device troubleshooting, access requests).
-   * The query is processed live by the Azure AI Foundry LLM deployment.
-2. **Real-Time Telemetry Extracted**:
-   * **Employee Attribution**: Captured directly from the authenticated session (`user_email`).
-   * **Exact Token Consumption**: Direct prompt tokens and completion tokens returned by Azure OpenAI.
-   * **Actual Run Cost**: Real financial spend per execution based on Azure model deployment pricing.
-   * **Handling Time Saved**: Standard manual task duration saved by auto-resolving the request (e.g. 25 minutes saved).
-3. **Why This Works Best for Demos**:
-   * It provides 100% verified, live results showing real employee usage without synthetic estimates.
+   * The employee interacts with the IT Support Agent to resolve real workplace requests (e.g., device triage, software setup).
+   * The query is processed live by our Azure OpenAI `gpt-4o` deployment in `claimsGuru` resource group.
+2. **Observed & Calculated Telemetry Pipeline**:
+   * **Observed Platform Telemetry (Tier 1)**: Exact prompt and completion token counts returned directly by the model inference response, plus request execution duration.
+   * **Application-Instrumented Properties (Tier 2)**: Authenticated employee email (`user_email`) and task classification captured directly from the session.
+   * **Estimated Financial & Operational Metrics (Tier 3)**:
+     * *Estimated Inference Cost*: Calculated using Azure model rate cards ($2.50 / 1M input tokens, $10.00 / 1M output tokens).
+     * *Estimated Time Saved*: Derived by comparing automated handling duration against an approved manual IT baseline (e.g., 25-minute standard baseline).
 
 ---
 
@@ -261,11 +280,11 @@ Stakeholder GitHub Repository
 
 ### Action Steps Based on Repo Structure:
 1. **If Case A (Declarative Agent)**:
-   * Do not run the repo code. It is an M365 manifest.
-   * Ask the admin for an Entra App Registration to pull usage data from the **Microsoft Graph Reports API**.
+   * Do not run the repo code. It is an M365 manifest package.
+   * Ingest usage data via the **Microsoft Graph Reports API** (`/v1.0/copilot/reports/...`).
 2. **If Case B (Copilot Studio Export)**:
    * It is a Power Platform solution.
-   * Connect to their **Dataverse Web API** (`conversationtranscripts`) to ingest session outcomes.
+   * Ingest session logs via the **Dataverse Web API** (`conversationtranscripts`).
 3. **If Case C (Code-First Custom Agent)**:
    * It is custom software running on Azure.
-   * Connect to their **Azure Application Insights** or configure a lightweight webhook in their agent loop.
+   * Ingest telemetry via **Azure Application Insights** or configure a webhook in their agent event loop.
