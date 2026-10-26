@@ -220,9 +220,3 @@ Stakeholder GitHub Repository
 3. **If Case C (Code-First Custom Agent)**:
    * It is custom software running on Azure.
    * Connect to their **Azure Application Insights** or configure a lightweight webhook in their agent loop.
-
----
-
-### Summary Checklist to Ask Your Stakeholder:
-1. *"Which platform runs these agents in production: **M365 Copilot**, **Copilot Studio**, or **Azure AI Foundry**?"*
-2. *"Can IT provide an **Azure Entra App Registration** with `Reports.Read.All` (for M365 Copilot) or read access to the **Dataverse Web API / Application Insights**?"*
