@@ -101,7 +101,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
   const isAdmin = user ? user.role === 'admin' : true;
   const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance' | 'ingestion' | 'claude_api'>('subs');
 
-  // Governance action thresholds (slide 7)
+  // Governance action thresholds
   const [thresholds, setThresholds] = useState<any>(initialThresholds || {
     experiment_days: 60,
     intervene_eval_pass: 88.0,
@@ -648,7 +648,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             transition: 'all 0.2s'
           }}
         >
-          <Zap size={15} /> Governance Action Rules (Slide 7)
+          <Zap size={15} /> Governance Action Rules
         </button>
 
         <button
@@ -1070,7 +1070,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         </div>
       )}
 
-      {/* SECTION 4: GOVERNANCE ACTION RULES (SLIDE 7) */}
+      {/* SECTION 4: GOVERNANCE ACTION RULES */}
       {activeSection === 'governance' && (
         <div style={{
           background: '#FFFFFF',
@@ -1081,7 +1081,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         }}>
           <div style={{ marginBottom: 18 }}>
             <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#00349B' }}>
-              Action Rule Engine Thresholds (Slide 7 Decision Tree)
+              Portfolio Governance & Action Thresholds
             </h3>
             <p style={{ margin: '4px 0 0 0', fontSize: 12.5, color: '#64748B' }}>
               Automated triggers that classify enterprise agents into <b>Accelerate</b>, <b>Optimize</b>, <b>Intervene</b>, or <b>Experiment</b>.
