@@ -10,8 +10,8 @@ It covers:
 1. **The 4 Primary Agent Pathways in Microsoft**: Capabilities, output metrics, admin access, and exposed APIs.
 2. **Enterprise AI Subscriptions (Fixed Seats)**: GitHub Copilot and Microsoft 365 Copilot tiers, pricing, and extractable telemetry fields.
 3. **Practical Implementation Strategy With Current Resources**:
-   * **Type 1 (Fixed Seats)**: Obtaining real employee adoption data via Company Admin (Balaji).
-   * **Type 3 (Custom Autonomous Agents)**: Code-first telemetry observability using Azure AI Foundry / Azure OpenAI.
+   * **Fixed Seats Telemetry**: Obtaining real employee adoption and license efficiency data via Company Admin (Balaji).
+   * **Custom Autonomous Agents**: Code-first telemetry observability using Azure AI Foundry / Azure OpenAI.
 4. **How to Identify Stakeholder GitHub Repositories**: Inspecting folder structures to distinguish declarative, low-code, and code-first agents.
 
 ---
@@ -157,7 +157,7 @@ Enterprises license developer and knowledge-worker AI primarily through **fixed 
 
 ---
 
-### Type 1: Fixed Seats — What We Need From Balaji (Admin)
+### 3.1 Fixed Seats Telemetry: What We Need From Balaji (Admin)
 
 To show real employee adoption and inactive license savings in the dashboard, we only need from Balaji:
 * **Microsoft 365 Copilot Usage CSV Export** from the M365 Admin Center (`admin.microsoft.com -> Reports -> Usage -> Microsoft 365 Copilot -> Export`), **OR**
@@ -167,7 +167,7 @@ To show real employee adoption and inactive license savings in the dashboard, we
 
 ---
 
-### Type 3: Custom Agents — Live Demonstration via Azure AI Foundry LLM
+### 3.2 Custom Autonomous Agents: Live Demonstration via Azure AI Foundry
 
 We can build a simple, realistic enterprise agent that connects directly to an Azure AI Foundry / Azure OpenAI LLM resource to demonstrate live employee interactions and real usage metrics in real time:
 
