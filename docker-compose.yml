@@ -43,6 +43,10 @@ services:
       - ./agent_service:/app
     environment:
       COCKPIT_API_URL: http://api:8000
+      AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
+      AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
+      AZURE_OPENAI_DEPLOYMENT: it-agent-model
+      AZURE_OPENAI_API_VERSION: "2024-08-01-preview"
     command: uvicorn main:app --host 0.0.0.0 --port 8080 --reload
     depends_on:
       - api
