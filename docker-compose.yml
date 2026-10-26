@@ -1,5 +1,5 @@
 services:
-  # ── FastAPI Backend (with SQLite) ──────────────────────────────
+  # ── FastAPI Backend (with SQLite) ──────────────────────────
   api:
     build:
       context: ./backend
@@ -9,14 +9,14 @@ services:
       DATABASE_URL: sqlite:////app/db/cockpit.db
       SQLITE_DB_PATH: /app/db/cockpit.db
       JWT_SECRET: ${JWT_SECRET:-wct-dev-secret-change-in-prod}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000,http://localhost:8080}
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-  # ── Vite React Frontend (dev) ──────────────────────────────────
+  # ── Vite React Frontend (dev) ──────────────────────────────
   web:
     build:
       context: ./frontend
@@ -30,3 +30,19 @@ services:
     environment:
       VITE_API_URL: http://localhost:8000
     command: npm run dev -- --host 0.0.0.0
+
+  # ── Tier-1 IT Support Agent (Standalone Service & UI) ──────────
+  it-agent:
+    build:
+      context: ./agent_service
+      dockerfile: Dockerfile
+    container_name: wct-it-agent
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./agent_service:/app
+    environment:
+      COCKPIT_API_URL: http://api:8000
+    command: uvicorn main:app --host 0.0.0.0 --port 8080 --reload
+    depends_on:
+      - api
