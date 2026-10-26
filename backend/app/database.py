@@ -277,6 +277,51 @@ def sync_active_agents(conn: sqlite3.Connection):
     except Exception as e:
         print(f"Warning: error syncing active agents: {e}")
 
+def seed_claude_code_employees(conn: sqlite3.Connection):
+    try:
+        candidates = [
+            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "claude_code_usage_report_2026-10-01_to_2026-10-07.json")),
+            os.path.abspath(os.path.join(os.getcwd(), "claude_code_usage_report_2026-10-01_to_2026-10-07.json")),
+            os.path.abspath(os.path.join("/app", "..", "claude_code_usage_report_2026-10-01_to_2026-10-07.json")),
+            os.path.abspath(os.path.join("/app", "claude_code_usage_report_2026-10-01_to_2026-10-07.json")),
+        ]
+        json_path = next((c for c in candidates if os.path.exists(c)), None)
+        if not json_path:
+            return
+
+        with open(json_path, "r", encoding="utf-8") as f:
+            raw_data = json.load(f).get("data", [])
+
+        emails = sorted(list(set(
+            d.get("actor", {}).get("email_address") 
+            for d in raw_data 
+            if d.get("actor", {}).get("email_address")
+        )))
+
+        if not emails:
+            return
+
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM company WHERE LOWER(name) LIKE '%waferwire%' OR id = 1")
+        row = cur.fetchone()
+        company_id = row[0] if row else 1
+
+        cur.execute("SELECT id FROM team WHERE company_id = ? AND LOWER(name) = 'software engineering'", (company_id,))
+        trow = cur.fetchone()
+        team_id = trow[0] if trow else 6
+
+        for email in emails:
+            username = email.split("@")[0]
+            display_name = username.replace(".", " ").replace("_", " ").title()
+            external_user_key = f"usr_{username}"
+            cur.execute("""
+                INSERT OR IGNORE INTO employee 
+                (company_id, team_id, external_user_key, display_name, email, is_active, joined_on)
+                VALUES (?, ?, ?, ?, ?, 1, '2026-01-01')
+            """, (company_id, team_id, external_user_key, display_name, email))
+    except Exception as e:
+        print(f"Warning: error seeding claude code employees: {e}")
+
 def init_db(seed_if_empty: bool = True):
     db_path = get_db_path()
     init_sql_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "db", "init.sql"))
@@ -296,3 +341,6 @@ def init_db(seed_if_empty: bool = True):
                 seed_database(conn)
             else:
                 sync_active_agents(conn)
+
+        # Seed and persist the 15 employees from Claude Code usage telemetry
+        seed_claude_code_employees(conn)
