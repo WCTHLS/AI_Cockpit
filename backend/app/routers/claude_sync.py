@@ -13,45 +13,52 @@ from ..auth import get_current_user
 
 router = APIRouter(prefix="/admin/claude", tags=["claude-integration"])
 
+ANTHROPIC_BASE_URL = "https://api.anthropic.com"
+ANTHROPIC_VERSION = "2023-06-01"
+
 # -------------------------------------------------------------------------
 # Schemas
 # -------------------------------------------------------------------------
 class ClaudeConfigRequest(BaseModel):
+    connection_mode: Optional[str] = "mock"  # 'live' | 'custom' | 'mock'
+    custom_base_url: Optional[str] = None
+    organization_id: Optional[str] = None
     cost_report_url: Optional[str] = None
     usage_report_url: Optional[str] = None
     admin_api_key: Optional[str] = None
     auto_sync_on_refresh: Optional[bool] = True
 
 class ClaudeSyncRequest(BaseModel):
+    connection_mode: Optional[str] = None
+    custom_base_url: Optional[str] = None
+    admin_api_key: Optional[str] = None
     cost_report_url: Optional[str] = None
     usage_report_url: Optional[str] = None
-    admin_api_key: Optional[str] = None
     month: Optional[str] = "2026-09"
     force_local: Optional[bool] = False
 
 # Workspace ID to Agent Name Mapping
 WORKSPACE_TO_AGENT = {
-    "wrk_account_research_agent": "Account Research Agent",
-    "wrk_campaign_content_agent": "Campaign Content Agent",
-    "wrk_case_triage_agent": "Case Triage Agent",
-    "wrk_code_review_agent": "Code Review Agent",
-    "wrk_collections_agent": "Collections Agent",
-    "wrk_contract_review_agent": "Contract Review Agent",
-    "wrk_customer_self_service_agent": "Customer Self Service Agent",
-    "wrk_demand_sensing_agent": "Demand Sensing Agent",
-    "wrk_developer_copilot": "Developer Copilot",
-    "wrk_invoice_matching_agent": "Invoice Matching Agent",
-    "wrk_knowledge_article_agent": "Knowledge Article Agent",
-    "wrk_logistics_tracking_agent": "Logistics Tracking Agent",
-    "wrk_order_status_agent": "Order Status Agent",
-    "wrk_password_access_agent": "Password & Access Agent",
-    "wrk_rfp_response_agent": "RFP Response Agent",
-    "wrk_ticket_triage_agent": "Ticket Triage Agent",
-    "wrk_variance_analysis_agent": "Variance Analysis Agent",
-    "unattributed": "Anthropic Unattributed Platform Overhead"
+    "wrk_account_research_agent": {"name": "Account Research Agent", "dept": "Sales"},
+    "wrk_campaign_content_agent": {"name": "Campaign Content Agent", "dept": "Sales"},
+    "wrk_case_triage_agent": {"name": "Case Triage Agent", "dept": "Customer"},
+    "wrk_code_review_agent": {"name": "Code Review Agent", "dept": "Eng & IT"},
+    "wrk_collections_agent": {"name": "Collections Agent", "dept": "Finance"},
+    "wrk_contract_review_agent": {"name": "Contract Review Agent", "dept": "Operations"},
+    "wrk_customer_self_service_agent": {"name": "Customer Self Service Agent", "dept": "Customer"},
+    "wrk_demand_sensing_agent": {"name": "Demand Sensing Agent", "dept": "Operations"},
+    "wrk_developer_copilot": {"name": "Developer Copilot", "dept": "Eng & IT"},
+    "wrk_invoice_matching_agent": {"name": "Invoice Matching Agent", "dept": "Finance"},
+    "wrk_knowledge_article_agent": {"name": "Knowledge Article Agent", "dept": "Customer"},
+    "wrk_logistics_tracking_agent": {"name": "Logistics Tracking Agent", "dept": "Operations"},
+    "wrk_order_status_agent": {"name": "Order Status Agent", "dept": "Customer"},
+    "wrk_password_access_agent": {"name": "Password & Access Agent", "dept": "Eng & IT"},
+    "wrk_rfp_response_agent": {"name": "RFP Response Agent", "dept": "Sales"},
+    "wrk_ticket_triage_agent": {"name": "Ticket Triage Agent", "dept": "Operations"},
+    "wrk_variance_analysis_agent": {"name": "Variance Analysis Agent", "dept": "Finance"},
+    "unattributed": {"name": "Anthropic Unattributed Platform Overhead", "dept": "Eng & IT"}
 }
 
-# Task Benchmarks (Hours saved per standard business task execution)
 AGENT_BENCHMARKS = {
     "rfp response agent": 51.0 / 60.0,
     "contract review agent": 45.0 / 60.0,
@@ -87,6 +94,9 @@ def _init_config_table():
         conn.execute("""
             CREATE TABLE IF NOT EXISTS claude_api_config (
                 id INTEGER PRIMARY KEY,
+                connection_mode TEXT DEFAULT 'mock',
+                custom_base_url TEXT,
+                organization_id TEXT,
                 cost_report_url TEXT,
                 usage_report_url TEXT,
                 admin_api_key TEXT,
@@ -97,9 +107,19 @@ def _init_config_table():
                 updated_at TEXT
             )
         """)
+        for col, col_type in [
+            ("connection_mode", "TEXT DEFAULT 'mock'"),
+            ("custom_base_url", "TEXT"),
+            ("organization_id", "TEXT"),
+        ]:
+            try:
+                conn.execute(f"ALTER TABLE claude_api_config ADD COLUMN {col} {col_type}")
+            except Exception:
+                pass
+
         conn.execute("""
-            INSERT OR IGNORE INTO claude_api_config (id, auto_sync_on_refresh, last_sync_status)
-            VALUES (1, 1, 'not_configured')
+            INSERT OR IGNORE INTO claude_api_config (id, connection_mode, auto_sync_on_refresh, last_sync_status)
+            VALUES (1, 'mock', 1, 'not_configured')
         """)
 
 def _get_config():
@@ -115,8 +135,14 @@ def _save_config(data: Dict[str, Any]):
     with get_db() as conn:
         fields = []
         vals = []
+        allowed = [
+            "connection_mode", "custom_base_url", "organization_id",
+            "cost_report_url", "usage_report_url", "admin_api_key",
+            "auto_sync_on_refresh", "last_synced_at", "last_sync_status",
+            "last_sync_metrics", "updated_at"
+        ]
         for k, v in data.items():
-            if k in ["cost_report_url", "usage_report_url", "admin_api_key", "auto_sync_on_refresh", "last_synced_at", "last_sync_status", "last_sync_metrics", "updated_at"]:
+            if k in allowed:
                 fields.append(f"{k} = ?")
                 vals.append(v)
         vals.append(1)
@@ -136,23 +162,26 @@ def _find_sample_file(filename: str) -> Optional[str]:
             return c
     return None
 
-def _fetch_or_fallback(url: Optional[str], api_key: Optional[str], filename: str) -> tuple[Dict[str, Any], str]:
+def _fetch_or_fallback(url: Optional[str], api_key: Optional[str], filename: str, query_params: Optional[Dict[str, Any]] = None) -> tuple[Dict[str, Any], str]:
     if url and url.strip():
         try:
-            headers = {"anthropic-version": "2023-06-01"}
+            headers = {"anthropic-version": ANTHROPIC_VERSION}
             if api_key and api_key.strip():
                 headers["x-api-key"] = api_key.strip()
-            with httpx.Client(timeout=10.0) as client:
-                resp = client.get(url.strip(), headers=headers)
+            with httpx.Client(timeout=12.0) as client:
+                resp = client.get(url.strip(), headers=headers, params=query_params)
                 if resp.status_code == 200:
-                    return resp.json(), f"remote_url ({url.strip()})"
-        except Exception:
+                    return resp.json(), f"live_remote ({url.strip()})"
+                elif resp.status_code in [401, 403]:
+                    # Return error indicator if live credentials invalid
+                    return {"error": f"Anthropic Authentication Error (HTTP {resp.status_code}): {resp.text}"}, f"error_{resp.status_code}"
+        except Exception as e:
             pass
 
     path = _find_sample_file(filename)
     if path and os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
-            return json.load(f), f"local_mock ({os.path.basename(path)})"
+            return json.load(f), f"sample_mock ({os.path.basename(path)})"
 
     return {"data": []}, "empty_fallback"
 
@@ -172,15 +201,31 @@ def get_claude_config(user: Dict[str, Any] = Depends(get_current_user)):
         except Exception:
             metrics = None
 
+    # Workspaces list for UI attribution transparency
+    workspaces = [
+        {"workspace_id": wid, "agent_name": info["name"], "department": info["dept"]}
+        for wid, info in WORKSPACE_TO_AGENT.items()
+    ]
+
     return {
+        "connection_mode": cfg.get("connection_mode") or "mock",
+        "custom_base_url": cfg.get("custom_base_url") or "",
+        "organization_id": cfg.get("organization_id") or "",
         "cost_report_url": cfg.get("cost_report_url") or "",
         "usage_report_url": cfg.get("usage_report_url") or "",
+        "official_endpoints": {
+            "base_url": ANTHROPIC_BASE_URL,
+            "cost_report": f"{ANTHROPIC_BASE_URL}/v1/organizations/cost_report",
+            "usage_report": f"{ANTHROPIC_BASE_URL}/v1/organizations/usage_report/messages",
+            "claude_code": f"{ANTHROPIC_BASE_URL}/v1/organizations/usage_report/claude_code"
+        },
         "has_api_key": bool(raw_key),
         "admin_api_key_masked": masked_key,
         "auto_sync_on_refresh": bool(cfg.get("auto_sync_on_refresh", 1)),
         "last_synced_at": cfg.get("last_synced_at"),
         "last_sync_status": cfg.get("last_sync_status") or "not_configured",
-        "last_sync_metrics": metrics
+        "last_sync_metrics": metrics,
+        "workspaces": workspaces
     }
 
 @router.post("/config")
@@ -191,6 +236,12 @@ def update_claude_config(req: ClaudeConfigRequest, user: Dict[str, Any] = Depend
     update_data: Dict[str, Any] = {
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
+    if req.connection_mode is not None:
+        update_data["connection_mode"] = req.connection_mode
+    if req.custom_base_url is not None:
+        update_data["custom_base_url"] = req.custom_base_url.strip()
+    if req.organization_id is not None:
+        update_data["organization_id"] = req.organization_id.strip()
     if req.cost_report_url is not None:
         update_data["cost_report_url"] = req.cost_report_url.strip()
     if req.usage_report_url is not None:
@@ -201,23 +252,54 @@ def update_claude_config(req: ClaudeConfigRequest, user: Dict[str, Any] = Depend
         update_data["admin_api_key"] = req.admin_api_key.strip()
 
     _save_config(update_data)
-    return {"status": "success", "message": "Claude integration configuration updated successfully."}
+    return {"status": "success", "message": "Claude Enterprise connection settings saved successfully."}
 
 
 @router.post("/sync")
 def sync_claude_telemetry(req: Optional[ClaudeSyncRequest] = None, user: Dict[str, Any] = Depends(get_current_user)):
     cfg = _get_config()
-    cost_url = (req.cost_report_url if req and req.cost_report_url else None) or cfg.get("cost_report_url")
-    usage_url = (req.usage_report_url if req and req.usage_report_url else None) or cfg.get("usage_report_url")
+    
+    # Resolve connection mode
+    mode = (req.connection_mode if req and req.connection_mode else None) or cfg.get("connection_mode") or "mock"
+    if req and req.force_local:
+        mode = "mock"
+
     api_key = (req.admin_api_key if req and req.admin_api_key else None) or cfg.get("admin_api_key")
     target_month = (req.month if req and req.month else "2026-09")
 
-    if req and req.force_local:
-        cost_url = None
-        usage_url = None
+    # Resolve endpoint URLs based on connection mode
+    cost_url = None
+    usage_url = None
 
-    cost_data, cost_source = _fetch_or_fallback(cost_url, api_key, "claude_cost_report_sample.json")
-    usage_data, usage_source = _fetch_or_fallback(usage_url, api_key, "claude_usage_report_sample.json")
+    if mode == "live":
+        cost_url = f"{ANTHROPIC_BASE_URL}/v1/organizations/cost_report"
+        usage_url = f"{ANTHROPIC_BASE_URL}/v1/organizations/usage_report/messages"
+    elif mode == "custom":
+        base = (req.custom_base_url if req and req.custom_base_url else None) or cfg.get("custom_base_url") or ""
+        base = base.rstrip('/')
+        if base:
+            cost_url = f"{base}/v1/organizations/cost_report" if "/v1" not in base else f"{base}/cost_report"
+            usage_url = f"{base}/v1/organizations/usage_report/messages" if "/v1" not in base else f"{base}/usage_report"
+
+    # Explicit URL overrides if provided
+    if req and req.cost_report_url:
+        cost_url = req.cost_report_url
+    if req and req.usage_report_url:
+        usage_url = req.usage_report_url
+
+    # Query params conforming to Anthropic spec
+    query_params = {
+        "starting_at": f"{target_month}-01T00:00:00Z",
+        "bucket_width": "1d",
+        "group_by[]": "workspace_id"
+    }
+
+    cost_data, cost_source = _fetch_or_fallback(cost_url, api_key, "claude_cost_report_sample.json", query_params)
+    usage_data, usage_source = _fetch_or_fallback(usage_url, api_key, "claude_usage_report_sample.json", query_params)
+
+    # Check for authentication errors from Anthropic
+    if "error" in cost_data:
+        raise HTTPException(status_code=400, detail=cost_data["error"])
 
     workspace_stats: Dict[str, Dict[str, Any]] = {}
 
@@ -302,9 +384,8 @@ def sync_claude_telemetry(req: Optional[ClaudeSyncRequest] = None, user: Dict[st
         dept_map = {aid: dept or "eng & it" for aid, dept in db_depts}
 
         for ws_id, st in workspace_stats.items():
-            ag_name = WORKSPACE_TO_AGENT.get(ws_id)
-            if not ag_name:
-                ag_name = ws_id.replace("wrk_", "").replace("_", " ").title()
+            ws_meta = WORKSPACE_TO_AGENT.get(ws_id)
+            ag_name = ws_meta["name"] if ws_meta else ws_id.replace("wrk_", "").replace("_", " ").title()
 
             ag_name_clean = ag_name.lower().strip()
             c_usd = round(st["cost_usd"], 2)
@@ -345,7 +426,7 @@ def sync_claude_telemetry(req: Optional[ClaudeSyncRequest] = None, user: Dict[st
             total_tasks_derived += tasks_est
             agents_synced += 1
 
-            # 1. Upsert value_measurement_month (Idempotent update for the target month)
+            # 1. Upsert value_measurement_month (Idempotent)
             val_row = cur.execute("""
                 SELECT id FROM value_measurement_month 
                 WHERE agent_id = ? AND team_id = ? AND month_start = ?
@@ -364,7 +445,7 @@ def sync_claude_telemetry(req: Optional[ClaudeSyncRequest] = None, user: Dict[st
                     VALUES (1, ?, ?, ?, ?, 'measured', 'approved')
                 """, (month_start_date, aid, tid, hours_saved))
 
-            # 2. Upsert cost_record (Idempotent update for consumption category)
+            # 2. Upsert cost_record (Idempotent)
             cost_row = cur.execute("""
                 SELECT id FROM cost_record 
                 WHERE agent_id = ? AND team_id = ? AND month_start = ? AND cost_category = 'consumption'
@@ -383,7 +464,7 @@ def sync_claude_telemetry(req: Optional[ClaudeSyncRequest] = None, user: Dict[st
                     VALUES (1, ?, ?, ?, 'consumption', ?, 'USD', 'vendor_usage_api', 'Claude Enterprise Billed Token Consumption')
                 """, (month_start_date, aid, tid, c_usd))
 
-            # 3. Update in-memory store for fallback
+            # 3. In-memory store sync for fallback
             existing = [a for a in store.raw_agents if a.get("Agent", "").lower() == ag_name.lower() and a.get("Month") == target_month]
             if existing:
                 rec = existing[0]
@@ -412,6 +493,7 @@ def sync_claude_telemetry(req: Optional[ClaudeSyncRequest] = None, user: Dict[st
         "tasks_executed": total_tasks_derived,
         "source_cost": cost_source,
         "source_usage": usage_source,
+        "connection_mode": mode,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
@@ -426,7 +508,8 @@ def sync_claude_telemetry(req: Optional[ClaudeSyncRequest] = None, user: Dict[st
         "synced_at": sync_metrics["timestamp"],
         "source_cost": cost_source,
         "source_usage": usage_source,
+        "connection_mode": mode,
         "agents_synced": agents_synced,
         "metrics": sync_metrics,
-        "message": f"Successfully synchronized {agents_synced} agents from Claude Enterprise endpoints ({cost_source}, {usage_source})."
+        "message": f"Successfully synchronized {agents_synced} agent workspaces via {mode.upper()} ({cost_source})."
     }

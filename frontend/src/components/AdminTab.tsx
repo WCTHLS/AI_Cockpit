@@ -131,10 +131,14 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
   // Claude Enterprise API Sync State
   const [claudeConfig, setClaudeConfig] = useState<ClaudeConfig | null>(null);
+  const [connectionMode, setConnectionMode] = useState<'live' | 'custom' | 'mock'>('mock');
+  const [customBaseUrl, setCustomBaseUrl] = useState<string>('');
+  const [organizationId, setOrganizationId] = useState<string>('');
   const [costReportUrl, setCostReportUrl] = useState<string>('');
   const [usageReportUrl, setUsageReportUrl] = useState<string>('');
   const [adminApiKey, setAdminApiKey] = useState<string>('');
   const [showApiKey, setShowApiKey] = useState<boolean>(false);
+  const [showWorkspaces, setShowWorkspaces] = useState<boolean>(false);
   const [autoSyncOnRefresh, setAutoSyncOnRefresh] = useState<boolean>(true);
   const [isSyncingClaude, setIsSyncingClaude] = useState<boolean>(false);
   const [isSavingClaudeConfig, setIsSavingClaudeConfig] = useState<boolean>(false);
@@ -147,6 +151,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     fetchClaudeConfig()
       .then((cfg) => {
         setClaudeConfig(cfg);
+        setConnectionMode(cfg.connection_mode || 'mock');
+        setCustomBaseUrl(cfg.custom_base_url || '');
+        setOrganizationId(cfg.organization_id || '');
         setCostReportUrl(cfg.cost_report_url || '');
         setUsageReportUrl(cfg.usage_report_url || '');
         setAutoSyncOnRefresh(cfg.auto_sync_on_refresh);
@@ -171,6 +178,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     setClaudeSyncError(null);
     try {
       const res = await updateClaudeConfig({
+        connection_mode: connectionMode,
+        custom_base_url: customBaseUrl,
+        organization_id: organizationId,
         cost_report_url: costReportUrl,
         usage_report_url: usageReportUrl,
         admin_api_key: adminApiKey,
@@ -193,6 +203,8 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     setClaudeSyncError(null);
     try {
       const res = await syncClaudeTelemetry({
+        connection_mode: forceLocal ? 'mock' : connectionMode,
+        custom_base_url: customBaseUrl,
         cost_report_url: costReportUrl,
         usage_report_url: usageReportUrl,
         admin_api_key: adminApiKey,
@@ -676,7 +688,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             transition: 'all 0.2s'
           }}
         >
-          <Zap size={15} /> Claude &amp; LLM Sync
+          <Zap size={15} /> Live Telemetry API
           <span style={{
             background: activeSection === 'claude_api' ? '#FCD34D' : '#EDE9FE',
             color: activeSection === 'claude_api' ? '#1E1B4B' : '#7C3AED',
@@ -1555,7 +1567,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{
-                background: 'linear-gradient(135deg, #7C3AED, #A855F7)',
+                background: 'linear-gradient(135deg, #7C3AED, #9333EA)',
                 color: '#FFFFFF',
                 padding: 10,
                 borderRadius: 10,
@@ -1567,22 +1579,36 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                 <Zap size={22} />
               </div>
               <div>
-                <h3 style={{ fontSize: 17, fontWeight: 800, color: '#1E1B4B', margin: 0 }}>
-                  Claude Enterprise &amp; Console Live Telemetry Sync
-                </h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <h3 style={{ fontSize: 17, fontWeight: 800, color: '#1E1B4B', margin: 0 }}>
+                    Anthropic Claude Enterprise Integration
+                  </h3>
+                  <span style={{
+                    fontSize: 10,
+                    fontWeight: 800,
+                    letterSpacing: '0.05em',
+                    padding: '2px 8px',
+                    borderRadius: 12,
+                    background: '#EDE9FE',
+                    color: '#7C3AED',
+                    textTransform: 'uppercase'
+                  }}>
+                    Official API Suite
+                  </span>
+                </div>
                 <p style={{ fontSize: 13, color: '#6B7280', margin: '3px 0 0 0' }}>
-                  Live API connector pulling real token consumption, prompt cache savings, and cost reports per agent workspace.
+                  Connect your Anthropic Organization to sync billed costs, token volume, prompt cache efficiency, and agent telemetry.
                 </p>
               </div>
             </div>
 
-            {/* Status Indicator */}
+            {/* Connection Status Badge */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
               gap: 8,
-              background: claudeConfig?.cost_report_url ? '#FAF5FF' : '#F0FDF4',
-              border: `1px solid ${claudeConfig?.cost_report_url ? '#D8B4FE' : '#86EFAC'}`,
+              background: connectionMode === 'live' ? '#F0FDF4' : connectionMode === 'custom' ? '#FFFBEB' : '#FAF5FF',
+              border: `1.5px solid ${connectionMode === 'live' ? '#86EFAC' : connectionMode === 'custom' ? '#FDE68A' : '#DDD6FE'}`,
               padding: '6px 14px',
               borderRadius: 20
             }}>
@@ -1590,15 +1616,15 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                background: claudeConfig?.cost_report_url ? '#9333EA' : '#16A34A',
-                boxShadow: `0 0 8px ${claudeConfig?.cost_report_url ? '#9333EA' : '#16A34A'}`
+                background: connectionMode === 'live' ? '#16A34A' : connectionMode === 'custom' ? '#D97706' : '#7C3AED',
+                boxShadow: `0 0 8px ${connectionMode === 'live' ? '#16A34A' : connectionMode === 'custom' ? '#D97706' : '#7C3AED'}`
               }} />
               <span style={{
                 fontSize: 12,
                 fontWeight: 700,
-                color: claudeConfig?.cost_report_url ? '#6B21A8' : '#15803D'
+                color: connectionMode === 'live' ? '#15803D' : connectionMode === 'custom' ? '#92400E' : '#6D28D9'
               }}>
-                {claudeConfig?.cost_report_url ? 'Remote Endpoint Connected' : 'Sample Mock Engine Active'}
+                {connectionMode === 'live' ? 'Live Cloud (api.anthropic.com)' : connectionMode === 'custom' ? 'Custom / Staging Gateway' : 'Sample Mock Engine Active'}
               </span>
             </div>
           </div>
@@ -1642,83 +1668,148 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             </div>
           )}
 
-          {/* Configuration Form Card */}
+          {/* 1. Connection Mode Selector (3 Authentic Segmented Cards) */}
+          <div style={{ marginBottom: 22 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
+              Select Telemetry Connection Environment:
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+              {/* Option A: Production Cloud */}
+              <div
+                onClick={() => setConnectionMode('live')}
+                style={{
+                  border: `2px solid ${connectionMode === 'live' ? '#7C3AED' : '#E2E8F0'}`,
+                  background: connectionMode === 'live' ? '#FAF5FF' : '#FFFFFF',
+                  borderRadius: 10,
+                  padding: 14,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  position: 'relative'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span style={{ fontSize: 13.5, fontWeight: 800, color: connectionMode === 'live' ? '#6D28D9' : '#1E293B' }}>
+                    Production Anthropic Cloud
+                  </span>
+                  <span style={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: '50%',
+                    border: `2px solid ${connectionMode === 'live' ? '#7C3AED' : '#CBD5E1'}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {connectionMode === 'live' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#7C3AED' }} />}
+                  </span>
+                </div>
+                <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#7C3AED', marginBottom: 4 }}>
+                  https://api.anthropic.com
+                </div>
+                <div style={{ fontSize: 11.5, color: '#64748B' }}>
+                  Direct live connection to Anthropic's Admin Cost &amp; Usage APIs with Admin Key.
+                </div>
+              </div>
+
+              {/* Option B: Custom / Teammate Mock Server */}
+              <div
+                onClick={() => setConnectionMode('custom')}
+                style={{
+                  border: `2px solid ${connectionMode === 'custom' ? '#7C3AED' : '#E2E8F0'}`,
+                  background: connectionMode === 'custom' ? '#FAF5FF' : '#FFFFFF',
+                  borderRadius: 10,
+                  padding: 14,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span style={{ fontSize: 13.5, fontWeight: 800, color: connectionMode === 'custom' ? '#6D28D9' : '#1E293B' }}>
+                    Hosted Mock Gateway
+                  </span>
+                  <span style={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: '50%',
+                    border: `2px solid ${connectionMode === 'custom' ? '#7C3AED' : '#CBD5E1'}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {connectionMode === 'custom' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#7C3AED' }} />}
+                  </span>
+                </div>
+                <div style={{ fontSize: 11, color: '#D97706', fontWeight: 600, marginBottom: 4 }}>
+                  Hosted Mock
+                </div>
+                <div style={{ fontSize: 11.5, color: '#64748B' }}>
+                  Route requests to a custom mock server or corporate proxy URL for pre-live testing.
+                </div>
+              </div>
+
+              {/* Option C: Offline Root Sample Mock */}
+              <div
+                onClick={() => setConnectionMode('mock')}
+                style={{
+                  border: `2px solid ${connectionMode === 'mock' ? '#7C3AED' : '#E2E8F0'}`,
+                  background: connectionMode === 'mock' ? '#FAF5FF' : '#FFFFFF',
+                  borderRadius: 10,
+                  padding: 14,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span style={{ fontSize: 13.5, fontWeight: 800, color: connectionMode === 'mock' ? '#6D28D9' : '#1E293B' }}>
+                    Local Sample Engine
+                  </span>
+                  <span style={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: '50%',
+                    border: `2px solid ${connectionMode === 'mock' ? '#7C3AED' : '#CBD5E1'}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {connectionMode === 'mock' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#7C3AED' }} />}
+                  </span>
+                </div>
+                <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#6B7280', marginBottom: 4 }}>
+                  claude_cost_report_sample.json
+                </div>
+                <div style={{ fontSize: 11.5, color: '#64748B' }}>
+                  Offline test harness reading exact Anthropic schema JSON files from the project root.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Authentication & Connection Credentials Form */}
           <div style={{
             background: '#FBFBFE',
             border: '1px solid #E9D5FF',
             borderRadius: 10,
             padding: 20,
-            marginBottom: 24
+            marginBottom: 20
           }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#4C1D95', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Link2 size={16} />
-              API Endpoints &amp; Authentication Configuration
+              <Key size={16} />
+              Anthropic Credentials &amp; Target Organization
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-              {/* Cost Report URL */}
-              <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
-                  Claude Cost Report Endpoint URL:
-                </label>
-                <input
-                  type="text"
-                  value={costReportUrl}
-                  onChange={(e) => setCostReportUrl(e.target.value)}
-                  placeholder="https://.../v1/organizations/cost_report (leave blank for local root mock)"
-                  style={{
-                    width: '100%',
-                    padding: '9px 12px',
-                    borderRadius: 6,
-                    border: '1px solid #CBD5E1',
-                    fontSize: 12.5,
-                    fontFamily: 'monospace',
-                    background: '#FFFFFF'
-                  }}
-                />
-                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
-                  Default fallback: <code style={{ color: '#7C3AED' }}>claude_cost_report_sample.json</code> (Root directory)
-                </div>
-              </div>
-
-              {/* Usage Report URL */}
-              <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
-                  Claude Usage Report Endpoint URL:
-                </label>
-                <input
-                  type="text"
-                  value={usageReportUrl}
-                  onChange={(e) => setUsageReportUrl(e.target.value)}
-                  placeholder="https://.../v1/organizations/usage_report/messages (leave blank for local mock)"
-                  style={{
-                    width: '100%',
-                    padding: '9px 12px',
-                    borderRadius: 6,
-                    border: '1px solid #CBD5E1',
-                    fontSize: 12.5,
-                    fontFamily: 'monospace',
-                    background: '#FFFFFF'
-                  }}
-                />
-                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
-                  Default fallback: <code style={{ color: '#7C3AED' }}>claude_usage_report_sample.json</code> (Root directory)
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'center' }}>
               {/* Admin API Key */}
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
-                  Anthropic Admin API Key (sk-ant-admin01-...):
+                  Anthropic Organization Admin API Key:
                 </label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type={showApiKey ? 'text' : 'password'}
                     value={adminApiKey}
                     onChange={(e) => setAdminApiKey(e.target.value)}
-                    placeholder={claudeConfig?.has_api_key ? `Configured: ${claudeConfig.admin_api_key_masked}` : 'Enter sk-ant-admin01-...'}
+                    placeholder={claudeConfig?.has_api_key ? `Configured: ${claudeConfig.admin_api_key_masked}` : 'sk-ant-admin01-...'}
                     style={{
                       width: '100%',
                       padding: '9px 40px 9px 12px',
@@ -1747,69 +1838,200 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                   </button>
                 </div>
                 <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
-                  Key is encrypted and stored locally. Never transmitted to third-party servers.
+                  Required format: <strong style={{ color: '#7C3AED' }}>sk-ant-admin01-...</strong> (Created in console.anthropic.com &gt; Settings &gt; API Keys &gt; Admin Keys).
                 </div>
               </div>
 
-              {/* Auto Sync Toggle & Save Button */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#374151' }}>
-                  <input
-                    type="checkbox"
-                    checked={autoSyncOnRefresh}
-                    onChange={(e) => setAutoSyncOnRefresh(e.target.checked)}
-                    style={{ width: 16, height: 16, accentColor: '#7C3AED' }}
-                  />
-                  <span>Auto-sync telemetry whenever dashboard is refreshed</span>
+              {/* Organization ID */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
+                  Anthropic Organization ID (Optional):
                 </label>
-
-                <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-                  <button
-                    onClick={handleSaveClaudeConfig}
-                    disabled={isSavingClaudeConfig}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      background: '#7C3AED',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      borderRadius: 6,
-                      padding: '8px 16px',
-                      fontSize: 12.5,
-                      fontWeight: 700,
-                      cursor: isSavingClaudeConfig ? 'not-allowed' : 'pointer'
-                    }}
-                  >
-                    <Save size={14} />
-                    {isSavingClaudeConfig ? 'Saving...' : 'Save Configuration'}
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setCostReportUrl('');
-                      setUsageReportUrl('');
-                      setAdminApiKey('');
-                    }}
-                    style={{
-                      background: '#FFFFFF',
-                      color: '#6B7280',
-                      border: '1px solid #CBD5E1',
-                      borderRadius: 6,
-                      padding: '8px 14px',
-                      fontSize: 12.5,
-                      fontWeight: 600,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Reset to Local Mock
-                  </button>
+                <input
+                  type="text"
+                  value={organizationId}
+                  onChange={(e) => setOrganizationId(e.target.value)}
+                  placeholder="org_01xxxxxxxxxxxxxxxxxxxx (defaults to primary)"
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 6,
+                    border: '1px solid #CBD5E1',
+                    fontSize: 12.5,
+                    fontFamily: 'monospace',
+                    background: '#FFFFFF'
+                  }}
+                />
+                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
+                  Allows multi-tenant enterprise org scoping.
                 </div>
+              </div>
+            </div>
+
+            {/* Custom Base URL (if custom mode selected) */}
+            {connectionMode === 'custom' && (
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
+                  Custom Mock Server / Proxy Base URL:
+                </label>
+                <input
+                  type="text"
+                  value={customBaseUrl}
+                  onChange={(e) => setCustomBaseUrl(e.target.value)}
+                  placeholder="https://hosted-mock.internal/api or http://localhost:8000"
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 6,
+                    border: '1px solid #CBD5E1',
+                    fontSize: 12.5,
+                    fontFamily: 'monospace',
+                    background: '#FFFFFF'
+                  }}
+                />
+                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
+                  The Cockpit will automatically query <code>/v1/organizations/cost_report</code> and <code>/v1/organizations/usage_report/messages</code> on this host.
+                </div>
+              </div>
+            )}
+
+            {/* 3. Official Anthropic Endpoints Active Box */}
+            <div style={{
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: 8,
+              padding: '12px 16px',
+              marginBottom: 16
+            }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#1E293B', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Link2 size={14} color="#7C3AED" />
+                Active Anthropic Endpoints Connected:
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, fontSize: 11.5 }}>
+                <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
+                  <div style={{ fontWeight: 700, color: '#0F172A' }}>Cost Report API</div>
+                  <code style={{ fontSize: 11, color: '#7C3AED' }}>GET /v1/organizations/cost_report</code>
+                </div>
+                <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
+                  <div style={{ fontWeight: 700, color: '#0F172A' }}>Message Usage API</div>
+                  <code style={{ fontSize: 11, color: '#7C3AED' }}>GET /v1/organizations/usage_report/messages</code>
+                </div>
+                <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
+                  <div style={{ fontWeight: 700, color: '#0F172A' }}>Claude Code Telemetry</div>
+                  <code style={{ fontSize: 11, color: '#7C3AED' }}>GET /v1/organizations/usage_report/claude_code</code>
+                </div>
+              </div>
+            </div>
+
+            {/* Auto Sync & Save Form Actions */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 8 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+                <input
+                  type="checkbox"
+                  checked={autoSyncOnRefresh}
+                  onChange={(e) => setAutoSyncOnRefresh(e.target.checked)}
+                  style={{ width: 16, height: 16, accentColor: '#7C3AED' }}
+                />
+                <span>Automatically sync telemetry on dashboard refresh</span>
+              </label>
+
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  onClick={() => setShowWorkspaces(!showWorkspaces)}
+                  style={{
+                    background: '#FFFFFF',
+                    color: '#6D28D9',
+                    border: '1px solid #DDD6FE',
+                    borderRadius: 6,
+                    padding: '8px 14px',
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  {showWorkspaces ? 'Hide Workspace Mappings' : 'View Agent Workspace Mappings (17)'}
+                </button>
+
+                <button
+                  onClick={handleSaveClaudeConfig}
+                  disabled={isSavingClaudeConfig}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: '#7C3AED',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '8px 18px',
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    cursor: isSavingClaudeConfig ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  <Save size={14} />
+                  {isSavingClaudeConfig ? 'Saving...' : 'Save Configuration'}
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Trigger Live Sync Action Banner */}
+          {/* 4. Workspace Attribution Mapping Table */}
+          {showWorkspaces && claudeConfig?.workspaces && (
+            <div style={{
+              background: '#FFFFFF',
+              border: '1px solid #DDD6FE',
+              borderRadius: 10,
+              padding: 16,
+              marginBottom: 20,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+            }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#1E1B4B', marginBottom: 10 }}>
+                Claude API Workspace ➔ Cockpit Agent Mapping Matrix
+              </div>
+              <div style={{ maxHeight: 220, overflowY: 'auto', border: '1px solid #E2E8F0', borderRadius: 6 }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, textAlign: 'left' }}>
+                  <thead>
+                    <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#64748B' }}>
+                      <th style={{ padding: '8px 12px' }}>Anthropic Workspace ID</th>
+                      <th style={{ padding: '8px 12px' }}>Cockpit Flagship Agent</th>
+                      <th style={{ padding: '8px 12px' }}>Business Department</th>
+                      <th style={{ padding: '8px 12px' }}>Attribution Method</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {claudeConfig.workspaces.map((ws, i) => (
+                      <tr key={i} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                        <td style={{ padding: '7px 12px', fontFamily: 'monospace', color: '#7C3AED' }}>
+                          {ws.workspace_id}
+                        </td>
+                        <td style={{ padding: '7px 12px', fontWeight: 700, color: '#1E293B' }}>
+                          {ws.agent_name}
+                        </td>
+                        <td style={{ padding: '7px 12px', color: '#64748B' }}>
+                          {ws.department}
+                        </td>
+                        <td style={{ padding: '7px 12px' }}>
+                          <span style={{
+                            fontSize: 10.5,
+                            fontWeight: 700,
+                            padding: '2px 6px',
+                            borderRadius: 10,
+                            background: ws.workspace_id === 'unattributed' ? '#FEE2E2' : '#DCFCE7',
+                            color: ws.workspace_id === 'unattributed' ? '#991B1B' : '#166534'
+                          }}>
+                            {ws.workspace_id === 'unattributed' ? 'Shared Platform' : 'Direct API Attribution'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* 5. Trigger Live Sync Action Banner */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -1822,10 +2044,10 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
           }}>
             <div>
               <div style={{ fontSize: 15, fontWeight: 800, color: '#581C87' }}>
-                Trigger Telemetry Ingestion &amp; Metric Update
+                Synchronize Anthropic Claude Telemetry
               </div>
               <div style={{ fontSize: 12.5, color: '#6B21A8', marginTop: 2 }}>
-                Executes the Anthropic pipeline parser: extracts daily buckets, converts cents to USD, computes prompt cache savings, and recalculates scorecard values.
+                Executes the pipeline parser: pulls daily cost buckets, parses cents, breaks down token prompt caching, and updates agent scorecards.
               </div>
             </div>
 
@@ -1848,7 +2070,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                 }}
               >
                 <Database size={14} />
-                Force Local Sample Mock
+                Run Local Sample Mock
               </button>
 
               <button
@@ -1858,11 +2080,11 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
-                  background: '#7C3AED',
+                  background: 'linear-gradient(135deg, #7C3AED, #9333EA)',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: 6,
-                  padding: '9px 20px',
+                  padding: '9px 22px',
                   fontSize: 13,
                   fontWeight: 800,
                   cursor: isSyncingClaude ? 'not-allowed' : 'pointer',
@@ -1884,7 +2106,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             </div>
           </div>
 
-          {/* Live Telemetry Impact Dashboard */}
+          {/* 6. Live Telemetry Impact Dashboard */}
           {claudeSyncResult && (
             <div style={{
               background: '#FFFFFF',
@@ -2021,8 +2243,6 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             </div>
           )}
         </div>
-      )}
-
-    </div>
+      )}    </div>
   );
 };

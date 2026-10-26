@@ -123,15 +123,31 @@ export interface ClaudeSyncMetrics {
   timestamp: string;
 }
 
+export interface ClaudeWorkspaceMapping {
+  workspace_id: string;
+  agent_name: string;
+  department: string;
+}
+
 export interface ClaudeConfig {
+  connection_mode: 'live' | 'custom' | 'mock';
+  custom_base_url: string;
+  organization_id: string;
   cost_report_url: string;
   usage_report_url: string;
+  official_endpoints?: {
+    base_url: string;
+    cost_report: string;
+    usage_report: string;
+    claude_code: string;
+  };
   has_api_key: boolean;
   admin_api_key_masked: string;
   auto_sync_on_refresh: boolean;
   last_synced_at: string | null;
   last_sync_status: string;
   last_sync_metrics: ClaudeSyncMetrics | null;
+  workspaces?: ClaudeWorkspaceMapping[];
 }
 
 export interface ClaudeSyncResponse {

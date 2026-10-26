@@ -214,6 +214,9 @@ export async function fetchClaudeConfig(): Promise<ClaudeConfig> {
 }
 
 export async function updateClaudeConfig(config: {
+  connection_mode?: 'live' | 'custom' | 'mock';
+  custom_base_url?: string;
+  organization_id?: string;
   cost_report_url?: string;
   usage_report_url?: string;
   admin_api_key?: string;
@@ -232,6 +235,8 @@ export async function updateClaudeConfig(config: {
 }
 
 export async function syncClaudeTelemetry(params?: {
+  connection_mode?: 'live' | 'custom' | 'mock';
+  custom_base_url?: string;
   cost_report_url?: string;
   usage_report_url?: string;
   admin_api_key?: string;
