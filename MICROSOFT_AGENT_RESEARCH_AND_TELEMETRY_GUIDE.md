@@ -153,6 +153,8 @@ Enterprises license developer and knowledge-worker AI primarily through **fixed 
 
 ## 3. Practical Implementation Strategy With Our Current Resources
 
+> **Architecture & Ingestion Note**: Based on the raw output metrics received from each telemetry source, we will design the data ingestion pipelines and write the backend parsing logic to extract, transform, and aggregate the required data points into our dashboard views (Scorecard, Cost Governance, and Seats & Adoption).
+
 ---
 
 ### Type 1: Fixed Seats — What We Need From Balaji (Admin)
