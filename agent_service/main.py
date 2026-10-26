@@ -121,6 +121,7 @@ Please reconnect your cable. If you need any further assistance, let me know!"""
     telemetry_payload = {
         "task_id": ticket_id,
         "agent_id": "it-service-desk",
+        "agent_name": "Ticket Triage Agent",
         "user_email": payload.employee_email,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "latency_ms": total_latency_ms,
