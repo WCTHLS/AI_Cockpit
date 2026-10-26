@@ -1,0 +1,5969 @@
+{
+  "data": [
+    {
+      "actor": {
+        "email_address": "aarav@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 59,
+          "removed": 14
+        },
+        "num_sessions": 2,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 6,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 764,
+            "cache_read": 4823,
+            "input": 13731,
+            "output": 2766
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 325,
+            "cache_read": 1795,
+            "input": 4595,
+            "output": 1014
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 9,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 348,
+            "cache_read": 1362,
+            "input": 5295,
+            "output": 1220
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "priya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 44,
+          "removed": 17
+        },
+        "num_sessions": 1,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 124,
+            "cache_read": 1239,
+            "input": 3948,
+            "output": 1116
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 113,
+            "cache_read": 549,
+            "input": 2016,
+            "output": 515
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 6,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 150,
+            "cache_read": 771,
+            "input": 2777,
+            "output": 789
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "rohan@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 6,
+        "lines_of_code": {
+          "added": 616,
+          "removed": 304
+        },
+        "num_sessions": 14,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 60,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1871,
+            "cache_read": 4794,
+            "input": 25693,
+            "output": 7581
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 47,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 4059,
+            "cache_read": 22136,
+            "input": 77226,
+            "output": 24252
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 9,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1418,
+            "cache_read": 6399,
+            "input": 35513,
+            "output": 8415
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 16,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 9,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 3,
+          "rejected": 2
+        },
+        "write_tool": {
+          "accepted": 5,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "ananya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 4,
+        "lines_of_code": {
+          "added": 301,
+          "removed": 117
+        },
+        "num_sessions": 7,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "api",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 769,
+            "cache_read": 3467,
+            "input": 10027,
+            "output": 2312
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 44,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1006,
+            "cache_read": 7001,
+            "input": 19891,
+            "output": 5507
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 18,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 977,
+            "cache_read": 5617,
+            "input": 31823,
+            "output": 9378
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 16,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 5,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 3,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "vikram@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 2,
+        "lines_of_code": {
+          "added": 117,
+          "removed": 29
+        },
+        "num_sessions": 3,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 7,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 871,
+            "cache_read": 3815,
+            "input": 13301,
+            "output": 3837
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 155,
+            "cache_read": 1254,
+            "input": 4019,
+            "output": 936
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 5,
+          "rejected": 2
+        },
+        "multi_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "sneha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 2,
+        "lines_of_code": {
+          "added": 76,
+          "removed": 32
+        },
+        "num_sessions": 4,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 10,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 647,
+            "cache_read": 4316,
+            "input": 19079,
+            "output": 4984
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 328,
+            "cache_read": 2062,
+            "input": 5978,
+            "output": 1695
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 5,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "karthik@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 7,
+        "lines_of_code": {
+          "added": 299,
+          "removed": 141
+        },
+        "num_sessions": 11,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "api",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 66,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1981,
+            "cache_read": 10714,
+            "input": 30793,
+            "output": 8315
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 24,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 2134,
+            "cache_read": 16381,
+            "input": 48493,
+            "output": 11433
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "iTerm.app",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 36,
+          "rejected": 6
+        },
+        "multi_edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 6,
+          "rejected": 2
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "divya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 6,
+        "lines_of_code": {
+          "added": 742,
+          "removed": 316
+        },
+        "num_sessions": 19,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "api",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 8,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1087,
+            "cache_read": 12544,
+            "input": 32758,
+            "output": 7844
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 37,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 15,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 2
+        },
+        "write_tool": {
+          "accepted": 17,
+          "rejected": 3
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "arjun@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 4,
+        "lines_of_code": {
+          "added": 366,
+          "removed": 113
+        },
+        "num_sessions": 9,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 678,
+            "cache_read": 5044,
+            "input": 12778,
+            "output": 3724
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 56,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 2214,
+            "cache_read": 9710,
+            "input": 30313,
+            "output": 6932
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 32,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 4575,
+            "cache_read": 14140,
+            "input": 59146,
+            "output": 15655
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 18,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 9,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 4,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "meera@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 3,
+        "lines_of_code": {
+          "added": 250,
+          "removed": 79
+        },
+        "num_sessions": 8,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "api",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 5,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 633,
+            "cache_read": 2791,
+            "input": 17522,
+            "output": 5271
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 4,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "rahul@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 3,
+        "lines_of_code": {
+          "added": 365,
+          "removed": 142
+        },
+        "num_sessions": 10,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 17,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 1625,
+            "cache_read": 6508,
+            "input": 30138,
+            "output": 8481
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 42,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1507,
+            "cache_read": 9088,
+            "input": 25253,
+            "output": 5166
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 5,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1675,
+            "cache_read": 5976,
+            "input": 21459,
+            "output": 4990
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 10,
+          "rejected": 2
+        },
+        "multi_edit_tool": {
+          "accepted": 8,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 7,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "kavya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 6,
+        "lines_of_code": {
+          "added": 513,
+          "removed": 265
+        },
+        "num_sessions": 12,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 6,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1563,
+            "cache_read": 5215,
+            "input": 21401,
+            "output": 6026
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 32,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 4242,
+            "cache_read": 22500,
+            "input": 60120,
+            "output": 15356
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 65,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1118,
+            "cache_read": 7449,
+            "input": 29488,
+            "output": 8136
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 30,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 8,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 6,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "siddharth@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 3,
+        "lines_of_code": {
+          "added": 252,
+          "removed": 97
+        },
+        "num_sessions": 6,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 4,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1135,
+            "cache_read": 4055,
+            "input": 14529,
+            "output": 3863
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 31,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 733,
+            "cache_read": 2266,
+            "input": 13224,
+            "output": 3988
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 10,
+          "rejected": 2
+        },
+        "multi_edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 3,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "neha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 8,
+        "lines_of_code": {
+          "added": 413,
+          "removed": 190
+        },
+        "num_sessions": 20,
+        "pull_requests_by_claude_code": 3
+      },
+      "customer_type": "api",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 13,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 2485,
+            "cache_read": 17848,
+            "input": 52023,
+            "output": 10664
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 49,
+          "rejected": 6
+        },
+        "multi_edit_tool": {
+          "accepted": 10,
+          "rejected": 3
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 2
+        },
+        "write_tool": {
+          "accepted": 11,
+          "rejected": 2
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "imran@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 33,
+          "removed": 10
+        },
+        "num_sessions": 2,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-01T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 186,
+            "cache_read": 1265,
+            "input": 3434,
+            "output": 691
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 11,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 321,
+            "cache_read": 1646,
+            "input": 5278,
+            "output": 1403
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "aarav@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 2,
+        "lines_of_code": {
+          "added": 119,
+          "removed": 36
+        },
+        "num_sessions": 4,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 18,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 433,
+            "cache_read": 3517,
+            "input": 9392,
+            "output": 2278
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 12,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 1074,
+            "cache_read": 4683,
+            "input": 23523,
+            "output": 5901
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 10,
+          "rejected": 2
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "priya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 37,
+          "removed": 10
+        },
+        "num_sessions": 2,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 4,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 606,
+            "cache_read": 1888,
+            "input": 10447,
+            "output": 2113
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 8,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 198,
+            "cache_read": 617,
+            "input": 3970,
+            "output": 1014
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 227,
+            "cache_read": 1550,
+            "input": 4848,
+            "output": 1115
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "rohan@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 11,
+        "lines_of_code": {
+          "added": 260,
+          "removed": 102
+        },
+        "num_sessions": 17,
+        "pull_requests_by_claude_code": 3
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 87,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 3268,
+            "cache_read": 15992,
+            "input": 45625,
+            "output": 10803
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 59,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 3439,
+            "cache_read": 38152,
+            "input": 112439,
+            "output": 28352
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 19,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 5,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 3,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 5,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "ananya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 6,
+        "lines_of_code": {
+          "added": 196,
+          "removed": 105
+        },
+        "num_sessions": 10,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "api",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 33,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 887,
+            "cache_read": 4705,
+            "input": 15830,
+            "output": 4129
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 818,
+            "cache_read": 1713,
+            "input": 10633,
+            "output": 3479
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 28,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 2292,
+            "cache_read": 21282,
+            "input": 55155,
+            "output": 13697
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 17,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 6,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 4,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "vikram@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 129,
+          "removed": 63
+        },
+        "num_sessions": 5,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 24,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 610,
+            "cache_read": 3992,
+            "input": 13513,
+            "output": 3027
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 18,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 2555,
+            "cache_read": 12004,
+            "input": 38553,
+            "output": 8158
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 715,
+            "cache_read": 3881,
+            "input": 9819,
+            "output": 2416
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 14,
+          "rejected": 2
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "sneha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 3,
+        "lines_of_code": {
+          "added": 154,
+          "removed": 77
+        },
+        "num_sessions": 5,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 419,
+            "cache_read": 2566,
+            "input": 9977,
+            "output": 3263
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 2,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "karthik@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 6,
+        "lines_of_code": {
+          "added": 433,
+          "removed": 196
+        },
+        "num_sessions": 14,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "api",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 78,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 2272,
+            "cache_read": 10089,
+            "input": 32106,
+            "output": 9841
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 5,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 619,
+            "cache_read": 6784,
+            "input": 19530,
+            "output": 4507
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "iTerm.app",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 28,
+          "rejected": 5
+        },
+        "multi_edit_tool": {
+          "accepted": 12,
+          "rejected": 3
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 6,
+          "rejected": 2
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "divya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 9,
+        "lines_of_code": {
+          "added": 317,
+          "removed": 87
+        },
+        "num_sessions": 20,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "api",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 10,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1586,
+            "cache_read": 9714,
+            "input": 42030,
+            "output": 9352
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 110,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1303,
+            "cache_read": 7453,
+            "input": 42921,
+            "output": 13933
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 52,
+          "rejected": 7
+        },
+        "multi_edit_tool": {
+          "accepted": 17,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 12,
+          "rejected": 2
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "arjun@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 7,
+        "lines_of_code": {
+          "added": 321,
+          "removed": 89
+        },
+        "num_sessions": 16,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 80,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 3087,
+            "cache_read": 12377,
+            "input": 46734,
+            "output": 9858
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 38,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 2943,
+            "cache_read": 21676,
+            "input": 64784,
+            "output": 18952
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 11,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 2268,
+            "cache_read": 15506,
+            "input": 41946,
+            "output": 10186
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 34,
+          "rejected": 7
+        },
+        "multi_edit_tool": {
+          "accepted": 19,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 7,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "meera@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 8,
+        "lines_of_code": {
+          "added": 348,
+          "removed": 178
+        },
+        "num_sessions": 18,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "api",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 45,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 4599,
+            "cache_read": 18937,
+            "input": 86759,
+            "output": 21947
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 9,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1352,
+            "cache_read": 7112,
+            "input": 38239,
+            "output": 7695
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 17,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 9,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 3,
+          "rejected": 2
+        },
+        "write_tool": {
+          "accepted": 4,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "rahul@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 3,
+        "lines_of_code": {
+          "added": 376,
+          "removed": 180
+        },
+        "num_sessions": 12,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 26,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 1361,
+            "cache_read": 11963,
+            "input": 42437,
+            "output": 13425
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 33,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 13,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 4,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "kavya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 6,
+        "lines_of_code": {
+          "added": 264,
+          "removed": 57
+        },
+        "num_sessions": 17,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 9,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 2694,
+            "cache_read": 8647,
+            "input": 37000,
+            "output": 8287
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 36,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 13,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 4,
+          "rejected": 2
+        },
+        "write_tool": {
+          "accepted": 8,
+          "rejected": 2
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "siddharth@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 5,
+        "lines_of_code": {
+          "added": 348,
+          "removed": 92
+        },
+        "num_sessions": 17,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 8,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1704,
+            "cache_read": 8286,
+            "input": 30162,
+            "output": 8015
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 31,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 7,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 3,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 7,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "neha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 7,
+        "lines_of_code": {
+          "added": 340,
+          "removed": 134
+        },
+        "num_sessions": 11,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "api",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 5,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1514,
+            "cache_read": 7539,
+            "input": 21514,
+            "output": 5496
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 65,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 2449,
+            "cache_read": 6559,
+            "input": 31076,
+            "output": 8110
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 17,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 9,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 6,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "imran@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 55,
+          "removed": 19
+        },
+        "num_sessions": 3,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-02T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 11,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 1707,
+            "cache_read": 9509,
+            "input": 26399,
+            "output": 5325
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 10,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "aarav@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 42,
+          "removed": 9
+        },
+        "num_sessions": 1,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-03T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 70,
+            "cache_read": 421,
+            "input": 1484,
+            "output": 478
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 4,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 62,
+            "cache_read": 500,
+            "input": 2031,
+            "output": 583
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "vikram@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 40,
+          "removed": 18
+        },
+        "num_sessions": 1,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-03T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 54,
+            "cache_read": 526,
+            "input": 1488,
+            "output": 363
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 112,
+            "cache_read": 579,
+            "input": 1824,
+            "output": 415
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 193,
+            "cache_read": 1815,
+            "input": 5666,
+            "output": 1160
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "sneha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 28,
+          "removed": 6
+        },
+        "num_sessions": 1,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-03T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 68,
+            "cache_read": 227,
+            "input": 1218,
+            "output": 405
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 322,
+            "cache_read": 2065,
+            "input": 5336,
+            "output": 1755
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 96,
+            "cache_read": 334,
+            "input": 1857,
+            "output": 437
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "divya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 2,
+        "lines_of_code": {
+          "added": 197,
+          "removed": 46
+        },
+        "num_sessions": 5,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-03T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 19,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 679,
+            "cache_read": 3519,
+            "input": 10353,
+            "output": 2354
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 11,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 2,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "arjun@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 25,
+          "removed": 13
+        },
+        "num_sessions": 1,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-03T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 65,
+            "cache_read": 319,
+            "input": 1658,
+            "output": 391
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 271,
+            "cache_read": 1268,
+            "input": 5205,
+            "output": 1251
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "meera@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 2,
+        "lines_of_code": {
+          "added": 173,
+          "removed": 51
+        },
+        "num_sessions": 4,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-03T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 10,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 916,
+            "cache_read": 4020,
+            "input": 16288,
+            "output": 5381
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 715,
+            "cache_read": 1954,
+            "input": 9261,
+            "output": 2484
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 5,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 3,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 2,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "imran@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 30,
+          "removed": 15
+        },
+        "num_sessions": 1,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-03T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 115,
+            "cache_read": 1426,
+            "input": 3827,
+            "output": 1057
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "sneha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 94,
+          "removed": 51
+        },
+        "num_sessions": 3,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-04T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 16,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 627,
+            "cache_read": 2053,
+            "input": 7884,
+            "output": 2050
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 257,
+            "cache_read": 1524,
+            "input": 3816,
+            "output": 966
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "karthik@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 71,
+          "removed": 23
+        },
+        "num_sessions": 2,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-04T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 6,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 732,
+            "cache_read": 2314,
+            "input": 10712,
+            "output": 3384
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "iTerm.app",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "rahul@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 114,
+          "removed": 46
+        },
+        "num_sessions": 3,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-04T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 10,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 1414,
+            "cache_read": 4067,
+            "input": 19214,
+            "output": 5304
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 372,
+            "cache_read": 1822,
+            "input": 7941,
+            "output": 1890
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 3,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "kavya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 25,
+          "removed": 11
+        },
+        "num_sessions": 1,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-04T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 88,
+            "cache_read": 282,
+            "input": 1754,
+            "output": 581
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 213,
+            "cache_read": 1070,
+            "input": 3742,
+            "output": 847
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 93,
+            "cache_read": 445,
+            "input": 1811,
+            "output": 399
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "siddharth@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 93,
+          "removed": 39
+        },
+        "num_sessions": 3,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-04T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 6,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 561,
+            "cache_read": 4383,
+            "input": 13542,
+            "output": 2852
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 8,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "neha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 141,
+          "removed": 67
+        },
+        "num_sessions": 4,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-04T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 16,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 557,
+            "cache_read": 2068,
+            "input": 7282,
+            "output": 2060
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 12,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 844,
+            "cache_read": 9890,
+            "input": 25269,
+            "output": 5702
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "imran@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 21,
+          "removed": 5
+        },
+        "num_sessions": 1,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-04T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 83,
+            "cache_read": 681,
+            "input": 1739,
+            "output": 461
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 108,
+            "cache_read": 317,
+            "input": 1836,
+            "output": 608
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "aarav@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 112,
+          "removed": 27
+        },
+        "num_sessions": 5,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 282,
+            "cache_read": 1743,
+            "input": 7267,
+            "output": 2153
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 9,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 699,
+            "cache_read": 7572,
+            "input": 19017,
+            "output": 4444
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 3,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 5,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "priya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 4,
+        "lines_of_code": {
+          "added": 294,
+          "removed": 140
+        },
+        "num_sessions": 11,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 45,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1268,
+            "cache_read": 5033,
+            "input": 19849,
+            "output": 5644
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 21,
+          "rejected": 2
+        },
+        "multi_edit_tool": {
+          "accepted": 10,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 5,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "rohan@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 6,
+        "lines_of_code": {
+          "added": 317,
+          "removed": 66
+        },
+        "num_sessions": 13,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 63,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1593,
+            "cache_read": 7357,
+            "input": 31496,
+            "output": 7793
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 40,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 3346,
+            "cache_read": 22290,
+            "input": 69869,
+            "output": 20324
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 31,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 6,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 4,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "ananya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 9,
+        "lines_of_code": {
+          "added": 460,
+          "removed": 230
+        },
+        "num_sessions": 17,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "api",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 10,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1270,
+            "cache_read": 10904,
+            "input": 40927,
+            "output": 9063
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 28,
+          "rejected": 7
+        },
+        "multi_edit_tool": {
+          "accepted": 12,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 10,
+          "rejected": 2
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "vikram@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 93,
+          "removed": 25
+        },
+        "num_sessions": 4,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 12,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 416,
+            "cache_read": 1497,
+            "input": 7753,
+            "output": 1569
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 8,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 3,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "sneha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 53,
+          "removed": 26
+        },
+        "num_sessions": 2,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 188,
+            "cache_read": 953,
+            "input": 2864,
+            "output": 788
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 7,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 711,
+            "cache_read": 2632,
+            "input": 15285,
+            "output": 3248
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 3,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "karthik@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 8,
+        "lines_of_code": {
+          "added": 308,
+          "removed": 71
+        },
+        "num_sessions": 13,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "api",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 46,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 4574,
+            "cache_read": 34437,
+            "input": 97733,
+            "output": 21453
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "iTerm.app",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 27,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 6,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "divya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 8,
+        "lines_of_code": {
+          "added": 322,
+          "removed": 129
+        },
+        "num_sessions": 13,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "api",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 67,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1917,
+            "cache_read": 11318,
+            "input": 29976,
+            "output": 8467
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 36,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 3452,
+            "cache_read": 16924,
+            "input": 63877,
+            "output": 18006
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 22,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 5,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 4,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "arjun@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 3,
+        "lines_of_code": {
+          "added": 222,
+          "removed": 49
+        },
+        "num_sessions": 7,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 292,
+            "cache_read": 1243,
+            "input": 8008,
+            "output": 2208
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 9,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 6,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "meera@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 2,
+        "lines_of_code": {
+          "added": 146,
+          "removed": 45
+        },
+        "num_sessions": 7,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 25,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 1605,
+            "cache_read": 8352,
+            "input": 47384,
+            "output": 12471
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 31,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 490,
+            "cache_read": 2833,
+            "input": 14424,
+            "output": 3887
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 302,
+            "cache_read": 3428,
+            "input": 9460,
+            "output": 2718
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 15,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 8,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "rahul@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 8,
+        "lines_of_code": {
+          "added": 212,
+          "removed": 108
+        },
+        "num_sessions": 13,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "api",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 24,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 3433,
+            "cache_read": 17090,
+            "input": 49679,
+            "output": 11268
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 8,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 959,
+            "cache_read": 7263,
+            "input": 30934,
+            "output": 7935
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 31,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 5,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 10,
+          "rejected": 2
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "kavya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 8,
+        "lines_of_code": {
+          "added": 759,
+          "removed": 333
+        },
+        "num_sessions": 17,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 8,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 2111,
+            "cache_read": 5265,
+            "input": 28640,
+            "output": 7667
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 44,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 9,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 3,
+          "rejected": 2
+        },
+        "write_tool": {
+          "accepted": 7,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "siddharth@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 2,
+        "lines_of_code": {
+          "added": 396,
+          "removed": 192
+        },
+        "num_sessions": 9,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 25,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 3033,
+            "cache_read": 21531,
+            "input": 54254,
+            "output": 11865
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 28,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 7,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "neha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 11,
+        "lines_of_code": {
+          "added": 459,
+          "removed": 222
+        },
+        "num_sessions": 20,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "api",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 62,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 10123,
+            "cache_read": 48326,
+            "input": 138803,
+            "output": 27836
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 73,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 2743,
+            "cache_read": 14125,
+            "input": 36754,
+            "output": 9064
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 11,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 2467,
+            "cache_read": 6282,
+            "input": 40076,
+            "output": 11070
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 27,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 19,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 6,
+          "rejected": 2
+        },
+        "write_tool": {
+          "accepted": 12,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "imran@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 62,
+          "removed": 23
+        },
+        "num_sessions": 2,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-05T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 8,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 229,
+            "cache_read": 1436,
+            "input": 4046,
+            "output": 1031
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 4,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 352,
+            "cache_read": 3481,
+            "input": 9498,
+            "output": 2111
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 219,
+            "cache_read": 1085,
+            "input": 3266,
+            "output": 876
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "aarav@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 33,
+          "removed": 8
+        },
+        "num_sessions": 1,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 53,
+            "cache_read": 315,
+            "input": 1736,
+            "output": 444
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 438,
+            "cache_read": 1688,
+            "input": 6803,
+            "output": 1363
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "priya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 2,
+        "lines_of_code": {
+          "added": 351,
+          "removed": 123
+        },
+        "num_sessions": 9,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 57,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1606,
+            "cache_read": 8601,
+            "input": 23576,
+            "output": 7259
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 20,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 1352,
+            "cache_read": 9439,
+            "input": 40220,
+            "output": 9442
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 4,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 941,
+            "cache_read": 4098,
+            "input": 16291,
+            "output": 3889
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 15,
+          "rejected": 2
+        },
+        "multi_edit_tool": {
+          "accepted": 6,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 6,
+          "rejected": 2
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "rohan@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 3,
+        "lines_of_code": {
+          "added": 179,
+          "removed": 45
+        },
+        "num_sessions": 7,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 346,
+            "cache_read": 2939,
+            "input": 9394,
+            "output": 2312
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 42,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1906,
+            "cache_read": 5344,
+            "input": 24051,
+            "output": 5211
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 13,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 2,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "ananya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 3,
+        "lines_of_code": {
+          "added": 236,
+          "removed": 114
+        },
+        "num_sessions": 11,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 51,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1325,
+            "cache_read": 4842,
+            "input": 20185,
+            "output": 6528
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 38,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 3346,
+            "cache_read": 21826,
+            "input": 67789,
+            "output": 18976
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 4,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 542,
+            "cache_read": 3837,
+            "input": 14659,
+            "output": 4436
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 7,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 7,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 6,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "vikram@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 46,
+          "removed": 25
+        },
+        "num_sessions": 2,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 8,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 164,
+            "cache_read": 530,
+            "input": 3419,
+            "output": 1102
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 198,
+            "cache_read": 1105,
+            "input": 3777,
+            "output": 1013
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 435,
+            "cache_read": 1392,
+            "input": 6725,
+            "output": 1745
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 5,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "sneha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 48,
+          "removed": 23
+        },
+        "num_sessions": 2,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 3,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 275,
+            "cache_read": 2372,
+            "input": 6525,
+            "output": 1702
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 6,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 263,
+            "cache_read": 1259,
+            "input": 3319,
+            "output": 864
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "karthik@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 2,
+        "lines_of_code": {
+          "added": 179,
+          "removed": 62
+        },
+        "num_sessions": 8,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 36,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1087,
+            "cache_read": 6542,
+            "input": 16398,
+            "output": 4475
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 22,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 1106,
+            "cache_read": 12569,
+            "input": 36476,
+            "output": 11482
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "iTerm.app",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 14,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 3,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "divya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 12,
+        "lines_of_code": {
+          "added": 602,
+          "removed": 328
+        },
+        "num_sessions": 18,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "api",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 68,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 4264,
+            "cache_read": 32068,
+            "input": 130978,
+            "output": 32477
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 117,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 3523,
+            "cache_read": 9898,
+            "input": 48447,
+            "output": 14652
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 36,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 12,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 4,
+          "rejected": 3
+        },
+        "write_tool": {
+          "accepted": 8,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "arjun@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 5,
+        "lines_of_code": {
+          "added": 157,
+          "removed": 47
+        },
+        "num_sessions": 8,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 33,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1051,
+            "cache_read": 5493,
+            "input": 17472,
+            "output": 4078
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 21,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 3155,
+            "cache_read": 7155,
+            "input": 43164,
+            "output": 10078
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 7,
+          "rejected": 2
+        },
+        "multi_edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "meera@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 6,
+        "lines_of_code": {
+          "added": 431,
+          "removed": 231
+        },
+        "num_sessions": 14,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 86,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 2923,
+            "cache_read": 6603,
+            "input": 38235,
+            "output": 10782
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 42,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 9,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 6,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "rahul@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 6,
+        "lines_of_code": {
+          "added": 418,
+          "removed": 156
+        },
+        "num_sessions": 14,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "api",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 53,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1244,
+            "cache_read": 8440,
+            "input": 24172,
+            "output": 6618
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 47,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 4391,
+            "cache_read": 15440,
+            "input": 102287,
+            "output": 21361
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 8,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1310,
+            "cache_read": 10425,
+            "input": 26892,
+            "output": 8523
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 42,
+          "rejected": 8
+        },
+        "multi_edit_tool": {
+          "accepted": 12,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 5,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "kavya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 11,
+        "lines_of_code": {
+          "added": 800,
+          "removed": 312
+        },
+        "num_sessions": 19,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 71,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 2163,
+            "cache_read": 7520,
+            "input": 30920,
+            "output": 8895
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 39,
+          "rejected": 5
+        },
+        "multi_edit_tool": {
+          "accepted": 21,
+          "rejected": 4
+        },
+        "notebook_edit_tool": {
+          "accepted": 3,
+          "rejected": 2
+        },
+        "write_tool": {
+          "accepted": 9,
+          "rejected": 2
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "siddharth@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 4,
+        "lines_of_code": {
+          "added": 269,
+          "removed": 59
+        },
+        "num_sessions": 8,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "api",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 26,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1043,
+            "cache_read": 4790,
+            "input": 13383,
+            "output": 3224
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 24,
+          "rejected": 5
+        },
+        "multi_edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 4,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "neha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 5,
+        "lines_of_code": {
+          "added": 560,
+          "removed": 180
+        },
+        "num_sessions": 16,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 9,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 3006,
+            "cache_read": 14008,
+            "input": 38862,
+            "output": 8315
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 43,
+          "rejected": 7
+        },
+        "multi_edit_tool": {
+          "accepted": 14,
+          "rejected": 3
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 7,
+          "rejected": 2
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "imran@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 85,
+          "removed": 28
+        },
+        "num_sessions": 4,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-06T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 508,
+            "cache_read": 1218,
+            "input": 6578,
+            "output": 1801
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 10,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 1193,
+            "cache_read": 2767,
+            "input": 18103,
+            "output": 5127
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 21,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 696,
+            "cache_read": 4216,
+            "input": 12655,
+            "output": 2547
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 5,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "aarav@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 2,
+        "lines_of_code": {
+          "added": 144,
+          "removed": 41
+        },
+        "num_sessions": 4,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 8,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 797,
+            "cache_read": 4188,
+            "input": 16584,
+            "output": 4157
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 22,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 571,
+            "cache_read": 2849,
+            "input": 9153,
+            "output": 2761
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 5,
+          "rejected": 2
+        },
+        "multi_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 2,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "priya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 0,
+        "lines_of_code": {
+          "added": 85,
+          "removed": 28
+        },
+        "num_sessions": 3,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 366,
+            "cache_read": 954,
+            "input": 5656,
+            "output": 1232
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 13,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 381,
+            "cache_read": 1672,
+            "input": 5348,
+            "output": 1706
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 8,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 1030,
+            "cache_read": 3496,
+            "input": 13631,
+            "output": 4409
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "rohan@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 3,
+        "lines_of_code": {
+          "added": 256,
+          "removed": 82
+        },
+        "num_sessions": 6,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 2,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 600,
+            "cache_read": 2313,
+            "input": 9258,
+            "output": 2114
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 20,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 927,
+            "cache_read": 4354,
+            "input": 11639,
+            "output": 2459
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 10,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 872,
+            "cache_read": 4708,
+            "input": 20100,
+            "output": 5025
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 14,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "ananya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 7,
+        "lines_of_code": {
+          "added": 369,
+          "removed": 140
+        },
+        "num_sessions": 14,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "api",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 7,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1566,
+            "cache_read": 7483,
+            "input": 26235,
+            "output": 8097
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 49,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 4836,
+            "cache_read": 22431,
+            "input": 88721,
+            "output": 24044
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 11,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 16,
+          "rejected": 3
+        },
+        "notebook_edit_tool": {
+          "accepted": 3,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 5,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "vikram@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 94,
+          "removed": 35
+        },
+        "num_sessions": 3,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 13,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 384,
+            "cache_read": 2062,
+            "input": 5578,
+            "output": 1653
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 1,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 238,
+            "cache_read": 2072,
+            "input": 5533,
+            "output": 1391
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 0
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "sneha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 126,
+          "removed": 38
+        },
+        "num_sessions": 5,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 17,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 2530,
+            "cache_read": 11222,
+            "input": 32096,
+            "output": 8159
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 6,
+          "rejected": 2
+        },
+        "multi_edit_tool": {
+          "accepted": 4,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "karthik@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 5,
+        "lines_of_code": {
+          "added": 194,
+          "removed": 71
+        },
+        "num_sessions": 11,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 40,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 3232,
+            "cache_read": 12643,
+            "input": 70305,
+            "output": 19805
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 45,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1208,
+            "cache_read": 5153,
+            "input": 19576,
+            "output": 5730
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "iTerm.app",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 30,
+          "rejected": 5
+        },
+        "multi_edit_tool": {
+          "accepted": 9,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 6,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "divya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 5,
+        "lines_of_code": {
+          "added": 391,
+          "removed": 213
+        },
+        "num_sessions": 15,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "api",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 31,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 2480,
+            "cache_read": 21326,
+            "input": 58247,
+            "output": 14953
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 45,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 629,
+            "cache_read": 6792,
+            "input": 19698,
+            "output": 5717
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 6,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 1102,
+            "cache_read": 9286,
+            "input": 24259,
+            "output": 6005
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 39,
+          "rejected": 5
+        },
+        "multi_edit_tool": {
+          "accepted": 3,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 5,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "arjun@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 4,
+        "lines_of_code": {
+          "added": 275,
+          "removed": 100
+        },
+        "num_sessions": 11,
+        "pull_requests_by_claude_code": 1
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 70,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 1272,
+            "cache_read": 10344,
+            "input": 33090,
+            "output": 8790
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 19,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 2091,
+            "cache_read": 6063,
+            "input": 32354,
+            "output": 9887
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 19,
+          "rejected": 3
+        },
+        "multi_edit_tool": {
+          "accepted": 6,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 4,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "meera@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 1,
+        "lines_of_code": {
+          "added": 101,
+          "removed": 55
+        },
+        "num_sessions": 3,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "api",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 6,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 449,
+            "cache_read": 4546,
+            "input": 13861,
+            "output": 3001
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 10,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 308,
+            "cache_read": 2075,
+            "input": 6191,
+            "output": 1322
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 7,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 0,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "team"
+    },
+    {
+      "actor": {
+        "email_address": "rahul@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 10,
+        "lines_of_code": {
+          "added": 621,
+          "removed": 290
+        },
+        "num_sessions": 25,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "api",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 123,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 2561,
+            "cache_read": 23666,
+            "input": 61656,
+            "output": 15242
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 51,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 4449,
+            "cache_read": 28620,
+            "input": 94364,
+            "output": 24833
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "Terminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 58,
+          "rejected": 9
+        },
+        "multi_edit_tool": {
+          "accepted": 22,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 4,
+          "rejected": 3
+        },
+        "write_tool": {
+          "accepted": 15,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "kavya@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 4,
+        "lines_of_code": {
+          "added": 221,
+          "removed": 114
+        },
+        "num_sessions": 8,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 34,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 697,
+            "cache_read": 4350,
+            "input": 15011,
+            "output": 4330
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 17,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 1643,
+            "cache_read": 6795,
+            "input": 29933,
+            "output": 8487
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "cursor",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 6,
+          "rejected": 2
+        },
+        "multi_edit_tool": {
+          "accepted": 3,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 2,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "siddharth@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 8,
+        "lines_of_code": {
+          "added": 375,
+          "removed": 174
+        },
+        "num_sessions": 13,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "api",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 4,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 845,
+            "cache_read": 2967,
+            "input": 14627,
+            "output": 4326
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 39,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 2771,
+            "cache_read": 28200,
+            "input": 74595,
+            "output": 19150
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "WindowsTerminal",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 15,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 6,
+          "rejected": 2
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 10,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "neha@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 8,
+        "lines_of_code": {
+          "added": 408,
+          "removed": 97
+        },
+        "num_sessions": 14,
+        "pull_requests_by_claude_code": 2
+      },
+      "customer_type": "api",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": true,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 83,
+            "currency": "USD"
+          },
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "cache_creation": 2617,
+            "cache_read": 10683,
+            "input": 40539,
+            "output": 10273
+          }
+        },
+        {
+          "estimated_cost": {
+            "amount": 8,
+            "currency": "USD"
+          },
+          "model": "claude-haiku-5-5",
+          "tokens": {
+            "cache_creation": 971,
+            "cache_read": 4712,
+            "input": 30999,
+            "output": 7865
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 22,
+          "rejected": 4
+        },
+        "multi_edit_tool": {
+          "accepted": 11,
+          "rejected": 3
+        },
+        "notebook_edit_tool": {
+          "accepted": 2,
+          "rejected": 1
+        },
+        "write_tool": {
+          "accepted": 8,
+          "rejected": 2
+        }
+      },
+      "subscription_type": "enterprise"
+    },
+    {
+      "actor": {
+        "email_address": "imran@wct.com",
+        "type": "user_actor"
+      },
+      "core_metrics": {
+        "commits_by_claude_code": 2,
+        "lines_of_code": {
+          "added": 74,
+          "removed": 22
+        },
+        "num_sessions": 4,
+        "pull_requests_by_claude_code": 0
+      },
+      "customer_type": "subscription",
+      "date": "2026-10-07T00:00:00Z",
+      "is_remote": false,
+      "model_breakdown": [
+        {
+          "estimated_cost": {
+            "amount": 7,
+            "currency": "USD"
+          },
+          "model": "claude-sonnet-5-5",
+          "tokens": {
+            "cache_creation": 800,
+            "cache_read": 2292,
+            "input": 12458,
+            "output": 3920
+          }
+        }
+      ],
+      "organization_id": "7c2e9a41-5b3d-4f68-9a1e-3d8f0b6c24a7",
+      "terminal_type": "tmux",
+      "tool_actions": {
+        "edit_tool": {
+          "accepted": 11,
+          "rejected": 1
+        },
+        "multi_edit_tool": {
+          "accepted": 3,
+          "rejected": 1
+        },
+        "notebook_edit_tool": {
+          "accepted": 0,
+          "rejected": 0
+        },
+        "write_tool": {
+          "accepted": 1,
+          "rejected": 1
+        }
+      },
+      "subscription_type": "team"
+    }
+  ],
+  "has_more": false,
+  "next_page": null
+}
