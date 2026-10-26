@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <title>Microsoft Enterprise AI Telemetry &amp; Raw API Specification</title>
 <style>
+
   @page {
     size: A4;
-    margin: 14mm 14mm 14mm 14mm;
+    margin: 16mm 14mm 16mm 14mm;
     @bottom-right {
       content: "Page " counter(page);
       font-size: 8.5pt;
@@ -25,9 +26,6 @@
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
-    .page-break {
-      page-break-before: always;
-    }
   }
   * {
     box-sizing: border-box;
@@ -36,92 +34,69 @@
     font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
     color: #1e293b;
     line-height: 1.55;
-    font-size: 11pt;
+    font-size: 10pt;
     background: #ffffff;
     margin: 0;
     padding: 0;
   }
   
-  /* Executive Header Banner */
-  .header-banner {
-    background: linear-gradient(135deg, #091e42 0%, #0045b5 60%, #0066ff 100%);
-    color: #ffffff;
-    padding: 22px 26px;
-    border-radius: 8px;
-    margin-bottom: 22px;
-    box-shadow: 0 4px 12px rgba(0, 69, 181, 0.15);
-  }
-  .header-banner h1 {
-    margin: 0 0 6px 0;
+  /* Main Title Styling */
+  h1 {
+    color: #0b3b8a;
     font-size: 20pt;
     font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 6px;
     letter-spacing: -0.3px;
-    color: #ffffff;
-    border: none;
-    padding: 0;
+    border-bottom: 3px solid #005a9e;
+    padding-bottom: 8px;
   }
-  .header-banner .subtitle {
+  h1 + p em, h1 + em {
+    display: block;
     font-size: 11pt;
-    color: #cbd5e1;
-    margin: 0 0 14px 0;
-    font-weight: 400;
+    color: #475569;
+    margin-bottom: 18px;
+    font-style: normal;
   }
-  .meta-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .pill {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: #ffffff;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 9pt;
-    font-weight: 500;
-  }
-  
+
   /* Headings */
-  h1 {
-    display: none;
-  }
   h2 {
     color: #0b3b8a;
-    font-size: 13.5pt;
+    font-size: 13pt;
     font-weight: 700;
-    margin-top: 24px;
+    margin-top: 22px;
     margin-bottom: 10px;
     padding-bottom: 5px;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 1.5px solid #cbd5e1;
     page-break-after: avoid;
   }
   h3 {
     color: #1e3a8a;
-    font-size: 12pt;
+    font-size: 11.5pt;
     font-weight: 600;
-    margin-top: 18px;
+    margin-top: 16px;
     margin-bottom: 8px;
     page-break-after: avoid;
   }
   h4 {
     color: #334155;
-    font-size: 10.5pt;
+    font-size: 10pt;
     font-weight: 600;
-    margin-top: 14px;
+    margin-top: 12px;
     margin-bottom: 6px;
     page-break-after: avoid;
   }
 
-  /* Paragraphs and Lists */
+  /* Text Elements */
   p {
     margin: 0 0 10px 0;
   }
   ul, ol {
     margin: 0 0 12px 0;
-    padding-left: 22px;
+    padding-left: 20px;
   }
   li {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
   strong {
     color: #0f172a;
@@ -132,10 +107,10 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    margin: 14px 0 18px 0;
-    font-size: 9.5pt;
+    margin: 12px 0 16px 0;
+    font-size: 9pt;
     page-break-inside: avoid;
-    border-radius: 6px;
+    border-radius: 4px;
     overflow: hidden;
     border: 1px solid #cbd5e1;
   }
@@ -146,8 +121,7 @@
     text-align: left;
     padding: 8px 10px;
     border: 1px solid #0b3b8a;
-    font-size: 9.5pt;
-    letter-spacing: 0.2px;
+    font-size: 9pt;
   }
   td {
     padding: 7px 10px;
@@ -159,15 +133,15 @@
     background-color: #f8fafc;
   }
 
-  /* Callouts */
+  /* Callouts / Quotes */
   blockquote {
     background: #f0f7ff;
-    border-left: 4px solid #0066ff;
-    border-radius: 0 6px 6px 0;
+    border-left: 4px solid #005a9e;
+    border-radius: 0 4px 4px 0;
     padding: 10px 14px;
     margin: 12px 0;
     color: #0f3775;
-    font-size: 10pt;
+    font-size: 9.5pt;
     page-break-inside: avoid;
   }
   blockquote p {
@@ -176,20 +150,20 @@
 
   /* Code Blocks & Inline Code */
   code {
-    font-family: 'Cascadia Code', Consolas, Monaco, 'Courier New', monospace;
-    font-size: 9pt;
+    font-family: 'Cascadia Code', Consolas, Monaco, monospace;
+    font-size: 8.5pt;
     background-color: #f1f5f9;
     color: #0f3775;
     padding: 2px 5px;
-    border-radius: 4px;
+    border-radius: 3px;
     border: 1px solid #e2e8f0;
   }
   pre {
     background: #0f172a;
     border: 1px solid #334155;
-    border-radius: 6px;
+    border-radius: 5px;
     padding: 10px 12px;
-    margin: 10px 0 14px 0;
+    margin: 8px 0 12px 0;
     overflow-x: auto;
     page-break-inside: avoid;
   }
@@ -198,40 +172,31 @@
     color: #e2e8f0;
     border: none;
     padding: 0;
-    font-size: 9pt;
-    line-height: 1.45;
+    font-size: 8.5pt;
+    line-height: 1.4;
   }
 
-  /* Horizontal Rules */
+  /* Divider */
   hr {
     border: 0;
     height: 1px;
     background: #e2e8f0;
-    margin: 18px 0;
+    margin: 16px 0;
   }
 
   /* Footer Note */
   .footer-doc {
-    margin-top: 30px;
-    padding-top: 12px;
+    margin-top: 26px;
+    padding-top: 10px;
     border-top: 1px solid #e2e8f0;
-    font-size: 8.5pt;
+    font-size: 8pt;
     color: #64748b;
     text-align: center;
   }
+
 </style>
 </head>
 <body>
-
-<div class="header-banner">
-  <h1>Microsoft Enterprise AI Telemetry &amp; Raw API Specification</h1>
-  <div class="subtitle">Direct Technical Reference for Raw Platform APIs, Payloads, and Authentication</div>
-  <div class="meta-pills">
-    <span class="pill">Scope: Raw Platform APIs &amp; Payloads</span>
-    <span class="pill">Demonstration: Type 3 Custom Agent Live Telemetry</span>
-    <span class="pill">Status: Verified Technical Specification</span>
-  </div>
-</div>
 
 <h1>Microsoft Enterprise AI Telemetry &amp; Raw API Specification</h1>
 <h3>Technical Reference for Direct Platform APIs, Raw Payloads, and Authentication</h3>
@@ -602,26 +567,16 @@ Content-Type: application/json
 </ul>
 <hr />
 <h3>3.2 Type 3 Custom Autonomous Agents: Live Demonstration via Azure AI Foundry</h3>
-<p>We build and demonstrate a code-first enterprise agent that connects directly to our dedicated Azure AI Foundry / Azure OpenAI LLM resource to capture real-time execution telemetry:</p>
-<h4>1. Why Type 3 (Custom Agents) Provides Complete Observability</h4>
-<p>With a custom agent, engineering has <strong>full observability control</strong>:<br />
-* <strong>What Our Application Code Controls &amp; Injects</strong>:<br />
-  * <strong>Employee Identity</strong>: Authenticated employee email (<code>user_email</code>) captured from the session.<br />
-  * <strong>Business Context</strong>: Task classification (e.g., <code>Hardware_Triage</code>, <code>Access_Provisioning</code>).<br />
-  * <strong>Tool Execution Traces</strong>: Latency, status codes, and payload health of external systems (ServiceNow, Jira, internal databases).<br />
-* <strong>What Azure OpenAI Returns Directly via API</strong>:<br />
-  * Exact prompt tokens (<code>prompt_tokens</code>) and completion tokens (<code>completion_tokens</code>) returned in the inference payload.<br />
-  * Request execution duration and HTTP status code.</p>
-<h4>2. Live Implementation Architecture</h4>
+<p>To demonstrate real-time telemetry from a custom agent, we are building an <strong>IT Support &amp; Helpdesk Agent</strong> using Azure AI Foundry tools:</p>
 <ul>
-<li><strong>Dedicated Resource</strong>: Azure OpenAI Cognitive Service <code>wct-cockpit-openai</code> in resource group <code>claimsGuru</code>.</li>
-<li><strong>Model Deployment</strong>: <code>it-agent-model</code> using <code>gpt-4o</code> (version <code>2024-11-20</code>, Global Standard).</li>
-<li><strong>Execution Flow</strong>:</li>
-<li>An employee submits an IT troubleshooting request (e.g., ThinkPad boot failure, VPN access).</li>
-<li>The custom agent queries the Azure OpenAI endpoint live.</li>
-<li>The response is returned to the user, and the raw token usage, latency, and employee attribution are extracted directly from the API response and ingested into telemetry storage.</li>
-<li><strong>Why This Works Best for Stakeholder Demos</strong>:</li>
-<li>It provides 100% verified, live telemetry generated by actual employee interactions with zero synthetic estimates.</li>
+<li><strong>What Agent We Are Building</strong>:</li>
+<li>An enterprise IT Helpdesk Agent that handles real employee workplace requests (such as hardware troubleshooting, device boot issues, and software access).</li>
+<li><strong>Exact Output Metrics We Are Showing</strong>:</li>
+<li><strong>Employee Identity</strong>: Authenticated user submitting the query (<code>user_email</code>).</li>
+<li><strong>Task Category</strong>: Classified IT request topic (e.g., <code>Hardware_Triage</code>, <code>Access_Provisioning</code>).</li>
+<li><strong>Token Consumption</strong>: Exact <code>prompt_tokens</code> and <code>completion_tokens</code> returned directly by the model API response.</li>
+<li><strong>Execution Latency</strong>: End-to-end response duration in milliseconds (<code>latency_ms</code>).</li>
+<li><strong>Tool Execution Status</strong>: Success or failure status of external tool or system integrations.</li>
 </ul>
 <hr />
 <h2>4. How to Identify What Type of Agents Are in Your Stakeholder's GitHub Repo</h2>
