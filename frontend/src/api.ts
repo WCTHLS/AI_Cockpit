@@ -1,4 +1,4 @@
-import { SummaryKPI, FunctionSummary, CostBreakdownItem, TrendMonth, AgentScorecardItem, SeatInventorySummary, UserProfile, IngestResponse, ClaudeConfig, ClaudeSyncResponse } from './types';
+import { SummaryKPI, FunctionSummary, CostBreakdownItem, TrendMonth, AgentScorecardItem, SeatInventorySummary, UserProfile, IngestResponse, ClaudeConfig, ClaudeSyncResponse, DeveloperToolConfig, DeveloperSyncResponse, DeveloperSeat } from './types';
 
 const API_BASE = '/api/v1';
 
@@ -251,6 +251,153 @@ export async function syncClaudeTelemetry(params?: {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.detail || 'Failed to sync Claude telemetry');
+  }
+  return res.json();
+}
+
+
+// Developer Tools (Google Gemini / Antigravity / GitHub Copilot) API
+export async function fetchDeveloperConfig(): Promise<DeveloperToolConfig> {
+  const res = await fetch(`${API_BASE}/admin/developer-tools/config`, {
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) {
+    throw new Error('Failed to fetch developer tools configuration');
+  }
+  return res.json();
+}
+
+export async function updateDeveloperConfig(config: {
+  provider?: string;
+  connection_mode?: string;
+  endpoint_url?: string;
+  api_key?: string;
+  org_or_project_id?: string;
+  developer_email?: string;
+  local_data_path?: string;
+  auto_sync_on_refresh?: boolean;
+}): Promise<{ status: string; message: string }> {
+  const res = await fetch(`${API_BASE}/admin/developer-tools/config`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(config)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to update developer tools configuration');
+  }
+  return res.json();
+}
+
+export async function testDeveloperConnection(params: {
+  provider?: string;
+  connection_mode?: string;
+  endpoint_url?: string;
+  api_key?: string;
+  org_or_project_id?: string;
+  local_data_path?: string;
+}): Promise<any> {
+  const res = await fetch(`${API_BASE}/admin/developer-tools/test-connection`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(params)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to test developer tool connection');
+  }
+  return res.json();
+}
+
+export async function syncDeveloperTelemetry(params?: {
+  provider?: string;
+  connection_mode?: string;
+  endpoint_url?: string;
+  api_key?: string;
+  developer_email?: string;
+  local_data_path?: string;
+  force_refresh?: boolean;
+}): Promise<DeveloperSyncResponse> {
+  const res = await fetch(`${API_BASE}/admin/developer-tools/sync`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(params || {})
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to sync developer telemetry');
+  }
+  return res.json();
+}
+
+export async function fetchDeveloperSeats(): Promise<{ total: number; seats: DeveloperSeat[] }> {
+  const res = await fetch(`${API_BASE}/admin/developer-tools/seats`, {
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) {
+    throw new Error('Failed to fetch developer seats');
+  }
+  return res.json();
+}
+
+
+export async function fetchDeveloperDrilldown(developerId?: string): Promise<any> {
+  const q = developerId ? `?developer_id=${encodeURIComponent(developerId)}` : '';
+  const res = await fetch(`${API_BASE}/admin/developer-tools/drilldown${q}`, {
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) {
+    throw new Error('Failed to fetch developer drilldown metrics');
+  }
+  return res.json();
+}
+
+export async function uploadM365Csv(file: File): Promise<any> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const token = localStorage.getItem('wct_auth_token');
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_BASE}/seats/m365/upload-csv`, {
+    method: 'POST',
+    headers,
+    body: formData
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to upload Microsoft 365 Copilot CSV');
+  }
+  return res.json();
+}
+
+
+export async function uploadTeammateZip(
+  file: File,
+  developerName: string,
+  developerEmail: string,
+  department = 'Eng & IT',
+  role = 'Software Engineer'
+): Promise<any> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('developer_name', developerName);
+  formData.append('developer_email', developerEmail);
+  formData.append('department', department);
+  formData.append('role', role);
+
+  const token = localStorage.getItem('wct_auth_token');
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_BASE}/admin/developer-tools/upload-teammate-zip`, {
+    method: 'POST',
+    headers,
+    body: formData
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to upload teammate brain zip');
   }
   return res.json();
 }

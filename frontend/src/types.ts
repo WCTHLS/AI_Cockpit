@@ -160,3 +160,50 @@ export interface ClaudeSyncResponse {
   message: string;
 }
 
+
+
+export interface DeveloperToolConfig {
+  provider: string;
+  connection_mode: string;
+  endpoint_url: string;
+  api_key_masked: string;
+  has_api_key: boolean;
+  org_or_project_id: string;
+  developer_email: string;
+  local_data_path: string;
+  auto_sync_on_refresh: boolean;
+  last_synced_at: string | null;
+  last_sync_status: string;
+  last_sync_metrics: any | null;
+}
+
+export interface DeveloperSyncResponse {
+  status: string;
+  synced_at: string;
+  provider: string;
+  developer: string;
+  developer_email: string;
+  metrics: any;
+  message: string;
+}
+
+export interface DeveloperSeat {
+  id: number;
+  developer_id: string;
+  developer_name: string;
+  developer_email: string;
+  department: string;
+  role: string;
+  provider: string;
+  license_tier: string;
+  editor: string;
+  status: string;
+  sessions_count: number;
+  prompts_count: number;
+  suggestions_generated: number;
+  suggestions_accepted: number;
+  acceptance_rate_pct: number;
+  hours_saved: number;
+  last_active_at: string;
+  updated_at: string;
+}
