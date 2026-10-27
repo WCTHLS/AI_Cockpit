@@ -182,6 +182,12 @@ def _init_developer_tables():
             except Exception:
                 pass
 
+        # Clean up any legacy naming on existing databases
+        try:
+            conn.execute("UPDATE developer_seats SET editor = 'Antigravity IDE' WHERE editor LIKE '%Gemini%'")
+        except Exception:
+            pass
+
 def _get_config() -> Dict[str, Any]:
     _init_developer_tables()
     with get_db() as conn:
