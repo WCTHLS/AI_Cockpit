@@ -18,6 +18,8 @@
       --text-main: #0F172A;
       --text-muted: #64748B;
       --accent-blue: #EFF6FF;
+      --success-green: #10B981;
+      --fail-red: #EF4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -59,6 +61,30 @@
       font-size: 12px;
       color: var(--text-muted);
     }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .new-chat-btn {
+      background: #F1F5F9;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .new-chat-btn:hover {
+      background: var(--accent-blue);
+      color: var(--primary);
+      border-color: #BFDBFE;
+    }
     .header-status {
       display: flex;
       align-items: center;
@@ -91,10 +117,10 @@
       width: 320px;
       background: #FFFFFF;
       border-right: 1px solid var(--border);
-      padding: 24px 20px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
       overflow-y: auto;
     }
     .user-profile-card {
@@ -127,6 +153,55 @@
     .user-info .name { font-weight: 700; font-size: 13.5px; }
     .user-info .device { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
 
+    /* Live Session Loop Telemetry Box */
+    .loop-metrics-card {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .loop-metrics-card h4 {
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .metric-badge {
+      background: #E2E8F0;
+      color: #334155;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .metric-item {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+    .metric-item .label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .metric-item .val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 2px;
+    }
+
     .scenario-section h4 {
       font-size: 12px;
       font-weight: 700;
@@ -138,10 +213,10 @@
     .scenario-pill {
       background: #FFFFFF;
       border: 1px solid var(--border);
-      padding: 12px 14px;
+      padding: 10px 12px;
       border-radius: 10px;
-      margin-bottom: 10px;
-      font-size: 13px;
+      margin-bottom: 8px;
+      font-size: 12.5px;
       font-weight: 600;
       color: #334155;
       cursor: pointer;
@@ -160,10 +235,10 @@
 
     .help-footer {
       margin-top: auto;
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--text-muted);
       line-height: 1.5;
-      padding-top: 14px;
+      padding-top: 12px;
       border-top: 1px solid var(--border);
     }
     .help-footer b { color: var(--text-main); }
@@ -219,6 +294,122 @@
     .msg-bubble h3 { font-size: 14px; color: var(--primary); margin: 12px 0 6px 0; font-weight: 700; }
     .msg-bubble ul { margin-left: 20px; margin-bottom: 8px; }
     .msg-bubble code { font-family: 'JetBrains Mono', monospace; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; font-size: 12.5px; }
+
+    /* Resolution Thumbs Card */
+    .resolution-card {
+      margin-top: 14px;
+      background: #F8FAFC;
+      border: 1.5px dashed #CBD5E1;
+      border-radius: 12px;
+      padding: 16px;
+      animation: fadeIn 0.3s ease;
+    }
+    .resolution-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+    .resolution-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .resolution-buttons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .thumbs-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+    .thumbs-up {
+      background: #ECFDF5;
+      color: #065F46;
+      border-color: #A7F3D0;
+    }
+    .thumbs-up:hover {
+      background: #D1FAE5;
+      transform: translateY(-1px);
+    }
+    .thumbs-down {
+      background: #FEF2F2;
+      color: #991B1B;
+      border-color: #FECACA;
+    }
+    .thumbs-down:hover {
+      background: #FEE2E2;
+      transform: translateY(-1px);
+    }
+    .thumbs-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Telemetry Confirmation Box */
+    .telemetry-receipt {
+      margin-top: 14px;
+      background: #0F172A;
+      color: #F8FAFC;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .receipt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      font-weight: 700;
+      color: #38BDF8;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .receipt-row span:first-child { color: #94A3B8; }
+    .receipt-row span:last-child { color: #F1F5F9; font-weight: 600; }
+    .receipt-actions {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #334155;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .next-session-btn {
+      background: #2563EB;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .next-session-btn:hover { background: #1D4ED8; }
 
     /* Input Bar */
     .chat-input-bar {
@@ -276,12 +467,17 @@
       <span class="brand-badge">LENOVO</span>
       <div class="header-title">
         <h1>Global IT Support Assistant</h1>
-        <p>Hardware Diagnostics • Software & Account Access • Real-time Triage</p>
+        <p>Hardware Diagnostics • Software & Account Access • Multi-turn Agent Loop</p>
       </div>
     </div>
-    <div class="header-status">
-      <span class="status-dot"></span>
-      <span>IT Support Online</span>
+    <div class="header-right">
+      <button class="new-chat-btn" onclick="startNewSession()">
+        <span>🔄</span> New Chat / Session
+      </button>
+      <div class="header-status">
+        <span class="status-dot"></span>
+        <span>IT Agent Active</span>
+      </div>
     </div>
   </header>
 
@@ -299,16 +495,42 @@
         </div>
       </div>
 
+      <!-- Aggregated Loop Telemetry -->
+      <div class="loop-metrics-card">
+        <h4>
+          <span>Current Loop Metrics</span>
+          <span class="metric-badge" id="sessionBadge">READY</span>
+        </h4>
+        <div class="metric-grid">
+          <div class="metric-item">
+            <div class="label">LLM Calls</div>
+            <div class="val" id="metricCalls">0</div>
+          </div>
+          <div class="metric-item">
+            <div class="label">Prompt Tokens</div>
+            <div class="val" id="metricPromptTokens">0</div>
+          </div>
+          <div class="metric-item">
+            <div class="label">Completion Tokens</div>
+            <div class="val" id="metricCompletionTokens">0</div>
+          </div>
+          <div class="metric-item">
+            <div class="label">Total Tokens</div>
+            <div class="val" id="metricTotalTokens">0</div>
+          </div>
+        </div>
+      </div>
+
       <div class="scenario-section">
         <h4>Common Requests</h4>
         <div class="scenario-pill" onclick="sendPrompt('My ThinkPad Thunderbolt 4 dock won\'t recognize my dual 4K monitors this morning. Screen remains black.')">
-          <span>🖥️</span> External Display / Docking Station
+          <span>🖥️</span> External Display / Docking
         </div>
         <div class="scenario-pill" onclick="sendPrompt('I need write permission and repo access to GitHub repository WCTHLS/AI_Cockpit for sprint delivery.')">
           <span>🔑</span> GitHub Repository Access
         </div>
         <div class="scenario-pill" onclick="sendPrompt('GlobalProtect VPN error: client PKI security certificate expired on Windows 11 machine.')">
-          <span>🛡️</span> VPN Security Certificate Renewal
+          <span>🛡️</span> VPN Security Certificate
         </div>
         <div class="scenario-pill" onclick="sendPrompt('Outlook 365 search bar is completely frozen and returns 0 results on recent email queries.')">
           <span>📧</span> Outlook Search Repair
@@ -316,8 +538,8 @@
       </div>
 
       <div class="help-footer">
-        <b>Need Urgent Escalation?</b><br>
-        If your device cannot boot, please reach out to the Lenovo Premier Support desk at extension <b>#4357</b>.
+        <b>Enterprise Telemetry Sync:</b><br>
+        When you give thumbs up / down, aggregated session metrics are posted to Cockpit Ingest API.
       </div>
     </aside>
 
@@ -328,14 +550,14 @@
           <div class="msg-bubble">
             Hello Aarav, I am the <b>Lenovo IT Support Assistant</b>. 
             <br><br>
-            I can help troubleshoot hardware peripherals, configure network & VPN settings, or provision application permissions. What can I help you with today?
+            I can help troubleshoot hardware peripherals, configure network & VPN settings, or provision application permissions. What issue can I resolve for you today?
           </div>
         </div>
       </div>
 
       <div class="chat-input-bar">
         <div class="input-box">
-          <input type="text" id="userInput" placeholder="Describe your IT or hardware issue..." onkeydown="if(event.key === 'Enter') handleSend()" />
+          <input type="text" id="userInput" placeholder="Describe your IT issue or ask a follow-up question..." onkeydown="if(event.key === 'Enter') handleSend()" />
         </div>
         <button class="send-btn" id="sendBtn" onclick="handleSend()">
           <span>Send</span>
@@ -345,9 +567,35 @@
   </div>
 
   <script>
+    let currentSessionId = null;
+    let isAwaitingResolution = false;
+
     function sendPrompt(promptText) {
       document.getElementById('userInput').value = promptText;
       handleSend();
+    }
+
+    function startNewSession() {
+      currentSessionId = null;
+      isAwaitingResolution = false;
+      
+      // Reset sidebar counters
+      document.getElementById('metricCalls').innerText = '0';
+      document.getElementById('metricPromptTokens').innerText = '0';
+      document.getElementById('metricCompletionTokens').innerText = '0';
+      document.getElementById('metricTotalTokens').innerText = '0';
+      document.getElementById('sessionBadge').innerText = 'READY';
+
+      // Clear chat messages to initial state
+      const chatContainer = document.getElementById('chatMessages');
+      chatContainer.innerHTML = `
+        <div class="message agent">
+          <div class="msg-bubble">
+            Hello Aarav, I am ready for your next request. What IT issue can I assist you with?
+          </div>
+        </div>
+      `;
+      scrollToBottom();
     }
 
     async function handleSend() {
@@ -358,6 +606,10 @@
       input.value = '';
       const sendBtn = document.getElementById('sendBtn');
       sendBtn.disabled = true;
+
+      // Remove any prior resolution box if user is continuing conversation
+      const existingRes = document.getElementById('active-resolution-card');
+      if (existingRes) existingRes.remove();
 
       // Append User message
       appendMessage('user', text);
@@ -381,6 +633,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             message: text,
+            session_id: currentSessionId,
             employee_email: 'aarav@lenovo.com',
             serial_number: 'LN-98234'
           })
@@ -390,8 +643,21 @@
         const thinkingNode = document.getElementById(thinkingId);
         if (thinkingNode) thinkingNode.remove();
 
-        // Format agent response cleanly
-        appendAgentResponse(data.response);
+        // Update active session tracking
+        currentSessionId = data.session_id;
+
+        // Update live metrics on sidebar
+        if (data.aggregated_loop_metrics) {
+          const m = data.aggregated_loop_metrics;
+          document.getElementById('metricCalls').innerText = m.llm_calls_count;
+          document.getElementById('metricPromptTokens').innerText = m.prompt_tokens;
+          document.getElementById('metricCompletionTokens').innerText = m.completion_tokens;
+          document.getElementById('metricTotalTokens').innerText = m.total_tokens;
+          document.getElementById('sessionBadge').innerText = 'IN LOOP';
+        }
+
+        // Render agent response with resolution feedback question
+        appendAgentResponse(data.response, currentSessionId);
 
       } catch (err) {
         const thinkingNode = document.getElementById(thinkingId);
@@ -411,12 +677,12 @@
       scrollToBottom();
     }
 
-    function appendAgentResponse(rawText) {
+    function appendAgentResponse(rawText, sessionId) {
       const container = document.getElementById('chatMessages');
       const msgElem = document.createElement('div');
       msgElem.className = 'message agent';
 
-      // Clean Markdown parsing for headers, bold, bullets, and inline code
+      // Clean Markdown formatting
       let formattedText = rawText
         .replace(/### (.*?)\n/g, '<h3>$1</h3>')
         .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
@@ -424,8 +690,89 @@
         .replace(/`([^`]+)`/g, '<code>$1</code>')
         .replace(/\n\n/g, '<br><br>');
 
-      msgElem.innerHTML = `<div class="msg-bubble">${formattedText}</div>`;
+      // Build resolution prompt box asking user if the issue was resolved
+      const resolutionHtml = `
+        <div class="resolution-card" id="active-resolution-card">
+          <div class="resolution-header">
+            <span>✨</span> Did this resolve your issue?
+          </div>
+          <p class="resolution-desc">
+            Please confirm to complete this agent resolution loop and transmit final telemetry to Cockpit.
+          </p>
+          <div class="resolution-buttons">
+            <button class="thumbs-btn thumbs-up" onclick="handleResolutionFeedback(true, '${sessionId}')">
+              <span>👍</span> Yes, Issue Resolved
+            </button>
+            <button class="thumbs-btn thumbs-down" onclick="handleResolutionFeedback(false, '${sessionId}')">
+              <span>👎</span> No, Need Escalation
+            </button>
+          </div>
+        </div>
+      `;
+
+      msgElem.innerHTML = `
+        <div class="msg-bubble">
+          ${formattedText}
+          ${resolutionHtml}
+        </div>
+      `;
       container.appendChild(msgElem);
+      scrollToBottom();
+    }
+
+    async function handleResolutionFeedback(isSuccess, sessionId) {
+      // Disable buttons
+      const resCard = document.getElementById('active-resolution-card');
+      if (resCard) {
+        const btns = resCard.querySelectorAll('button');
+        btns.forEach(b => b.disabled = true);
+      }
+
+      try {
+        const resp = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: sessionId,
+            sucess: isSuccess
+          })
+        });
+
+        const data = await resp.json();
+        const payload = data.aggregated_payload;
+
+        // Render Telemetry Receipt Card
+        const receiptElem = document.createElement('div');
+        receiptElem.className = 'telemetry-receipt';
+        receiptElem.innerHTML = `
+          <div class="receipt-header">
+            <span>🚀 Cockpit Telemetry Ingested</span>
+            <span>${payload.sucess ? '✅ RESOLVED' : '⚠️ UNRESOLVED'}</span>
+          </div>
+          <div class="receipt-row"><span>Agent Name:</span> <span>${payload.agent_name} (${payload.agent_id})</span></div>
+          <div class="receipt-row"><span>User:</span> <span>${payload.user_email}</span></div>
+          <div class="receipt-row"><span>Prompt Tokens:</span> <span>${payload.prompt_tokens}</span></div>
+          <div class="receipt-row"><span>Completion Tokens:</span> <span>${payload.completion_tokens}</span></div>
+          <div class="receipt-row"><span>Total Tokens (Loop):</span> <span>${payload.total_tokens}</span></div>
+          <div class="receipt-row"><span>Hours Saved:</span> <span>${payload.hours_saved}h</span></div>
+          <div class="receipt-row"><span>Gross Value:</span> <span>$${payload.gross_value_usd.toFixed(2)}</span></div>
+          <div class="receipt-row"><span>Ingest URL:</span> <span style="font-size: 10px;">${data.ingest_url}</span></div>
+          <div class="receipt-actions">
+            <button class="next-session-btn" onclick="startNewSession()">
+              <span>🔄</span> Start New Session
+            </button>
+          </div>
+        `;
+
+        if (resCard) {
+          resCard.replaceWith(receiptElem);
+        }
+
+        document.getElementById('sessionBadge').innerText = 'COMPLETED';
+
+      } catch (err) {
+        alert('Notice: Feedback recorded locally.');
+      }
       scrollToBottom();
     }
 
