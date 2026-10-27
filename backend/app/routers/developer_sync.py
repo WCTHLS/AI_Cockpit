@@ -115,6 +115,73 @@ def _init_developer_tables():
             )
         """)
 
+        # Auto-seed Swagath Reddy & Nivas from tracked json files so fresh clones/pulls work immediately
+        now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        
+        # 1. Swagath Reddy
+        swagath_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "antigravity_telemetry.json")
+        if os.path.exists(swagath_path):
+            try:
+                with open(swagath_path, "r", encoding="utf-8") as f:
+                    s_data = json.load(f)
+                    s_life = s_data.get("lifetime", {})
+                    conn.execute("""
+                        INSERT OR IGNORE INTO developer_seats (
+                            developer_id, developer_name, developer_email, department, role,
+                            provider, license_tier, editor, status, sessions_count,
+                            prompts_count, suggestions_generated, suggestions_accepted,
+                            acceptance_rate_pct, hours_saved, last_active_at, updated_at
+                        ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity IDE', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        s_data["developer_email"], s_data["developer_name"], s_data["developer_email"],
+                        s_data.get("department", "Eng & IT"), s_data.get("role", "Senior AI / Software Engineer"),
+                        s_life.get("sessions_count", 39), s_life.get("total_user_prompts", 3650),
+                        s_life.get("tool_actions_generated", 41587), s_life.get("tool_actions_accepted", 39673),
+                        s_life.get("acceptance_rate_pct", 95.4), s_life.get("estimated_hours_saved", 238.0),
+                        s_data.get("last_active_at", now_iso), now_iso
+                    ))
+                    conn.execute("""
+                        INSERT OR IGNORE INTO developer_drilldowns (
+                            developer_id, developer_email, drilldown_json, updated_at
+                        ) VALUES (?, ?, ?, ?)
+                    """, (
+                        s_data["developer_email"], s_data["developer_email"], json.dumps(s_data), now_iso
+                    ))
+            except Exception:
+                pass
+
+        # 2. Nivas
+        nivas_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "nivas_telemetry.json")
+        if os.path.exists(nivas_path):
+            try:
+                with open(nivas_path, "r", encoding="utf-8") as f:
+                    n_data = json.load(f)
+                    n_life = n_data.get("lifetime", {})
+                    conn.execute("""
+                        INSERT OR IGNORE INTO developer_seats (
+                            developer_id, developer_name, developer_email, department, role,
+                            provider, license_tier, editor, status, sessions_count,
+                            prompts_count, suggestions_generated, suggestions_accepted,
+                            acceptance_rate_pct, hours_saved, last_active_at, updated_at
+                        ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity IDE', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        n_data["developer_email"], n_data["developer_name"], n_data["developer_email"],
+                        n_data.get("department", "Eng & IT"), n_data.get("role", "AI / Software Engineer"),
+                        n_life.get("sessions_count", 35), n_life.get("total_user_prompts", 1693),
+                        n_life.get("tool_actions_generated", 16541), n_life.get("tool_actions_accepted", 15780),
+                        n_life.get("acceptance_rate_pct", 95.4), n_life.get("estimated_hours_saved", 94.7),
+                        now_iso, now_iso
+                    ))
+                    conn.execute("""
+                        INSERT OR IGNORE INTO developer_drilldowns (
+                            developer_id, developer_email, drilldown_json, updated_at
+                        ) VALUES (?, ?, ?, ?)
+                    """, (
+                        n_data["developer_email"], n_data["developer_email"], json.dumps(n_data), now_iso
+                    ))
+            except Exception:
+                pass
+
 def _get_config() -> Dict[str, Any]:
     _init_developer_tables()
     with get_db() as conn:

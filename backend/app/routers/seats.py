@@ -6,6 +6,7 @@ from typing import Optional, List, Dict, Any
 from ..schemas import SeatInventorySummary
 from ..database import get_db, query_all
 from ..auth import get_current_user
+from .developer_sync import _init_developer_tables
 
 router = APIRouter(prefix="/seats", tags=["seats"])
 
@@ -35,6 +36,7 @@ def get_seats_summary(
     user: Dict[str, Any] = Depends(get_current_user)
 ):
     _init_m365_table()
+    _init_developer_tables()
     effective_function = function
     if user.get("role") == "function_head" and user.get("function_name"):
         effective_function = user["function_name"]
@@ -77,98 +79,119 @@ def get_seats_summary(
     # Ingest M365 Copilot Seats (if Balaji has imported any)
     for ms in m365_seats:
         dept = ms.get("department") or "General"
-        inact = ms.get("inactive_days") or 0
+        if effective_function and effective_function != "All Functions" and effective_function not in dept:
+            continue
         total_seats += 1
-        tool_counts["Microsoft 365 Copilot"]["total"] += 1
-
-        if inact <= 6:
+        status = ms.get("status") or "ACTIVE"
+        if status == "ACTIVE":
             active_7d += 1
             tool_counts["Microsoft 365 Copilot"]["active"] += 1
-        elif inact <= 29:
+        elif status == "LAPSING":
             lapsing_7_29d += 1
-        else:
+        elif status == "IDLE":
             idle_30d += 1
             tool_counts["Microsoft 365 Copilot"]["idle"] += 1
+        tool_counts["Microsoft 365 Copilot"]["total"] += 1
 
         if dept not in func_counts:
             func_counts[dept] = {"function": dept, "total": 0, "active": 0, "idle": 0}
         func_counts[dept]["total"] += 1
-        if inact <= 6:
+        if status == "ACTIVE":
             func_counts[dept]["active"] += 1
-        elif inact >= 30:
+        elif status == "IDLE":
             func_counts[dept]["idle"] += 1
 
-    active_pct = round((active_7d / total_seats * 100.0) if total_seats > 0 else 0.0, 1)
-    lapsing_pct = round((lapsing_7_29d / total_seats * 100.0) if total_seats > 0 else 0.0, 1)
-    idle_pct = round((idle_30d / total_seats * 100.0) if total_seats > 0 else 0.0, 1)
-    reclaim_usd = round(idle_30d * (cost_per_seat or 30.0), 2)
+    avoidable_cost = float(idle_30d * (cost_per_seat or 30.0))
 
-    return {
-        "month": "2026-09",
-        "total_licensed_seats": total_seats,
-        "active_seats_7d": active_7d,
-        "active_pct": active_pct,
-        "lapsing_seats_7_29d": lapsing_7_29d,
-        "lapsing_pct": lapsing_pct,
-        "idle_seats_30d": idle_30d,
-        "idle_pct": idle_pct,
-        "estimated_reclaimable_usd": reclaim_usd,
-        "cost_per_seat_default": cost_per_seat or 30.0,
-        "by_tool": list(tool_counts.values()),
-        "by_function": list(func_counts.values())
-    }
-
-@router.get("/m365")
-def get_m365_seats(user: Dict[str, Any] = Depends(get_current_user)):
-    _init_m365_table()
-    rows = query_all("SELECT * FROM m365_copilot_seats ORDER BY inactive_days ASC")
-    return {
-        "total": len(rows),
-        "source": "Microsoft 365 Admin Center User Activity Stream",
-        "seats": rows
-    }
+    return SeatInventorySummary(
+        total_licensed_seats=total_seats,
+        active_seats_7d=active_7d,
+        lapsing_seats_7_29d=lapsing_7_29d,
+        idle_seats_30d=idle_30d,
+        avoidable_idle_spend_monthly=avoidable_cost,
+        by_tool=list(tool_counts.values()),
+        by_function=list(func_counts.values())
+    )
 
 @router.post("/m365/upload-csv")
 async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = Depends(get_current_user)):
+    """
+    Ingests official Microsoft 365 Copilot User Activity report CSV exported from
+    M365 Admin Center -> Reports -> Usage -> Microsoft 365 Apps -> Copilot activity.
+    """
     _init_m365_table()
     content = await file.read()
-    decoded = content.decode("utf-8-sig", errors="ignore")
+    try:
+        decoded = content.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        decoded = content.decode("latin-1")
+
     reader = csv.DictReader(io.StringIO(decoded))
-    
-    rows_added = 0
     now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    now_date = datetime.date.today()
+    today = datetime.date.today()
+
+    inserted = 0
+    updated = 0
 
     with get_db() as conn:
         for row in reader:
-            upn = row.get("User Principal Name") or row.get("Email") or row.get("user_principal_name")
-            if not upn:
+            upn = (
+                row.get("User Principal Name") or
+                row.get("UserPrincipalName") or
+                row.get("UPN") or
+                row.get("User email") or
+                row.get("Email")
+            )
+            if not upn or "@" not in upn:
                 continue
-            dname = row.get("Display Name") or row.get("Name") or upn.split("@")[0].title()
-            dept = row.get("Department") or "General"
-            last_date_str = row.get("Last Activity Date") or row.get("LastActivityDate") or ""
-            
-            inact_days = 0
-            if last_date_str:
-                try:
-                    act_dt = datetime.datetime.strptime(last_date_str[:10], "%Y-%m-%d").date()
-                    inact_days = max(0, (now_date - act_dt).days)
-                except Exception:
-                    inact_days = 0
-            
-            status = "ACTIVE" if inact_days <= 6 else ("LAPSING" if inact_days <= 29 else "IDLE")
-            chat_cnt = int(row.get("Copilot Chat Activity") or row.get("ChatActivity") or 0)
 
-            conn.execute("""
-                INSERT OR REPLACE INTO m365_copilot_seats (
+            display_name = (
+                row.get("Display Name") or
+                row.get("DisplayName") or
+                upn.split("@")[0].replace(".", " ").title()
+            )
+            dept = row.get("Department") or row.get("Dept") or "General"
+            last_activity = (
+                row.get("Last activity date (UTC)") or
+                row.get("Last Activity Date") or
+                row.get("LastActivityDate") or
+                None
+            )
+            chat_count = int(row.get("Copilot Chat activity count") or row.get("ChatActivityCount") or 0)
+
+            inactive_days = 0
+            if last_activity:
+                try:
+                    act_date = datetime.date.fromisoformat(last_activity[:10])
+                    inactive_days = max(0, (today - act_date).days)
+                except Exception:
+                    inactive_days = 0
+
+            status = "ACTIVE"
+            if inactive_days >= 30:
+                status = "IDLE"
+            elif inactive_days >= 7:
+                status = "LAPSING"
+
+            cur = conn.execute("""
+                INSERT INTO m365_copilot_seats (
                     user_principal_name, display_name, department, assigned_license,
                     last_activity_date, inactive_days, status, chat_activity_count, updated_at
                 ) VALUES (?, ?, ?, 'Microsoft 365 Copilot', ?, ?, ?, ?, ?)
-            """, (upn, dname, dept, last_date_str or now_date.isoformat(), inact_days, status, chat_cnt, now_iso))
-            rows_added += 1
+                ON CONFLICT(user_principal_name) DO UPDATE SET
+                    display_name = excluded.display_name,
+                    department = excluded.department,
+                    last_activity_date = excluded.last_activity_date,
+                    inactive_days = excluded.inactive_days,
+                    status = excluded.status,
+                    chat_activity_count = excluded.chat_activity_count,
+                    updated_at = excluded.updated_at
+            """, (upn, display_name, dept, last_activity, inactive_days, status, chat_count, now_iso))
+
+            if cur.rowcount > 0:
+                inserted += 1
 
     return {
         "status": "success",
-        "imported_seats": rows_added,
-        "message": f"Successfully ingested {rows_added} Microsoft 365 Copilot seats from {file.filename}."
+        "message": f"Successfully ingested M365 Copilot report: {inserted} active seats processed."
     }
