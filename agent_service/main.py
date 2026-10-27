@@ -10,7 +10,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-app = FastAPI(title="Lenovo Enterprise IT Support Agent", version="2.0.0")
+app = FastAPI(title="Lenovo Enterprise IT Support Agent", version="2.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,8 +31,9 @@ AZURE_OPENAI_API_KEY = os.environ.get("AZURE_OPENAI_API_KEY", "")
 AZURE_OPENAI_DEPLOYMENT = os.environ.get("AZURE_OPENAI_DEPLOYMENT", "it-agent-model")
 AZURE_OPENAI_API_VERSION = os.environ.get("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
 
-SYSTEM_PROMPT = """You are the Lenovo Global IT Support Assistant.
-You are helping employee Aarav Sharma (aarav@lenovo.com) who uses a ThinkPad P1 Gen 6 (Serial: LN-98234) with a ThinkPad Thunderbolt 4 Workstation Dock under Premier Support.
+def build_system_prompt(emp_name: str, emp_email: str, device: str) -> str:
+    return f"""You are the Lenovo Global IT Support Assistant.
+You are helping employee {emp_name} ({emp_email}) who uses a {device} under Premier Onsite Support.
 Your job is to troubleshoot hardware issues (docking stations, 4K displays), grant access (GitHub, Okta), or resolve software issues (VPN, Outlook).
 Always respond with professional, step-by-step enterprise IT guidance. 
 Use Markdown with bold headers and bullet points.
@@ -45,11 +46,57 @@ Keep the tone authoritative, polite, and direct."""
 # In-memory storage for active agent completion loops
 active_sessions: Dict[str, Dict[str, Any]] = {}
 
+# Fallback IT Service Desk employees if Cockpit API is temporarily starting
+DEFAULT_IT_EMPLOYEES = [
+    {
+        "id": 1,
+        "display_name": "Aarav Sharma",
+        "email": "aarav@wct.com",
+        "team_name": "IT Service Desk",
+        "function_name": "Eng & IT",
+        "device": "ThinkPad P1 Gen 6 (Serial: LN-98234)",
+        "initials": "AS",
+        "assigned_agents": [{"agent_id": 11, "agent_name": "Ticket Triage Agent"}]
+    },
+    {
+        "id": 2,
+        "display_name": "Ananya Rao",
+        "email": "ananya@wct.com",
+        "team_name": "IT Service Desk",
+        "function_name": "Eng & IT",
+        "device": "ThinkPad T14 Gen 4 (Serial: LN-44120)",
+        "initials": "AR",
+        "assigned_agents": [{"agent_id": 11, "agent_name": "Ticket Triage Agent"}]
+    },
+    {
+        "id": 3,
+        "display_name": "Arjun Patel",
+        "email": "arjun@wct.com",
+        "team_name": "IT Service Desk",
+        "function_name": "Eng & IT",
+        "device": "ThinkPad X1 Carbon Gen 11 (Serial: LN-55912)",
+        "initials": "AP",
+        "assigned_agents": [{"agent_id": 11, "agent_name": "Ticket Triage Agent"}]
+    },
+    {
+        "id": 4,
+        "display_name": "Divya Nair",
+        "email": "divya@wct.com",
+        "team_name": "IT Service Desk",
+        "function_name": "Eng & IT",
+        "device": "ThinkPad L15 Gen 3 (Serial: LN-77209)",
+        "initials": "DN",
+        "assigned_agents": [{"agent_id": 11, "agent_name": "Ticket Triage Agent"}]
+    }
+]
+
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
-    employee_email: Optional[str] = "aarav@lenovo.com"
-    serial_number: Optional[str] = "LN-98234"
+    employee_id: Optional[int] = 1
+    employee_name: Optional[str] = "Aarav Sharma"
+    employee_email: Optional[str] = "aarav@wct.com"
+    device_info: Optional[str] = "ThinkPad P1 Gen 6 (Serial: LN-98234)"
 
 class FeedbackRequest(BaseModel):
     session_id: str
@@ -67,23 +114,47 @@ def health():
         "active_sessions_count": len(active_sessions)
     }
 
+@app.get("/api/employees")
+async def get_it_employees():
+    """
+    Returns employees belonging to the IT Service Desk team who are assigned to this IT Support Agent.
+    Fetches dynamically from the Cockpit database API.
+    """
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            resp = await client.get(f"{COCKPIT_API_URL}/api/v1/telemetry/employees?team=IT%20Service%20Desk")
+            if resp.status_code == 200:
+                data = resp.json()
+                if data:
+                    return data
+    except Exception:
+        pass
+    return DEFAULT_IT_EMPLOYEES
+
 @app.post("/api/chat")
 async def chat_handler(payload: ChatRequest):
     start_time = time.time()
+    emp_name = payload.employee_name or "Aarav Sharma"
+    emp_email = payload.employee_email or "aarav@wct.com"
+    device = payload.device_info or "ThinkPad P1 Gen 6 (Serial: LN-98234)"
+    first_name = emp_name.split()[0]
     
     # 1. Retrieve or initialize multi-turn session loop
     session_id = payload.session_id
     if not session_id or session_id not in active_sessions:
         session_id = f"sess-{uuid.uuid4().hex[:8]}"
         ticket_id = f"INC-{int(time.time() * 1000) % 1000000}"
+        system_prompt = build_system_prompt(emp_name, emp_email, device)
         active_sessions[session_id] = {
             "session_id": session_id,
             "agent_id": "it-service-desk",
             "agent_name": "Ticket Triage Agent",
-            "user_email": payload.employee_email or "aarav@lenovo.com",
+            "user_email": emp_email,
+            "user_name": emp_name,
+            "device": device,
             "ticket_id": ticket_id,
             "agent_start_time": datetime.now(timezone.utc).isoformat(),
-            "messages": [{"role": "system", "content": SYSTEM_PROMPT}],
+            "messages": [{"role": "system", "content": system_prompt}],
             "prompt_tokens": 0,
             "completion_tokens": 0,
             "total_tokens": 0,
@@ -129,11 +200,11 @@ async def chat_handler(payload: ChatRequest):
     # Fallback template if Azure OpenAI is offline or not configured
     if not reply_text:
         ticket_id = session["ticket_id"]
-        reply_text = f"""Hello **Aarav**, I have analyzed your request.
+        reply_text = f"""Hello **{first_name}**, I have analyzed your request.
 
 ### Verified Hardware & Profile Details
-* **Registered Asset**: `ThinkPad P1 Gen 6` (Serial: `LN-98234`)
-* **Peripheral**: `ThinkPad Thunderbolt 4 Workstation Dock`
+* **Registered Employee**: `{emp_name}` ({emp_email})
+* **Hardware Asset**: `{device}`
 * **Coverage**: `Active Premier Onsite Support`
 
 ### Diagnostic Troubleshooting & Resolution
@@ -165,6 +236,11 @@ Please reconnect your cable."""
         "response": reply_text,
         "session_id": session_id,
         "ticket_id": session["ticket_id"],
+        "employee": {
+            "name": emp_name,
+            "email": emp_email,
+            "device": device
+        },
         "current_call_metrics": {
             "prompt_tokens": call_prompt_tokens,
             "completion_tokens": call_completion_tokens,
@@ -192,7 +268,7 @@ async def feedback_handler(payload: FeedbackRequest):
         session = {
             "agent_id": "it-service-desk",
             "agent_name": "Ticket Triage Agent",
-            "user_email": "aarav@lenovo.com",
+            "user_email": "aarav@wct.com",
             "ticket_id": f"INC-{int(time.time() * 1000) % 1000000}",
             "agent_start_time": datetime.now(timezone.utc).isoformat(),
             "prompt_tokens": 175,
@@ -215,7 +291,7 @@ async def feedback_handler(payload: FeedbackRequest):
     telemetry_payload = {
         "agent_id": session.get("agent_id", "it-service-desk"),
         "agent_name": session.get("agent_name", "Ticket Triage Agent"),
-        "user_email": session.get("user_email", "aarav@lenovo.com"),
+        "user_email": session.get("user_email", "aarav@wct.com"),
         "completion_tokens": session["completion_tokens"],
         "prompt_tokens": session["prompt_tokens"],
         "total_tokens": session["total_tokens"],

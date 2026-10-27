@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   CheckCircle, 
@@ -12,10 +12,14 @@ import {
   CheckCircle2, 
   Sparkles,
   Clock,
-  ShieldCheck
+  ShieldCheck,
+  Activity,
+  ChevronDown,
+  ChevronUp,
+  Cpu
 } from 'lucide-react';
 import { AgentScorecardItem } from '../types';
-import { formatUSD, formatPct } from '../api';
+import { formatUSD, formatPct, fetchAgentDailySummary, AgentDailyTelemetrySummary } from '../api';
 
 interface AgentDetailModalProps {
   agent: AgentScorecardItem | null;
@@ -33,6 +37,30 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
   const [isExecuting, setIsExecuting] = useState(false);
   const [remediationSuccess, setRemediationSuccess] = useState<string | null>(null);
   const [agentStatus, setAgentStatus] = useState<string>(agent.action || 'optimize');
+
+  // Live Daily Telemetry & Employee Usage State
+  const [dailySummary, setDailySummary] = useState<AgentDailyTelemetrySummary | null>(null);
+  const [isLoadingDaily, setIsLoadingDaily] = useState<boolean>(true);
+  const [showEmployeeBreakdown, setShowEmployeeBreakdown] = useState<boolean>(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoadingDaily(true);
+    fetchAgentDailySummary(agent.name)
+      .then(data => {
+        if (isMounted) {
+          setDailySummary(data);
+          setIsLoadingDaily(false);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load daily telemetry:', err);
+        if (isMounted) setIsLoadingDaily(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [agent.name]);
 
   const handleExecuteRemediation = (actionKey: string, successMessage: string) => {
     setIsExecuting(true);
@@ -191,7 +219,7 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
                 {agent.adoption_pct}%
               </div>
               <div style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>
-                {agent.active_users || 0} of {agent.licensed_users || 200} licensed
+                {agent.active_users || 0} of {agent.licensed_users || 4} assigned
               </div>
             </div>
 
@@ -201,19 +229,229 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
               padding: 12,
               borderRadius: 8
             }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#64748B' : '#94A3B8' }}>EVAL PASS RATE</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#64748B' : '#94A3B8' }}>EVAL PASS RATE (ALL USERS)</div>
               <div style={{
                 fontSize: 18,
                 fontWeight: 800,
-                color: agent.eval_pass_rate < 92 ? (isLight ? '#C62828' : '#F87171') : (isLight ? '#16A34A' : '#34D399'),
+                color: (agent.eval_pass_rate || 0) < 80 ? (isLight ? '#C62828' : '#F87171') : (isLight ? '#16A34A' : '#34D399'),
                 marginTop: 2
               }}>
                 {agent.eval_pass_rate}%
               </div>
               <div style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>
-                {agent.eval_passed || 296} / {agent.eval_runs || 300} passed
+                {agent.eval_passed ?? 0} / {agent.eval_runs ?? 0} passed
               </div>
             </div>
+          </div>
+
+          {/* ⚡ LIVE DAILY TELEMETRY & EMPLOYEE USAGE (TODAY'S AGGREGATED METRICS) */}
+          <div style={{
+            background: isLight 
+              ? 'linear-gradient(180deg, #F0F6FF 0%, #FFFFFF 100%)' 
+              : 'linear-gradient(180deg, #0B1E3B 0%, #0F172A 100%)',
+            border: isLight ? '1.5px solid #BFDBFE' : '1px solid #1E3A8A',
+            borderRadius: 10,
+            padding: 16,
+            boxShadow: isLight ? '0 2px 10px rgba(0, 52, 155, 0.05)' : '0 2px 10px rgba(0, 0, 0, 0.3)'
+          }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 26,
+                  height: 26,
+                  borderRadius: 6,
+                  background: isLight ? '#00349B' : '#3B82F6',
+                  color: '#FFFFFF'
+                }}>
+                  <Activity size={15} />
+                </span>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: 13.5, fontWeight: 800, color: isLight ? '#00349B' : '#93C5FD' }}>
+                    Live Daily Telemetry &amp; Employee Usage
+                  </h4>
+                  <div style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8' }}>
+                    Usage Date: <b>{dailySummary?.date || '2026-10-27'}</b> • {dailySummary?.employees_count || 0} active employees
+                  </div>
+                </div>
+              </div>
+              <span style={{
+                fontSize: 10.5,
+                fontWeight: 700,
+                padding: '3px 8px',
+                borderRadius: 12,
+                background: '#DCFCE7',
+                color: '#15803D',
+                border: '1px solid #86EFAC',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4
+              }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A' }} />
+                DB Synced
+              </span>
+            </div>
+
+            {/* 4 Core Daily KPI Metrics Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {/* 1. Token Usage of all employees in a day */}
+              <div style={{
+                background: isLight ? '#FFFFFF' : '#0F172A',
+                border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
+                borderRadius: 8,
+                padding: 12
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#475569' : '#94A3B8' }}>
+                  TOKEN USAGE (ALL EMPLOYEES)
+                </div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', marginTop: 2 }}>
+                  {(dailySummary?.total_tokens || 0).toLocaleString()} <span style={{ fontSize: 11.5, fontWeight: 600 }}>tokens</span>
+                </div>
+                <div style={{ fontSize: 10.5, color: isLight ? '#64748B' : '#94A3B8', marginTop: 3 }}>
+                  Prompt: {(dailySummary?.prompt_tokens || 0).toLocaleString()} • Completion: {(dailySummary?.completion_tokens || 0).toLocaleString()}
+                </div>
+              </div>
+
+              {/* 2. Average number of sessions in a day */}
+              <div style={{
+                background: isLight ? '#FFFFFF' : '#0F172A',
+                border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
+                borderRadius: 8,
+                padding: 12
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#475569' : '#94A3B8' }}>
+                  AVG SESSIONS / DAY
+                </div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC', marginTop: 2 }}>
+                  {dailySummary?.avg_sessions_in_day || 0} <span style={{ fontSize: 11.5, fontWeight: 600 }}>per user</span>
+                </div>
+                <div style={{ fontSize: 10.5, color: isLight ? '#64748B' : '#94A3B8', marginTop: 3 }}>
+                  {dailySummary?.total_sessions || 0} total sessions across {dailySummary?.employees_count || 0} users
+                </div>
+              </div>
+
+              {/* 3. Average success rate of agent in a day (of all users) */}
+              <div style={{
+                background: isLight ? '#FFFFFF' : '#0F172A',
+                border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
+                borderRadius: 8,
+                padding: 12
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#475569' : '#94A3B8' }}>
+                  AVG SUCCESS RATE (ALL USERS)
+                </div>
+                <div style={{
+                  fontSize: 20,
+                  fontWeight: 800,
+                  color: (dailySummary?.avg_success_rate_pct || 0) >= 80 ? (isLight ? '#16A34A' : '#4ADE80') : (isLight ? '#DC2626' : '#F87171'),
+                  marginTop: 2
+                }}>
+                  {dailySummary?.avg_success_rate_pct || 0}%
+                </div>
+                <div style={{ fontSize: 10.5, color: isLight ? '#64748B' : '#94A3B8', marginTop: 3 }}>
+                  {dailySummary?.total_success_count || 0} of {dailySummary?.total_sessions || 0} sessions successful
+                </div>
+              </div>
+
+              {/* 4. Average agent completion time */}
+              <div style={{
+                background: isLight ? '#FFFFFF' : '#0F172A',
+                border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
+                borderRadius: 8,
+                padding: 12
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#475569' : '#94A3B8' }}>
+                  AVG AGENT COMPLETION TIME
+                </div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC', marginTop: 2 }}>
+                  {dailySummary?.avg_agent_completion_seconds || 0}s
+                </div>
+                <div style={{ fontSize: 10.5, color: isLight ? '#64748B' : '#94A3B8', marginTop: 3 }}>
+                  Loop execution time across all users
+                </div>
+              </div>
+            </div>
+
+            {/* Employee Breakdown Table */}
+            {dailySummary && dailySummary.employees_breakdown && dailySummary.employees_breakdown.length > 0 && (
+              <div style={{ marginTop: 14 }}>
+                <button
+                  onClick={() => setShowEmployeeBreakdown(!showEmployeeBreakdown)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: '4px 0',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: isLight ? '#00349B' : '#60A5FA',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4
+                  }}
+                >
+                  <span>{showEmployeeBreakdown ? 'Hide' : 'Show'} Employee Usage Breakdown ({dailySummary.employees_breakdown.length} Employees)</span>
+                  {showEmployeeBreakdown ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                </button>
+
+                {showEmployeeBreakdown && (
+                  <div style={{
+                    marginTop: 8,
+                    background: isLight ? '#FFFFFF' : '#0F172A',
+                    border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+                    borderRadius: 6,
+                    overflow: 'hidden'
+                  }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11.5 }}>
+                      <thead>
+                        <tr style={{ background: isLight ? '#F8FAFC' : '#1E293B', borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid #334155' }}>
+                          <th style={{ textAlign: 'left', padding: '7px 10px', color: isLight ? '#64748B' : '#94A3B8' }}>Employee</th>
+                          <th style={{ textAlign: 'center', padding: '7px 8px', color: isLight ? '#64748B' : '#94A3B8' }}>Sessions</th>
+                          <th style={{ textAlign: 'right', padding: '7px 8px', color: isLight ? '#64748B' : '#94A3B8' }}>Tokens (In/Out)</th>
+                          <th style={{ textAlign: 'center', padding: '7px 8px', color: isLight ? '#64748B' : '#94A3B8' }}>Success Rate</th>
+                          <th style={{ textAlign: 'right', padding: '7px 10px', color: isLight ? '#64748B' : '#94A3B8' }}>Avg Completion</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dailySummary.employees_breakdown.map((emp, i) => (
+                          <tr key={emp.employee_id || i} style={{ borderBottom: isLight ? '1px solid #F1F5F9' : '1px solid #1E293B' }}>
+                            <td style={{ padding: '7px 10px', fontWeight: 600, color: isLight ? '#0F172A' : '#F8FAFC' }}>
+                              <div>{emp.display_name}</div>
+                              <div style={{ fontSize: 10, color: isLight ? '#64748B' : '#94A3B8', fontWeight: 400 }}>{emp.email}</div>
+                            </td>
+                            <td style={{ textAlign: 'center', padding: '7px 8px', fontWeight: 700, color: isLight ? '#00349B' : '#93C5FD' }}>
+                              {emp.sessions_count}
+                            </td>
+                            <td style={{ textAlign: 'right', padding: '7px 8px' }}>
+                              <div style={{ fontWeight: 600 }}>{emp.total_tokens.toLocaleString()}</div>
+                              <div style={{ fontSize: 9.5, color: isLight ? '#64748B' : '#94A3B8' }}>{emp.prompt_tokens}/{emp.completion_tokens}</div>
+                            </td>
+                            <td style={{ textAlign: 'center', padding: '7px 8px' }}>
+                              <span style={{
+                                padding: '2px 6px',
+                                borderRadius: 4,
+                                fontSize: 10,
+                                fontWeight: 700,
+                                background: emp.success_rate_pct >= 80 ? '#ECFDF5' : '#FEF2F2',
+                                color: emp.success_rate_pct >= 80 ? '#059669' : '#DC2626'
+                              }}>
+                                {emp.success_rate_pct}% ({emp.sucess}/{emp.sessions_count})
+                              </span>
+                            </td>
+                            <td style={{ textAlign: 'right', padding: '7px 10px', fontWeight: 600, color: isLight ? '#334155' : '#E2E8F0' }}>
+                              {emp.agent_completion}s
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Governance & Action Guidance */}

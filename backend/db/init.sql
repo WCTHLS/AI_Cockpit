@@ -91,6 +91,22 @@ CREATE TABLE IF NOT EXISTS team_agent (
     UNIQUE(team_id, agent_id, assigned_from)
 );
 
+-- Individual employee to agent assignment mapping
+CREATE TABLE IF NOT EXISTS employee_agent (
+    id              INTEGER PRIMARY KEY,
+    company_id      INTEGER NOT NULL REFERENCES company(id) ON DELETE CASCADE,
+    employee_id     INTEGER NOT NULL REFERENCES employee(id) ON DELETE CASCADE,
+    agent_id        INTEGER NOT NULL REFERENCES ai_agent(id) ON DELETE CASCADE,
+    assigned_from   TEXT NOT NULL DEFAULT (date('now')),
+    is_active       INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0,1)),
+    created_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(employee_id, company_id) REFERENCES employee(id, company_id),
+    FOREIGN KEY(agent_id, company_id) REFERENCES ai_agent(id, company_id),
+    UNIQUE(employee_id, agent_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_employee_agent_emp ON employee_agent(employee_id, agent_id);
+
 -- 3. Data source / ingestion lineage
 CREATE TABLE IF NOT EXISTS data_source (
     id              INTEGER PRIMARY KEY,
@@ -151,6 +167,25 @@ CREATE TABLE IF NOT EXISTS agent_usage_daily (
 CREATE INDEX IF NOT EXISTS idx_usage_company_date ON agent_usage_daily(company_id, usage_date);
 CREATE INDEX IF NOT EXISTS idx_usage_agent_team_date ON agent_usage_daily(agent_id, team_id, usage_date);
 CREATE INDEX IF NOT EXISTS idx_usage_employee_date ON agent_usage_daily(employee_id, usage_date);
+
+-- Aggregated daily employee agent usage table
+CREATE TABLE IF NOT EXISTS user_usage (
+    id                          INTEGER PRIMARY KEY,
+    company_id                  INTEGER NOT NULL DEFAULT 1,
+    employee_id                 INTEGER NOT NULL,
+    agent_id                    INTEGER NOT NULL,
+    usage_date                  TEXT NOT NULL, -- YYYY-MM-DD
+    sessions_count              INTEGER NOT NULL DEFAULT 1,
+    daily_usage_json            TEXT NOT NULL,
+    created_at                  TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at                  TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(employee_id) REFERENCES employee(id) ON DELETE CASCADE,
+    FOREIGN KEY(agent_id) REFERENCES ai_agent(id) ON DELETE CASCADE,
+    UNIQUE(employee_id, agent_id, usage_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_usage_emp_date ON user_usage(employee_id, usage_date);
+CREATE INDEX IF NOT EXISTS idx_user_usage_agent_date ON user_usage(agent_id, usage_date);
 
 -- 5. Custom-agent task runs (optional in the first iteration; essential for granular custom agents).
 CREATE TABLE IF NOT EXISTS agent_run (
