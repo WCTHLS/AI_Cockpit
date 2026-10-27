@@ -47,3 +47,7 @@ pgdata/
 Thumbs.db
 
 *.code-workspace
+
+teammate_brains/
+backend/app/teammate_brains/
+

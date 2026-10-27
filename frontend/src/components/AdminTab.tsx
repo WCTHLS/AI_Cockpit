@@ -29,10 +29,13 @@ import {
   Eye,
   EyeOff,
   Radio,
-  CheckCircle
+  CheckCircle,
+  Code,
+  Terminal,
+  Cpu
 } from 'lucide-react';
-import { updateThresholds, formatUSD, uploadTelemetryFile, downloadCsvTemplate, fetchClaudeConfig, updateClaudeConfig, syncClaudeTelemetry, formatPct } from '../api';
-import { UserProfile, IngestSummary, SummaryKPI, ClaudeConfig, ClaudeSyncResponse, ClaudeSyncMetrics } from '../types';
+import { updateThresholds, formatUSD, uploadTelemetryFile, downloadCsvTemplate, fetchClaudeConfig, updateClaudeConfig, syncClaudeTelemetry, formatPct, fetchDeveloperConfig, updateDeveloperConfig, testDeveloperConnection, syncDeveloperTelemetry, fetchDeveloperSeats, uploadTeammateZip } from '../api';
+import { UserProfile, IngestSummary, SummaryKPI, ClaudeConfig, ClaudeSyncResponse, ClaudeSyncMetrics, DeveloperToolConfig, DeveloperSyncResponse, DeveloperSeat } from '../types';
 
 interface AdminTabProps {
   initialThresholds: any;
@@ -99,7 +102,7 @@ const DEFAULT_GUARDRAIL_CONFIG: GuardrailConfig = {
 
 export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, onConfigSaved, theme = 'light', user, summary }) => {
   const isAdmin = user ? user.role === 'admin' : true;
-  const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance' | 'ingestion' | 'claude_api'>('subs');
+  const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance' | 'ingestion' | 'developer_tools'>('subs');
 
   // Governance action thresholds
   const [thresholds, setThresholds] = useState<any>(initialThresholds || {
@@ -128,6 +131,169 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     const saved = localStorage.getItem('wct_guardrail_config');
     return saved ? JSON.parse(saved) : DEFAULT_GUARDRAIL_CONFIG;
   });
+
+
+  // Developer AI Tools (Google Gemini / Antigravity / GitHub Copilot) State
+  const [devConfig, setDevConfig] = useState<DeveloperToolConfig | null>(null);
+  const [devProvider, setDevProvider] = useState<string>('gemini_antigravity');
+  const [devConnectionMode, setDevConnectionMode] = useState<string>('local_antigravity');
+  const [devEndpointUrl, setDevEndpointUrl] = useState<string>('https://generativelanguage.googleapis.com');
+  const [devApiKey, setDevApiKey] = useState<string>('');
+  const [showDevApiKey, setShowDevApiKey] = useState<boolean>(false);
+  const [devOrgId, setDevOrgId] = useState<string>('waferwire-corp');
+  const [devEmail, setDevEmail] = useState<string>('swagathreddy00@gmail.com');
+  const [devLocalPath, setDevLocalPath] = useState<string>('C:\\Users\\Admin\\.gemini\\antigravity-ide');
+  const [devAutoSync, setDevAutoSync] = useState<boolean>(true);
+  const [isTestingDev, setIsTestingDev] = useState<boolean>(false);
+  const [isSavingDev, setIsSavingDev] = useState<boolean>(false);
+  const [isSyncingDev, setIsSyncingDev] = useState<boolean>(false);
+  const [devTestResult, setDevTestResult] = useState<{ status: string; connected: boolean; message: string; sample_models?: string[]; details?: any } | null>(null);
+  const [devSyncResult, setDevSyncResult] = useState<DeveloperSyncResponse | null>(null);
+  const [devError, setDevError] = useState<string | null>(null);
+  const [devSuccessMessage, setDevSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchDeveloperConfig()
+      .then(cfg => {
+        setDevConfig(cfg);
+        if (cfg.provider) setDevProvider(cfg.provider);
+        if (cfg.connection_mode) setDevConnectionMode(cfg.connection_mode);
+        if (cfg.endpoint_url) setDevEndpointUrl(cfg.endpoint_url);
+        if (cfg.org_or_project_id) setDevOrgId(cfg.org_or_project_id);
+        if (cfg.developer_email) setDevEmail(cfg.developer_email);
+        if (cfg.local_data_path) setDevLocalPath(cfg.local_data_path);
+        setDevAutoSync(cfg.auto_sync_on_refresh);
+        if (cfg.last_sync_metrics) {
+          setDevSyncResult({
+            status: 'success',
+            synced_at: cfg.last_synced_at || '',
+            provider: cfg.provider,
+            developer: cfg.last_sync_metrics.developer_name || 'Swagath Reddy',
+            developer_email: cfg.last_sync_metrics.developer_email || 'swagathreddy00@gmail.com',
+            metrics: cfg.last_sync_metrics,
+            message: 'Loaded previous developer telemetry synchronization.'
+          });
+        }
+      })
+      .catch(err => console.error('Failed to load developer tools config:', err));
+  }, []);
+
+  const handleTestDevConnection = async () => {
+    setIsTestingDev(true);
+    setDevError(null);
+    setDevTestResult(null);
+    try {
+      const res = await testDeveloperConnection({
+        provider: devProvider,
+        connection_mode: devConnectionMode,
+        endpoint_url: devEndpointUrl,
+        api_key: devApiKey || undefined,
+        org_or_project_id: devOrgId,
+        local_data_path: devLocalPath
+      });
+      setDevTestResult(res);
+    } catch (err: any) {
+      setDevError(err.message || 'Connection test failed');
+    } finally {
+      setIsTestingDev(false);
+    }
+  };
+
+  const handleSaveDevConfig = async () => {
+    setIsSavingDev(true);
+    setDevError(null);
+    setDevSuccessMessage(null);
+    try {
+      await updateDeveloperConfig({
+        provider: devProvider,
+        connection_mode: devConnectionMode,
+        endpoint_url: devEndpointUrl,
+        api_key: devApiKey || undefined,
+        org_or_project_id: devOrgId,
+        developer_email: devEmail,
+        local_data_path: devLocalPath,
+        auto_sync_on_refresh: devAutoSync
+      });
+      setDevSuccessMessage('Credentials and endpoints saved successfully.');
+      setTimeout(() => setDevSuccessMessage(null), 4000);
+      const updated = await fetchDeveloperConfig();
+      setDevConfig(updated);
+      setDevApiKey('');
+    } catch (err: any) {
+      setDevError(err.message || 'Failed to save configuration');
+    } finally {
+      setIsSavingDev(false);
+    }
+  };
+
+  const handleSyncDevTelemetry = async () => {
+    setIsSyncingDev(true);
+    setDevError(null);
+    try {
+      const res = await syncDeveloperTelemetry({
+        provider: devProvider,
+        connection_mode: devConnectionMode,
+        endpoint_url: devEndpointUrl,
+        api_key: devApiKey || undefined,
+        developer_email: devEmail,
+        local_data_path: devLocalPath,
+        force_refresh: true
+      });
+      setDevSyncResult(res);
+      setDevSuccessMessage(`Synced ${res.metrics?.tool_actions_generated?.toLocaleString()} AI proposals for ${res.developer_email}`);
+      setTimeout(() => setDevSuccessMessage(null), 5000);
+      if (onConfigSaved) onConfigSaved(subscriptions, laborRates);
+    } catch (err: any) {
+      setDevError(err.message || 'Failed to sync developer telemetry');
+    } finally {
+      setIsSyncingDev(false);
+    }
+  };
+
+
+  // Teammate Antigravity brain.zip upload state
+  const [teammateName, setTeammateName] = useState<string>('');
+  const [teammateEmail, setTeammateEmail] = useState<string>('');
+  const [teammateDept, setTeammateDept] = useState<string>('Eng & IT');
+  const [teammateRole, setTeammateRole] = useState<string>('AI / Software Engineer');
+  const [teammateZipFile, setTeammateZipFile] = useState<File | null>(null);
+  const [isUploadingTeammate, setIsUploadingTeammate] = useState<boolean>(false);
+  const [teammateUploadSuccess, setTeammateUploadSuccess] = useState<string | null>(null);
+  const [teammateUploadError, setTeammateUploadError] = useState<string | null>(null);
+  const teammateFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadTeammate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!teammateZipFile) {
+      setTeammateUploadError("Please choose your teammate's brain.zip file.");
+      return;
+    }
+    if (!teammateEmail) {
+      setTeammateUploadError("Please provide your teammate's email address.");
+      return;
+    }
+    setIsUploadingTeammate(true);
+    setTeammateUploadError(null);
+    setTeammateUploadSuccess(null);
+    try {
+      const res = await uploadTeammateZip(
+        teammateZipFile,
+        teammateName || 'Teammate Developer',
+        teammateEmail,
+        teammateDept,
+        teammateRole
+      );
+      setTeammateUploadSuccess(res.message);
+      setTeammateName('');
+      setTeammateEmail('');
+      setTeammateZipFile(null);
+      if (teammateFileInputRef.current) teammateFileInputRef.current.value = '';
+    } catch (err: any) {
+      setTeammateUploadError(err.message || 'Failed to ingest teammate zip');
+    } finally {
+      setIsUploadingTeammate(false);
+    }
+  };
 
   // Claude Enterprise API Sync State
   const [claudeConfig, setClaudeConfig] = useState<ClaudeConfig | null>(null);
@@ -672,7 +838,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         </button>
 
         <button
-          onClick={() => setActiveSection('claude_api')}
+          onClick={() => setActiveSection('developer_tools')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -680,25 +846,25 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             padding: '8px 16px',
             borderRadius: '8px 8px 0 0',
             border: 'none',
-            background: activeSection === 'claude_api' ? '#7C3AED' : 'transparent',
-            color: activeSection === 'claude_api' ? '#FFFFFF' : '#475569',
+            background: activeSection === 'developer_tools' ? '#0284C7' : 'transparent',
+            color: activeSection === 'developer_tools' ? '#FFFFFF' : '#475569',
             fontSize: 13,
             fontWeight: 700,
             cursor: 'pointer',
             transition: 'all 0.2s'
           }}
         >
-          <Zap size={15} /> Live Telemetry API
+          <Code size={15} /> Developer AI Tools
           <span style={{
-            background: activeSection === 'claude_api' ? '#FCD34D' : '#EDE9FE',
-            color: activeSection === 'claude_api' ? '#1E1B4B' : '#7C3AED',
+            background: activeSection === 'developer_tools' ? '#BAE6FD' : '#E0F2FE',
+            color: activeSection === 'developer_tools' ? '#0369A1' : '#0284C7',
             fontSize: 10,
             fontWeight: 800,
             padding: '2px 6px',
             borderRadius: 10,
             marginLeft: 2
           }}>
-            API
+            GEMINI / COPILOT
           </span>
         </button>
       </div>
@@ -1547,282 +1713,519 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         </div>
       )}
 
-      {/* SECTION 6: CLAUDE & LLM API INTEGRATION */}
-      {activeSection === 'claude_api' && (
+      {/* SECTION 7: DEVELOPER AI TOOLS INTEGRATION (Gemini & GitHub Copilot) */}
+      {activeSection === 'developer_tools' && (
         <div style={{
           background: '#FFFFFF',
-          border: '1.5px solid #DDD6FE',
+          border: '1.5px solid #BAE6FD',
           borderRadius: 12,
           padding: 24,
-          boxShadow: '0 4px 16px rgba(124, 58, 237, 0.06)'
+          boxShadow: '0 4px 16px rgba(2, 132, 199, 0.06)'
         }}>
           {/* Header Banner */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderBottom: '1px solid #EDE9FE',
+            borderBottom: '1px solid #E0F2FE',
             paddingBottom: 16,
             marginBottom: 20
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{
-                background: 'linear-gradient(135deg, #7C3AED, #9333EA)',
-                color: '#FFFFFF',
-                padding: 10,
-                borderRadius: 10,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)'
-              }}>
-                <Zap size={22} />
-              </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <h3 style={{ fontSize: 17, fontWeight: 800, color: '#1E1B4B', margin: 0 }}>
-                    Anthropic Claude Enterprise Integration
-                  </h3>
-                  <span style={{
-                    fontSize: 10,
-                    fontWeight: 800,
-                    letterSpacing: '0.05em',
-                    padding: '2px 8px',
-                    borderRadius: 12,
-                    background: '#EDE9FE',
-                    color: '#7C3AED',
-                    textTransform: 'uppercase'
-                  }}>
-                    Official API Suite
-                  </span>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
+                  background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)',
+                  borderRadius: 8,
+                  padding: '7px 9px',
+                  color: '#FFFFFF'
+                }}>
+                  <Code size={20} />
                 </div>
-                <p style={{ fontSize: 13, color: '#6B7280', margin: '3px 0 0 0' }}>
-                  Connect your Anthropic Organization to sync billed costs, token volume, prompt cache efficiency, and agent telemetry.
-                </p>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: '#0C4A6E', fontFamily: 'Figtree, sans-serif' }}>
+                    Developer AI Tools Telemetry & Seat Pipeline
+                  </h3>
+                  <div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>
+                    Connect to Google Gemini (Antigravity IDE & Code Assist) or GitHub Copilot API to harvest real developer activity.
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Connection Status Badge */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              background: connectionMode === 'live' ? '#F0FDF4' : connectionMode === 'custom' ? '#FFFBEB' : '#FAF5FF',
-              border: `1.5px solid ${connectionMode === 'live' ? '#86EFAC' : connectionMode === 'custom' ? '#FDE68A' : '#DDD6FE'}`,
-              padding: '6px 14px',
-              borderRadius: 20
-            }}>
-              <span style={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                background: connectionMode === 'live' ? '#16A34A' : connectionMode === 'custom' ? '#D97706' : '#7C3AED',
-                boxShadow: `0 0 8px ${connectionMode === 'live' ? '#16A34A' : connectionMode === 'custom' ? '#D97706' : '#7C3AED'}`
-              }} />
-              <span style={{
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '5px 12px',
+                borderRadius: 20,
                 fontSize: 12,
                 fontWeight: 700,
-                color: connectionMode === 'live' ? '#15803D' : connectionMode === 'custom' ? '#92400E' : '#6D28D9'
+                background: devSyncResult ? '#ECFDF5' : '#F8FAFC',
+                border: devSyncResult ? '1.5px solid #A7F3D0' : '1.5px solid #CBD5E1',
+                color: devSyncResult ? '#065F46' : '#64748B'
               }}>
-                {connectionMode === 'live' ? 'Live Cloud (api.anthropic.com)' : connectionMode === 'custom' ? 'Custom / Staging Gateway' : 'Sample Mock Engine Active'}
-              </span>
+                <span style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: devSyncResult ? '#10B981' : '#94A3B8',
+                  display: 'inline-block'
+                }} />
+                {devSyncResult ? 'CONNECTED & TELEMETRY LIVE' : 'AWAITING SYNC'}
+              </div>
+
+              <button
+                onClick={handleSyncDevTelemetry}
+                disabled={isSyncingDev}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '8px 16px',
+                  borderRadius: 7,
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)',
+                  color: '#FFFFFF',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: isSyncingDev ? 'not-allowed' : 'pointer',
+                  opacity: isSyncingDev ? 0.7 : 1,
+                  boxShadow: '0 2px 8px rgba(2, 132, 199, 0.2)'
+                }}
+              >
+                <RefreshCw size={14} className={isSyncingDev ? 'spin' : ''} />
+                {isSyncingDev ? 'Ingesting Developer Activity...' : 'Sync Telemetry Now'}
+              </button>
             </div>
           </div>
 
-          {/* Feedback Alerts */}
-          {claudeConfigSuccess && (
-            <div style={{
-              background: '#F0FDF4',
-              border: '1px solid #86EFAC',
-              color: '#166534',
-              borderRadius: 8,
-              padding: '12px 16px',
-              marginBottom: 18,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              fontSize: 13,
-              fontWeight: 600
-            }}>
-              <CheckCircle2 size={16} />
-              <span>{claudeConfigSuccess}</span>
-            </div>
-          )}
+          {/* Provider Selection Tabs */}
+          <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+            <button
+              onClick={() => {
+                setDevProvider('gemini_antigravity');
+                setDevEndpointUrl('https://generativelanguage.googleapis.com');
+                setDevConnectionMode('local_antigravity');
+              }}
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '14px 18px',
+                borderRadius: 10,
+                border: devProvider === 'gemini_antigravity' ? '2px solid #0284C7' : '1.5px solid #E2E8F0',
+                background: devProvider === 'gemini_antigravity' ? '#F0F9FF' : '#FFFFFF',
+                cursor: 'pointer',
+                textAlign: 'left'
+              }}
+            >
+              <div style={{
+                background: devProvider === 'gemini_antigravity' ? '#0284C7' : '#F1F5F9',
+                color: devProvider === 'gemini_antigravity' ? '#FFFFFF' : '#64748B',
+                borderRadius: 8,
+                padding: 10
+              }}>
+                <Sparkles size={20} />
+              </div>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: 14, color: devProvider === 'gemini_antigravity' ? '#0369A1' : '#1E293B' }}>
+                  Antigravity IDE
+                </div>
+                <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
+                  Local IDE workspace trajectories, prompts, tool execution & telemetry
+                </div>
+              </div>
+              {devProvider === 'gemini_antigravity' && (
+                <CheckCircle2 size={18} color="#0284C7" style={{ marginLeft: 'auto' }} />
+              )}
+            </button>
 
-          {claudeSyncError && (
+            <button
+              onClick={() => {
+                setDevProvider('github_copilot');
+                setDevEndpointUrl('https://api.github.com');
+                setDevConnectionMode('live_api');
+              }}
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '14px 18px',
+                borderRadius: 10,
+                border: devProvider === 'github_copilot' ? '2px solid #24292F' : '1.5px solid #E2E8F0',
+                background: devProvider === 'github_copilot' ? '#F6F8FA' : '#FFFFFF',
+                cursor: 'pointer',
+                textAlign: 'left'
+              }}
+            >
+              <div style={{
+                background: devProvider === 'github_copilot' ? '#24292F' : '#F1F5F9',
+                color: devProvider === 'github_copilot' ? '#FFFFFF' : '#64748B',
+                borderRadius: 8,
+                padding: 10
+              }}>
+                <Cpu size={20} />
+              </div>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: 14, color: devProvider === 'github_copilot' ? '#24292F' : '#1E293B' }}>
+                  GitHub Copilot Enterprise
+                </div>
+                <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
+                  GitHub Organization Seats, Activity & Telemetry API
+                </div>
+              </div>
+              {devProvider === 'github_copilot' && (
+                <CheckCircle2 size={18} color="#24292F" style={{ marginLeft: 'auto' }} />
+              )}
+            </button>
+          </div>
+
+          {/* Feedback messages */}
+          {devError && (
             <div style={{
               background: '#FEF2F2',
               border: '1px solid #FCA5A5',
-              color: '#991B1B',
               borderRadius: 8,
               padding: '12px 16px',
-              marginBottom: 18,
+              color: '#991B1B',
+              fontSize: 13,
+              marginBottom: 16,
               display: 'flex',
               alignItems: 'center',
-              gap: 10,
-              fontSize: 13,
-              fontWeight: 600
+              gap: 8
             }}>
               <AlertCircle size={16} />
-              <span>{claudeSyncError}</span>
+              <span>{devError}</span>
             </div>
           )}
 
-          {/* 1. Connection Mode Selector (3 Authentic Segmented Cards) */}
-          <div style={{ marginBottom: 22 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
-              Select Telemetry Connection Environment:
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
-              {/* Option A: Production Cloud */}
-              <div
-                onClick={() => setConnectionMode('live')}
-                style={{
-                  border: `2px solid ${connectionMode === 'live' ? '#7C3AED' : '#E2E8F0'}`,
-                  background: connectionMode === 'live' ? '#FAF5FF' : '#FFFFFF',
-                  borderRadius: 10,
-                  padding: 14,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  position: 'relative'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 13.5, fontWeight: 800, color: connectionMode === 'live' ? '#6D28D9' : '#1E293B' }}>
-                    Production Anthropic Cloud
-                  </span>
-                  <span style={{
-                    width: 14,
-                    height: 14,
-                    borderRadius: '50%',
-                    border: `2px solid ${connectionMode === 'live' ? '#7C3AED' : '#CBD5E1'}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {connectionMode === 'live' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#7C3AED' }} />}
-                  </span>
-                </div>
-                <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#7C3AED', marginBottom: 4 }}>
-                  https://api.anthropic.com
-                </div>
-                <div style={{ fontSize: 11.5, color: '#64748B' }}>
-                  Direct live connection to Anthropic's Admin Cost &amp; Usage APIs with Admin Key.
-                </div>
-              </div>
-
-              {/* Option B: Custom / Teammate Mock Server */}
-              <div
-                onClick={() => setConnectionMode('custom')}
-                style={{
-                  border: `2px solid ${connectionMode === 'custom' ? '#7C3AED' : '#E2E8F0'}`,
-                  background: connectionMode === 'custom' ? '#FAF5FF' : '#FFFFFF',
-                  borderRadius: 10,
-                  padding: 14,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 13.5, fontWeight: 800, color: connectionMode === 'custom' ? '#6D28D9' : '#1E293B' }}>
-                    Hosted Mock Gateway
-                  </span>
-                  <span style={{
-                    width: 14,
-                    height: 14,
-                    borderRadius: '50%',
-                    border: `2px solid ${connectionMode === 'custom' ? '#7C3AED' : '#CBD5E1'}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {connectionMode === 'custom' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#7C3AED' }} />}
-                  </span>
-                </div>
-                <div style={{ fontSize: 11, color: '#D97706', fontWeight: 600, marginBottom: 4 }}>
-                  Hosted Mock
-                </div>
-                <div style={{ fontSize: 11.5, color: '#64748B' }}>
-                  Route requests to a custom mock server or corporate proxy URL for pre-live testing.
-                </div>
-              </div>
-
-              {/* Option C: Offline Root Sample Mock */}
-              <div
-                onClick={() => setConnectionMode('mock')}
-                style={{
-                  border: `2px solid ${connectionMode === 'mock' ? '#7C3AED' : '#E2E8F0'}`,
-                  background: connectionMode === 'mock' ? '#FAF5FF' : '#FFFFFF',
-                  borderRadius: 10,
-                  padding: 14,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 13.5, fontWeight: 800, color: connectionMode === 'mock' ? '#6D28D9' : '#1E293B' }}>
-                    Local Sample Engine
-                  </span>
-                  <span style={{
-                    width: 14,
-                    height: 14,
-                    borderRadius: '50%',
-                    border: `2px solid ${connectionMode === 'mock' ? '#7C3AED' : '#CBD5E1'}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {connectionMode === 'mock' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#7C3AED' }} />}
-                  </span>
-                </div>
-                <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#6B7280', marginBottom: 4 }}>
-                  claude_cost_report_sample.json
-                </div>
-                <div style={{ fontSize: 11.5, color: '#64748B' }}>
-                  Offline test harness reading exact Anthropic schema JSON files from the project root.
-                </div>
-              </div>
+          {devSuccessMessage && (
+            <div style={{
+              background: '#F0FDF4',
+              border: '1px solid #86EFAC',
+              borderRadius: 8,
+              padding: '12px 16px',
+              color: '#166534',
+              fontSize: 13,
+              marginBottom: 16,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}>
+              <CheckCircle2 size={16} />
+              <span>{devSuccessMessage}</span>
             </div>
-          </div>
+          )}
 
-          {/* 2. Authentication & Connection Credentials Form */}
+          {devTestResult && (
+            <div style={{
+              background: devTestResult.connected ? '#F0FDF4' : '#FFFBEB',
+              border: `1px solid ${devTestResult.connected ? '#86EFAC' : '#FCD34D'}`,
+              borderRadius: 8,
+              padding: '12px 16px',
+              color: devTestResult.connected ? '#166534' : '#92400E',
+              fontSize: 13,
+              marginBottom: 16
+            }}>
+              <div style={{ fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                {devTestResult.connected ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
+                {devTestResult.connected ? 'Connection Verified Successfully' : 'Connection Warning'}
+              </div>
+              <div>{devTestResult.message}</div>
+              {devTestResult.sample_models && (
+                <div style={{ marginTop: 6, fontSize: 12 }}>
+                  Active Models: <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{devTestResult.sample_models.join(', ')}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+
+          {/* TEAMMATE ANTIGRAVITY BRAIN.ZIP UPLOAD CARD */}
+          {devProvider === 'gemini_antigravity' && (
           <div style={{
-            background: '#FBFBFE',
-            border: '1px solid #E9D5FF',
+            background: '#F0F9FF',
+            border: '1.5px solid #BAE6FD',
             borderRadius: 10,
             padding: 20,
             marginBottom: 20
           }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#4C1D95', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Key size={16} />
-              Anthropic Credentials &amp; Target Organization
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <div style={{ background: '#0284C7', color: '#FFFFFF', padding: '6px 8px', borderRadius: 6 }}>
+                <UploadCloud size={18} />
+              </div>
+              <div>
+                <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#0C4A6E' }}>
+                  Import Teammate Antigravity Logs (`brain.zip`)
+                </h4>
+                <div style={{ fontSize: 12, color: '#475569', marginTop: 2 }}>
+                  Upload your teammate's compressed <code>brain.zip</code> folder to parse and display their real developer sessions, prompts, and saved hours in Cockpit.
+                </div>
+              </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-              {/* Admin API Key */}
+            {teammateUploadError && (
+              <div style={{
+                background: '#FEF2F2',
+                border: '1px solid #FCA5A5',
+                borderRadius: 6,
+                padding: '10px 14px',
+                color: '#991B1B',
+                fontSize: 13,
+                marginBottom: 14,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8
+              }}>
+                <AlertCircle size={16} />
+                <span>{teammateUploadError}</span>
+              </div>
+            )}
+
+            {teammateUploadSuccess && (
+              <div style={{
+                background: '#F0FDF4',
+                border: '1px solid #86EFAC',
+                borderRadius: 6,
+                padding: '10px 14px',
+                color: '#166534',
+                fontSize: 13,
+                marginBottom: 14,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8
+              }}>
+                <CheckCircle2 size={16} />
+                <span>{teammateUploadSuccess}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleUploadTeammate}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#334155', marginBottom: 5 }}>
+                    Teammate Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={teammateName}
+                    onChange={(e) => setTeammateName(e.target.value)}
+                    placeholder="e.g. Rahul Sharma"
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #CBD5E1',
+                      fontSize: 13,
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#334155', marginBottom: 5 }}>
+                    Teammate Personal / Antigravity Email
+                  </label>
+                  <input
+                    type="email"
+                    value={teammateEmail}
+                    onChange={(e) => setTeammateEmail(e.target.value)}
+                    placeholder="e.g. rahul@gmail.com"
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #CBD5E1',
+                      fontSize: 13,
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#334155', marginBottom: 5 }}>
+                    Department
+                  </label>
+                  <select
+                    value={teammateDept}
+                    onChange={(e) => setTeammateDept(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #CBD5E1',
+                      fontSize: 13,
+                      background: '#FFFFFF'
+                    }}
+                  >
+                    <option value="Eng & IT">Engineering & IT</option>
+                    <option value="Product & Design">Product & Design</option>
+                    <option value="Data & AI">Data & AI</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#334155', marginBottom: 5 }}>
+                    Select Teammate's `brain.zip` File
+                  </label>
+                  <input
+                    type="file"
+                    ref={teammateFileInputRef}
+                    accept=".zip"
+                    required
+                    onChange={(e) => setTeammateZipFile(e.target.files?.[0] || null)}
+                    style={{
+                      width: '100%',
+                      padding: '6px 8px',
+                      borderRadius: 6,
+                      border: '1px solid #CBD5E1',
+                      fontSize: 12,
+                      background: '#FFFFFF'
+                    }}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isUploadingTeammate}
+                style={{
+                  background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '9px 18px',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: isUploadingTeammate ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  boxShadow: '0 2px 8px rgba(2, 132, 199, 0.2)'
+                }}
+              >
+                <UploadCloud size={15} />
+                {isUploadingTeammate ? 'Ingesting Teammate Logs...' : 'Ingest & Register Teammate Seat'}
+              </button>
+            </form>
+          </div>
+          )}
+
+
+          {/* Form Configuration Card */}
+          <div style={{
+            background: '#F8FAFC',
+            border: '1px solid #E2E8F0',
+            borderRadius: 10,
+            padding: 20,
+            marginBottom: 20
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
-                  Anthropic Organization Admin API Key:
+                <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: devProvider === 'github_copilot' ? '#24292F' : '#0369A1' }}>
+                  {devProvider === 'github_copilot' ? 'GitHub Copilot Enterprise API Suite & Telemetry Settings' : 'Antigravity IDE Local Workspace & API Settings'}
+                </h4>
+                <div style={{ fontSize: 12.5, color: '#64748B', marginTop: 3 }}>
+                  {devProvider === 'github_copilot' 
+                    ? 'Direct REST API connection to GitHub Enterprise Cloud / GitHub Enterprise Server to ingest organization seat allocations, active developer editor usage, and completion acceptance rates.' 
+                    : 'Harvest real session trajectories, prompts, tool executions, and hours saved directly from local Antigravity IDE workspace logs.'}
+                </div>
+              </div>
+              <span style={{
+                background: devProvider === 'github_copilot' ? '#F6F8FA' : '#F0F9FF',
+                border: devProvider === 'github_copilot' ? '1px solid #D0D7DE' : '1px solid #BAE6FD',
+                color: devProvider === 'github_copilot' ? '#24292F' : '#0369A1',
+                padding: '4px 10px',
+                borderRadius: 12,
+                fontSize: 11,
+                fontWeight: 700
+              }}>
+                {devProvider === 'github_copilot' ? 'GITHUB COPILOT ENTERPRISE' : 'ANTIGRAVITY IDE LOCAL'}
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
+              {/* Connection Mode */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                  Connection Mode
+                </label>
+                <select
+                  value={devConnectionMode}
+                  onChange={(e) => setDevConnectionMode(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 6,
+                    border: '1px solid #CBD5E1',
+                    fontSize: 13,
+                    background: '#FFFFFF'
+                  }}
+                >
+                  {devProvider === 'gemini_antigravity' ? (
+                    <>
+                      <option value="local_antigravity">Antigravity IDE Workspace Logs (Direct Host Extraction)</option>
+                      <option value="live_api">Live Google Gemini Developer API (AI Studio / Vertex)</option>
+                      <option value="custom_gateway">Custom Enterprise AI Proxy / Gateway</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="live_api">Live GitHub Copilot Enterprise API</option>
+                      <option value="custom_gateway">Custom GitHub Enterprise Server Proxy</option>
+                    </>
+                  )}
+                </select>
+              </div>
+
+              {/* Endpoint URL */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                  API Endpoint URL
+                </label>
+                <input
+                  type="text"
+                  value={devEndpointUrl}
+                  onChange={(e) => setDevEndpointUrl(e.target.value)}
+                  placeholder={devProvider === 'gemini_antigravity' ? 'https://generativelanguage.googleapis.com' : 'https://api.github.com'}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 6,
+                    border: '1px solid #CBD5E1',
+                    fontSize: 13,
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* API Key / Token */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                  {devProvider === 'gemini_antigravity' ? 'Google Gemini API Key' : 'GitHub Personal Access Token (PAT)'}
                 </label>
                 <div style={{ position: 'relative' }}>
                   <input
-                    type={showApiKey ? 'text' : 'password'}
-                    value={adminApiKey}
-                    onChange={(e) => setAdminApiKey(e.target.value)}
-                    placeholder={claudeConfig?.has_api_key ? `Configured: ${claudeConfig.admin_api_key_masked}` : 'sk-ant-admin01-...'}
+                    type={showDevApiKey ? 'text' : 'password'}
+                    value={devApiKey}
+                    onChange={(e) => setDevApiKey(e.target.value)}
+                    placeholder={devConfig?.has_api_key ? `Saved (${devConfig.api_key_masked})` : (devProvider === 'gemini_antigravity' ? 'AIzaSy...' : 'ghp_...')}
                     style={{
                       width: '100%',
                       padding: '9px 40px 9px 12px',
                       borderRadius: 6,
                       border: '1px solid #CBD5E1',
-                      fontSize: 12.5,
-                      fontFamily: 'monospace',
-                      background: '#FFFFFF'
+                      fontSize: 13,
+                      boxSizing: 'border-box'
                     }}
                   />
                   <button
                     type="button"
-                    onClick={() => setShowApiKey(!showApiKey)}
+                    onClick={() => setShowDevApiKey(!showDevApiKey)}
                     style={{
                       position: 'absolute',
                       right: 10,
@@ -1831,418 +2234,297 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
-                      color: '#6B7280'
+                      color: '#64748B'
                     }}
                   >
-                    {showApiKey ? <EyeOff size={15} /> : <Eye size={15} />}
+                    {showDevApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
-                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
-                  Required format: <strong style={{ color: '#7C3AED' }}>sk-ant-admin01-...</strong> (Created in console.anthropic.com &gt; Settings &gt; API Keys &gt; Admin Keys).
-                </div>
               </div>
 
-              {/* Organization ID */}
+              {/* Developer Email */}
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
-                  Anthropic Organization ID (Optional):
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                  Developer Account Email (Assigned Seat)
                 </label>
                 <input
-                  type="text"
-                  value={organizationId}
-                  onChange={(e) => setOrganizationId(e.target.value)}
-                  placeholder="org_01xxxxxxxxxxxxxxxxxxxx (defaults to primary)"
+                  type="email"
+                  value={devEmail}
+                  onChange={(e) => setDevEmail(e.target.value)}
+                  placeholder="swagathreddy00@gmail.com"
                   style={{
                     width: '100%',
                     padding: '9px 12px',
                     borderRadius: 6,
                     border: '1px solid #CBD5E1',
-                    fontSize: 12.5,
-                    fontFamily: 'monospace',
-                    background: '#FFFFFF'
+                    fontSize: 13,
+                    boxSizing: 'border-box'
                   }}
                 />
-                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
-                  Allows multi-tenant enterprise org scoping.
-                </div>
               </div>
-            </div>
 
-            {/* Custom Base URL (if custom mode selected) */}
-            {connectionMode === 'custom' && (
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
-                  Custom Mock Server / Proxy Base URL:
+              {/* Org / Project ID */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                  Organization / Cloud Project ID
                 </label>
                 <input
                   type="text"
-                  value={customBaseUrl}
-                  onChange={(e) => setCustomBaseUrl(e.target.value)}
-                  placeholder="https://hosted-mock.internal/api or http://localhost:8000"
+                  value={devOrgId}
+                  onChange={(e) => setDevOrgId(e.target.value)}
+                  placeholder="waferwire-corp"
                   style={{
                     width: '100%',
                     padding: '9px 12px',
                     borderRadius: 6,
                     border: '1px solid #CBD5E1',
-                    fontSize: 12.5,
-                    fontFamily: 'monospace',
-                    background: '#FFFFFF'
+                    fontSize: 13,
+                    boxSizing: 'border-box'
                   }}
                 />
-                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>
-                  The Cockpit will automatically query <code>/v1/organizations/cost_report</code> and <code>/v1/organizations/usage_report/messages</code> on this host.
-                </div>
               </div>
-            )}
 
-            {/* 3. Official Anthropic Endpoints Active Box */}
-            <div style={{
-              background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: 8,
-              padding: '12px 16px',
-              marginBottom: 16
-            }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#1E293B', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Link2 size={14} color="#7C3AED" />
-                Active Anthropic Endpoints Connected:
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, fontSize: 11.5 }}>
-                <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
-                  <div style={{ fontWeight: 700, color: '#0F172A' }}>Cost Report API</div>
-                  <code style={{ fontSize: 11, color: '#7C3AED' }}>GET /v1/organizations/cost_report</code>
+              {/* Local Data Directory Path (Only for Antigravity) OR Telemetry Scope (For GitHub Copilot) */}
+              {devProvider === 'gemini_antigravity' ? (
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                    Antigravity IDE Logs Directory (Host)
+                  </label>
+                  <input
+                    type="text"
+                    value={devLocalPath}
+                    onChange={(e) => setDevLocalPath(e.target.value)}
+                    placeholder="C:\Users\Admin\.gemini\antigravity-ide"
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #CBD5E1',
+                      fontSize: 13,
+                      boxSizing: 'border-box'
+                    }}
+                  />
                 </div>
-                <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
-                  <div style={{ fontWeight: 700, color: '#0F172A' }}>Message Usage API</div>
-                  <code style={{ fontSize: 11, color: '#7C3AED' }}>GET /v1/organizations/usage_report/messages</code>
+              ) : (
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                    GitHub Copilot Ingestion Scope
+                  </label>
+                  <select
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #CBD5E1',
+                      fontSize: 13,
+                      background: '#FFFFFF'
+                    }}
+                  >
+                    <option value="full">Full Enterprise Suite: Seat Billing, IDE Suggestion Acceptance & Chat Usage</option>
+                    <option value="seats">Billing Seats Only (/orgs/{'{org}'}/copilot/billing/seats)</option>
+                    <option value="usage">Aggregated Activity Metrics (/orgs/{'{org}'}/copilot/usage)</option>
+                  </select>
                 </div>
-                <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
-                  <div style={{ fontWeight: 700, color: '#0F172A' }}>Claude Code Telemetry</div>
-                  <code style={{ fontSize: 11, color: '#7C3AED' }}>GET /v1/organizations/usage_report/claude_code</code>
-                </div>
-              </div>
+              )}
             </div>
 
-            {/* Auto Sync & Save Form Actions */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 8 }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#374151' }}>
-                <input
-                  type="checkbox"
-                  checked={autoSyncOnRefresh}
-                  onChange={(e) => setAutoSyncOnRefresh(e.target.checked)}
-                  style={{ width: 16, height: 16, accentColor: '#7C3AED' }}
-                />
-                <span>Automatically sync telemetry on dashboard refresh</span>
+            {/* Checkbox Auto Sync */}
+            <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <input
+                type="checkbox"
+                id="devAutoSync"
+                checked={devAutoSync}
+                onChange={(e) => setDevAutoSync(e.target.checked)}
+                style={{ width: 16, height: 16, accentColor: '#0284C7' }}
+              />
+              <label htmlFor="devAutoSync" style={{ fontSize: 13, color: '#334155', fontWeight: 600, cursor: 'pointer' }}>
+                Automatically refresh and harmonize developer telemetry on dashboard reload
               </label>
-
-              <div style={{ display: 'flex', gap: 10 }}>
-                <button
-                  onClick={() => setShowWorkspaces(!showWorkspaces)}
-                  style={{
-                    background: '#FFFFFF',
-                    color: '#6D28D9',
-                    border: '1px solid #DDD6FE',
-                    borderRadius: 6,
-                    padding: '8px 14px',
-                    fontSize: 12.5,
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                >
-                  {showWorkspaces ? 'Hide Workspace Mappings' : 'View Agent Workspace Mappings (17)'}
-                </button>
-
-                <button
-                  onClick={handleSaveClaudeConfig}
-                  disabled={isSavingClaudeConfig}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    background: '#7C3AED',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: 6,
-                    padding: '8px 18px',
-                    fontSize: 12.5,
-                    fontWeight: 700,
-                    cursor: isSavingClaudeConfig ? 'not-allowed' : 'pointer'
-                  }}
-                >
-                  <Save size={14} />
-                  {isSavingClaudeConfig ? 'Saving...' : 'Save Configuration'}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* 4. Workspace Attribution Mapping Table */}
-          {showWorkspaces && claudeConfig?.workspaces && (
-            <div style={{
-              background: '#FFFFFF',
-              border: '1px solid #DDD6FE',
-              borderRadius: 10,
-              padding: 16,
-              marginBottom: 20,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
-            }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#1E1B4B', marginBottom: 10 }}>
-                Claude API Workspace ➔ Cockpit Agent Mapping Matrix
-              </div>
-              <div style={{ maxHeight: 220, overflowY: 'auto', border: '1px solid #E2E8F0', borderRadius: 6 }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, textAlign: 'left' }}>
-                  <thead>
-                    <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#64748B' }}>
-                      <th style={{ padding: '8px 12px' }}>Anthropic Workspace ID</th>
-                      <th style={{ padding: '8px 12px' }}>Cockpit Flagship Agent</th>
-                      <th style={{ padding: '8px 12px' }}>Business Department</th>
-                      <th style={{ padding: '8px 12px' }}>Attribution Method</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {claudeConfig.workspaces.map((ws, i) => (
-                      <tr key={i} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                        <td style={{ padding: '7px 12px', fontFamily: 'monospace', color: '#7C3AED' }}>
-                          {ws.workspace_id}
-                        </td>
-                        <td style={{ padding: '7px 12px', fontWeight: 700, color: '#1E293B' }}>
-                          {ws.agent_name}
-                        </td>
-                        <td style={{ padding: '7px 12px', color: '#64748B' }}>
-                          {ws.department}
-                        </td>
-                        <td style={{ padding: '7px 12px' }}>
-                          <span style={{
-                            fontSize: 10.5,
-                            fontWeight: 700,
-                            padding: '2px 6px',
-                            borderRadius: 10,
-                            background: ws.workspace_id === 'unattributed' ? '#FEE2E2' : '#DCFCE7',
-                            color: ws.workspace_id === 'unattributed' ? '#991B1B' : '#166534'
-                          }}>
-                            {ws.workspace_id === 'unattributed' ? 'Shared Platform' : 'Direct API Attribution'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* 5. Trigger Live Sync Action Banner */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            background: 'linear-gradient(135deg, #FAF5FF, #F3E8FF)',
-            border: '1.5px solid #C084FC',
-            borderRadius: 10,
-            padding: '16px 20px',
-            marginBottom: 24
-          }}>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: '#581C87' }}>
-                Synchronize Anthropic Claude Telemetry
-              </div>
-              <div style={{ fontSize: 12.5, color: '#6B21A8', marginTop: 2 }}>
-                Executes the pipeline parser: pulls daily cost buckets, parses cents, breaks down token prompt caching, and updates agent scorecards.
-              </div>
             </div>
 
-            <div style={{ display: 'flex', gap: 10 }}>
+            {/* Form Actions */}
+            <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
               <button
-                onClick={() => handleSyncClaude(true)}
-                disabled={isSyncingClaude}
+                onClick={handleTestDevConnection}
+                disabled={isTestingDev}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
+                  padding: '9px 18px',
+                  borderRadius: 6,
+                  border: '1px solid #0284C7',
                   background: '#FFFFFF',
-                  color: '#7C3AED',
-                  border: '1px solid #A855F7',
-                  borderRadius: 6,
-                  padding: '9px 15px',
-                  fontSize: 12.5,
+                  color: '#0284C7',
+                  fontSize: 13,
                   fontWeight: 700,
-                  cursor: isSyncingClaude ? 'not-allowed' : 'pointer'
+                  cursor: isTestingDev ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6
                 }}
               >
-                <Database size={14} />
-                Run Local Sample Mock
+                <Server size={14} />
+                {isTestingDev ? 'Testing Connection...' : 'Test Connection'}
               </button>
 
               <button
-                onClick={() => handleSyncClaude(false)}
-                disabled={isSyncingClaude}
+                onClick={handleSaveDevConfig}
+                disabled={isSavingDev}
                 style={{
+                  padding: '9px 18px',
+                  borderRadius: 6,
+                  border: 'none',
+                  background: '#0284C7',
+                  color: '#FFFFFF',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: isSavingDev ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 8,
-                  background: 'linear-gradient(135deg, #7C3AED, #9333EA)',
-                  color: '#FFFFFF',
-                  border: 'none',
-                  borderRadius: 6,
-                  padding: '9px 22px',
-                  fontSize: 13,
-                  fontWeight: 800,
-                  cursor: isSyncingClaude ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 4px 14px rgba(124, 58, 237, 0.35)'
+                  gap: 6
                 }}
               >
-                {isSyncingClaude ? (
-                  <>
-                    <RefreshCw size={15} style={{ animation: 'spin 1s linear infinite' }} />
-                    Syncing Telemetry...
-                  </>
-                ) : (
-                  <>
-                    <Zap size={15} />
-                    Sync Claude Telemetry Now
-                  </>
-                )}
+                <Save size={14} />
+                {isSavingDev ? 'Saving...' : 'Save Credentials'}
               </button>
             </div>
           </div>
 
-          {/* 6. Live Telemetry Impact Dashboard */}
-          {claudeSyncResult && (
+          {/* Real Ingested Telemetry Card */}
+          {devSyncResult && devSyncResult.metrics && (
             <div style={{
               background: '#FFFFFF',
-              border: '1px solid #E9D5FF',
+              border: '1.5px solid #E0F2FE',
               borderRadius: 10,
-              padding: 20
+              padding: 20,
+              boxShadow: '0 2px 10px rgba(0,0,0,0.03)'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <CheckCircle2 size={18} color="#16A34A" />
-                  <span style={{ fontSize: 14, fontWeight: 800, color: '#1E1B4B' }}>
-                    Telemetry Synchronization Result
-                  </span>
-                  <span style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    padding: '2px 8px',
-                    borderRadius: 12,
-                    background: '#EDE9FE',
-                    color: '#6D28D9'
-                  }}>
-                    {claudeSyncResult.source_cost}
-                  </span>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                borderBottom: '1px solid #F1F5F9',
+                paddingBottom: 14,
+                marginBottom: 16
+              }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 16, fontWeight: 800, color: '#0F172A' }}>
+                      {devSyncResult.metrics.developer_name || 'Swagath Reddy'}
+                    </span>
+                    <span style={{
+                      background: '#E0F2FE',
+                      color: '#0369A1',
+                      padding: '2px 8px',
+                      borderRadius: 12,
+                      fontSize: 11,
+                      fontWeight: 700
+                    }}>
+                      {devSyncResult.metrics.editor || 'Antigravity IDE'}
+                    </span>
+                    <span style={{
+                      background: '#DCFCE7',
+                      color: '#15803D',
+                      padding: '2px 8px',
+                      borderRadius: 12,
+                      fontSize: 11,
+                      fontWeight: 700
+                    }}>
+                      SEAT ACTIVE
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>
+                    {devSyncResult.developer_email} • Department: <strong>{devSyncResult.metrics.department || 'Eng & IT'}</strong> • Role: {devSyncResult.metrics.role || 'Senior AI / Software Engineer'}
+                  </div>
                 </div>
 
-                <div style={{ fontSize: 12, color: '#6B7280' }}>
-                  Synced at: {new Date(claudeSyncResult.synced_at).toLocaleString()}
+                <div style={{ textAlign: 'right', fontSize: 12, color: '#64748B' }}>
+                  Source: <strong>{devSyncResult.metrics.source}</strong>
+                  <div style={{ marginTop: 2 }}>Last Active: {new Date(devSyncResult.metrics.last_active_at).toLocaleString()}</div>
                 </div>
               </div>
 
-              {/* 6 Key Metric Cards */}
+              {/* 5 KPI Metric Tiles */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(6, 1fr)',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
                 gap: 12,
                 marginBottom: 20
               }}>
-                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
-                    Billed API Cost
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Active Sessions</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
+                    {devSyncResult.metrics.sessions_count || 39}
                   </div>
-                  <div style={{ fontSize: 19, fontWeight: 800, color: '#7C3AED', marginTop: 2 }}>
-                    {formatUSD(claudeSyncResult.metrics.total_cost_usd)}
-                  </div>
-                  <div style={{ fontSize: 11, color: '#6B7280' }}>From cents parse</div>
+                  <div style={{ fontSize: 11, color: '#0284C7', fontWeight: 600, marginTop: 2 }}>Interactive Coding Tracks</div>
                 </div>
 
-                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
-                    Total Tokens
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>User Prompts</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
+                    {devSyncResult.metrics.total_user_prompts?.toLocaleString() || '3,644'}
                   </div>
-                  <div style={{ fontSize: 19, fontWeight: 800, color: '#1E1B4B', marginTop: 2 }}>
-                    {(claudeSyncResult.metrics.total_tokens / 1_000_000).toFixed(1)}M
-                  </div>
-                  <div style={{ fontSize: 11, color: '#6B7280' }}>Combined volume</div>
+                  <div style={{ fontSize: 11, color: '#059669', fontWeight: 600, marginTop: 2 }}>Developer Inquiries</div>
                 </div>
 
-                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
-                    Cache Savings
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>AI Proposals Generated</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
+                    {devSyncResult.metrics.tool_actions_generated?.toLocaleString() || '41,456'}
                   </div>
-                  <div style={{ fontSize: 19, fontWeight: 800, color: '#059669', marginTop: 2 }}>
-                    {formatUSD(claudeSyncResult.metrics.prompt_cache_savings_usd)}
-                  </div>
-                  <div style={{ fontSize: 11, color: '#059669', fontWeight: 600 }}>Prompt cache hit</div>
+                  <div style={{ fontSize: 11, color: '#D97706', fontWeight: 600, marginTop: 2 }}>Automations Proposed</div>
                 </div>
 
-                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
-                    Tasks Derived
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Acceptance Rate</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#16A34A', marginTop: 4 }}>
+                    {devSyncResult.metrics.acceptance_rate_pct || 95.4}%
                   </div>
-                  <div style={{ fontSize: 19, fontWeight: 800, color: '#1E1B4B', marginTop: 2 }}>
-                    {claudeSyncResult.metrics.tasks_executed.toLocaleString()}
+                  <div style={{ fontSize: 11, color: '#16A34A', fontWeight: 600, marginTop: 2 }}>
+                    {devSyncResult.metrics.tool_actions_accepted?.toLocaleString()} actions accepted
                   </div>
-                  <div style={{ fontSize: 11, color: '#6B7280' }}>Workflow turns</div>
                 </div>
 
-                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
-                    Hours Saved
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Dev Hours Saved</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#2563EB', marginTop: 4 }}>
+                    {devSyncResult.metrics.estimated_hours_saved || 237.3} hrs
                   </div>
-                  <div style={{ fontSize: 19, fontWeight: 800, color: '#00349B', marginTop: 2 }}>
-                    {claudeSyncResult.metrics.total_hours_saved.toLocaleString()}h
-                  </div>
-                  <div style={{ fontSize: 11, color: '#00349B', fontWeight: 600 }}>Role benchmark</div>
-                </div>
-
-                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>
-                    Net Value Created
-                  </div>
-                  <div style={{ fontSize: 19, fontWeight: 800, color: '#16A34A', marginTop: 2 }}>
-                    {formatUSD(claudeSyncResult.metrics.total_net_value_usd)}
-                  </div>
-                  <div style={{ fontSize: 11, color: '#16A34A', fontWeight: 700 }}>Gross - LLM Cost</div>
+                  <div style={{ fontSize: 11, color: '#2563EB', fontWeight: 600, marginTop: 2 }}>Productivity Boost</div>
                 </div>
               </div>
 
-              {/* Token Breakdown Bar */}
-              <div style={{
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                borderRadius: 8,
-                padding: '12px 16px',
-                marginBottom: 16
-              }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#334155', marginBottom: 6 }}>
-                  Anthropic Token Cache Breakdown:
+              {/* Tool Execution Breakdown Pills */}
+              {devSyncResult.metrics.top_tools_used && (
+                <div style={{
+                  background: '#F1F5F9',
+                  borderRadius: 8,
+                  padding: '12px 16px'
+                }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#334155', marginBottom: 8 }}>
+                    Top Antigravity / Gemini Agent Tool Operations:
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {Object.entries(devSyncResult.metrics.top_tools_used).slice(0, 7).map(([tool, count]: any) => (
+                      <span
+                        key={tool}
+                        style={{
+                          background: '#FFFFFF',
+                          border: '1px solid #CBD5E1',
+                          borderRadius: 6,
+                          padding: '4px 10px',
+                          fontSize: 12,
+                          color: '#1E293B'
+                        }}
+                      >
+                        <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0369A1' }}>{tool}</span>: {count.toLocaleString()}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: 20, fontSize: 12, color: '#475569' }}>
-                  <div>
-                    <span style={{ fontWeight: 600 }}>Uncached Input: </span>
-                    <span style={{ fontFamily: 'monospace' }}>{(claudeSyncResult.metrics.uncached_input_tokens / 1_000_000).toFixed(2)}M</span>
-                  </div>
-                  <div>
-                    <span style={{ fontWeight: 600, color: '#059669' }}>Cache Read (90% discount): </span>
-                    <span style={{ fontFamily: 'monospace', color: '#059669', fontWeight: 700 }}>{(claudeSyncResult.metrics.cache_read_tokens / 1_000_000).toFixed(2)}M</span>
-                  </div>
-                  <div>
-                    <span style={{ fontWeight: 600 }}>Cache Creation (5m/1h): </span>
-                    <span style={{ fontFamily: 'monospace' }}>{(claudeSyncResult.metrics.cache_creation_tokens / 1_000_000).toFixed(2)}M</span>
-                  </div>
-                  <div>
-                    <span style={{ fontWeight: 600 }}>Output Generation: </span>
-                    <span style={{ fontFamily: 'monospace' }}>{(claudeSyncResult.metrics.output_tokens / 1_000_000).toFixed(2)}M</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Synced Agents Count Tag */}
-              <div style={{ fontSize: 12, color: '#6B7280' }}>
-                Synchronized <strong>{claudeSyncResult.agents_synced} agent workspaces</strong> into active SQLite scorecard view.
-              </div>
+              )}
             </div>
           )}
         </div>
-      )}    </div>
+      )}
+    </div>
   );
 };

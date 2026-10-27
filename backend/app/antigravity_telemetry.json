@@ -1,0 +1,508 @@
+{
+  "developer_name": "Swagath Reddy",
+  "developer_email": "swagathreddy00@gmail.com",
+  "department": "Eng & IT",
+  "role": "Senior AI / Software Engineer",
+  "editor": "Antigravity IDE",
+  "status": "ACTIVE",
+  "lifetime": {
+    "sessions_count": 39,
+    "total_user_prompts": 3650,
+    "tool_actions_generated": 41587,
+    "tool_actions_accepted": 39673,
+    "acceptance_rate_pct": 95.4,
+    "estimated_hours_saved": 238.0,
+    "top_tools_used": {
+      "grep_search": 4805,
+      "view_file": 12431,
+      "list_dir": 793,
+      "run_command": 14165,
+      "manage_task": 2822,
+      "write_to_file": 2218,
+      "browser_subagent": 34,
+      "replace_file_content": 3110,
+      "ask_question": 10,
+      "read_url_content": 13,
+      "schedule": 852,
+      "search_web": 98,
+      "multi_replace_file_content": 171,
+      "kill_task": 1,
+      "generate_image": 14,
+      "ask_permission": 45,
+      "list_permissions": 5
+    }
+  },
+  "monthly_breakdown": {
+    "2026-10": {
+      "month": "2026-10",
+      "sessions": 9,
+      "prompts": 1525,
+      "tools": 23849,
+      "accepted": 22751,
+      "acceptance_rate": 95.4,
+      "hours_saved": 136.5,
+      "tools_breakdown": {
+        "grep_search": 2158,
+        "view_file": 5846,
+        "list_dir": 237,
+        "run_command": 10627,
+        "manage_task": 2263,
+        "write_to_file": 999,
+        "browser_subagent": 21,
+        "replace_file_content": 1062,
+        "ask_question": 8,
+        "read_url_content": 7,
+        "schedule": 534,
+        "search_web": 56,
+        "multi_replace_file_content": 29,
+        "kill_task": 1,
+        "generate_image": 1
+      }
+    },
+    "2026-09": {
+      "month": "2026-09",
+      "sessions": 6,
+      "prompts": 361,
+      "tools": 2341,
+      "accepted": 2233,
+      "acceptance_rate": 95.4,
+      "hours_saved": 13.4,
+      "tools_breakdown": {
+        "run_command": 548,
+        "manage_task": 264,
+        "schedule": 49,
+        "write_to_file": 108,
+        "view_file": 876,
+        "list_dir": 55,
+        "grep_search": 287,
+        "search_web": 1,
+        "replace_file_content": 149,
+        "multi_replace_file_content": 4
+      }
+    },
+    "2026-08": {
+      "month": "2026-08",
+      "sessions": 11,
+      "prompts": 798,
+      "tools": 8596,
+      "accepted": 8200,
+      "acceptance_rate": 95.4,
+      "hours_saved": 49.2,
+      "tools_breakdown": {
+        "run_command": 1929,
+        "list_dir": 196,
+        "view_file": 3088,
+        "write_to_file": 716,
+        "replace_file_content": 908,
+        "manage_task": 108,
+        "schedule": 196,
+        "grep_search": 1336,
+        "multi_replace_file_content": 83,
+        "ask_question": 1,
+        "search_web": 10,
+        "browser_subagent": 13,
+        "generate_image": 5,
+        "ask_permission": 2,
+        "read_url_content": 5
+      }
+    },
+    "2026-07": {
+      "month": "2026-07",
+      "sessions": 8,
+      "prompts": 879,
+      "tools": 5713,
+      "accepted": 5450,
+      "acceptance_rate": 95.4,
+      "hours_saved": 32.7,
+      "tools_breakdown": {
+        "list_dir": 158,
+        "grep_search": 946,
+        "view_file": 2286,
+        "write_to_file": 318,
+        "replace_file_content": 877,
+        "multi_replace_file_content": 48,
+        "run_command": 867,
+        "schedule": 28,
+        "search_web": 22,
+        "manage_task": 109,
+        "generate_image": 8,
+        "ask_permission": 43,
+        "list_permissions": 1,
+        "ask_question": 1,
+        "read_url_content": 1
+      }
+    },
+    "2026-06": {
+      "month": "2026-06",
+      "sessions": 5,
+      "prompts": 87,
+      "tools": 1088,
+      "accepted": 1037,
+      "acceptance_rate": 95.4,
+      "hours_saved": 6.2,
+      "tools_breakdown": {
+        "list_permissions": 4,
+        "list_dir": 147,
+        "run_command": 194,
+        "manage_task": 78,
+        "view_file": 335,
+        "write_to_file": 77,
+        "replace_file_content": 114,
+        "grep_search": 78,
+        "multi_replace_file_content": 7,
+        "search_web": 9,
+        "schedule": 45
+      }
+    }
+  },
+  "recent_sessions": [
+    {
+      "session_id": "3a83fad0...",
+      "full_id": "3a83fad0-04e8-467e-97d7-67595e28043e",
+      "date": "2026-10-27 12:48",
+      "month": "2026-10",
+      "prompts_count": 11,
+      "tools_count": 138,
+      "hours_saved": 0.79,
+      "top_tools": [
+        [
+          "view_file",
+          60
+        ],
+        [
+          "run_command",
+          34
+        ],
+        [
+          "grep_search",
+          12
+        ]
+      ]
+    },
+    {
+      "session_id": "48abdbc2...",
+      "full_id": "48abdbc2-6d83-4681-b7ff-cb34bafedefa",
+      "date": "2026-10-27 12:48",
+      "month": "2026-10",
+      "prompts_count": 177,
+      "tools_count": 1748,
+      "hours_saved": 10.0,
+      "top_tools": [
+        [
+          "run_command",
+          1221
+        ],
+        [
+          "write_to_file",
+          218
+        ],
+        [
+          "view_file",
+          132
+        ]
+      ]
+    },
+    {
+      "session_id": "b7012538...",
+      "full_id": "b7012538-456f-4afd-84af-d360698e83ed",
+      "date": "2026-10-23 14:19",
+      "month": "2026-10",
+      "prompts_count": 82,
+      "tools_count": 1755,
+      "hours_saved": 10.04,
+      "top_tools": [
+        [
+          "run_command",
+          851
+        ],
+        [
+          "view_file",
+          380
+        ],
+        [
+          "manage_task",
+          230
+        ]
+      ]
+    },
+    {
+      "session_id": "817a8d77...",
+      "full_id": "817a8d77-1ced-4dce-bf26-54a25797311c",
+      "date": "2026-10-21 11:19",
+      "month": "2026-10",
+      "prompts_count": 269,
+      "tools_count": 5970,
+      "hours_saved": 34.17,
+      "top_tools": [
+        [
+          "run_command",
+          4214
+        ],
+        [
+          "manage_task",
+          667
+        ],
+        [
+          "write_to_file",
+          543
+        ]
+      ]
+    },
+    {
+      "session_id": "8ce7c3f4...",
+      "full_id": "8ce7c3f4-62a9-4426-b369-5a791582f12b",
+      "date": "2026-10-19 16:35",
+      "month": "2026-10",
+      "prompts_count": 1,
+      "tools_count": 3,
+      "hours_saved": 0.01,
+      "top_tools": [
+        [
+          "view_file",
+          2
+        ],
+        [
+          "list_dir",
+          1
+        ]
+      ]
+    },
+    {
+      "session_id": "03a4e5ea...",
+      "full_id": "03a4e5ea-2f54-41d2-b3a2-e8dc1e16172e",
+      "date": "2026-10-16 11:27",
+      "month": "2026-10",
+      "prompts_count": 18,
+      "tools_count": 224,
+      "hours_saved": 1.28,
+      "top_tools": [
+        [
+          "run_command",
+          129
+        ],
+        [
+          "view_file",
+          60
+        ],
+        [
+          "replace_file_content",
+          11
+        ]
+      ]
+    },
+    {
+      "session_id": "c00e19fb...",
+      "full_id": "c00e19fb-5603-4b9b-9587-31f03ae34f02",
+      "date": "2026-10-13 14:15",
+      "month": "2026-10",
+      "prompts_count": 28,
+      "tools_count": 76,
+      "hours_saved": 0.43,
+      "top_tools": [
+        [
+          "run_command",
+          45
+        ],
+        [
+          "view_file",
+          12
+        ],
+        [
+          "replace_file_content",
+          10
+        ]
+      ]
+    },
+    {
+      "session_id": "a9ea8561...",
+      "full_id": "a9ea8561-d099-4b28-a4d5-d27798485ac3",
+      "date": "2026-10-12 18:49",
+      "month": "2026-10",
+      "prompts_count": 259,
+      "tools_count": 3957,
+      "hours_saved": 22.64,
+      "top_tools": [
+        [
+          "view_file",
+          1462
+        ],
+        [
+          "run_command",
+          1179
+        ],
+        [
+          "grep_search",
+          627
+        ]
+      ]
+    },
+    {
+      "session_id": "9e10eb8c...",
+      "full_id": "9e10eb8c-e646-4b4b-b44b-86611bed0678",
+      "date": "2026-10-05 15:39",
+      "month": "2026-10",
+      "prompts_count": 680,
+      "tools_count": 9978,
+      "hours_saved": 57.11,
+      "top_tools": [
+        [
+          "view_file",
+          3483
+        ],
+        [
+          "run_command",
+          2954
+        ],
+        [
+          "grep_search",
+          1345
+        ]
+      ]
+    },
+    {
+      "session_id": "015a4d53...",
+      "full_id": "015a4d53-6df6-417c-9785-f3a643c250a3",
+      "date": "2026-09-22 18:38",
+      "month": "2026-09",
+      "prompts_count": 7,
+      "tools_count": 29,
+      "hours_saved": 0.16,
+      "top_tools": [
+        [
+          "manage_task",
+          12
+        ],
+        [
+          "run_command",
+          8
+        ],
+        [
+          "schedule",
+          6
+        ]
+      ]
+    },
+    {
+      "session_id": "10319a31...",
+      "full_id": "10319a31-c895-47c0-b2c8-3cd274687c50",
+      "date": "2026-09-18 15:49",
+      "month": "2026-09",
+      "prompts_count": 9,
+      "tools_count": 94,
+      "hours_saved": 0.53,
+      "top_tools": [
+        [
+          "view_file",
+          49
+        ],
+        [
+          "grep_search",
+          23
+        ],
+        [
+          "list_dir",
+          19
+        ]
+      ]
+    },
+    {
+      "session_id": "8889a9e2...",
+      "full_id": "8889a9e2-7eea-4034-9cf3-fa6ca3620e2b",
+      "date": "2026-09-08 07:48",
+      "month": "2026-09",
+      "prompts_count": 29,
+      "tools_count": 85,
+      "hours_saved": 0.49,
+      "top_tools": [
+        [
+          "write_to_file",
+          45
+        ],
+        [
+          "run_command",
+          21
+        ],
+        [
+          "view_file",
+          10
+        ]
+      ]
+    },
+    {
+      "session_id": "797a7ae3...",
+      "full_id": "797a7ae3-afd6-4c53-b95e-e1a031194b75",
+      "date": "2026-09-07 17:41",
+      "month": "2026-09",
+      "prompts_count": 122,
+      "tools_count": 768,
+      "hours_saved": 4.39,
+      "top_tools": [
+        [
+          "view_file",
+          334
+        ],
+        [
+          "run_command",
+          177
+        ],
+        [
+          "grep_search",
+          128
+        ]
+      ]
+    },
+    {
+      "session_id": "17bd73ad...",
+      "full_id": "17bd73ad-202d-4b4a-9f99-9456a98d0400",
+      "date": "2026-09-04 16:58",
+      "month": "2026-09",
+      "prompts_count": 15,
+      "tools_count": 258,
+      "hours_saved": 1.48,
+      "top_tools": [
+        [
+          "view_file",
+          98
+        ],
+        [
+          "run_command",
+          82
+        ],
+        [
+          "grep_search",
+          25
+        ]
+      ]
+    },
+    {
+      "session_id": "fd5444fb...",
+      "full_id": "fd5444fb-c20f-4c37-bb79-3a17f5c94c57",
+      "date": "2026-09-04 15:02",
+      "month": "2026-09",
+      "prompts_count": 179,
+      "tools_count": 1107,
+      "hours_saved": 6.34,
+      "top_tools": [
+        [
+          "view_file",
+          384
+        ],
+        [
+          "run_command",
+          258
+        ],
+        [
+          "manage_task",
+          188
+        ]
+      ]
+    }
+  ],
+  "calculation_methodology": {
+    "metric": "Hours Saved",
+    "formula": "Accepted Proposals * 21.6 seconds / 3600",
+    "benchmark_seconds_per_action": 21.6,
+    "description": "21.6 seconds represents the empirical software engineer benchmark for manual shell command execution, file navigation, syntax editing, and terminal debugging replaced by agent tool proposals."
+  },
+  "last_active_at": "2026-10-27T07:18:28.301892+00:00"
+}

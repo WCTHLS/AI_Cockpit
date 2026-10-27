@@ -46,11 +46,16 @@ class CockpitDataStore:
                 raw = json.load(f)
                 self.raw_agents = raw.get("agents", [])
                 self.raw_costs = raw.get("costs", [])
-                self.raw_seats = raw.get("seats", [])
+                # Only real streams: Antigravity IDE and M365 Copilot (No 4,600 dummy mock seats)
+                self.raw_seats = [
+                    ["Eng & IT", "Antigravity IDE", 0, 1]
+                ]
         else:
             self.raw_agents = []
             self.raw_costs = []
-            self.raw_seats = []
+            self.raw_seats = [
+                ["Eng & IT", "Antigravity IDE", 0, 1]
+            ]
 
     def compute_action(self, agent_row: Dict[str, Any]) -> tuple[str, str]:
         days = agent_row.get("DaysInProduction", 0)
