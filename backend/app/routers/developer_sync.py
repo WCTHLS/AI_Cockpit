@@ -11,7 +11,7 @@ import shutil
 import httpx
 
 from ..data_store import store
-from ..database import get_db, query_all
+from ..database import get_db, query_all, query_one
 from ..auth import get_current_user
 
 router = APIRouter(prefix="/admin/developer-tools", tags=["developer-tools"])
