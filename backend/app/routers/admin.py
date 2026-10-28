@@ -111,22 +111,22 @@ WORKING_AGENT_SCHEMA = {
         "monthly_infra_cost": {
             "type": "number",
             "description": "Fixed monthly infrastructure, cloud hosting, and container cost for this agent in USD",
-            "example": 150.00
+            "example": 45.00
         },
         "monthly_budget": {
             "type": "number",
             "description": "Monthly allocated FinOps budget for this agent in USD (used as denominator for Cost vs budget)",
-            "example": 500.00
+            "example": 100.00
         },
         "baseline_employee_hours": {
             "type": "number",
-            "description": "Average human employee hours previously required to complete 1 task manually (e.g. 0.5 hours for 30 minutes)",
-            "example": 0.5
+            "description": "Average human employee hours previously required to complete 1 task manually (e.g. 0.25 hours for 15 minutes)",
+            "example": 0.25
         },
         "employee_monthly_rate": {
             "type": "number",
             "description": "Fully loaded monthly salary and compensation rate of the human employee role in USD",
-            "example": 6500.00
+            "example": 900.00
         },
         "employee_monthly_working_hours": {
             "type": "number",
@@ -136,7 +136,7 @@ WORKING_AGENT_SCHEMA = {
         "category": {
             "type": "string",
             "enum": ["built_with", "built_using", "built_in"],
-            "default": "built_with",
+            "default": "built_using",
             "description": "Cockpit agent taxonomy category"
         },
         "agent_type": {
@@ -158,12 +158,12 @@ WORKING_AGENT_SCHEMA = {
         "model": "gpt-4o",
         "input_token_price_per_1m": 2.50,
         "output_token_price_per_1m": 10.00,
-        "monthly_infra_cost": 150.00,
-        "monthly_budget": 500.00,
-        "baseline_employee_hours": 0.5,
-        "employee_monthly_rate": 6500.00,
+        "monthly_infra_cost": 45.00,
+        "monthly_budget": 100.00,
+        "baseline_employee_hours": 0.25,
+        "employee_monthly_rate": 900.00,
         "employee_monthly_working_hours": 160,
-        "category": "built_with",
+        "category": "built_using",
         "agent_type": "workflow_agent",
         "description": "Automated IT service desk ticket triaging, diagnostic analysis, and resolution suggestions."
     }

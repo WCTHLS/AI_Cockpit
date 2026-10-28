@@ -282,14 +282,14 @@ def ensure_ai_agent_columns(conn: sqlite3.Connection):
         # Initialize Ticket Triage Agent with company baseline values if not yet configured
         cur.execute("""
             UPDATE ai_agent SET
-                monthly_infra_cost = CASE WHEN monthly_infra_cost = 0 THEN 150.0 ELSE monthly_infra_cost END,
+                monthly_infra_cost = CASE WHEN monthly_infra_cost = 0 THEN 45.0 ELSE monthly_infra_cost END,
                 input_token_price_per_1m = CASE WHEN input_token_price_per_1m = 0 THEN 2.50 ELSE input_token_price_per_1m END,
                 output_token_price_per_1m = CASE WHEN output_token_price_per_1m = 0 THEN 10.00 ELSE output_token_price_per_1m END,
                 model = COALESCE(model, 'gpt-4o'),
-                baseline_employee_hours = CASE WHEN baseline_employee_hours = 0 THEN 0.5 ELSE baseline_employee_hours END,
-                employee_monthly_rate = CASE WHEN employee_monthly_rate = 0 THEN 6500.0 ELSE employee_monthly_rate END,
+                baseline_employee_hours = CASE WHEN baseline_employee_hours = 0 THEN 0.25 ELSE baseline_employee_hours END,
+                employee_monthly_rate = CASE WHEN employee_monthly_rate = 0 THEN 900.0 ELSE employee_monthly_rate END,
                 employee_monthly_working_hours = CASE WHEN employee_monthly_working_hours = 0 THEN 160.0 ELSE employee_monthly_working_hours END,
-                monthly_budget = CASE WHEN monthly_budget = 0 THEN 500.0 ELSE monthly_budget END,
+                monthly_budget = CASE WHEN monthly_budget = 0 THEN 100.0 ELSE monthly_budget END,
                 business_function = COALESCE(business_function, 'Eng & IT'),
                 team = COALESCE(team, 'IT Service Desk'),
                 description = COALESCE(description, 'Automated IT service desk ticket triaging, diagnostic analysis, and resolution suggestions.')

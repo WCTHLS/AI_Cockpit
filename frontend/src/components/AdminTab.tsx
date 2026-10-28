@@ -149,14 +149,14 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     "model": "gpt-4o",
     "input_token_price_per_1m": 2.50,
     "output_token_price_per_1m": 10.00,
-    "monthly_infra_cost": 150.00,
-    "monthly_budget": 500.00,
-    "baseline_employee_hours": 0.5,
-    "employee_monthly_rate": 6500.00,
+    "monthly_infra_cost": 45.00,
+    "monthly_budget": 100.00,
+    "baseline_employee_hours": 0.25,
+    "employee_monthly_rate": 900.00,
     "employee_monthly_working_hours": 160,
-    "category": "built_with",
+    "category": "built_using",
     "agent_type": "workflow_agent",
-    "description": "Automated IT service desk ticket triaging, diagnostic analysis, and resolution suggestions."
+    "description": "Custom autonomous code-first agent triaging tier-1 IT tickets, Active Directory unlocks, and software provisioning."
   }, null, 2);
 
   const SUPPLY_CHAIN_COPILOT_AGENT_JSON = JSON.stringify({
@@ -167,9 +167,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     "input_token_price_per_1m": 0.00,
     "output_token_price_per_1m": 0.00,
     "monthly_infra_cost": 200.00,
-    "monthly_budget": 600.00,
+    "monthly_budget": 300.00,
     "baseline_employee_hours": 0.33,
-    "employee_monthly_rate": 7200.00,
+    "employee_monthly_rate": 1100.00,
     "employee_monthly_working_hours": 160,
     "category": "built_with",
     "agent_type": "workflow_agent",
@@ -2944,36 +2944,36 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                     key: 'monthly_infra_cost',
                     type: 'number (USD)',
                     req: true,
-                    example: '150.00',
+                    example: '45.00',
                     desc: 'Fixed monthly cloud hosting, container & cluster run cost.'
                   },
                   {
                     key: 'monthly_budget',
                     type: 'number (USD)',
                     req: true,
-                    example: '500.00',
+                    example: '100.00',
                     desc: 'Allocated monthly operational budget limit for cost vs budget performance.'
                   },
                   {
                     key: 'baseline_employee_hours',
                     type: 'number (hours)',
                     req: true,
-                    example: '0.5 (30 minutes)',
+                    example: '0.25 (15 minutes)',
                     desc: 'Time human employee previously took to complete 1 manual task.'
                   },
                   {
                     key: 'employee_monthly_rate',
                     type: 'number (USD)',
                     req: true,
-                    example: '6500.00',
-                    desc: 'Monthly human salary baseline for labor value calculation.'
+                    example: '900.00',
+                    desc: 'Monthly human salary baseline for labor value calculation (~?75k/mo fully loaded).'
                   },
                   {
                     key: 'employee_monthly_working_hours',
                     type: 'number (hours)',
                     req: true,
                     example: '160',
-                    desc: 'Standard monthly employee working hours (used as divisor to derive hourly rate: $6,500 / 160 = $40.63/hr).'
+                    desc: 'Standard monthly employee working hours (used as divisor to derive hourly rate: $900 / 160 = $5.63/hr).'
                   },
                   {
                     key: 'category & agent_type',
@@ -3174,22 +3174,32 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                         <td style={{ padding: '12px 14px', textAlign: 'right' }}>
                           <button
                             onClick={() => {
-                              const configObj = {
-                                agent_name: ag.name,
-                                business_function: ag.business_function || 'Eng & IT',
-                                team: ag.team || 'IT Service Desk',
-                                model: ag.model || 'gpt-4o',
-                                input_token_price_per_1m: ag.input_token_price_per_1m ?? 2.50,
-                                output_token_price_per_1m: ag.output_token_price_per_1m ?? 10.00,
-                                monthly_infra_cost: ag.monthly_infra_cost ?? 150.00,
-                                monthly_budget: ag.monthly_budget ?? 500.00,
-                                baseline_employee_hours: ag.baseline_employee_hours ?? 0.5,
-                                employee_monthly_rate: ag.employee_monthly_rate ?? 6500.00,
-                                employee_monthly_working_hours: ag.employee_monthly_working_hours ?? 160,
-                                category: ag.category || 'built_with',
-                                agent_type: ag.agent_type || 'workflow_agent',
-                                description: ag.description || ''
-                              };
+                              let configObj: any = null;
+                              if (ag.config_json) {
+                                try {
+                                  configObj = JSON.parse(ag.config_json);
+                                } catch (e) {
+                                  configObj = null;
+                                }
+                              }
+                              if (!configObj) {
+                                configObj = {
+                                  agent_name: ag.name,
+                                  business_function: ag.business_function || 'Eng & IT',
+                                  team: ag.team || 'IT Service Desk',
+                                  model: ag.model || 'gpt-4o',
+                                  input_token_price_per_1m: ag.input_token_price_per_1m ?? 2.50,
+                                  output_token_price_per_1m: ag.output_token_price_per_1m ?? 10.00,
+                                  monthly_infra_cost: ag.monthly_infra_cost ?? (ag.name.includes('Supply Chain') ? 200.0 : 45.0),
+                                  monthly_budget: ag.monthly_budget ?? (ag.name.includes('Supply Chain') ? 300.0 : 100.0),
+                                  baseline_employee_hours: ag.baseline_employee_hours ?? (ag.name.includes('Supply Chain') ? 0.33 : 0.25),
+                                  employee_monthly_rate: ag.employee_monthly_rate ?? (ag.name.includes('Supply Chain') ? 1100.0 : 900.0),
+                                  employee_monthly_working_hours: ag.employee_monthly_working_hours ?? 160,
+                                  category: ag.category || (ag.name.includes('Supply Chain') ? 'built_with' : 'built_using'),
+                                  agent_type: ag.agent_type || 'workflow_agent',
+                                  description: ag.description || ''
+                                };
+                              }
                               setWorkingAgentJson(JSON.stringify(configObj, null, 2));
                               setWorkingAgentIngestResult({
                                 type: 'success',
