@@ -34,9 +34,10 @@ import {
   Terminal,
   Cpu,
   Bot,
-  Copy
+  Copy,
+  Plus
 } from 'lucide-react';
-import { updateThresholds, formatUSD, uploadTelemetryFile, downloadCsvTemplate, fetchClaudeConfig, updateClaudeConfig, syncClaudeTelemetry, formatPct, fetchDeveloperConfig, updateDeveloperConfig, testDeveloperConnection, syncDeveloperTelemetry, fetchDeveloperSeats, uploadTeammateZip, fetchWorkingAgents, fetchWorkingAgentSchema, ingestWorkingAgent } from '../api';
+import { updateThresholds, formatUSD, uploadTelemetryFile, downloadCsvTemplate, fetchClaudeConfig, updateClaudeConfig, syncClaudeTelemetry, formatPct, fetchDeveloperConfig, updateDeveloperConfig, testDeveloperConnection, syncDeveloperTelemetry, fetchDeveloperSeats, uploadTeammateZip, fetchWorkingAgents, fetchWorkingAgentSchema, ingestWorkingAgent, testAgentConnection } from '../api';
 import { UserProfile, IngestSummary, SummaryKPI, ClaudeConfig, ClaudeSyncResponse, ClaudeSyncMetrics, DeveloperToolConfig, DeveloperSyncResponse, DeveloperSeat, WorkingAgentItem } from '../types';
 
 interface AdminTabProps {
@@ -175,6 +176,201 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     "agent_type": "workflow_agent",
     "description": "Microsoft Copilot Studio autonomous workflow bot deployed in Teams for SAP shipment tracking, warehouse inventory checks, and automated RMA parts dispatch."
   }, null, 2);
+
+
+  // Dedicated Connect New Live Agent / Integration Modal State
+  const [isAddAgentModalOpen, setIsAddAgentModalOpen] = useState<boolean>(false);
+  const [isTestingConnection, setIsTestingConnection] = useState<boolean>(false);
+  const [connectionTestResult, setConnectionTestResult] = useState<{
+    status: 'success' | 'warning' | 'error' | null;
+    message: string;
+    latency_ms?: number;
+  }>({ status: null, message: '' });
+  const [isSubmittingNewAgent, setIsSubmittingNewAgent] = useState<boolean>(false);
+
+  const [newAgentForm, setNewAgentForm] = useState({
+    provider: 'copilot_studio',
+    agent_name: 'Global Logistics & Dispatch Copilot',
+    business_function: 'Operations',
+    team: 'Supply Chain',
+    category: 'built_with',
+    agent_type: 'workflow_agent',
+    model: 'copilot-studio-v2',
+    monthly_infra_cost: 200.0,
+    monthly_budget: 300.0,
+    baseline_employee_hours: 0.33,
+    employee_monthly_rate: 1100.0,
+    employee_monthly_working_hours: 160,
+    input_token_price_per_1m: 0.0,
+    output_token_price_per_1m: 0.0,
+    description: 'Autonomous low-code workflow assistant built in Copilot Studio for enterprise shipment queries and automated RMA workflows.',
+    dataverse_url: 'https://contoso-logistics.api.crm.dynamics.com',
+    client_id: 'd9b73461-8261-4f10-9b30-192a8374a2b1',
+    client_secret: '••••••••••••••••••••••••••••••••',
+    app_insights_app_id: 'app-insights-lenovo-sc-prod',
+    app_insights_key: '••••••••••••••••••••••••••••••••',
+    api_endpoint: 'https://contoso-ai.openai.azure.com',
+    api_key: '••••••••••••••••••••••••••••••••',
+    deployment_name: 'gpt-4o'
+  });
+
+  const handleProviderChange = (provider: string) => {
+    if (provider === 'copilot_studio') {
+      setNewAgentForm(prev => ({
+        ...prev,
+        provider,
+        agent_name: 'Global Logistics & Dispatch Copilot',
+        business_function: 'Operations',
+        team: 'Supply Chain',
+        category: 'built_with',
+        model: 'copilot-studio-v2',
+        monthly_infra_cost: 200.0,
+        monthly_budget: 300.0,
+        baseline_employee_hours: 0.33,
+        employee_monthly_rate: 1100.0,
+        input_token_price_per_1m: 0.0,
+        output_token_price_per_1m: 0.0,
+        description: 'Autonomous low-code workflow assistant built in Copilot Studio for enterprise shipment queries and automated RMA workflows.',
+        dataverse_url: 'https://contoso-logistics.api.crm.dynamics.com',
+        app_insights_app_id: 'app-insights-lenovo-sc-prod'
+      }));
+    } else if (provider === 'azure_openai') {
+      setNewAgentForm(prev => ({
+        ...prev,
+        provider,
+        agent_name: 'Customer Support Autonomous Agent',
+        business_function: 'Eng & IT',
+        team: 'IT Service Desk',
+        category: 'built_using',
+        model: 'gpt-4o',
+        monthly_infra_cost: 45.0,
+        monthly_budget: 150.0,
+        baseline_employee_hours: 0.25,
+        employee_monthly_rate: 900.0,
+        input_token_price_per_1m: 2.50,
+        output_token_price_per_1m: 10.0,
+        description: 'Code-first autonomous agent powered by Azure OpenAI GPT-4o with tool calling and vector retrieval.',
+        api_endpoint: 'https://contoso-ai.openai.azure.com',
+        deployment_name: 'gpt-4o'
+      }));
+    } else if (provider === 'anthropic_claude') {
+      setNewAgentForm(prev => ({
+        ...prev,
+        provider,
+        agent_name: 'Code Review & PR Synthesis Agent',
+        business_function: 'Eng & IT',
+        team: 'Software Engineering',
+        category: 'built_with',
+        model: 'claude-3-5-sonnet',
+        monthly_infra_cost: 50.0,
+        monthly_budget: 200.0,
+        baseline_employee_hours: 0.50,
+        employee_monthly_rate: 3500.0,
+        input_token_price_per_1m: 3.00,
+        output_token_price_per_1m: 15.0,
+        description: 'Autonomous software engineering assistant for automated pull request synthesis and code reviews.'
+      }));
+    } else {
+      setNewAgentForm(prev => ({
+        ...prev,
+        provider,
+        agent_name: 'Developer Tooling Copilot',
+        business_function: 'Eng & IT',
+        team: 'Software Engineering',
+        category: 'built_with',
+        model: 'copilot-business',
+        monthly_infra_cost: 30.0,
+        monthly_budget: 60.0,
+        baseline_employee_hours: 0.50,
+        employee_monthly_rate: 4000.0,
+        input_token_price_per_1m: 0.0,
+        output_token_price_per_1m: 0.0,
+        description: 'Developer productivity tool assisting engineers with boilerplate generation and test suites.'
+      }));
+    }
+    setConnectionTestResult({ status: null, message: '' });
+  };
+
+  const handleTestNewAgentConnection = async () => {
+    setIsTestingConnection(true);
+    setConnectionTestResult({ status: null, message: '' });
+    try {
+      const res = await testAgentConnection({
+        provider: newAgentForm.provider,
+        dataverse_url: newAgentForm.dataverse_url,
+        client_id: newAgentForm.client_id,
+        client_secret: newAgentForm.client_secret,
+        app_insights_app_id: newAgentForm.app_insights_app_id,
+        app_insights_key: newAgentForm.app_insights_key,
+        api_endpoint: newAgentForm.api_endpoint,
+        api_key: newAgentForm.api_key,
+        deployment_name: newAgentForm.deployment_name
+      });
+      setConnectionTestResult({
+        status: res.status as any,
+        message: res.message,
+        latency_ms: res.latency_ms
+      });
+    } catch (err: any) {
+      setConnectionTestResult({
+        status: 'error',
+        message: err.message || 'Connection test failed. Check endpoint parameters.'
+      });
+    } finally {
+      setIsTestingConnection(false);
+    }
+  };
+
+  const handleCreateNewAgent = async () => {
+    if (!newAgentForm.agent_name.trim()) {
+      alert('Please enter an Agent Name.');
+      return;
+    }
+    setIsSubmittingNewAgent(true);
+    try {
+      const payload = {
+        agent_name: newAgentForm.agent_name.trim(),
+        business_function: newAgentForm.business_function,
+        team: newAgentForm.team,
+        category: newAgentForm.category,
+        agent_type: newAgentForm.agent_type,
+        model: newAgentForm.model,
+        monthly_infra_cost: Number(newAgentForm.monthly_infra_cost),
+        monthly_budget: Number(newAgentForm.monthly_budget),
+        baseline_employee_hours: Number(newAgentForm.baseline_employee_hours),
+        employee_monthly_rate: Number(newAgentForm.employee_monthly_rate),
+        employee_monthly_working_hours: Number(newAgentForm.employee_monthly_working_hours),
+        input_token_price_per_1m: Number(newAgentForm.input_token_price_per_1m),
+        output_token_price_per_1m: Number(newAgentForm.output_token_price_per_1m),
+        description: newAgentForm.description,
+        telemetry_config: {
+          provider: newAgentForm.provider,
+          dataverse_url: newAgentForm.dataverse_url,
+          client_id: newAgentForm.client_id,
+          app_insights_app_id: newAgentForm.app_insights_app_id,
+          api_endpoint: newAgentForm.api_endpoint,
+          deployment_name: newAgentForm.deployment_name,
+          connected_at: new Date().toISOString()
+        }
+      };
+
+      await ingestWorkingAgent(payload);
+      setWorkingAgentIngestResult({
+        type: 'success',
+        message: `Successfully connected & registered '${newAgentForm.agent_name}'! Live metrics, budget allocation, and ROI calculations are now active in the dashboard.`
+      });
+      setIsAddAgentModalOpen(false);
+      await loadWorkingAgents();
+      if (onThresholdsUpdated) {
+        onThresholdsUpdated();
+      }
+    } catch (err: any) {
+      alert(`Failed to register new agent: ${err.message}`);
+    } finally {
+      setIsSubmittingNewAgent(false);
+    }
+  };
+
 
   // Dedicated In-UI Direct Agent Values Editor Modal
   const [editingAgent, setEditingAgent] = useState<WorkingAgentItem | null>(null);
@@ -3125,11 +3321,34 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <button
+                  onClick={() => setIsAddAgentModalOpen(true)}
+                  style={{
+                    background: 'linear-gradient(135deg, #4F46E5, #6366F1)',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '8px 16px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 7,
+                    boxShadow: '0 2px 8px rgba(79, 70, 229, 0.28)',
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-1px)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+                >
+                  <Plus size={16} />
+                  Connect New Agent / API
+                </button>
                 <span style={{
                   background: '#EEF2FF',
                   color: '#4338CA',
-                  padding: '5px 12px',
+                  padding: '6px 12px',
                   borderRadius: 20,
                   fontSize: 12,
                   fontWeight: 700
@@ -3729,6 +3948,498 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               </div>
             </div>
           )}
+
+          {/* DEDICATED CONNECT NEW LIVE AGENT / API INTEGRATION MODAL */}
+          {isAddAgentModalOpen && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(15, 23, 42, 0.7)',
+              backdropFilter: 'blur(5px)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 20
+            }}>
+              <div style={{
+                background: '#FFFFFF',
+                borderRadius: 16,
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+                width: '100%',
+                maxWidth: 820,
+                maxHeight: '92vh',
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                border: '1px solid #E2E8F0'
+              }}>
+                {/* Modal Header */}
+                <div style={{
+                  padding: '20px 24px',
+                  borderBottom: '1px solid #E2E8F0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  background: 'linear-gradient(to right, #F8FAFC, #FFFFFF)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 10,
+                      background: 'linear-gradient(135deg, #4F46E5, #6366F1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#FFFFFF',
+                      boxShadow: '0 4px 10px rgba(79, 70, 229, 0.3)'
+                    }}>
+                      <Bot size={22} />
+                    </div>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: '#0F172A' }}>
+                        Connect New Live Agent / API Integration
+                      </h3>
+                      <p style={{ margin: '3px 0 0 0', fontSize: 12, color: '#64748B' }}>
+                        Register a new enterprise agent, configure FinOps benchmarks, and connect its live telemetry or emulation feed.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsAddAgentModalOpen(false)}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#64748B',
+                      cursor: 'pointer',
+                      padding: 6,
+                      display: 'flex',
+                      borderRadius: 6
+                    }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Modal Form Body */}
+                <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 22 }}>
+                  {/* Step 1: Select Platform Provider */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12.5, fontWeight: 800, color: '#1E293B', marginBottom: 8 }}>
+                      1. Select Agent Architecture &amp; Platform Provider
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+                      {[
+                        { id: 'copilot_studio', name: 'Copilot Studio', sub: 'Low-Code Dataverse Bot', icon: Radio, pack: '$200/mo Pack' },
+                        { id: 'azure_openai', name: 'Azure OpenAI', sub: 'Custom GPT-4o Token Bot', icon: Cpu, pack: '$45/mo + Tokens' },
+                        { id: 'anthropic_claude', name: 'Anthropic Claude', sub: 'Claude Workspace API', icon: Terminal, pack: '$50/mo API' },
+                        { id: 'developer_tool', name: 'Developer Seat', sub: 'IDE Productivity Tool', icon: Code, pack: '$30/seat/mo' }
+                      ].map((prov) => {
+                        const Icon = prov.icon;
+                        const isSel = newAgentForm.provider === prov.id;
+                        return (
+                          <div
+                            key={prov.id}
+                            onClick={() => handleProviderChange(prov.id)}
+                            style={{
+                              border: isSel ? '2px solid #4F46E5' : '1.5px solid #E2E8F0',
+                              background: isSel ? '#EEF2FF' : '#F8FAFC',
+                              borderRadius: 10,
+                              padding: '12px 10px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              textAlign: 'center',
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            <Icon size={20} color={isSel ? '#4F46E5' : '#64748B'} style={{ marginBottom: 6 }} />
+                            <div style={{ fontSize: 13, fontWeight: 800, color: isSel ? '#312E81' : '#1E293B' }}>{prov.name}</div>
+                            <div style={{ fontSize: 10.5, color: '#64748B', marginTop: 2 }}>{prov.sub}</div>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: isSel ? '#4F46E5' : '#0284C7', marginTop: 6, background: '#FFFFFF', padding: '2px 6px', borderRadius: 6, border: '1px solid #E2E8F0' }}>
+                              {prov.pack}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Step 2: Agent Identity & Organization */}
+                  <div style={{ background: '#F8FAFC', padding: 16, borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: '#1E293B', marginBottom: 12 }}>
+                      2. Agent Identity &amp; Organizational Placement
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, marginBottom: 12 }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Agent Display Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={newAgentForm.agent_name}
+                          onChange={(e) => setNewAgentForm({ ...newAgentForm, agent_name: e.target.value })}
+                          placeholder="e.g. EMEA Logistics & Dispatch Copilot"
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 700,
+                            color: '#0F172A'
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Business Function
+                        </label>
+                        <select
+                          value={newAgentForm.business_function}
+                          onChange={(e) => setNewAgentForm({ ...newAgentForm, business_function: e.target.value })}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 600,
+                            background: '#FFFFFF'
+                          }}
+                        >
+                          <option value="Operations">Operations</option>
+                          <option value="Eng & IT">Eng & IT</option>
+                          <option value="Finance">Finance</option>
+                          <option value="Sales">Sales</option>
+                          <option value="Customer">Customer</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Team Name
+                        </label>
+                        <input
+                          type="text"
+                          value={newAgentForm.team}
+                          onChange={(e) => setNewAgentForm({ ...newAgentForm, team: e.target.value })}
+                          placeholder="e.g. Supply Chain"
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 600
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                        Agent Capability &amp; Task Description
+                      </label>
+                      <input
+                        type="text"
+                        value={newAgentForm.description}
+                        onChange={(e) => setNewAgentForm({ ...newAgentForm, description: e.target.value })}
+                        placeholder="Brief summary of tasks automated by this agent..."
+                        style={{
+                          width: '100%',
+                          padding: '8px 12px',
+                          border: '1.5px solid #CBD5E1',
+                          borderRadius: 8,
+                          fontSize: 12.5,
+                          color: '#334155'
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Step 3: Live API Connection & Telemetry Credentials */}
+                  <div style={{ background: '#FFFFFF', padding: 18, borderRadius: 12, border: '1.5px solid #C7D2FE', boxShadow: '0 2px 8px rgba(79, 70, 229, 0.05)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                      <div>
+                        <div style={{ fontSize: 13.5, fontWeight: 800, color: '#1E1B4B', display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <Link2 size={16} color="#4F46E5" />
+                          3. Live API &amp; Telemetry Stream Credentials
+                        </div>
+                        <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 2 }}>
+                          Connect your enterprise Microsoft 365 Dataverse tenant or Azure OpenAI endpoint for real-time telemetry streaming.
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={handleTestNewAgentConnection}
+                        disabled={isTestingConnection}
+                        style={{
+                          padding: '6px 14px',
+                          background: '#EEF2FF',
+                          border: '1px solid #C7D2FE',
+                          borderRadius: 8,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          color: '#4338CA',
+                          cursor: isTestingConnection ? 'not-allowed' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6
+                        }}
+                      >
+                        {isTestingConnection ? (
+                          <>
+                            <RefreshCw size={12} className="animate-spin" />
+                            Testing Ping...
+                          </>
+                        ) : (
+                          <>
+                            <Zap size={12} />
+                            Test Connection
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Connection Test Result Badge */}
+                    {connectionTestResult.status && (
+                      <div style={{
+                        padding: '10px 14px',
+                        borderRadius: 8,
+                        marginBottom: 12,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        background: connectionTestResult.status === 'success' ? '#F0FDF4' : connectionTestResult.status === 'warning' ? '#FEFCE8' : '#FEF2F2',
+                        color: connectionTestResult.status === 'success' ? '#166534' : connectionTestResult.status === 'warning' ? '#854D0E' : '#991B1B',
+                        border: `1px solid ${connectionTestResult.status === 'success' ? '#BBF7D0' : connectionTestResult.status === 'warning' ? '#FEF08A' : '#FECACA'}`
+                      }}>
+                        {connectionTestResult.status === 'success' ? <CheckCircle size={15} /> : <AlertCircle size={15} />}
+                        <span>{connectionTestResult.message}</span>
+                        {connectionTestResult.latency_ms && (
+                          <span style={{ marginLeft: 'auto', fontSize: 11, background: '#DCFCE7', padding: '2px 6px', borderRadius: 4 }}>
+                            {connectionTestResult.latency_ms}ms
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Conditional Fields based on Provider */}
+                    {newAgentForm.provider === 'copilot_studio' ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                        <div style={{ gridColumn: 'span 2' }}>
+                          <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                            Microsoft Dataverse OData URL (ConversationTranscripts Endpoint)
+                          </label>
+                          <input
+                            type="text"
+                            value={newAgentForm.dataverse_url}
+                            onChange={(e) => setNewAgentForm({ ...newAgentForm, dataverse_url: e.target.value })}
+                            placeholder="https://<org-env>.api.crm.dynamics.com"
+                            style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                            Azure Entra ID Client ID (App Registration)
+                          </label>
+                          <input
+                            type="text"
+                            value={newAgentForm.client_id}
+                            onChange={(e) => setNewAgentForm({ ...newAgentForm, client_id: e.target.value })}
+                            placeholder="e.g. d9b73461-8261-4f10-9b30-..."
+                            style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                            Azure Application Insights App ID (Real-Time Streams)
+                          </label>
+                          <input
+                            type="text"
+                            value={newAgentForm.app_insights_app_id}
+                            onChange={(e) => setNewAgentForm({ ...newAgentForm, app_insights_app_id: e.target.value })}
+                            placeholder="e.g. app-insights-lenovo-sc-prod"
+                            style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                          />
+                        </div>
+                      </div>
+                    ) : newAgentForm.provider === 'azure_openai' ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                            Azure OpenAI Endpoint URL
+                          </label>
+                          <input
+                            type="text"
+                            value={newAgentForm.api_endpoint}
+                            onChange={(e) => setNewAgentForm({ ...newAgentForm, api_endpoint: e.target.value })}
+                            placeholder="https://<resource>.openai.azure.com"
+                            style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                            Model Deployment Name
+                          </label>
+                          <input
+                            type="text"
+                            value={newAgentForm.deployment_name}
+                            onChange={(e) => setNewAgentForm({ ...newAgentForm, deployment_name: e.target.value })}
+                            placeholder="gpt-4o"
+                            style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Admin API License Key / Authentication Token
+                        </label>
+                        <input
+                          type="password"
+                          value={newAgentForm.api_key}
+                          onChange={(e) => setNewAgentForm({ ...newAgentForm, api_key: e.target.value })}
+                          placeholder="••••••••••••••••••••••••••••••••"
+                          style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Step 4: FinOps Economics & Human Capital Rates */}
+                  <div style={{ background: '#F8FAFC', padding: 16, borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: '#1E293B', marginBottom: 12 }}>
+                      4. FinOps Infrastructure &amp; Human Capital Benchmarks
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Monthly Infra / Pack Fee ($)
+                        </label>
+                        <input
+                          type="number"
+                          step="1"
+                          value={newAgentForm.monthly_infra_cost}
+                          onChange={(e) => setNewAgentForm({ ...newAgentForm, monthly_infra_cost: parseFloat(e.target.value) || 0 })}
+                          style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5, fontWeight: 700 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Monthly Budget Cap ($)
+                        </label>
+                        <input
+                          type="number"
+                          step="1"
+                          value={newAgentForm.monthly_budget}
+                          onChange={(e) => setNewAgentForm({ ...newAgentForm, monthly_budget: parseFloat(e.target.value) || 0 })}
+                          style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5, fontWeight: 700 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Task Saved (Hours)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={newAgentForm.baseline_employee_hours}
+                          onChange={(e) => setNewAgentForm({ ...newAgentForm, baseline_employee_hours: parseFloat(e.target.value) || 0 })}
+                          style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5, fontWeight: 700 }}
+                        />
+                        <div style={{ fontSize: 10, color: '#0369A1', marginTop: 2 }}>
+                          = {Math.round(newAgentForm.baseline_employee_hours * 60)} mins/task
+                        </div>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Employee Salary ($/mo)
+                        </label>
+                        <input
+                          type="number"
+                          step="1"
+                          value={newAgentForm.employee_monthly_rate}
+                          onChange={(e) => setNewAgentForm({ ...newAgentForm, employee_monthly_rate: parseFloat(e.target.value) || 0 })}
+                          style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5, fontWeight: 700 }}
+                        />
+                        <div style={{ fontSize: 10, color: '#059669', marginTop: 2 }}>
+                          = ${(newAgentForm.employee_monthly_rate / 160).toFixed(2)}/hr wage
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div style={{
+                  padding: '16px 24px',
+                  borderTop: '1px solid #E2E8F0',
+                  background: '#F8FAFC',
+                  borderBottomLeftRadius: 16,
+                  borderBottomRightRadius: 16,
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: 12
+                }}>
+                  <button
+                    onClick={() => setIsAddAgentModalOpen(false)}
+                    disabled={isSubmittingNewAgent}
+                    style={{
+                      padding: '8px 18px',
+                      background: '#FFFFFF',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: 8,
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: '#475569',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleCreateNewAgent}
+                    disabled={isSubmittingNewAgent}
+                    style={{
+                      padding: '8px 24px',
+                      background: 'linear-gradient(135deg, #4F46E5, #6366F1)',
+                      border: 'none',
+                      borderRadius: 8,
+                      fontSize: 13,
+                      fontWeight: 800,
+                      color: '#FFFFFF',
+                      cursor: isSubmittingNewAgent ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      boxShadow: '0 2px 8px rgba(79, 70, 229, 0.35)'
+                    }}
+                  >
+                    {isSubmittingNewAgent ? (
+                      <>
+                        <RefreshCw size={14} className="animate-spin" />
+                        Connecting &amp; Registering Agent...
+                      </>
+                    ) : (
+                      <>
+                        <Check size={15} />
+                        Connect &amp; Activate Agent
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       )}
     </div>

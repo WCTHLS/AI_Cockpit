@@ -469,3 +469,27 @@ export async function ingestWorkingAgent(payload: any): Promise<any> {
 }
 
 
+
+
+export async function testAgentConnection(payload: {
+  provider: string;
+  dataverse_url?: string;
+  client_id?: string;
+  client_secret?: string;
+  app_insights_app_id?: string;
+  app_insights_key?: string;
+  api_endpoint?: string;
+  api_key?: string;
+  deployment_name?: string;
+}): Promise<{ status: string; connected: boolean; mode: string; message: string; latency_ms?: number }> {
+  const res = await fetch(`${API_BASE}/admin/test-connection`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to test agent connection');
+  }
+  return res.json();
+}
