@@ -177,8 +177,15 @@ def seed_database(conn: sqlite3.Connection):
             """, (tid_row[0], aid))
 
 def sync_active_agents(conn: sqlite3.Connection):
-    # Keep only active custom agents (do not resurrect dummy agents from json)
-    pass
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE ai_agent 
+            SET is_active = 0 
+            WHERE name != 'Ticket Triage Agent' AND (config_json IS NULL OR config_json = '');
+        """)
+    except Exception as e:
+        print(f"Warning in sync_active_agents: {e}")
 
 def seed_claude_code_employees(conn: sqlite3.Connection):
     try:
