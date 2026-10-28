@@ -17,6 +17,7 @@ export interface AgentScorecardItem {
   eval_pass_rate: number;
   policy_incidents: number;
   days_in_production: number;
+  baseline_employee_hours?: number;
   action: 'accelerate' | 'optimize' | 'experiment' | 'intervene';
   suggested_action?: string;
 }

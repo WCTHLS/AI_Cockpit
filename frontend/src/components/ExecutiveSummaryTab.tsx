@@ -846,7 +846,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         gap: 14
       }}>
         {/* KPI 1: NET AI VALUE (Hero Midnight Gradient Card with Sparkline) */}
-        <div className="executive-card" style={{
+        <div className="executive-card" title="Calculated as: Total Gross Labor Value Created ($2.21M) - Total AI Cost ($412K) = Net AI Value ($1.80M)&#10;ROI Ratio = Gross Value ÷ Total AI Cost" style={{
           background: 'linear-gradient(135deg, #0A2540 0%, #00349B 100%)',
           borderRadius: 12,
           padding: '16px 18px',
@@ -858,7 +858,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           justifyContent: 'space-between',
           minHeight: 120,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          cursor: 'help'
         }}>
           <div style={{
             position: 'absolute',
@@ -879,7 +880,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               }}>
                 NET AI VALUE
               </span>
-              <span style={{
+              <span title="Calculated as: Total Gross Labor Value ÷ Total AI Cost" style={{
                 fontSize: 10,
                 fontWeight: 800,
                 background: 'rgba(255, 255, 255, 0.18)',
@@ -887,7 +888,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
                 color: '#FFFFFF',
                 padding: '2px 7px',
                 borderRadius: 12,
-                border: '1px solid rgba(255, 255, 255, 0.25)'
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                cursor: 'help'
               }}>
                 {displayRoi}
               </span>
@@ -925,7 +927,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         </div>
 
         {/* KPI 2: HOURS SAVED */}
-        <div className="executive-card" style={{
+        <div className="executive-card" title="Calculated as: Sum of (Successful Agent Runs × Baseline Human Hours) across all active agents = ~26,000 hrs (~163 FTEs at 160 hrs/mo)" style={{
           background: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: 12,
@@ -936,7 +938,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           justifyContent: 'space-between',
           minHeight: 120,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          cursor: 'help'
         }}>
           <div style={{
             position: 'absolute',
@@ -957,14 +960,15 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               }}>
                 HOURS SAVED
               </span>
-              <span style={{
+              <span title="Calculated as: Total hours saved ÷ 160 monthly working hours per employee" style={{
                 fontSize: 10,
                 fontWeight: 700,
                 background: '#ECFDF5',
                 color: '#059669',
                 border: '1px solid #A7F3D0',
                 padding: '2px 7px',
-                borderRadius: 12
+                borderRadius: 12,
+                cursor: 'help'
               }}>
                 {displayFtes}
               </span>
@@ -985,7 +989,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         </div>
 
         {/* KPI 3: ADOPTION */}
-        <div className="executive-card" style={{
+        <div className="executive-card" title="Calculated as: (Active Employees Using AI / Total Licensed Workforce Seats) × 100% = 3,588 / 4,600 = 78%" style={{
           background: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: 12,
@@ -996,7 +1000,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           justifyContent: 'space-between',
           minHeight: 120,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          cursor: 'help'
         }}>
           <div style={{
             position: 'absolute',
@@ -1045,7 +1050,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         </div>
 
         {/* KPI 4: TOTAL AI COST */}
-        <div className="executive-card" style={{
+        <div className="executive-card" title="Calculated as: Sum of LLM Token Usage Costs + Cloud Infrastructure Costs + M365/Copilot Seat License Subscriptions" style={{
           background: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: 12,
@@ -1056,7 +1061,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           justifyContent: 'space-between',
           minHeight: 120,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          cursor: 'help'
         }}>
           <div style={{
             position: 'absolute',
@@ -1118,7 +1124,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         </div>
 
         {/* KPI 5: EVAL PASS RATE */}
-        <div className="executive-card" style={{
+        <div className="executive-card" title="Calculated as: (Successful Agent Interactions ÷ Total Evaluated Interactions) × 100% across all production agents" style={{
           background: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: 12,
@@ -1129,7 +1135,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           justifyContent: 'space-between',
           minHeight: 120,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          cursor: 'help'
         }}>
           <div style={{
             position: 'absolute',

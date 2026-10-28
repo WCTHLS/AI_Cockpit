@@ -271,6 +271,7 @@ class CockpitDataStore:
                     "eval_pass_rate": eval_p,
                     "policy_incidents": incidents,
                     "days_in_production": int(r.get("days_in_prod_at_month_end") or 0),
+                    "baseline_employee_hours": baseline_hrs_cfg,
                     "action": action,
                     "suggested_action": suggested,
                 })

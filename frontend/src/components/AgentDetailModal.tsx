@@ -150,21 +150,22 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 8 }}>
               <div>
-                <div style={{ fontSize: 24, fontWeight: 800, color: isLight ? '#00349B' : '#93C5FD' }}>
+                <div title={`Calculated as: ${agent.eval_passed ?? 8} successful runs × ${agent.baseline_employee_hours || 0.5} hrs baseline task time = ${Math.round(agent.hours_saved || 0)} hrs/mo`} style={{ fontSize: 24, fontWeight: 800, color: isLight ? '#00349B' : '#93C5FD', cursor: 'help' }}>
                   {Math.round(agent.hours_saved || 0).toLocaleString()} hrs / mo
                 </div>
                 <div style={{ fontSize: 12, color: isLight ? '#475569' : '#94A3B8' }}>
                   Workforce time returned to core strategic operations
                 </div>
               </div>
-              <div style={{
+              <div title={`Calculated as: ${Math.round(agent.hours_saved || 0)} hours saved ÷ 160 employee monthly working hours = ~${((agent.hours_saved || 0) / 160).toFixed(1)} Full-Time Employees`} style={{
                 background: isLight ? '#FFFFFF' : '#0B132B',
                 border: isLight ? '1px solid #93C5FD' : '1px solid #1E3A8A',
                 padding: '4px 10px',
                 borderRadius: 6,
                 fontSize: 12,
                 fontWeight: 700,
-                color: isLight ? '#00349B' : '#60A5FA'
+                color: isLight ? '#00349B' : '#60A5FA',
+                cursor: 'help'
               }}>
                 ~{((agent.hours_saved || 0) / 160).toFixed(1)} FTE Equiv.
               </div>
@@ -173,11 +174,12 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
 
           {/* Metrics Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div style={{
+            <div title={`Calculated as: Gross Value (${formatUSD(agent.gross_value || (agent.net_value + agent.cost))}) - Actual AI Cost (${formatUSD(agent.cost)})&#10;Gross Value = Hours Saved × Hourly Rate ($6,500 / 160 hrs = $40.63/hr)`} style={{
               background: isLight ? '#F8FAFC' : '#0F172A',
               border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
               padding: 12,
-              borderRadius: 8
+              borderRadius: 8,
+              cursor: 'help'
             }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#64748B' : '#94A3B8' }}>NET AI VALUE</div>
               <div style={{ fontSize: 18, fontWeight: 800, color: isLight ? '#00349B' : '#38BDF8', marginTop: 2 }}>
@@ -188,11 +190,12 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
               </div>
             </div>
 
-            <div style={{
+            <div title={`Calculated as: (Actual Cost ${formatUSD(agent.cost)} / Budget ${formatUSD(agent.budget || agent.cost)}) × 100%&#10;Actual AI Cost = Token Cost + Monthly Infra Cost (no seat licenses for custom agents)`} style={{
               background: isLight ? '#F8FAFC' : '#0F172A',
               border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
               padding: 12,
-              borderRadius: 8
+              borderRadius: 8,
+              cursor: 'help'
             }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#64748B' : '#94A3B8' }}>COST VS BUDGET</div>
               <div style={{
@@ -208,11 +211,12 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
               </div>
             </div>
 
-            <div style={{
+            <div title={`Calculated as: (${agent.active_users || 0} active employees / ${agent.licensed_users || 4} assigned) × 100%`} style={{
               background: isLight ? '#F8FAFC' : '#0F172A',
               border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
               padding: 12,
-              borderRadius: 8
+              borderRadius: 8,
+              cursor: 'help'
             }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#64748B' : '#94A3B8' }}>WORKFORCE ADOPTION</div>
               <div style={{ fontSize: 18, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC', marginTop: 2 }}>
@@ -223,11 +227,12 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
               </div>
             </div>
 
-            <div style={{
+            <div title={`Calculated as: (${agent.eval_passed ?? 0} successful sessions / ${agent.eval_runs ?? 0} total sessions) × 100% across all employees`} style={{
               background: isLight ? '#F8FAFC' : '#0F172A',
               border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
               padding: 12,
-              borderRadius: 8
+              borderRadius: 8,
+              cursor: 'help'
             }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#64748B' : '#94A3B8' }}>EVAL PASS RATE (ALL USERS)</div>
               <div style={{
@@ -298,11 +303,12 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
             {/* 4 Core Daily KPI Metrics Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {/* 1. Token Usage of all employees in a day */}
-              <div style={{
+              <div title="Calculated as: Sum of prompt tokens + completion tokens consumed in all employee sessions today" style={{
                 background: isLight ? '#FFFFFF' : '#0F172A',
                 border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
                 borderRadius: 8,
-                padding: 12
+                padding: 12,
+                cursor: 'help'
               }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#475569' : '#94A3B8' }}>
                   TOKEN USAGE (ALL EMPLOYEES)
@@ -316,11 +322,12 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
               </div>
 
               {/* 2. Average number of sessions in a day */}
-              <div style={{
+              <div title="Calculated as: Total daily sessions ÷ Number of active participating employees today" style={{
                 background: isLight ? '#FFFFFF' : '#0F172A',
                 border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
                 borderRadius: 8,
-                padding: 12
+                padding: 12,
+                cursor: 'help'
               }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#475569' : '#94A3B8' }}>
                   AVG SESSIONS / DAY
@@ -334,11 +341,12 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
               </div>
 
               {/* 3. Average success rate of agent in a day (of all users) */}
-              <div style={{
+              <div title="Calculated as: (Total successful sessions today ÷ Total executed sessions today) × 100%" style={{
                 background: isLight ? '#FFFFFF' : '#0F172A',
                 border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
                 borderRadius: 8,
-                padding: 12
+                padding: 12,
+                cursor: 'help'
               }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#475569' : '#94A3B8' }}>
                   AVG SUCCESS RATE (ALL USERS)
@@ -357,11 +365,12 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
               </div>
 
               {/* 4. Average agent completion time */}
-              <div style={{
+              <div title="Calculated as: Average duration in seconds from agent_start_time to agent_end_time across all runs today" style={{
                 background: isLight ? '#FFFFFF' : '#0F172A',
                 border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
                 borderRadius: 8,
-                padding: 12
+                padding: 12,
+                cursor: 'help'
               }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#475569' : '#94A3B8' }}>
                   AVG AGENT COMPLETION TIME

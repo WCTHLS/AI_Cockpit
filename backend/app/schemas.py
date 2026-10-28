@@ -78,6 +78,7 @@ class AgentScorecardItem(BaseModel):
     eval_pass_rate: float
     policy_incidents: int
     days_in_production: int
+    baseline_employee_hours: Optional[float] = 0.5
     action: str  # accelerate, optimize, experiment, intervene
     suggested_action: Optional[str] = None
 
