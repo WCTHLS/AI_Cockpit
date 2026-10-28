@@ -437,3 +437,33 @@ export async function uploadTeammateZip(
   return res.json();
 }
 
+export async function fetchWorkingAgentSchema(): Promise<any> {
+  const res = await fetch(`${API_BASE}/admin/working-agents/schema`, {
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) throw new Error('Failed to fetch working agent schema');
+  return res.json();
+}
+
+export async function fetchWorkingAgents(): Promise<{ total: number; agents: any[] }> {
+  const res = await fetch(`${API_BASE}/admin/working-agents`, {
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) throw new Error('Failed to fetch working agents');
+  return res.json();
+}
+
+export async function ingestWorkingAgent(payload: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/admin/working-agents`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: typeof payload === 'string' ? payload : JSON.stringify(payload)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to ingest working agent');
+  }
+  return res.json();
+}
+
+

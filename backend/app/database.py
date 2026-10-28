@@ -250,6 +250,42 @@ def seed_claude_code_employees(conn: sqlite3.Connection):
     except Exception as e:
         print(f"Warning: error seeding employees and agent mappings: {e}")
 
+def ensure_ai_agent_columns(conn: sqlite3.Connection):
+    try:
+        cur = conn.cursor()
+        existing = [c[1] for c in cur.execute("PRAGMA table_info(ai_agent)").fetchall()]
+        cols_to_add = [
+            ("monthly_infra_cost", "REAL NOT NULL DEFAULT 0.0"),
+            ("input_token_price_per_1m", "REAL NOT NULL DEFAULT 2.50"),
+            ("output_token_price_per_1m", "REAL NOT NULL DEFAULT 10.00"),
+            ("model", "TEXT NOT NULL DEFAULT 'gpt-4o'"),
+            ("baseline_employee_hours", "REAL NOT NULL DEFAULT 0.5"),
+            ("employee_monthly_rate", "REAL NOT NULL DEFAULT 0.0"),
+            ("business_function", "TEXT"),
+            ("team", "TEXT"),
+            ("config_json", "TEXT")
+        ]
+        for name, dtype in cols_to_add:
+            if name not in existing:
+                cur.execute(f"ALTER TABLE ai_agent ADD COLUMN {name} {dtype};")
+
+        # Initialize Ticket Triage Agent with company baseline values if not yet configured
+        cur.execute("""
+            UPDATE ai_agent SET
+                monthly_infra_cost = CASE WHEN monthly_infra_cost = 0 THEN 150.0 ELSE monthly_infra_cost END,
+                input_token_price_per_1m = CASE WHEN input_token_price_per_1m = 0 THEN 2.50 ELSE input_token_price_per_1m END,
+                output_token_price_per_1m = CASE WHEN output_token_price_per_1m = 0 THEN 10.00 ELSE output_token_price_per_1m END,
+                model = COALESCE(model, 'gpt-4o'),
+                baseline_employee_hours = CASE WHEN baseline_employee_hours = 0 THEN 0.5 ELSE baseline_employee_hours END,
+                employee_monthly_rate = CASE WHEN employee_monthly_rate = 0 THEN 6500.0 ELSE employee_monthly_rate END,
+                business_function = COALESCE(business_function, 'Eng & IT'),
+                team = COALESCE(team, 'IT Service Desk'),
+                description = COALESCE(description, 'Automated IT service desk ticket triaging, diagnostic analysis, and resolution suggestions.')
+            WHERE name = 'Ticket Triage Agent';
+        """)
+    except Exception as e:
+        print(f"Warning ensuring ai_agent columns: {e}")
+
 def init_db(seed_if_empty: bool = True):
     db_path = get_db_path()
     init_sql_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "db", "init.sql"))
@@ -260,6 +296,8 @@ def init_db(seed_if_empty: bool = True):
         if os.path.exists(init_sql_path):
             with open(init_sql_path, "r", encoding="utf-8") as f:
                 conn.executescript(f.read())
+
+        ensure_ai_agent_columns(conn)
 
         if seed_if_empty:
             cur = conn.cursor()
@@ -272,3 +310,36 @@ def init_db(seed_if_empty: bool = True):
 
         # Seed and persist the 15 employees from Claude Code usage telemetry
         seed_claude_code_employees(conn)
+
+        # Seed and persist Ticket Triage Agent daily user usage
+        seed_ticket_triage_user_usage(conn)
+
+def seed_ticket_triage_user_usage(conn: sqlite3.Connection):
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM user_usage;")
+        count = cur.fetchone()[0]
+        if count == 0:
+            cur.execute("SELECT id FROM ai_agent WHERE name = 'Ticket Triage Agent';")
+            agent_row = cur.fetchone()
+            agent_id = agent_row[0] if agent_row else 11
+
+            usage_records = [
+                ("aarav@wct.com", 2, {"agent_id": "it-service-desk", "agent_name": "Ticket Triage Agent", "user_email": "aarav@lenovo.com", "completion_tokens": 1272, "prompt_tokens": 1484, "total_tokens": 2756, "session_count": 2, "agent_completion": 7.43, "date": "2026-10-27", "sucess": 2}),
+                ("ananya@wct.com", 3, {"agent_id": "it-service-desk", "agent_name": "Ticket Triage Agent", "user_email": "ananya@wct.com", "completion_tokens": 2100, "prompt_tokens": 2020, "total_tokens": 4120, "session_count": 3, "agent_completion": 6.85, "date": "2026-10-27", "sucess": 3}),
+                ("arjun@wct.com", 3, {"agent_id": "it-service-desk", "agent_name": "Ticket Triage Agent", "user_email": "arjun@wct.com", "completion_tokens": 1900, "prompt_tokens": 1678, "total_tokens": 3578, "session_count": 3, "agent_completion": 9.81, "date": "2026-10-27", "sucess": 2}),
+                ("divya@wct.com", 1, {"agent_id": "it-service-desk", "agent_name": "Ticket Triage Agent", "user_email": "divya@wct.com", "completion_tokens": 624, "prompt_tokens": 826, "total_tokens": 1450, "session_count": 1, "agent_completion": 5.9, "date": "2026-10-27", "sucess": 1})
+            ]
+
+            for emp_email, sess_cnt, u_json in usage_records:
+                cur.execute("SELECT id FROM employee WHERE email = ? OR email LIKE ?;", (emp_email, f"%{emp_email.split('@')[0]}%"))
+                emp_row = cur.fetchone()
+                if emp_row:
+                    emp_id = emp_row[0]
+                    cur.execute("""
+                        INSERT OR IGNORE INTO user_usage (company_id, employee_id, agent_id, usage_date, sessions_count, daily_usage_json)
+                        VALUES (1, ?, ?, '2026-10-27', ?, ?);
+                    """, (emp_id, agent_id, sess_cnt, json.dumps(u_json)))
+    except Exception as e:
+        print(f"Warning seeding ticket triage user usage: {e}")
+

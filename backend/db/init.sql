@@ -71,6 +71,15 @@ CREATE TABLE IF NOT EXISTS ai_agent (
     go_live_date    TEXT, -- ISO date YYYY-MM-DD
     is_active       INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0,1)),
     created_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    monthly_infra_cost REAL NOT NULL DEFAULT 0.0,
+    input_token_price_per_1m REAL NOT NULL DEFAULT 2.50,
+    output_token_price_per_1m REAL NOT NULL DEFAULT 10.00,
+    model           TEXT NOT NULL DEFAULT 'gpt-4o',
+    baseline_employee_hours REAL NOT NULL DEFAULT 0.5,
+    employee_monthly_rate REAL NOT NULL DEFAULT 0.0,
+    business_function TEXT,
+    team            TEXT,
+    config_json     TEXT,
     UNIQUE(company_id, name),
     UNIQUE(id, company_id)
 );
