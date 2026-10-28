@@ -288,6 +288,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
       setTeammateEmail('');
       setTeammateZipFile(null);
       if (teammateFileInputRef.current) teammateFileInputRef.current.value = '';
+      if (onThresholdsUpdated) onThresholdsUpdated();
     } catch (err: any) {
       setTeammateUploadError(err.message || 'Failed to ingest teammate zip');
     } finally {
@@ -2388,141 +2389,6 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             </div>
           </div>
 
-          {/* Real Ingested Telemetry Card */}
-          {devSyncResult && devSyncResult.metrics && (
-            <div style={{
-              background: '#FFFFFF',
-              border: '1.5px solid #E0F2FE',
-              borderRadius: 10,
-              padding: 20,
-              boxShadow: '0 2px 10px rgba(0,0,0,0.03)'
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                borderBottom: '1px solid #F1F5F9',
-                paddingBottom: 14,
-                marginBottom: 16
-              }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 16, fontWeight: 800, color: '#0F172A' }}>
-                      {devSyncResult.metrics.developer_name || 'Swagath Reddy'}
-                    </span>
-                    <span style={{
-                      background: '#E0F2FE',
-                      color: '#0369A1',
-                      padding: '2px 8px',
-                      borderRadius: 12,
-                      fontSize: 11,
-                      fontWeight: 700
-                    }}>
-                      {devSyncResult.metrics.editor || 'Antigravity IDE'}
-                    </span>
-                    <span style={{
-                      background: '#DCFCE7',
-                      color: '#15803D',
-                      padding: '2px 8px',
-                      borderRadius: 12,
-                      fontSize: 11,
-                      fontWeight: 700
-                    }}>
-                      SEAT ACTIVE
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>
-                    {devSyncResult.developer_email} • Department: <strong>{devSyncResult.metrics.department || 'Eng & IT'}</strong> • Role: {devSyncResult.metrics.role || 'Senior AI / Software Engineer'}
-                  </div>
-                </div>
-
-                <div style={{ textAlign: 'right', fontSize: 12, color: '#64748B' }}>
-                  Source: <strong>{devSyncResult.metrics.source}</strong>
-                  <div style={{ marginTop: 2 }}>Last Active: {new Date(devSyncResult.metrics.last_active_at).toLocaleString()}</div>
-                </div>
-              </div>
-
-              {/* 5 KPI Metric Tiles */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                gap: 12,
-                marginBottom: 20
-              }}>
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Active Sessions</div>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
-                    {devSyncResult.metrics.sessions_count || 39}
-                  </div>
-                  <div style={{ fontSize: 11, color: '#0284C7', fontWeight: 600, marginTop: 2 }}>Interactive Coding Tracks</div>
-                </div>
-
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>User Prompts</div>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
-                    {devSyncResult.metrics.total_user_prompts?.toLocaleString() || '3,644'}
-                  </div>
-                  <div style={{ fontSize: 11, color: '#059669', fontWeight: 600, marginTop: 2 }}>Developer Inquiries</div>
-                </div>
-
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>AI Proposals Generated</div>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
-                    {devSyncResult.metrics.tool_actions_generated?.toLocaleString() || '41,456'}
-                  </div>
-                  <div style={{ fontSize: 11, color: '#D97706', fontWeight: 600, marginTop: 2 }}>Automations Proposed</div>
-                </div>
-
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Acceptance Rate</div>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: '#16A34A', marginTop: 4 }}>
-                    {devSyncResult.metrics.acceptance_rate_pct || 95.4}%
-                  </div>
-                  <div style={{ fontSize: 11, color: '#16A34A', fontWeight: 600, marginTop: 2 }}>
-                    {devSyncResult.metrics.tool_actions_accepted?.toLocaleString()} actions accepted
-                  </div>
-                </div>
-
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Dev Hours Saved</div>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: '#2563EB', marginTop: 4 }}>
-                    {devSyncResult.metrics.estimated_hours_saved || 237.3} hrs
-                  </div>
-                  <div style={{ fontSize: 11, color: '#2563EB', fontWeight: 600, marginTop: 2 }}>Productivity Boost</div>
-                </div>
-              </div>
-
-              {/* Tool Execution Breakdown Pills */}
-              {devSyncResult.metrics.top_tools_used && (
-                <div style={{
-                  background: '#F1F5F9',
-                  borderRadius: 8,
-                  padding: '12px 16px'
-                }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#334155', marginBottom: 8 }}>
-                    Top Antigravity / Gemini Agent Tool Operations:
-                  </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {Object.entries(devSyncResult.metrics.top_tools_used).slice(0, 7).map(([tool, count]: any) => (
-                      <span
-                        key={tool}
-                        style={{
-                          background: '#FFFFFF',
-                          border: '1px solid #CBD5E1',
-                          borderRadius: 6,
-                          padding: '4px 10px',
-                          fontSize: 12,
-                          color: '#1E293B'
-                        }}
-                      >
-                        <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0369A1' }}>{tool}</span>: {count.toLocaleString()}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       )}
     </div>

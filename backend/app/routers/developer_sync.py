@@ -824,10 +824,16 @@ async def upload_teammate_zip(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to read zip archive: {str(e)}")
 
-    transcript_names = [n for n in zf.namelist() if n.endswith("transcript.jsonl")]
+    transcript_names = [
+        n for n in zf.namelist() 
+        if n.replace('\\', '/').endswith('/transcript.jsonl') or n.lower() == 'transcript.jsonl'
+    ]
     if not transcript_names:
-        # Fallback: check if transcript files have different casing
-        transcript_names = [n for n in zf.namelist() if "transcript" in n.lower() and n.endswith(".jsonl")]
+        # Fallback: check if transcript files have different casing or structure
+        transcript_names = [
+            n for n in zf.namelist() 
+            if "transcript" in n.lower() and n.endswith(".jsonl") and "chunk" not in n.lower()
+        ]
 
     total_prompts = 0
     total_tools = 0
@@ -838,7 +844,14 @@ async def upload_teammate_zip(
     last_timestamp = None
 
     for tname in transcript_names:
-        session_id = tname.split('/')[0] if '/' in tname else 'session'
+        parts = [p for p in tname.replace('\\', '/').split('/') if p]
+        session_id = 'session'
+        for i, part in enumerate(parts):
+            if part == '.system_generated' and i > 0:
+                session_id = parts[i - 1]
+                break
+        else:
+            session_id = parts[1] if (len(parts) > 1 and parts[0].lower() in ('brain', 'brains')) else parts[0]
         s_prompts = 0
         s_tools = 0
         s_timestamp = None

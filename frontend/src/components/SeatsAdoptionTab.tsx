@@ -389,7 +389,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
             {total}
           </div>
           <div style={{ fontSize: 11.5, color: '#BFDBFE', marginTop: 4, fontWeight: 600 }}>
-            Antigravity (1) + M365 Copilot ({total - 1})
+            Antigravity ({developerSeats.length}) + M365 Copilot ({Math.max(0, total - developerSeats.length)})
           </div>
         </div>
 
