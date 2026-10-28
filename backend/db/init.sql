@@ -53,7 +53,8 @@ CREATE TABLE IF NOT EXISTS employee (
     left_on             TEXT,
     created_at          TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(team_id, company_id) REFERENCES team(id, company_id),
-    UNIQUE(company_id, external_user_key)
+    UNIQUE(company_id, external_user_key),
+    UNIQUE(id, company_id)
 );
 
 CREATE TABLE IF NOT EXISTS ai_agent (
