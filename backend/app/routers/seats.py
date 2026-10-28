@@ -101,14 +101,22 @@ def get_seats_summary(
         elif status == "IDLE":
             func_counts[dept]["idle"] += 1
 
+    active_pct = round((active_7d / total_seats * 100.0), 1) if total_seats > 0 else 0.0
+    lapsing_pct = round((lapsing_7_29d / total_seats * 100.0), 1) if total_seats > 0 else 0.0
+    idle_pct = round((idle_30d / total_seats * 100.0), 1) if total_seats > 0 else 0.0
     avoidable_cost = float(idle_30d * (cost_per_seat or 30.0))
 
     return SeatInventorySummary(
+        month=datetime.date.today().strftime('%Y-%m'),
         total_licensed_seats=total_seats,
         active_seats_7d=active_7d,
+        active_pct=active_pct,
         lapsing_seats_7_29d=lapsing_7_29d,
+        lapsing_pct=lapsing_pct,
         idle_seats_30d=idle_30d,
-        avoidable_idle_spend_monthly=avoidable_cost,
+        idle_pct=idle_pct,
+        estimated_reclaimable_usd=avoidable_cost,
+        cost_per_seat_default=float(cost_per_seat or 30.0),
         by_tool=list(tool_counts.values()),
         by_function=list(func_counts.values())
     )
