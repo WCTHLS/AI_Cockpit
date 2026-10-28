@@ -194,6 +194,7 @@ def get_working_agents(user: Dict[str, Any] = Depends(get_current_user)):
         LEFT JOIN team_agent ta ON ta.agent_id = a.id AND ta.is_active = 1
         LEFT JOIN team t ON t.id = ta.team_id
         LEFT JOIN business_function bf ON bf.id = t.function_id
+        WHERE a.is_active = 1
         GROUP BY a.id
         ORDER BY a.name ASC;
     """)
