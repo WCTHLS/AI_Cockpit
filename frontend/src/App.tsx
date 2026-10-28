@@ -126,24 +126,13 @@ export const App: React.FC = () => {
   const [selectedAgent, setSelectedAgent] = useState<AgentScorecardItem | null>(null);
   const [scorecardActionFilter, setScorecardActionFilter] = useState<string>('');
 
-  // Dynamic portfolio valuation calculation reacting live to custom settings
-  const blendedWage = (
-    (laborConfig.engineering || 95) * 0.40 +
-    (laborConfig.operations || 65) * 0.30 +
-    (laborConfig.finance || 80) * 0.15 +
-    (laborConfig.sales || 85) * 0.15
-  );
-
-  const totalHours = summary?.total_hours_saved || 26000;
-  const dynamicGrossValue = totalHours * blendedWage;
-  
-  // Non-license costs: Platform ($72k) + Tokens ($96k) + Build ($52k) + Enablement ($24k) = $244k
-  const baseNonLicense = 244000;
-  const pooledSeatCount = seats?.total_licensed_seats || 4600;
-  const dynamicLicenseCost = (pooledSeatCount * (subscriptionConfig.m365CopilotPrice || 30)) + (120 * (subscriptionConfig.copilotStudioPackPrice || 200));
-  const dynamicTotalCost = baseNonLicense + dynamicLicenseCost;
-  const dynamicNetValue = dynamicGrossValue - dynamicTotalCost;
-  const dynamicRoiMultiplier = dynamicTotalCost > 0 ? (dynamicGrossValue / dynamicTotalCost) : 0;
+  // Dynamic portfolio totals directly computed from database-backed summary and active agents
+  const totalHours = summary?.total_hours_saved ?? (agents.reduce((acc, a) => acc + (a.hours_saved || 0), 0));
+  const dynamicGrossValue = summary?.total_gross_value ?? (agents.reduce((acc, a) => acc + (a.gross_value || 0), 0));
+  const dynamicTotalCost = summary?.total_cost ?? (agents.reduce((acc, a) => acc + (a.cost || 0), 0));
+  const dynamicNetValue = summary?.total_net_value ?? (dynamicGrossValue - dynamicTotalCost);
+  const dynamicRoiMultiplier = dynamicTotalCost > 0 ? (dynamicGrossValue / dynamicTotalCost) : (summary?.roi_ratio || 0);
+  const dynamicLicenseCost = agents.reduce((acc, a) => acc + (a.cost || 0), 0);
 
   // Sync theme to root DOM node
   useEffect(() => {

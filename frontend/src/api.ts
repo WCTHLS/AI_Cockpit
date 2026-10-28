@@ -4,13 +4,15 @@ const API_BASE = '/api/v1';
 
 // Helper to format currency
 export function formatUSD(val: number): string {
-  if (Math.abs(val) >= 1_000_000) {
-    return `$${(val / 1_000_000).toFixed(2)}M`;
+  const sign = val < 0 ? '-' : '';
+  const abs = Math.abs(val);
+  if (abs >= 1_000_000) {
+    return `${sign}$${(abs / 1_000_000).toFixed(2)}M`;
   }
-  if (Math.abs(val) >= 1_000) {
-    return `$${(val / 1_000).toFixed(1)}k`;
+  if (abs >= 1_000) {
+    return `${sign}$${(abs / 1_000).toFixed(1)}k`;
   }
-  return `$${val.toLocaleString()}`;
+  return `${sign}$${abs.toFixed(2)}`;
 }
 
 export function formatPct(val: number): string {

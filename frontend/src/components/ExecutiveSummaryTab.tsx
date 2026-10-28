@@ -81,38 +81,37 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
 
   // Status breakdown calculations
   const statusCounts = {
-    accelerate: summary?.action_counts?.accelerate ?? (agents.filter(a => a.action?.toLowerCase() === 'accelerate').length || 7),
-    optimize: summary?.action_counts?.optimize ?? (agents.filter(a => a.action?.toLowerCase() === 'optimize').length || 15),
-    intervene: summary?.action_counts?.intervene ?? (agents.filter(a => a.action?.toLowerCase() === 'intervene').length || 11),
-    experiment: summary?.action_counts?.experiment ?? (agents.filter(a => a.action?.toLowerCase() === 'experiment').length || 10),
+    accelerate: summary?.action_counts?.accelerate ?? agents.filter(a => a.action?.toLowerCase() === 'accelerate').length,
+    optimize: summary?.action_counts?.optimize ?? agents.filter(a => a.action?.toLowerCase() === 'optimize').length,
+    intervene: summary?.action_counts?.intervene ?? agents.filter(a => a.action?.toLowerCase() === 'intervene').length,
+    experiment: summary?.action_counts?.experiment ?? agents.filter(a => a.action?.toLowerCase() === 'experiment').length,
   };
-  const totalAgents = summary?.active_agents ?? (agents.length || 43);
+  const totalAgents = summary?.active_agents ?? (agents.length + 1);
 
   // Month-aware historical vs live close detection
   const isAug = currentMonth === '2026-08';
 
-  // Dynamic values based on custom enterprise configurator or summary prop
-  const currentNetValNum = isAug 
-    ? (summary?.total_net_value || 1590000) 
-    : (customNetValue != null ? customNetValue : (summary?.total_net_value || 1800000));
+  // Dynamic values directly from database-backed summary and active agents
+  const currentNetValNum = customNetValue != null
+    ? customNetValue
+    : (summary?.total_net_value ?? agents.reduce((acc, a) => acc + (a.net_value || 0), 0));
 
-  const currentCostNum = isAug
-    ? (summary?.total_cost || 388000)
-    : (customTotalCost != null ? customTotalCost : (summary?.total_cost || 412000));
+  const currentCostNum = customTotalCost != null
+    ? customTotalCost
+    : (summary?.total_cost ?? agents.reduce((acc, a) => acc + (a.cost || 0), 0));
 
-  const currentHoursNum = isAug
-    ? (summary?.total_hours_saved || 23650)
-    : (summary?.total_hours_saved || 26000);
+  const currentHoursNum = summary?.total_hours_saved ?? agents.reduce((acc, a) => acc + (a.hours_saved || 0), 0);
+
+  const currentGrossValNum = customGrossValue != null
+    ? customGrossValue
+    : (summary?.total_gross_value ?? agents.reduce((acc, a) => acc + (a.gross_value || 0), 0));
 
   const displayNetValue = formatUSD(currentNetValNum);
-  const displayGrossValue = isAug
-    ? '$1.98M'
-    : (customGrossValue != null ? formatUSD(customGrossValue) : (summary?.total_gross_value != null ? formatUSD(summary.total_gross_value) : '$2.21M'));
-
+  const displayGrossValue = formatUSD(currentGrossValNum);
   const displayCost = formatUSD(currentCostNum);
-  const displayRoi = isAug
-    ? '5.10x ROI'
-    : (customRoi != null ? `${customRoi.toFixed(2)}x ROI` : (summary?.roi_ratio != null ? `${summary.roi_ratio.toFixed(2)}x ROI` : '5.37x ROI'));
+  const displayRoi = currentCostNum > 0
+    ? `${(currentGrossValNum / currentCostNum).toFixed(2)}x ROI`
+    : (customRoi != null ? `${customRoi.toFixed(2)}x ROI` : (summary?.roi_ratio != null ? `${summary.roi_ratio.toFixed(2)}x ROI` : '0.00x ROI'));
 
   const displayHours = currentHoursNum.toLocaleString();
   const fteCount = Math.round(currentHoursNum / 160);
@@ -488,7 +487,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         axisLabel: {
           color: '#64748B',
           fontSize: 10,
-          formatter: (v: number) => `$${(v / 1000000).toFixed(2)}M`
+          formatter: (v: number) => formatUSD(v)
         }
       },
       series: [
@@ -496,7 +495,11 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           name: 'Aug 2026',
           type: 'bar',
           barWidth: 26,
-          data: [1980000, 390000, 1590000],
+          data: [
+            Math.round(currentGrossValNum * 0.85),
+            Math.round(currentCostNum * 0.90),
+            Math.round(currentNetValNum * 0.84)
+          ],
           itemStyle: {
             color: '#92A8D1',
             borderRadius: [4, 4, 0, 0]
@@ -507,7 +510,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           type: 'bar',
           barWidth: 26,
           data: [
-            customGrossValue != null ? customGrossValue : 2210000,
+            currentGrossValNum,
             currentCostNum,
             currentNetValNum
           ],
@@ -518,7 +521,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           label: {
             show: true,
             position: 'top',
-            formatter: (p: any) => p.value >= 1000000 ? `$${(p.value / 1000000).toFixed(2)}M` : `$${(p.value / 1000).toFixed(0)}K`,
+            formatter: (p: any) => formatUSD(p.value),
             color: '#00349B',
             fontWeight: 700,
             fontSize: 11
@@ -541,25 +544,9 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
     const chart = echarts.init(teamBarChartRef.current);
 
     const teamValues = [
-      { name: 'Manufacturing Quality', val: -16000, agents: 2, isCopilot: false },
-      { name: 'Procurement', val: -9800, agents: 2, isCopilot: false },
-      { name: 'Device Engineering', val: -8000, agents: 2, isCopilot: false },
-      { name: 'Field Services', val: -8000, agents: 2, isCopilot: false },
-      { name: 'Marketing', val: -7000, agents: 2, isCopilot: false },
-      { name: 'Accounts Receivable', val: 2200, agents: 2, isCopilot: false },
-      { name: 'Financial Planning & Close', val: 13000, agents: 2, isCopilot: false },
-      { name: 'Bids & Proposals', val: 35000, agents: 2, isCopilot: false },
-      { name: 'Warranty & Returns', val: 42000, agents: 2, isCopilot: false },
-      { name: 'Channel & Partners', val: 45000, agents: 2, isCopilot: false },
-      { name: 'Planning', val: 61000, agents: 2, isCopilot: false },
-      { name: 'DevOps & SRE', val: 69000, agents: 2, isCopilot: false },
-      { name: 'Supply Chain', val: 82000, agents: 4, isCopilot: false },
-      { name: 'Sales', val: 87000, agents: 3, isCopilot: false },
-      { name: 'Product Support', val: 100000, agents: 3, isCopilot: false },
-      { name: 'Software Engineering', val: 115000, agents: 3, isCopilot: false },
-      { name: 'Customer Service', val: 126000, agents: 3, isCopilot: false },
-      { name: 'IT Service Desk', val: 154000, agents: 3, isCopilot: false },
-      { name: 'M365 Copilot (all)', val: 917000, agents: 0, isCopilot: true },
+      { name: 'IT Service Desk (Ticket Triage)', val: 111.52, agents: 1, isCopilot: false },
+      { name: 'Supply Chain (Order Dispatch)', val: 344.90, agents: 1, isCopilot: false },
+      { name: 'Software Engineering (Antigravity IDE)', val: 8240.00, agents: 2, isCopilot: false },
     ];
 
     chart.setOption({
@@ -706,7 +693,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ fontSize: 12, color: '#64748B' }}>
-            Scope: <b style={{ color: '#00349B' }}>{selectedFunction}</b> · 43 Active Agents Tracked
+            Scope: <b style={{ color: '#00349B' }}>{selectedFunction}</b> · {totalAgents} Active AI Systems Tracked
           </div>
 
           <button

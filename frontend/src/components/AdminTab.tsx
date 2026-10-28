@@ -176,6 +176,90 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     "description": "Microsoft Copilot Studio autonomous workflow bot deployed in Teams for SAP shipment tracking, warehouse inventory checks, and automated RMA parts dispatch."
   }, null, 2);
 
+  // Dedicated In-UI Direct Agent Values Editor Modal
+  const [editingAgent, setEditingAgent] = useState<WorkingAgentItem | null>(null);
+  const [agentFormValues, setAgentFormValues] = useState<{
+    agent_name: string;
+    business_function: string;
+    team: string;
+    model: string;
+    monthly_infra_cost: number;
+    monthly_budget: number;
+    baseline_employee_hours: number;
+    employee_monthly_rate: number;
+    employee_monthly_working_hours: number;
+    input_token_price_per_1m: number;
+    output_token_price_per_1m: number;
+    category: string;
+    agent_type: string;
+    description: string;
+  }>({
+    agent_name: '',
+    business_function: 'Eng & IT',
+    team: 'IT Service Desk',
+    model: 'gpt-4o',
+    monthly_infra_cost: 45,
+    monthly_budget: 100,
+    baseline_employee_hours: 0.25,
+    employee_monthly_rate: 900,
+    employee_monthly_working_hours: 160,
+    input_token_price_per_1m: 2.5,
+    output_token_price_per_1m: 10,
+    category: 'built_using',
+    agent_type: 'workflow_agent',
+    description: ''
+  });
+  const [isSavingAgentForm, setIsSavingAgentForm] = useState<boolean>(false);
+
+  const handleOpenEditModal = (ag: WorkingAgentItem) => {
+    let configObj: any = null;
+    if (ag.config_json) {
+      try {
+        configObj = JSON.parse(ag.config_json);
+      } catch (e) {
+        configObj = null;
+      }
+    }
+    setEditingAgent(ag);
+    setAgentFormValues({
+      agent_name: ag.name,
+      business_function: ag.business_function || configObj?.business_function || 'Eng & IT',
+      team: ag.team || configObj?.team || 'IT Service Desk',
+      model: ag.model || configObj?.model || 'gpt-4o',
+      monthly_infra_cost: ag.monthly_infra_cost ?? configObj?.monthly_infra_cost ?? (ag.name.includes('Supply Chain') ? 200.0 : 45.0),
+      monthly_budget: ag.monthly_budget ?? configObj?.monthly_budget ?? (ag.name.includes('Supply Chain') ? 300.0 : 100.0),
+      baseline_employee_hours: ag.baseline_employee_hours ?? configObj?.baseline_employee_hours ?? (ag.name.includes('Supply Chain') ? 0.33 : 0.25),
+      employee_monthly_rate: ag.employee_monthly_rate ?? configObj?.employee_monthly_rate ?? (ag.name.includes('Supply Chain') ? 1100.0 : 900.0),
+      employee_monthly_working_hours: ag.employee_monthly_working_hours ?? configObj?.employee_monthly_working_hours ?? 160,
+      input_token_price_per_1m: ag.input_token_price_per_1m ?? configObj?.input_token_price_per_1m ?? 2.50,
+      output_token_price_per_1m: ag.output_token_price_per_1m ?? configObj?.output_token_price_per_1m ?? 10.00,
+      category: ag.category || configObj?.category || (ag.name.includes('Supply Chain') ? 'built_with' : 'built_using'),
+      agent_type: ag.agent_type || configObj?.agent_type || 'workflow_agent',
+      description: ag.description || configObj?.description || ''
+    });
+  };
+
+  const handleSaveAgentForm = async () => {
+    if (!agentFormValues.agent_name.trim()) return;
+    try {
+      setIsSavingAgentForm(true);
+      await ingestWorkingAgent(agentFormValues);
+      setWorkingAgentIngestResult({
+        type: 'success',
+        message: `Successfully saved '${agentFormValues.agent_name}' parameters directly to database! Scorecard & executive metrics recalculated.`
+      });
+      setEditingAgent(null);
+      await loadWorkingAgents();
+      if (onThresholdsUpdated) {
+        onThresholdsUpdated();
+      }
+    } catch (err: any) {
+      alert(`Failed to save agent to database: ${err.message}`);
+    } finally {
+      setIsSavingAgentForm(false);
+    }
+  };
+
   const [workingAgentJson, setWorkingAgentJson] = useState<string>(TICKET_TRIAGE_AGENT_JSON);
   const [workingAgentsList, setWorkingAgentsList] = useState<WorkingAgentItem[]>([]);
   const [isLoadingWorkingAgents, setIsLoadingWorkingAgents] = useState<boolean>(false);
@@ -3171,9 +3255,30 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                           </span>
                         </td>
 
-                        <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                          <button
-                            onClick={() => {
+                        <td style={{ padding: '12px 14px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>
+                            <button
+                              onClick={() => handleOpenEditModal(ag)}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                padding: '6px 12px',
+                                background: '#4F46E5',
+                                border: 'none',
+                                borderRadius: 6,
+                                color: '#FFFFFF',
+                                fontSize: 11,
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                boxShadow: '0 1px 3px rgba(79, 70, 229, 0.25)'
+                              }}
+                            >
+                              <Sliders size={12} />
+                              Edit Values
+                            </button>
+                            <button
+                              onClick={() => {
                               let configObj: any = null;
                               if (ag.config_json) {
                                 try {
@@ -3219,7 +3324,8 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                             }}
                           >
                             Edit in JSON
-                          </button>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -3228,6 +3334,401 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               </table>
             </div>
           </div>
+
+          {/* DEDICATED DIRECT AGENT VALUES EDITOR MODAL */}
+          {editingAgent && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 20
+            }}>
+              <div style={{
+                background: '#FFFFFF',
+                borderRadius: 14,
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)',
+                width: '100%',
+                maxWidth: 720,
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                {/* Modal Header */}
+                <div style={{
+                  padding: '20px 24px',
+                  borderBottom: '1px solid #E2E8F0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: '#F8FAFC',
+                  borderTopLeftRadius: 14,
+                  borderTopRightRadius: 14
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{
+                      background: '#EEF2FF',
+                      color: '#4F46E5',
+                      padding: 8,
+                      borderRadius: 8,
+                      display: 'flex'
+                    }}>
+                      <Sliders size={20} />
+                    </div>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: '#0F172A' }}>
+                        Edit Agent Parameters: {editingAgent.name}
+                      </h3>
+                      <p style={{ margin: '3px 0 0 0', fontSize: 12, color: '#64748B' }}>
+                        Changes are saved directly into the SQLite database and will immediately recalculate all scorecard metrics.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setEditingAgent(null)}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#64748B',
+                      cursor: 'pointer',
+                      padding: 4,
+                      display: 'flex'
+                    }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Modal Form Body */}
+                <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+                  
+                  {/* Section 1: Financials & Infra */}
+                  <div>
+                    <h4 style={{ margin: '0 0 12px 0', fontSize: 13, fontWeight: 800, color: '#1E293B', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <DollarSign size={15} color="#4F46E5" />
+                      Monthly Infrastructure & Budgeting
+                    </h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Monthly Infra / Capacity Pack Cost ($/mo)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={agentFormValues.monthly_infra_cost}
+                          onChange={(e) => setAgentFormValues({ ...agentFormValues, monthly_infra_cost: parseFloat(e.target.value) || 0 })}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 600
+                          }}
+                        />
+                        <span style={{ fontSize: 11, color: '#64748B' }}>Fixed monthly server or Copilot Studio capacity fee.</span>
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Monthly Budget Allocation ($/mo)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={agentFormValues.monthly_budget}
+                          onChange={(e) => setAgentFormValues({ ...agentFormValues, monthly_budget: parseFloat(e.target.value) || 0 })}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 600
+                          }}
+                        />
+                        <span style={{ fontSize: 11, color: '#64748B' }}>Departmental AI spending cap for cost vs budget.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 2: Human Labor Benchmark & Hourly Wage */}
+                  <div style={{ background: '#F8FAFC', padding: 16, borderRadius: 10, border: '1px solid #E2E8F0' }}>
+                    <h4 style={{ margin: '0 0 12px 0', fontSize: 13, fontWeight: 800, color: '#1E293B', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Clock size={15} color="#0284C7" />
+                      Human Capital & Labor Rate Benchmark
+                    </h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Baseline Hours Saved / Task
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={agentFormValues.baseline_employee_hours}
+                          onChange={(e) => setAgentFormValues({ ...agentFormValues, baseline_employee_hours: parseFloat(e.target.value) || 0 })}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 600
+                          }}
+                        />
+                        <span style={{ fontSize: 11, color: '#0369A1', fontWeight: 600 }}>
+                          = {Math.round(agentFormValues.baseline_employee_hours * 60)} minutes/task
+                        </span>
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Employee Monthly Salary ($/mo)
+                        </label>
+                        <input
+                          type="number"
+                          step="1"
+                          value={agentFormValues.employee_monthly_rate}
+                          onChange={(e) => setAgentFormValues({ ...agentFormValues, employee_monthly_rate: parseFloat(e.target.value) || 0 })}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 600
+                          }}
+                        />
+                        <span style={{ fontSize: 11, color: '#64748B' }}>Fully loaded monthly salary.</span>
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Working Hours / Month
+                        </label>
+                        <input
+                          type="number"
+                          step="1"
+                          value={agentFormValues.employee_monthly_working_hours}
+                          onChange={(e) => setAgentFormValues({ ...agentFormValues, employee_monthly_working_hours: parseFloat(e.target.value) || 160 })}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 600
+                          }}
+                        />
+                        <span style={{ fontSize: 11, color: '#64748B' }}>Standard: 160 hrs/mo.</span>
+                      </div>
+                    </div>
+
+                    <div style={{
+                      marginTop: 12,
+                      padding: '8px 12px',
+                      background: '#EFF6FF',
+                      borderRadius: 6,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#1E40AF' }}>
+                        Calculated Employee Hourly Wage:
+                      </span>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: '#1E40AF' }}>
+                        ${((agentFormValues.employee_monthly_rate || 0) / (agentFormValues.employee_monthly_working_hours || 160)).toFixed(2)}/hr
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Section 3: Model & Token Rates */}
+                  <div>
+                    <h4 style={{ margin: '0 0 12px 0', fontSize: 13, fontWeight: 800, color: '#1E293B', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Zap size={15} color="#10B981" />
+                      Model & Token Pricing
+                    </h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Model Identifier
+                        </label>
+                        <input
+                          type="text"
+                          value={agentFormValues.model}
+                          onChange={(e) => setAgentFormValues({ ...agentFormValues, model: e.target.value })}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 600
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Input Token Rate ($/1M)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={agentFormValues.input_token_price_per_1m}
+                          onChange={(e) => setAgentFormValues({ ...agentFormValues, input_token_price_per_1m: parseFloat(e.target.value) || 0 })}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 600
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Output Token Rate ($/1M)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={agentFormValues.output_token_price_per_1m}
+                          onChange={(e) => setAgentFormValues({ ...agentFormValues, output_token_price_per_1m: parseFloat(e.target.value) || 0 })}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 600
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 4: Function & Team Mapping */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                        Business Function
+                      </label>
+                      <select
+                        value={agentFormValues.business_function}
+                        onChange={(e) => setAgentFormValues({ ...agentFormValues, business_function: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '8px 12px',
+                          border: '1.5px solid #CBD5E1',
+                          borderRadius: 8,
+                          fontSize: 13,
+                          fontWeight: 600,
+                          background: '#FFFFFF'
+                        }}
+                      >
+                        <option value="Eng & IT">Eng & IT</option>
+                        <option value="Operations">Operations</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Customer">Customer</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                        Team Name
+                      </label>
+                      <input
+                        type="text"
+                        value={agentFormValues.team}
+                        onChange={(e) => setAgentFormValues({ ...agentFormValues, team: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '8px 12px',
+                          border: '1.5px solid #CBD5E1',
+                          borderRadius: 8,
+                          fontSize: 13,
+                          fontWeight: 600
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div style={{
+                  padding: '16px 24px',
+                  borderTop: '1px solid #E2E8F0',
+                  background: '#F8FAFC',
+                  borderBottomLeftRadius: 14,
+                  borderBottomRightRadius: 14,
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: 12
+                }}>
+                  <button
+                    onClick={() => setEditingAgent(null)}
+                    disabled={isSavingAgentForm}
+                    style={{
+                      padding: '8px 18px',
+                      background: '#FFFFFF',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: 8,
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: '#475569',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveAgentForm}
+                    disabled={isSavingAgentForm}
+                    style={{
+                      padding: '8px 22px',
+                      background: '#4F46E5',
+                      border: 'none',
+                      borderRadius: 8,
+                      fontSize: 13,
+                      fontWeight: 800,
+                      color: '#FFFFFF',
+                      cursor: isSavingAgentForm ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      boxShadow: '0 2px 6px rgba(79, 70, 229, 0.3)'
+                    }}
+                  >
+                    {isSavingAgentForm ? (
+                      <>
+                        <RefreshCw size={14} className="animate-spin" />
+                        Saving to Database...
+                      </>
+                    ) : (
+                      <>
+                        <Save size={14} />
+                        Save Changes to Database
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
