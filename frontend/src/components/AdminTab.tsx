@@ -159,6 +159,23 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     "description": "Automated IT service desk ticket triaging, diagnostic analysis, and resolution suggestions."
   }, null, 2);
 
+  const SUPPLY_CHAIN_COPILOT_AGENT_JSON = JSON.stringify({
+    "agent_name": "Global Supply Chain & Order Dispatch Bot",
+    "business_function": "Operations",
+    "team": "Supply Chain",
+    "model": "copilot-studio-v2",
+    "input_token_price_per_1m": 0.00,
+    "output_token_price_per_1m": 0.00,
+    "monthly_infra_cost": 200.00,
+    "monthly_budget": 600.00,
+    "baseline_employee_hours": 0.33,
+    "employee_monthly_rate": 7200.00,
+    "employee_monthly_working_hours": 160,
+    "category": "built_with",
+    "agent_type": "workflow_agent",
+    "description": "Microsoft Copilot Studio autonomous workflow bot deployed in Teams for SAP shipment tracking, warehouse inventory checks, and automated RMA parts dispatch."
+  }, null, 2);
+
   const [workingAgentJson, setWorkingAgentJson] = useState<string>(TICKET_TRIAGE_AGENT_JSON);
   const [workingAgentsList, setWorkingAgentsList] = useState<WorkingAgentItem[]>([]);
   const [isLoadingWorkingAgents, setIsLoadingWorkingAgents] = useState<boolean>(false);
@@ -2648,6 +2665,44 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                   >
                     Ticket Triage Preset
                   </button>
+                  <button
+                    onClick={() => {
+                      setWorkingAgentJson(SUPPLY_CHAIN_COPILOT_AGENT_JSON);
+                      setJsonValidationError(null);
+                    }}
+                    style={{
+                      padding: '5px 10px',
+                      background: '#F0FDF4',
+                      border: '1px solid #BBF7D0',
+                      borderRadius: 6,
+                      color: '#15803D',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Supply Chain Preset (Copilot Studio)
+                  </button>
+                  <a
+                    href="http://localhost:8000/api/v1/copilot-studio/ui"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      padding: '5px 10px',
+                      background: '#0F172A',
+                      border: '1px solid #334155',
+                      borderRadius: 6,
+                      color: '#38BDF8',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}
+                  >
+                    ? Open Copilot Studio Bot Console
+                  </a>
                   <button
                     onClick={handleFormatJson}
                     style={{

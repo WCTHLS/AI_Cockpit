@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse
 from contextlib import asynccontextmanager
 from .config import settings
 from .database import init_db
-from .routers import auth, summary, agents, costs, seats, admin, telemetry, ingest, claude_sync, developer_sync
+from .routers import auth, summary, agents, costs, seats, admin, telemetry, ingest, claude_sync, developer_sync, copilot_studio
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -42,6 +42,7 @@ app.include_router(telemetry.router, prefix=settings.API_V1_STR)
 app.include_router(ingest.router, prefix=settings.API_V1_STR)
 app.include_router(claude_sync.router, prefix=settings.API_V1_STR)
 app.include_router(developer_sync.router, prefix=settings.API_V1_STR)
+app.include_router(copilot_studio.router, prefix=settings.API_V1_STR)
 
 @app.get("/health", tags=["system"])
 def health_check():

@@ -182,7 +182,8 @@ def sync_active_agents(conn: sqlite3.Connection):
         cur.execute("""
             UPDATE ai_agent 
             SET is_active = 0 
-            WHERE name != 'Ticket Triage Agent' AND (config_json IS NULL OR config_json = '');
+            WHERE name NOT IN ('Ticket Triage Agent', 'Global Supply Chain & Order Dispatch Bot') 
+              AND (config_json IS NULL OR config_json = '');
         """)
     except Exception as e:
         print(f"Warning in sync_active_agents: {e}")
