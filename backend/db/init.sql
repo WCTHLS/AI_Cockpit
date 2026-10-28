@@ -77,6 +77,8 @@ CREATE TABLE IF NOT EXISTS ai_agent (
     model           TEXT NOT NULL DEFAULT 'gpt-4o',
     baseline_employee_hours REAL NOT NULL DEFAULT 0.5,
     employee_monthly_rate REAL NOT NULL DEFAULT 0.0,
+    employee_monthly_working_hours REAL NOT NULL DEFAULT 160.0,
+    monthly_budget  REAL NOT NULL DEFAULT 500.0,
     business_function TEXT,
     team            TEXT,
     config_json     TEXT,

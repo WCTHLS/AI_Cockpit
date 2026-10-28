@@ -167,11 +167,15 @@ class CockpitDataStore:
                 )
                 tot_sessions = 0
                 tot_success = 0
+                tot_prompt_tokens = 0
+                tot_completion_tokens = 0
                 for ur in usage_agg:
                     try:
                         parsed = json.loads(ur["daily_usage_json"])
                         tot_sessions += int(parsed.get("session_count", ur["sessions_count"]))
                         tot_success += int(parsed.get("sucess", 0))
+                        tot_prompt_tokens += int(parsed.get("prompt_tokens", 0))
+                        tot_completion_tokens += int(parsed.get("completion_tokens", 0))
                     except Exception:
                         pass
 
@@ -184,24 +188,52 @@ class CockpitDataStore:
                     eval_passed = int(r.get("eval_passed_cases") or 0)
                     eval_p = float(r.get("eval_pass_rate") or 0.0)
 
-                # ── 3. PRODUCTIVITY & FINANCIALS ──
+                # ── 3. PRODUCTIVITY & FINANCIALS (Using working agent configuration) ──
                 incidents = int(r.get("incident_count") or 0)
-                hours_saved = float(r.get("hours_saved") or 0.0)
-                if hours_saved == 0.0 and tot_success > 0:
-                    hours_saved = round(tot_success * 0.42, 1)
 
-                hourly_rate = float(r.get("hourly_cost") or 85.0)
-                gross_val = float(r.get("gross_value") or 0.0)
-                if gross_val == 0.0 and hours_saved > 0:
-                    gross_val = round(hours_saved * hourly_rate, 2)
+                # Fetch agent's specific onboarding configuration from ai_agent table
+                agent_cfg = query_one("""
+                    SELECT 
+                        monthly_infra_cost, monthly_budget, input_token_price_per_1m, output_token_price_per_1m,
+                        baseline_employee_hours, employee_monthly_rate, employee_monthly_working_hours
+                    FROM ai_agent WHERE id = ?
+                """, (db_agent_id,))
 
-                cost = round(float(r.get("total_cost") or 0.0), 2)
-                budget = round(float(r.get("budget") or 0.0), 2)
-                if budget == 0.0:
-                    budget = 250.0  # standard monthly allocation
+                baseline_hrs_cfg = float(agent_cfg.get("baseline_employee_hours") or 0.5) if agent_cfg else 0.5
+                emp_monthly_rate_cfg = float(agent_cfg.get("employee_monthly_rate") or 6500.0) if agent_cfg else 6500.0
+                working_hours_cfg = float(agent_cfg.get("employee_monthly_working_hours") or 160.0) if agent_cfg else 160.0
+                monthly_infra_cfg = float(agent_cfg.get("monthly_infra_cost") or 0.0) if agent_cfg else 0.0
+                monthly_budget_cfg = float(agent_cfg.get("monthly_budget") or 500.0) if agent_cfg else 500.0
+                input_price_cfg = float(agent_cfg.get("input_token_price_per_1m") or 2.50) if agent_cfg else 2.50
+                output_price_cfg = float(agent_cfg.get("output_token_price_per_1m") or 10.00) if agent_cfg else 10.00
 
+                # 3A. Hours Saved
+                if tot_success > 0:
+                    hours_saved = round(tot_success * baseline_hrs_cfg, 1)
+                else:
+                    hours_saved = float(r.get("hours_saved") or 0.0)
+
+                # 3B. Hourly labor rate = employee_monthly_rate / employee_monthly_working_hours
+                if emp_monthly_rate_cfg > 0 and working_hours_cfg > 0:
+                    hourly_rate = round(emp_monthly_rate_cfg / working_hours_cfg, 2)
+                else:
+                    hourly_rate = float(r.get("hourly_cost") or 40.63)
+
+                # 3C. Gross Labor Value Created
+                gross_val = round(hours_saved * hourly_rate, 2)
+
+                # 3D. Monthly Actual AI Cost = sum of tokens usage cost + monthly infra cost (no seats for custom agents)
+                if tot_prompt_tokens > 0 or tot_completion_tokens > 0:
+                    token_cost = (tot_prompt_tokens * input_price_cfg / 1_000_000.0) + (tot_completion_tokens * output_price_cfg / 1_000_000.0)
+                else:
+                    token_cost = float(r.get("total_cost") or 0.0)
+
+                cost = round(token_cost + monthly_infra_cfg, 2)
+
+                # 3E. Monthly Budget and Net Value Delivered
+                budget = round(monthly_budget_cfg if monthly_budget_cfg > 0 else float(r.get("budget") or 500.0), 2)
                 net_val = round(gross_val - cost, 2)
-                cost_budget_pct = round((cost / budget * 100.0), 1) if budget > 0 else 0.1
+                cost_budget_pct = round((cost / budget * 100.0), 1) if budget > 0 else 0.0
 
                 # ── 4. STATUS & GOVERNANCE ACTION ──
                 if incidents > 0:

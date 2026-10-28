@@ -150,8 +150,10 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     "input_token_price_per_1m": 2.50,
     "output_token_price_per_1m": 10.00,
     "monthly_infra_cost": 150.00,
+    "monthly_budget": 500.00,
     "baseline_employee_hours": 0.5,
     "employee_monthly_rate": 6500.00,
+    "employee_monthly_working_hours": 160,
     "category": "built_with",
     "agent_type": "workflow_agent",
     "description": "Automated IT service desk ticket triaging, diagnostic analysis, and resolution suggestions."
@@ -3025,6 +3027,13 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                     desc: 'Fixed monthly cloud hosting, container & cluster run cost.'
                   },
                   {
+                    key: 'monthly_budget',
+                    type: 'number (USD)',
+                    req: true,
+                    example: '500.00',
+                    desc: 'Allocated monthly operational budget limit for cost vs budget performance.'
+                  },
+                  {
                     key: 'baseline_employee_hours',
                     type: 'number (hours)',
                     req: true,
@@ -3036,7 +3045,14 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                     type: 'number (USD)',
                     req: true,
                     example: '6500.00',
-                    desc: 'Monthly human salary baseline (used for hourly value calculation at 160 hrs/mo).'
+                    desc: 'Monthly human salary baseline for labor value calculation.'
+                  },
+                  {
+                    key: 'employee_monthly_working_hours',
+                    type: 'number (hours)',
+                    req: true,
+                    example: '160',
+                    desc: 'Standard monthly employee working hours (used as divisor to derive hourly rate: $6,500 / 160 = $40.63/hr).'
                   },
                   {
                     key: 'category & agent_type',
@@ -3127,9 +3143,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                     <th style={{ padding: '12px 14px' }}>Business Function &amp; Team</th>
                     <th style={{ padding: '12px 14px' }}>LLM Model</th>
                     <th style={{ padding: '12px 14px' }}>Token Pricing (per 1M)</th>
-                    <th style={{ padding: '12px 14px' }}>Monthly Infra Cost</th>
+                    <th style={{ padding: '12px 14px' }}>Monthly Budget &amp; Infra</th>
                     <th style={{ padding: '12px 14px' }}>Task Baseline</th>
-                    <th style={{ padding: '12px 14px' }}>Employee Monthly Rate</th>
+                    <th style={{ padding: '12px 14px' }}>Employee Wage &amp; Hours</th>
                     <th style={{ padding: '12px 14px' }}>Status</th>
                     <th style={{ padding: '12px 14px', textAlign: 'right' }}>Actions</th>
                   </tr>
@@ -3194,10 +3210,12 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                         </td>
 
                         <td style={{ padding: '12px 14px' }}>
-                          <div style={{ fontSize: 13, fontWeight: 800, color: '#1E293B' }}>
-                            ${Number(ag.monthly_infra_cost || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          <div style={{ fontSize: 12.5, fontWeight: 800, color: '#1E293B' }}>
+                            Budget: <span style={{ color: '#4F46E5' }}>${Number(ag.monthly_budget || 500.0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                           </div>
-                          <div style={{ fontSize: 10.5, color: '#64748B' }}>per month</div>
+                          <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
+                            Infra: ${Number(ag.monthly_infra_cost || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / mo
+                          </div>
                         </td>
 
                         <td style={{ padding: '12px 14px' }}>
@@ -3211,11 +3229,11 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                         </td>
 
                         <td style={{ padding: '12px 14px' }}>
-                          <div style={{ fontSize: 13, fontWeight: 800, color: '#1E293B' }}>
-                            ${Number(ag.employee_monthly_rate || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          <div style={{ fontSize: 12.5, fontWeight: 800, color: '#1E293B' }}>
+                            ${Number(ag.employee_monthly_rate || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / mo
                           </div>
-                          <div style={{ fontSize: 10.5, color: '#64748B' }}>
-                            (~${(Number(ag.employee_monthly_rate || 0) / 160.0).toFixed(2)}/hr)
+                          <div style={{ fontSize: 11, color: '#0369A1', fontWeight: 600, marginTop: 2 }}>
+                            ${((Number(ag.employee_monthly_rate || 6500.0)) / (Number(ag.employee_monthly_working_hours || 160.0))).toFixed(2)}/hr ({ag.employee_monthly_working_hours || 160} hrs/mo)
                           </div>
                         </td>
 
@@ -3240,11 +3258,13 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                                 business_function: ag.business_function || 'Eng & IT',
                                 team: ag.team || 'IT Service Desk',
                                 model: ag.model || 'gpt-4o',
-                                input_token_price_per_1m: ag.input_token_price_per_1m || 2.50,
-                                output_token_price_per_1m: ag.output_token_price_per_1m || 10.00,
-                                monthly_infra_cost: ag.monthly_infra_cost || 150.00,
-                                baseline_employee_hours: ag.baseline_employee_hours || 0.5,
-                                employee_monthly_rate: ag.employee_monthly_rate || 6500.00,
+                                input_token_price_per_1m: ag.input_token_price_per_1m ?? 2.50,
+                                output_token_price_per_1m: ag.output_token_price_per_1m ?? 10.00,
+                                monthly_infra_cost: ag.monthly_infra_cost ?? 150.00,
+                                monthly_budget: ag.monthly_budget ?? 500.00,
+                                baseline_employee_hours: ag.baseline_employee_hours ?? 0.5,
+                                employee_monthly_rate: ag.employee_monthly_rate ?? 6500.00,
+                                employee_monthly_working_hours: ag.employee_monthly_working_hours ?? 160,
                                 category: ag.category || 'built_with',
                                 agent_type: ag.agent_type || 'workflow_agent',
                                 description: ag.description || ''

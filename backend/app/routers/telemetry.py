@@ -276,17 +276,34 @@ def ingest_telemetry(payload: TelemetryIngestPayload):
 
     status = "SUCCESS" if is_success else "FAILED"
 
+    # Look up agent configuration from ai_agent table (onboarded via working agent JSON)
+    agent_cfg = query_one("""
+        SELECT 
+            input_token_price_per_1m, output_token_price_per_1m,
+            baseline_employee_hours, employee_monthly_rate,
+            employee_monthly_working_hours, monthly_infra_cost, monthly_budget
+        FROM ai_agent 
+        WHERE name = ? OR name LIKE ?
+    """, (agent_name, f"%{agent_name}%"))
+
+    input_price = float(agent_cfg.get("input_token_price_per_1m") or 2.50) if agent_cfg else 2.50
+    output_price = float(agent_cfg.get("output_token_price_per_1m") or 10.00) if agent_cfg else 10.00
+    baseline_hrs = float(agent_cfg.get("baseline_employee_hours") or 0.5) if agent_cfg else 0.5
+    monthly_rate = float(agent_cfg.get("employee_monthly_rate") or 6500.0) if agent_cfg else 6500.0
+    working_hrs = float(agent_cfg.get("employee_monthly_working_hours") or 160.0) if agent_cfg else 160.0
+    hourly_labor_rate = round(monthly_rate / working_hrs, 2) if working_hrs > 0 else 40.63
+
     cost_usd = payload.cost_usd
     if cost_usd is None:
-        cost_usd = round((tokens_in * 2.50 / 1_000_000) + (tokens_out * 10.0 / 1_000_000), 5)
+        cost_usd = round((tokens_in * input_price / 1_000_000) + (tokens_out * output_price / 1_000_000), 5)
 
     hours_saved = payload.hours_saved
     if hours_saved is None:
-        hours_saved = 0.42 if is_success else 0.0
+        hours_saved = baseline_hrs if is_success else 0.0
 
     gross_value_usd = payload.gross_value_usd
     if gross_value_usd is None:
-        gross_value_usd = round(hours_saved * 85.0, 2)
+        gross_value_usd = round(hours_saved * hourly_labor_rate, 2)
 
     # 1. Update in-memory store for fallback / fast response
     for row in store.raw_agents:

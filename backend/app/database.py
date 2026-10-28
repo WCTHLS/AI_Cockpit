@@ -261,6 +261,8 @@ def ensure_ai_agent_columns(conn: sqlite3.Connection):
             ("model", "TEXT NOT NULL DEFAULT 'gpt-4o'"),
             ("baseline_employee_hours", "REAL NOT NULL DEFAULT 0.5"),
             ("employee_monthly_rate", "REAL NOT NULL DEFAULT 0.0"),
+            ("employee_monthly_working_hours", "REAL NOT NULL DEFAULT 160.0"),
+            ("monthly_budget", "REAL NOT NULL DEFAULT 500.0"),
             ("business_function", "TEXT"),
             ("team", "TEXT"),
             ("config_json", "TEXT")
@@ -278,6 +280,8 @@ def ensure_ai_agent_columns(conn: sqlite3.Connection):
                 model = COALESCE(model, 'gpt-4o'),
                 baseline_employee_hours = CASE WHEN baseline_employee_hours = 0 THEN 0.5 ELSE baseline_employee_hours END,
                 employee_monthly_rate = CASE WHEN employee_monthly_rate = 0 THEN 6500.0 ELSE employee_monthly_rate END,
+                employee_monthly_working_hours = CASE WHEN employee_monthly_working_hours = 0 THEN 160.0 ELSE employee_monthly_working_hours END,
+                monthly_budget = CASE WHEN monthly_budget = 0 THEN 500.0 ELSE monthly_budget END,
                 business_function = COALESCE(business_function, 'Eng & IT'),
                 team = COALESCE(team, 'IT Service Desk'),
                 description = COALESCE(description, 'Automated IT service desk ticket triaging, diagnostic analysis, and resolution suggestions.')

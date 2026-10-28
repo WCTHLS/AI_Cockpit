@@ -216,8 +216,10 @@ export interface WorkingAgentConfig {
   input_token_price_per_1m: number;
   output_token_price_per_1m: number;
   monthly_infra_cost: number;
+  monthly_budget?: number;
   baseline_employee_hours: number;
   employee_monthly_rate: number;
+  employee_monthly_working_hours?: number;
   category?: string;
   agent_type?: string;
   description?: string;
@@ -235,11 +237,13 @@ export interface WorkingAgentItem {
   is_active: number;
   created_at: string;
   monthly_infra_cost: number;
+  monthly_budget: number;
   input_token_price_per_1m: number;
   output_token_price_per_1m: number;
   model: string;
   baseline_employee_hours: number;
   employee_monthly_rate: number;
+  employee_monthly_working_hours: number;
   business_function: string;
   team: string;
   config_json?: string;

@@ -62,7 +62,7 @@ async def upload_csv(
 WORKING_AGENT_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "WorkingAgentIngestConfig",
-    "description": "Enterprise working AI agent onboarding schema defining governance parameters, FinOps pricing, and productivity baselines.",
+    "description": "Enterprise working AI agent onboarding schema defining governance parameters, FinOps pricing, monthly budget, and productivity baselines.",
     "type": "object",
     "required": [
         "agent_name",
@@ -72,8 +72,10 @@ WORKING_AGENT_SCHEMA = {
         "input_token_price_per_1m",
         "output_token_price_per_1m",
         "monthly_infra_cost",
+        "monthly_budget",
         "baseline_employee_hours",
-        "employee_monthly_rate"
+        "employee_monthly_rate",
+        "employee_monthly_working_hours"
     ],
     "properties": {
         "agent_name": {
@@ -111,6 +113,11 @@ WORKING_AGENT_SCHEMA = {
             "description": "Fixed monthly infrastructure, cloud hosting, and container cost for this agent in USD",
             "example": 150.00
         },
+        "monthly_budget": {
+            "type": "number",
+            "description": "Monthly allocated FinOps budget for this agent in USD (used as denominator for Cost vs budget)",
+            "example": 500.00
+        },
         "baseline_employee_hours": {
             "type": "number",
             "description": "Average human employee hours previously required to complete 1 task manually (e.g. 0.5 hours for 30 minutes)",
@@ -120,6 +127,11 @@ WORKING_AGENT_SCHEMA = {
             "type": "number",
             "description": "Fully loaded monthly salary and compensation rate of the human employee role in USD",
             "example": 6500.00
+        },
+        "employee_monthly_working_hours": {
+            "type": "number",
+            "description": "Standard monthly working hours for employees (default 160 hours/month)",
+            "example": 160.0
         },
         "category": {
             "type": "string",
@@ -147,8 +159,10 @@ WORKING_AGENT_SCHEMA = {
         "input_token_price_per_1m": 2.50,
         "output_token_price_per_1m": 10.00,
         "monthly_infra_cost": 150.00,
+        "monthly_budget": 500.00,
         "baseline_employee_hours": 0.5,
         "employee_monthly_rate": 6500.00,
+        "employee_monthly_working_hours": 160,
         "category": "built_with",
         "agent_type": "workflow_agent",
         "description": "Automated IT service desk ticket triaging, diagnostic analysis, and resolution suggestions."
@@ -171,8 +185,8 @@ def get_working_agents(user: Dict[str, Any] = Depends(get_current_user)):
         SELECT 
             a.id, a.company_id, a.name, a.category, a.agent_type, a.portfolio,
             a.description, a.go_live_date, a.is_active, a.created_at,
-            a.monthly_infra_cost, a.input_token_price_per_1m, a.output_token_price_per_1m,
-            a.model, a.baseline_employee_hours, a.employee_monthly_rate,
+            a.monthly_infra_cost, a.monthly_budget, a.input_token_price_per_1m, a.output_token_price_per_1m,
+            a.model, a.baseline_employee_hours, a.employee_monthly_rate, a.employee_monthly_working_hours,
             COALESCE(a.business_function, bf.name) as business_function,
             COALESCE(a.team, t.name) as team,
             a.config_json
@@ -227,6 +241,11 @@ def ingest_working_agent(
             except (ValueError, TypeError):
                 monthly_infra = 0.0
 
+            try:
+                monthly_budget = float(raw.get("monthly_budget") if raw.get("monthly_budget") is not None else (raw.get("agent_monthly_budget") or raw.get("budget") or 500.0))
+            except (ValueError, TypeError):
+                monthly_budget = 500.0
+
             if raw.get("baseline_employee_hours") is not None:
                 try:
                     baseline_hours = float(raw["baseline_employee_hours"])
@@ -250,6 +269,11 @@ def ingest_working_agent(
             except (ValueError, TypeError):
                 emp_monthly_rate = 0.0
 
+            try:
+                working_hours = float(raw.get("employee_monthly_working_hours") if raw.get("employee_monthly_working_hours") is not None else (raw.get("employee_working_hours") or raw.get("working_hours") or raw.get("monthly_working_hours") or 160.0))
+            except (ValueError, TypeError):
+                working_hours = 160.0
+
             category = raw.get("category") or "built_with"
             agent_type = raw.get("agent_type") or "workflow_agent"
             description = raw.get("description") or f"{name} serving {team_name} in {function_name}"
@@ -267,9 +291,9 @@ def ingest_working_agent(
             t_row = cur.fetchone()
             tid = t_row[0] if t_row else None
 
-            # 2. Update team hourly cost rate based on employee monthly rate (standard 160 hrs/month)
-            if tid and emp_monthly_rate > 0:
-                hourly_rate = round(emp_monthly_rate / 160.0, 2)
+            # 2. Update team hourly cost rate based on employee monthly rate & working hours
+            if tid and emp_monthly_rate > 0 and working_hours > 0:
+                hourly_rate = round(emp_monthly_rate / working_hours, 2)
                 cur.execute("""
                     INSERT INTO team_hourly_cost_rate (company_id, team_id, effective_from, hourly_cost, currency)
                     VALUES (1, ?, '2026-01-01', ?, 'USD')
@@ -280,13 +304,13 @@ def ingest_working_agent(
             cur.execute("""
                 INSERT INTO ai_agent (
                     company_id, name, category, agent_type, portfolio, description, go_live_date, is_active,
-                    monthly_infra_cost, input_token_price_per_1m, output_token_price_per_1m,
-                    model, baseline_employee_hours, employee_monthly_rate,
+                    monthly_infra_cost, monthly_budget, input_token_price_per_1m, output_token_price_per_1m,
+                    model, baseline_employee_hours, employee_monthly_rate, employee_monthly_working_hours,
                     business_function, team, config_json
                 ) VALUES (
                     1, ?, ?, ?, 'Default', ?, ?, 1,
-                    ?, ?, ?,
-                    ?, ?, ?,
+                    ?, ?, ?, ?,
+                    ?, ?, ?, ?,
                     ?, ?, ?
                 )
                 ON CONFLICT(company_id, name) DO UPDATE SET
@@ -294,19 +318,21 @@ def ingest_working_agent(
                     agent_type = excluded.agent_type,
                     description = excluded.description,
                     monthly_infra_cost = excluded.monthly_infra_cost,
+                    monthly_budget = excluded.monthly_budget,
                     input_token_price_per_1m = excluded.input_token_price_per_1m,
                     output_token_price_per_1m = excluded.output_token_price_per_1m,
                     model = excluded.model,
                     baseline_employee_hours = excluded.baseline_employee_hours,
                     employee_monthly_rate = excluded.employee_monthly_rate,
+                    employee_monthly_working_hours = excluded.employee_monthly_working_hours,
                     business_function = excluded.business_function,
                     team = excluded.team,
                     config_json = excluded.config_json,
                     is_active = 1;
             """, (
                 name, category, agent_type, description, go_live,
-                monthly_infra, input_price, output_price,
-                model, baseline_hours, emp_monthly_rate,
+                monthly_infra, monthly_budget, input_price, output_price,
+                model, baseline_hours, emp_monthly_rate, working_hours,
                 function_name, team_name, raw_json_str
             ))
 
@@ -332,6 +358,13 @@ def ingest_working_agent(
                         approval_status = 'approved';
                 """, (agent_id, tid, baseline_minutes))
 
+                # 6. Update agent budget in agent_budget_month
+                cur.execute("""
+                    INSERT INTO agent_budget_month (company_id, month_start, agent_id, team_id, cost_category, budget_amount, currency)
+                    VALUES (1, '2026-09-01', ?, ?, 'consumption', ?, 'USD')
+                    ON CONFLICT(agent_id, team_id, month_start, cost_category) DO UPDATE SET budget_amount = excluded.budget_amount;
+                """, (agent_id, tid, monthly_budget))
+
             results.append({
                 "agent_id": agent_id,
                 "agent_name": name,
@@ -341,8 +374,10 @@ def ingest_working_agent(
                 "input_token_price_per_1m": input_price,
                 "output_token_price_per_1m": output_price,
                 "monthly_infra_cost": monthly_infra,
+                "monthly_budget": monthly_budget,
                 "baseline_employee_hours": baseline_hours,
                 "employee_monthly_rate": emp_monthly_rate,
+                "employee_monthly_working_hours": working_hours,
                 "status": "SAVED"
             })
 
