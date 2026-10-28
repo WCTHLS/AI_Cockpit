@@ -609,7 +609,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         gap: 14
       }}>
         {/* KPI 1: TOTAL AI COST (Hero Midnight Gradient Card) */}
-        <div className="executive-card" style={{
+        <div className="executive-card" title="Calculated as: Sum of (Token Costs + Cloud Infra Costs + M365/Copilot Seat Licenses) across all departments" style={{
           background: 'linear-gradient(135deg, #0A2540 0%, #00349B 100%)',
           borderRadius: 12,
           padding: '16px 18px',
@@ -621,7 +621,8 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           justifyContent: 'space-between',
           minHeight: 120,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          cursor: 'help'
         }}>
           <div style={{
             position: 'absolute',
@@ -671,7 +672,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         </div>
 
         {/* KPI 2: BUDGET VARIANCE */}
-        <div className="executive-card" style={{
+        <div className="executive-card" title="Calculated as: Total Budget ($425K) - Total Actual Cost ($412K) = $13K favorable variance (under budget)" style={{
           background: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: 12,
@@ -682,7 +683,8 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           justifyContent: 'space-between',
           minHeight: 120,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          cursor: 'help'
         }}>
           <div style={{
             position: 'absolute',
@@ -730,7 +732,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         </div>
 
         {/* KPI 3: VALUE PER $1 SPENT */}
-        <div className="executive-card" style={{
+        <div className="executive-card" title="Calculated as: Total Gross Labor Value Created ÷ Total Actual AI Cost = $2.21M ÷ $412K = $5.37 return per $1 spent" style={{
           background: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: 12,
@@ -741,7 +743,8 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           justifyContent: 'space-between',
           minHeight: 120,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          cursor: 'help'
         }}>
           <div style={{
             position: 'absolute',
@@ -790,7 +793,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         </div>
 
         {/* KPI 4: COST PER HOUR SAVED */}
-        <div className="executive-card" style={{
+        <div className="executive-card" title="Calculated as: Total Actual AI Cost ÷ Total Labor Hours Saved = $412K ÷ 26,000 hrs = $15.85 / hour saved" style={{
           background: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: 12,
@@ -801,7 +804,8 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           justifyContent: 'space-between',
           minHeight: 120,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          cursor: 'help'
         }}>
           <div style={{
             position: 'absolute',
@@ -850,7 +854,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         </div>
 
         {/* KPI 5: ENGINEERING TOKENS */}
-        <div className="executive-card" style={{
+        <div className="executive-card" title="Calculated as: Monthly token consumption spend on frontier models (Claude 3.5 Sonnet, GPT-4o) across engineering teams" style={{
           background: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: 12,
@@ -861,7 +865,8 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           justifyContent: 'space-between',
           minHeight: 120,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          cursor: 'help'
         }}>
           <div style={{
             position: 'absolute',

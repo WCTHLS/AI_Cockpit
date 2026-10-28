@@ -255,6 +255,43 @@ export async function syncClaudeTelemetry(params?: {
   return res.json();
 }
 
+export interface EmployeeDailyMetric {
+  employee_id: number;
+  display_name: string;
+  email: string;
+  sessions_count: number;
+  completion_tokens: number;
+  prompt_tokens: number;
+  total_tokens: number;
+  agent_completion: number;
+  sucess: number;
+  success_rate_pct: number;
+}
+
+export interface AgentDailyTelemetrySummary {
+  date: string;
+  agent_id: string;
+  agent_name: string;
+  employees_count: number;
+  total_tokens: number;
+  completion_tokens: number;
+  prompt_tokens: number;
+  total_sessions: number;
+  avg_sessions_in_day: number;
+  avg_success_rate_pct: number;
+  total_success_count: number;
+  avg_agent_completion_seconds: number;
+  employees_breakdown: EmployeeDailyMetric[];
+}
+
+export async function fetchAgentDailySummary(agentId?: string, date?: string): Promise<AgentDailyTelemetrySummary> {
+  const params = new URLSearchParams();
+  if (agentId) params.append('agent_id', agentId);
+  if (date) params.append('date', date);
+  const res = await fetch(`${API_BASE}/telemetry/daily-summary?${params.toString()}`);
+  if (!res.ok) throw new Error('Failed to fetch daily telemetry summary');
+  return res.json();
+}
 
 // Developer Tools (Google Gemini / Antigravity / GitHub Copilot) API
 export async function fetchDeveloperConfig(): Promise<DeveloperToolConfig> {
@@ -340,7 +377,6 @@ export async function fetchDeveloperSeats(): Promise<{ total: number; seats: Dev
   return res.json();
 }
 
-
 export async function fetchDeveloperDrilldown(developerId?: string): Promise<any> {
   const q = developerId ? `?developer_id=${encodeURIComponent(developerId)}` : '';
   const res = await fetch(`${API_BASE}/admin/developer-tools/drilldown${q}`, {
@@ -371,7 +407,6 @@ export async function uploadM365Csv(file: File): Promise<any> {
   return res.json();
 }
 
-
 export async function uploadTeammateZip(
   file: File,
   developerName: string,
@@ -401,3 +436,34 @@ export async function uploadTeammateZip(
   }
   return res.json();
 }
+
+export async function fetchWorkingAgentSchema(): Promise<any> {
+  const res = await fetch(`${API_BASE}/admin/working-agents/schema`, {
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) throw new Error('Failed to fetch working agent schema');
+  return res.json();
+}
+
+export async function fetchWorkingAgents(): Promise<{ total: number; agents: any[] }> {
+  const res = await fetch(`${API_BASE}/admin/working-agents`, {
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) throw new Error('Failed to fetch working agents');
+  return res.json();
+}
+
+export async function ingestWorkingAgent(payload: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/admin/working-agents`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: typeof payload === 'string' ? payload : JSON.stringify(payload)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to ingest working agent');
+  }
+  return res.json();
+}
+
+

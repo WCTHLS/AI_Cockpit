@@ -18,6 +18,8 @@
       --text-main: #0F172A;
       --text-muted: #64748B;
       --accent-blue: #EFF6FF;
+      --success-green: #10B981;
+      --fail-red: #EF4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -59,6 +61,30 @@
       font-size: 12px;
       color: var(--text-muted);
     }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .new-chat-btn {
+      background: #F1F5F9;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .new-chat-btn:hover {
+      background: var(--accent-blue);
+      color: var(--primary);
+      border-color: #BFDBFE;
+    }
     .header-status {
       display: flex;
       align-items: center;
@@ -88,30 +114,84 @@
 
     /* Sidebar */
     .sidebar {
-      width: 320px;
+      width: 330px;
       background: #FFFFFF;
       border-right: 1px solid var(--border);
-      padding: 24px 20px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
       overflow-y: auto;
     }
+
+    /* Dynamic Profile Selector Card */
     .user-profile-card {
       background: var(--accent-blue);
       border: 1px solid #DBEAFE;
       border-radius: 12px;
       padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
-    .user-profile-card h4 {
+    .profile-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .profile-card-header h4 {
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       color: var(--primary);
-      margin-bottom: 8px;
       font-weight: 700;
     }
-    .user-meta { display: flex; align-items: center; gap: 12px; }
+    .team-badge {
+      background: #FFFFFF;
+      border: 1px solid #BFDBFE;
+      color: var(--primary);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    .employee-select-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .select-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .employee-dropdown {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12.5px;
+      font-family: inherit;
+      color: var(--text-main);
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .employee-dropdown:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 52, 155, 0.1);
+    }
+    .user-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
     .avatar {
       width: 40px;
       height: 40px;
@@ -122,10 +202,90 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 13.5px;
+      flex-shrink: 0;
     }
-    .user-info .name { font-weight: 700; font-size: 13.5px; }
-    .user-info .device { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+    .user-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .user-info .name {
+      font-weight: 700;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-info .device {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .assigned-agent-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #065F46;
+      background: #ECFDF5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #A7F3D0;
+      margin-top: 4px;
+    }
+
+    /* Live Session Loop Telemetry Box */
+    .loop-metrics-card {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .loop-metrics-card h4 {
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .metric-badge {
+      background: #E2E8F0;
+      color: #334155;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .metric-item {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+    .metric-item .label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .metric-item .val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 2px;
+    }
 
     .scenario-section h4 {
       font-size: 12px;
@@ -138,10 +298,10 @@
     .scenario-pill {
       background: #FFFFFF;
       border: 1px solid var(--border);
-      padding: 12px 14px;
+      padding: 10px 12px;
       border-radius: 10px;
-      margin-bottom: 10px;
-      font-size: 13px;
+      margin-bottom: 8px;
+      font-size: 12.5px;
       font-weight: 600;
       color: #334155;
       cursor: pointer;
@@ -160,10 +320,10 @@
 
     .help-footer {
       margin-top: auto;
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--text-muted);
       line-height: 1.5;
-      padding-top: 14px;
+      padding-top: 12px;
       border-top: 1px solid var(--border);
     }
     .help-footer b { color: var(--text-main); }
@@ -219,6 +379,122 @@
     .msg-bubble h3 { font-size: 14px; color: var(--primary); margin: 12px 0 6px 0; font-weight: 700; }
     .msg-bubble ul { margin-left: 20px; margin-bottom: 8px; }
     .msg-bubble code { font-family: 'JetBrains Mono', monospace; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; font-size: 12.5px; }
+
+    /* Resolution Thumbs Card */
+    .resolution-card {
+      margin-top: 14px;
+      background: #F8FAFC;
+      border: 1.5px dashed #CBD5E1;
+      border-radius: 12px;
+      padding: 16px;
+      animation: fadeIn 0.3s ease;
+    }
+    .resolution-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+    .resolution-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .resolution-buttons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .thumbs-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+    .thumbs-up {
+      background: #ECFDF5;
+      color: #065F46;
+      border-color: #A7F3D0;
+    }
+    .thumbs-up:hover {
+      background: #D1FAE5;
+      transform: translateY(-1px);
+    }
+    .thumbs-down {
+      background: #FEF2F2;
+      color: #991B1B;
+      border-color: #FECACA;
+    }
+    .thumbs-down:hover {
+      background: #FEE2E2;
+      transform: translateY(-1px);
+    }
+    .thumbs-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Telemetry Confirmation Box */
+    .telemetry-receipt {
+      margin-top: 14px;
+      background: #0F172A;
+      color: #F8FAFC;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .receipt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      font-weight: 700;
+      color: #38BDF8;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .receipt-row span:first-child { color: #94A3B8; }
+    .receipt-row span:last-child { color: #F1F5F9; font-weight: 600; }
+    .receipt-actions {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #334155;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .next-session-btn {
+      background: #2563EB;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .next-session-btn:hover { background: #1D4ED8; }
 
     /* Input Bar */
     .chat-input-bar {
@@ -276,39 +552,58 @@
       <span class="brand-badge">LENOVO</span>
       <div class="header-title">
         <h1>Global IT Support Assistant</h1>
-        <p>Hardware Diagnostics • Software & Account Access • Real-time Triage</p>
+        <p>Hardware Diagnostics • Software & Account Access • Multi-turn Agent Loop</p>
       </div>
     </div>
-    <div class="header-status">
-      <span class="status-dot"></span>
-      <span>IT Support Online</span>
+    <div class="header-right">
+      <button class="new-chat-btn" onclick="startNewSession()">
+        <span>🔄</span> New Chat / Session
+      </button>
+      <div class="header-status">
+        <span class="status-dot"></span>
+        <span>IT Agent Active</span>
+      </div>
     </div>
   </header>
 
   <div class="main-layout">
     <!-- Sidebar -->
     <aside class="sidebar">
+      <!-- Dynamic Employee Profile Selector Card -->
       <div class="user-profile-card">
-        <h4>Employee Profile</h4>
+        <div class="profile-card-header">
+          <h4>Employee Profile</h4>
+          <span class="team-badge">IT Service Desk</span>
+        </div>
+
+        <div class="employee-select-wrapper">
+          <label for="employeeSelect" class="select-label">Select IT Desk Employee:</label>
+          <select id="employeeSelect" class="employee-dropdown" onchange="onEmployeeSelectChange()">
+            <!-- Populated dynamically from DB /api/employees -->
+          </select>
+        </div>
+
         <div class="user-meta">
-          <div class="avatar">AS</div>
+          <div class="avatar" id="userAvatar">AS</div>
           <div class="user-info">
-            <div class="name">Aarav Sharma</div>
-            <div class="device">aarav@lenovo.com • ThinkPad P1 Gen 6</div>
+            <div class="name" id="userName">Aarav Sharma</div>
+            <div class="device" id="userDevice">aarav@wct.com • ThinkPad P1 Gen 6</div>
+            <div class="assigned-agent-badge" id="userAgentBadge">
+              <span>🤖</span> Assigned: Ticket Triage Agent
+            </div>
           </div>
         </div>
       </div>
-
       <div class="scenario-section">
         <h4>Common Requests</h4>
         <div class="scenario-pill" onclick="sendPrompt('My ThinkPad Thunderbolt 4 dock won\'t recognize my dual 4K monitors this morning. Screen remains black.')">
-          <span>🖥️</span> External Display / Docking Station
+          <span>🖥️</span> External Display / Docking
         </div>
         <div class="scenario-pill" onclick="sendPrompt('I need write permission and repo access to GitHub repository WCTHLS/AI_Cockpit for sprint delivery.')">
           <span>🔑</span> GitHub Repository Access
         </div>
         <div class="scenario-pill" onclick="sendPrompt('GlobalProtect VPN error: client PKI security certificate expired on Windows 11 machine.')">
-          <span>🛡️</span> VPN Security Certificate Renewal
+          <span>🛡️</span> VPN Security Certificate
         </div>
         <div class="scenario-pill" onclick="sendPrompt('Outlook 365 search bar is completely frozen and returns 0 results on recent email queries.')">
           <span>📧</span> Outlook Search Repair
@@ -316,8 +611,8 @@
       </div>
 
       <div class="help-footer">
-        <b>Need Urgent Escalation?</b><br>
-        If your device cannot boot, please reach out to the Lenovo Premier Support desk at extension <b>#4357</b>.
+        <b>Lenovo IT Support Assistant</b><br>
+        24/7 automated troubleshooting &amp; service desk triage.
       </div>
     </aside>
 
@@ -325,17 +620,17 @@
     <main class="chat-container">
       <div class="chat-messages" id="chatMessages">
         <div class="message agent">
-          <div class="msg-bubble">
+          <div class="msg-bubble" id="welcomeMsgBubble">
             Hello Aarav, I am the <b>Lenovo IT Support Assistant</b>. 
             <br><br>
-            I can help troubleshoot hardware peripherals, configure network & VPN settings, or provision application permissions. What can I help you with today?
+            I can help troubleshoot hardware peripherals, configure network & VPN settings, or provision application permissions. What issue can I resolve for you today?
           </div>
         </div>
       </div>
 
       <div class="chat-input-bar">
         <div class="input-box">
-          <input type="text" id="userInput" placeholder="Describe your IT or hardware issue..." onkeydown="if(event.key === 'Enter') handleSend()" />
+          <input type="text" id="userInput" placeholder="Describe your IT issue or ask a follow-up question..." onkeydown="if(event.key === 'Enter') handleSend()" />
         </div>
         <button class="send-btn" id="sendBtn" onclick="handleSend()">
           <span>Send</span>
@@ -345,9 +640,114 @@
   </div>
 
   <script>
+    let currentSessionId = null;
+    let isAwaitingResolution = false;
+    let loadedEmployees = [];
+    let currentEmployee = {
+      id: 1,
+      display_name: "Aarav Sharma",
+      email: "aarav@wct.com",
+      device: "ThinkPad P1 Gen 6 (Serial: LN-98234)",
+      initials: "AS",
+      assigned_agents: [{ agent_name: "Ticket Triage Agent" }]
+    };
+
+    // Load IT Service Desk employees from backend database on startup
+    async function loadEmployees() {
+      try {
+        const resp = await fetch('/api/employees');
+        if (resp.status === 200) {
+          const list = await resp.json();
+          if (list && list.length > 0) {
+            loadedEmployees = list;
+            populateEmployeeDropdown(list);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('Notice: Loading fallback employees list');
+      }
+
+      // Default fallback
+      loadedEmployees = [
+        { id: 1, display_name: "Aarav Sharma", email: "aarav@wct.com", device: "ThinkPad P1 Gen 6 (Serial: LN-98234)", initials: "AS", assigned_agents: [{ agent_name: "Ticket Triage Agent" }] },
+        { id: 2, display_name: "Ananya Rao", email: "ananya@wct.com", device: "ThinkPad T14 Gen 4 (Serial: LN-44120)", initials: "AR", assigned_agents: [{ agent_name: "Ticket Triage Agent" }] },
+        { id: 3, display_name: "Arjun Patel", email: "arjun@wct.com", device: "ThinkPad X1 Carbon Gen 11 (Serial: LN-55912)", initials: "AP", assigned_agents: [{ agent_name: "Ticket Triage Agent" }] },
+        { id: 4, display_name: "Divya Nair", email: "divya@wct.com", device: "ThinkPad L15 Gen 3 (Serial: LN-77209)", initials: "DN", assigned_agents: [{ agent_name: "Ticket Triage Agent" }] }
+      ];
+      populateEmployeeDropdown(loadedEmployees);
+    }
+
+    function populateEmployeeDropdown(list) {
+      const select = document.getElementById('employeeSelect');
+      select.innerHTML = '';
+      list.forEach((emp, idx) => {
+        const opt = document.createElement('option');
+        opt.value = emp.id;
+        opt.innerText = `${emp.display_name} (${emp.email})`;
+        if (idx === 0) opt.selected = true;
+        select.appendChild(opt);
+      });
+      applySelectedEmployee(list[0]);
+    }
+
+    function onEmployeeSelectChange() {
+      const select = document.getElementById('employeeSelect');
+      const empId = parseInt(select.value, 10);
+      const found = loadedEmployees.find(e => e.id === empId);
+      if (found) {
+        applySelectedEmployee(found);
+        startNewSession();
+      }
+    }
+
+    function applySelectedEmployee(emp) {
+      currentEmployee = emp;
+      document.getElementById('userName').innerText = emp.display_name;
+      document.getElementById('userEmailDevice')?.remove();
+      document.getElementById('userDevice').innerText = `${emp.email} • ${emp.device}`;
+      document.getElementById('userAvatar').innerText = emp.initials || emp.display_name.substring(0, 2).toUpperCase();
+
+      const agentName = (emp.assigned_agents && emp.assigned_agents[0]) ? emp.assigned_agents[0].agent_name : "Ticket Triage Agent";
+      document.getElementById('userAgentBadge').innerHTML = `<span>🤖</span> Assigned: ${agentName}`;
+
+      const firstName = emp.display_name.split(' ')[0];
+      const welcome = document.getElementById('welcomeMsgBubble');
+      if (welcome) {
+        welcome.innerHTML = `
+          Hello <b>${firstName}</b>, I am the <b>Lenovo IT Support Assistant</b>.
+          <br><br>
+          I have retrieved your profile on the <b>IT Service Desk</b> team with registered hardware <code>${emp.device}</code>. What issue can I assist you with today?
+        `;
+      }
+    }
+
     function sendPrompt(promptText) {
       document.getElementById('userInput').value = promptText;
       handleSend();
+    }
+
+    function startNewSession() {
+      currentSessionId = null;
+      isAwaitingResolution = false;
+      
+      // Reset sidebar counters
+      document.getElementById('metricCalls').innerText = '0';
+      document.getElementById('metricPromptTokens').innerText = '0';
+      document.getElementById('metricCompletionTokens').innerText = '0';
+      document.getElementById('metricTotalTokens').innerText = '0';
+      document.getElementById('sessionBadge').innerText = 'READY';
+
+      const firstName = currentEmployee.display_name.split(' ')[0];
+      const chatContainer = document.getElementById('chatMessages');
+      chatContainer.innerHTML = `
+        <div class="message agent">
+          <div class="msg-bubble" id="welcomeMsgBubble">
+            Hello <b>${firstName}</b>, I am ready for your next request. What IT issue can I assist you with?
+          </div>
+        </div>
+      `;
+      scrollToBottom();
     }
 
     async function handleSend() {
@@ -359,6 +759,10 @@
       const sendBtn = document.getElementById('sendBtn');
       sendBtn.disabled = true;
 
+      // Remove any prior resolution box if user is continuing conversation
+      const existingRes = document.getElementById('active-resolution-card');
+      if (existingRes) existingRes.remove();
+
       // Append User message
       appendMessage('user', text);
 
@@ -369,7 +773,7 @@
       thinkingElem.id = thinkingId;
       thinkingElem.innerHTML = `
         <div class="msg-bubble" style="color: #64748B;">
-          Checking hardware diagnostics and internal knowledge base...
+          Checking hardware diagnostics and internal knowledge base for ${currentEmployee.display_name}...
         </div>
       `;
       document.getElementById('chatMessages').appendChild(thinkingElem);
@@ -381,8 +785,11 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             message: text,
-            employee_email: 'aarav@lenovo.com',
-            serial_number: 'LN-98234'
+            session_id: currentSessionId,
+            employee_id: currentEmployee.id,
+            employee_name: currentEmployee.display_name,
+            employee_email: currentEmployee.email,
+            device_info: currentEmployee.device
           })
         });
 
@@ -390,8 +797,11 @@
         const thinkingNode = document.getElementById(thinkingId);
         if (thinkingNode) thinkingNode.remove();
 
-        // Format agent response cleanly
-        appendAgentResponse(data.response);
+        // Update active session tracking
+        currentSessionId = data.session_id;
+
+        // Render agent response with resolution feedback question
+        appendAgentResponse(data.response, currentSessionId);
 
       } catch (err) {
         const thinkingNode = document.getElementById(thinkingId);
@@ -411,12 +821,12 @@
       scrollToBottom();
     }
 
-    function appendAgentResponse(rawText) {
+    function appendAgentResponse(rawText, sessionId) {
       const container = document.getElementById('chatMessages');
       const msgElem = document.createElement('div');
       msgElem.className = 'message agent';
 
-      // Clean Markdown parsing for headers, bold, bullets, and inline code
+      // Clean Markdown formatting
       let formattedText = rawText
         .replace(/### (.*?)\n/g, '<h3>$1</h3>')
         .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
@@ -424,8 +834,87 @@
         .replace(/`([^`]+)`/g, '<code>$1</code>')
         .replace(/\n\n/g, '<br><br>');
 
-      msgElem.innerHTML = `<div class="msg-bubble">${formattedText}</div>`;
+      // Build resolution prompt box asking user if the issue was resolved
+      const resolutionHtml = `
+        <div class="resolution-card" id="active-resolution-card">
+          <div class="resolution-header">
+            <span>✨</span> Did this resolve your issue?
+          </div>
+          <p class="resolution-desc">
+            Please let us know if your request has been resolved or if further assistance is needed.
+          </p>
+          <div class="resolution-buttons">
+            <button class="thumbs-btn thumbs-up" onclick="handleResolutionFeedback(true, '${sessionId}')">
+              <span>👍</span> Yes, Issue Resolved
+            </button>
+            <button class="thumbs-btn thumbs-down" onclick="handleResolutionFeedback(false, '${sessionId}')">
+              <span>👎</span> No, Need Escalation
+            </button>
+          </div>
+        </div>
+      `;
+
+      msgElem.innerHTML = `
+        <div class="msg-bubble">
+          ${formattedText}
+          ${resolutionHtml}
+        </div>
+      `;
       container.appendChild(msgElem);
+      scrollToBottom();
+    }
+
+    async function handleResolutionFeedback(isSuccess, sessionId) {
+      const resCard = document.getElementById('active-resolution-card');
+      if (resCard) {
+        const btns = resCard.querySelectorAll('button');
+        btns.forEach(b => b.disabled = true);
+      }
+
+      try {
+        const resp = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: sessionId,
+            sucess: isSuccess
+          })
+        });
+
+        const data = await resp.json();
+        const payload = data.aggregated_payload || {};
+
+        // Render clean, professional confirmation card (no technical telemetry metrics)
+        const receiptElem = document.createElement('div');
+        receiptElem.className = 'telemetry-receipt';
+        receiptElem.style.cssText = 'background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 8px; padding: 14px 16px; margin-top: 12px;';
+        receiptElem.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-weight: 700; color: #166534; font-size: 13.5px;">
+              ${isSuccess ? '✅ Issue Marked as Resolved' : '⚠️ Escalation Feedback Recorded'}
+            </span>
+          </div>
+          <div style="font-size: 12.5px; color: #374151; margin-bottom: 12px; line-height: 1.4;">
+            ${isSuccess 
+              ? `Thank you, <b>${escapeHtml(currentEmployee.display_name)}</b>! Your ticket has been marked as resolved.` 
+              : `Thank you for your feedback, <b>${escapeHtml(currentEmployee.display_name)}</b>. Your request has been flagged for IT Service Desk escalation.`}
+          </div>
+          <div style="display: flex; justify-content: flex-start;">
+            <button class="next-session-btn" onclick="startNewSession()" style="background: #00349b; color: white; border: none; border-radius: 6px; padding: 8px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer;">
+              <span>🔄</span> Start New Chat Session
+            </button>
+          </div>
+        `;
+
+        if (resCard) {
+          resCard.replaceWith(receiptElem);
+        }
+
+      } catch (err) {
+        if (resCard) {
+          resCard.innerHTML = `<div style="padding: 10px; color: #166534;">✅ Feedback recorded. <button onclick="startNewSession()">Start New Chat</button></div>`;
+        }
+      }
       scrollToBottom();
     }
 
@@ -438,6 +927,9 @@
       const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
       return text.replace(/[&<>"']/g, m => map[m]);
     }
+
+    // Initialize employees on page load
+    window.addEventListener('DOMContentLoaded', loadEmployees);
   </script>
 </body>
 </html>

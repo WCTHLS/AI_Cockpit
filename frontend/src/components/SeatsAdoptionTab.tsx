@@ -370,12 +370,13 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         marginBottom: 20
       }}>
         {/* Card 1: Licensed Seats */}
-        <div style={{
+        <div title="Total assigned enterprise seat licenses across developers and knowledge workers" style={{
           background: 'linear-gradient(135deg, #00349B 0%, #002266 100%)',
           color: '#FFFFFF',
           borderRadius: 12,
           padding: '18px 20px',
-          boxShadow: '0 4px 16px rgba(0, 52, 155, 0.12)'
+          boxShadow: '0 4px 16px rgba(0, 52, 155, 0.12)',
+          cursor: 'help'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#93C5FD' }}>
@@ -394,12 +395,13 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         </div>
 
         {/* Card 2: Active Seats */}
-        <div style={{
+        <div title={`Calculated as: (${active} active users within past 7 days ÷ ${total} total licensed seats) × 100%`} style={{
           background: '#FFFFFF',
           border: '1.5px solid #D1FAE5',
           borderRadius: 12,
           padding: '18px 20px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+          cursor: 'help'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#059669' }}>
@@ -418,12 +420,13 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         </div>
 
         {/* Card 3: Lapsing Seats */}
-        <div style={{
+        <div title={`Calculated as: (${lapsing} users inactive between 7 and 29 days ÷ ${total} total seats) × 100%`} style={{
           background: '#FFFFFF',
           border: '1.5px solid #E2E8F0',
           borderRadius: 12,
           padding: '18px 20px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+          cursor: 'help'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#475569' }}>
@@ -442,12 +445,13 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         </div>
 
         {/* Card 4: Idle Seats */}
-        <div style={{
+        <div title={`Calculated as: (${idle} users with 0 sessions over 30+ days ÷ ${total} total seats) × 100%`} style={{
           background: '#FFFFFF',
           border: '1.5px solid #FEF3C7',
           borderRadius: 12,
           padding: '18px 20px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+          cursor: 'help'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#B45309' }}>
@@ -466,12 +470,13 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         </div>
 
         {/* Card 5: Idle Seat Cost */}
-        <div style={{
+        <div title={`Calculated as: ${idle} idle dormant seats × $${seatCost} cost per seat/month = ${formatUSD(monthlyIdleCost)}/mo unrecovered spend`} style={{
           background: '#FFFFFF',
           border: '1.5px solid #FEE2E2',
           borderRadius: 12,
           padding: '18px 20px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+          cursor: 'help'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#DC2626' }}>

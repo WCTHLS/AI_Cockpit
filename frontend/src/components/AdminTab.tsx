@@ -32,10 +32,12 @@ import {
   CheckCircle,
   Code,
   Terminal,
-  Cpu
+  Cpu,
+  Bot,
+  Copy
 } from 'lucide-react';
-import { updateThresholds, formatUSD, uploadTelemetryFile, downloadCsvTemplate, fetchClaudeConfig, updateClaudeConfig, syncClaudeTelemetry, formatPct, fetchDeveloperConfig, updateDeveloperConfig, testDeveloperConnection, syncDeveloperTelemetry, fetchDeveloperSeats, uploadTeammateZip } from '../api';
-import { UserProfile, IngestSummary, SummaryKPI, ClaudeConfig, ClaudeSyncResponse, ClaudeSyncMetrics, DeveloperToolConfig, DeveloperSyncResponse, DeveloperSeat } from '../types';
+import { updateThresholds, formatUSD, uploadTelemetryFile, downloadCsvTemplate, fetchClaudeConfig, updateClaudeConfig, syncClaudeTelemetry, formatPct, fetchDeveloperConfig, updateDeveloperConfig, testDeveloperConnection, syncDeveloperTelemetry, fetchDeveloperSeats, uploadTeammateZip, fetchWorkingAgents, fetchWorkingAgentSchema, ingestWorkingAgent } from '../api';
+import { UserProfile, IngestSummary, SummaryKPI, ClaudeConfig, ClaudeSyncResponse, ClaudeSyncMetrics, DeveloperToolConfig, DeveloperSyncResponse, DeveloperSeat, WorkingAgentItem } from '../types';
 
 interface AdminTabProps {
   initialThresholds: any;
@@ -102,7 +104,7 @@ const DEFAULT_GUARDRAIL_CONFIG: GuardrailConfig = {
 
 export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, onConfigSaved, theme = 'light', user, summary }) => {
   const isAdmin = user ? user.role === 'admin' : true;
-  const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance' | 'ingestion' | 'developer_tools'>('subs');
+  const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance' | 'ingestion' | 'developer_tools' | 'working_agents'>('subs');
 
   // Governance action thresholds
   const [thresholds, setThresholds] = useState<any>(initialThresholds || {
@@ -138,6 +140,106 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
   const [devProvider, setDevProvider] = useState<string>('gemini_antigravity');
   const [devConnectionMode, setDevConnectionMode] = useState<string>('local_antigravity');
   const [devEndpointUrl, setDevEndpointUrl] = useState<string>('https://generativelanguage.googleapis.com');
+
+  // Working Agents Onboarding & Ingestion State
+  const TICKET_TRIAGE_AGENT_JSON = JSON.stringify({
+    "agent_name": "Ticket Triage Agent",
+    "business_function": "Eng & IT",
+    "team": "IT Service Desk",
+    "model": "gpt-4o",
+    "input_token_price_per_1m": 2.50,
+    "output_token_price_per_1m": 10.00,
+    "monthly_infra_cost": 150.00,
+    "monthly_budget": 500.00,
+    "baseline_employee_hours": 0.5,
+    "employee_monthly_rate": 6500.00,
+    "employee_monthly_working_hours": 160,
+    "category": "built_with",
+    "agent_type": "workflow_agent",
+    "description": "Automated IT service desk ticket triaging, diagnostic analysis, and resolution suggestions."
+  }, null, 2);
+
+  const [workingAgentJson, setWorkingAgentJson] = useState<string>(TICKET_TRIAGE_AGENT_JSON);
+  const [workingAgentsList, setWorkingAgentsList] = useState<WorkingAgentItem[]>([]);
+  const [isLoadingWorkingAgents, setIsLoadingWorkingAgents] = useState<boolean>(false);
+  const [isIngestingWorkingAgent, setIsIngestingWorkingAgent] = useState<boolean>(false);
+  const [workingAgentIngestResult, setWorkingAgentIngestResult] = useState<{ type: 'success' | 'error'; message: string; agents?: any[] } | null>(null);
+  const [copiedSchema, setCopiedSchema] = useState<boolean>(false);
+  const [jsonValidationError, setJsonValidationError] = useState<string | null>(null);
+
+  const loadWorkingAgents = async () => {
+    try {
+      setIsLoadingWorkingAgents(true);
+      const data = await fetchWorkingAgents();
+      if (data && data.agents) {
+        setWorkingAgentsList(data.agents);
+      }
+    } catch (err: any) {
+      console.error('Failed to load working agents:', err);
+    } finally {
+      setIsLoadingWorkingAgents(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeSection === 'working_agents') {
+      loadWorkingAgents();
+    }
+  }, [activeSection]);
+
+  const handleValidateJson = () => {
+    try {
+      const parsed = JSON.parse(workingAgentJson);
+      const item = Array.isArray(parsed) ? parsed[0] : parsed;
+      if (!item.agent_name && !item.name) {
+        setJsonValidationError("Warning: 'agent_name' is missing in JSON.");
+        return false;
+      }
+      setJsonValidationError(null);
+      return true;
+    } catch (err: any) {
+      setJsonValidationError(`Invalid JSON Syntax: ${err.message}`);
+      return false;
+    }
+  };
+
+  const handleFormatJson = () => {
+    try {
+      const parsed = JSON.parse(workingAgentJson);
+      setWorkingAgentJson(JSON.stringify(parsed, null, 2));
+      setJsonValidationError(null);
+    } catch (err: any) {
+      setJsonValidationError(`Cannot format: ${err.message}`);
+    }
+  };
+
+  const handleIngestWorkingAgent = async () => {
+    try {
+      setWorkingAgentIngestResult(null);
+      const isValid = handleValidateJson();
+      if (!isValid) return;
+
+      setIsIngestingWorkingAgent(true);
+      const parsed = JSON.parse(workingAgentJson);
+      const res = await ingestWorkingAgent(parsed);
+      setWorkingAgentIngestResult({
+        type: 'success',
+        message: res.message || 'Successfully saved agent configuration into database.',
+        agents: res.agents
+      });
+      await loadWorkingAgents();
+      if (onThresholdsUpdated) {
+        onThresholdsUpdated();
+      }
+    } catch (err: any) {
+      setWorkingAgentIngestResult({
+        type: 'error',
+        message: err.message || 'Failed to save working agent.'
+      });
+    } finally {
+      setIsIngestingWorkingAgent(false);
+    }
+  };
   const [devApiKey, setDevApiKey] = useState<string>('');
   const [showDevApiKey, setShowDevApiKey] = useState<boolean>(false);
   const [devOrgId, setDevOrgId] = useState<string>('waferwire-corp');
@@ -866,6 +968,37 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             marginLeft: 2
           }}>
             GEMINI / COPILOT
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveSection('working_agents')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 7,
+            padding: '8px 16px',
+            borderRadius: '8px 8px 0 0',
+            border: 'none',
+            background: activeSection === 'working_agents' ? '#4F46E5' : 'transparent',
+            color: activeSection === 'working_agents' ? '#FFFFFF' : '#475569',
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          <Bot size={15} /> Working Agents Onboarding
+          <span style={{
+            background: activeSection === 'working_agents' ? '#E0E7FF' : '#EEF2FF',
+            color: activeSection === 'working_agents' ? '#3730A3' : '#4F46E5',
+            fontSize: 10,
+            fontWeight: 800,
+            padding: '2px 6px',
+            borderRadius: 10,
+            marginLeft: 2
+          }}>
+            JSON INGEST
           </span>
         </button>
       </div>
@@ -2391,6 +2524,648 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
         </div>
       )}
+
+      {/* SECTION 7: WORKING AGENTS ONBOARDING & SCHEMA INGESTION */}
+      {activeSection === 'working_agents' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Top Banner / Header Card */}
+          <div style={{
+            background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4338CA 100%)',
+            borderRadius: 12,
+            padding: '24px 28px',
+            color: '#FFFFFF',
+            boxShadow: '0 8px 24px rgba(49, 46, 129, 0.15)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 16
+          }}>
+            <div style={{ maxWidth: 750 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <span style={{
+                  background: 'rgba(255, 255, 255, 0.18)',
+                  padding: '4px 10px',
+                  borderRadius: 20,
+                  fontSize: 11,
+                  fontWeight: 800,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}>
+                  <Cpu size={13} /> Enterprise Agent Registry &amp; Ingestion
+                </span>
+                <span style={{
+                  background: '#10B981',
+                  color: '#FFFFFF',
+                  padding: '3px 8px',
+                  borderRadius: 12,
+                  fontSize: 11,
+                  fontWeight: 800
+                }}>
+                  Live DB Table: ai_agent
+                </span>
+              </div>
+              <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 6px 0', letterSpacing: '-0.02em' }}>
+                Working Agents Onboarding &amp; FinOps Governance
+              </h2>
+              <p style={{ fontSize: 13, color: '#C7D2FE', margin: 0, lineHeight: 1.5 }}>
+                Admin console to ingest working AI agents into the company scorecard. Define monthly infrastructure costs, LLM token economics (input &amp; output per 1M tokens), baseline human task hours, employee wage rates, business functions, and teams.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={loadWorkingAgents}
+                disabled={isLoadingWorkingAgents}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '9px 16px',
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  borderRadius: 8,
+                  color: '#FFFFFF',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  cursor: isLoadingWorkingAgents ? 'not-allowed' : 'pointer',
+                  transition: 'background 0.2s'
+                }}
+              >
+                <RefreshCw size={13} className={isLoadingWorkingAgents ? 'animate-spin' : ''} />
+                Refresh DB Agents ({workingAgentsList.length})
+              </button>
+            </div>
+          </div>
+
+          {/* Two-Column Grid: Ingestion Console (Left) + Schema Specification & Examples (Right) */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(420px, 1.25fr) minmax(360px, 1fr)',
+            gap: 24,
+            alignItems: 'start'
+          }}>
+            {/* LEFT: JSON Editor & Ingestion Console */}
+            <div style={{
+              background: '#FFFFFF',
+              border: '1.5px solid #E2E8F0',
+              borderRadius: 12,
+              padding: 22,
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                <div>
+                  <h3 style={{ fontSize: 16, fontWeight: 800, color: '#1E293B', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 7 }}>
+                    <FileText size={17} color="#4F46E5" /> Agent Input JSON
+                  </h3>
+                  <div style={{ fontSize: 12, color: '#64748B' }}>
+                    Paste or customize working agent configuration JSON
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => {
+                      setWorkingAgentJson(TICKET_TRIAGE_AGENT_JSON);
+                      setJsonValidationError(null);
+                    }}
+                    style={{
+                      padding: '5px 10px',
+                      background: '#EEF2FF',
+                      border: '1px solid #C7D2FE',
+                      borderRadius: 6,
+                      color: '#4338CA',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Ticket Triage Preset
+                  </button>
+                  <button
+                    onClick={handleFormatJson}
+                    style={{
+                      padding: '5px 10px',
+                      background: '#F1F5F9',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: 6,
+                      color: '#334155',
+                      fontSize: 11,
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Format
+                  </button>
+                  <button
+                    onClick={handleValidateJson}
+                    style={{
+                      padding: '5px 10px',
+                      background: '#F1F5F9',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: 6,
+                      color: '#334155',
+                      fontSize: 11,
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Validate
+                  </button>
+                </div>
+              </div>
+
+              {/* Monospace Code Editor */}
+              <div style={{ position: 'relative' }}>
+                <textarea
+                  value={workingAgentJson}
+                  onChange={(e) => {
+                    setWorkingAgentJson(e.target.value);
+                    if (jsonValidationError) setJsonValidationError(null);
+                  }}
+                  rows={17}
+                  spellCheck={false}
+                  style={{
+                    width: '100%',
+                    background: '#0F172A',
+                    color: '#38BDF8',
+                    fontFamily: 'Consolas, Monaco, "Courier New", monospace',
+                    fontSize: 12.5,
+                    lineHeight: '1.5',
+                    padding: '14px 16px',
+                    borderRadius: 8,
+                    border: jsonValidationError ? '1.5px solid #EF4444' : '1.5px solid #334155',
+                    boxSizing: 'border-box',
+                    outline: 'none',
+                    resize: 'vertical'
+                  }}
+                />
+              </div>
+
+              {/* Validation Status message */}
+              {jsonValidationError && (
+                <div style={{
+                  background: '#FEF2F2',
+                  border: '1px solid #FCA5A5',
+                  borderRadius: 6,
+                  padding: '8px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontSize: 12,
+                  color: '#B91C1C'
+                }}>
+                  <AlertCircle size={15} />
+                  <span>{jsonValidationError}</span>
+                </div>
+              )}
+
+              {/* Ingestion Result Banner */}
+              {workingAgentIngestResult && (
+                <div style={{
+                  background: workingAgentIngestResult.type === 'success' ? '#ECFDF5' : '#FEF2F2',
+                  border: `1px solid ${workingAgentIngestResult.type === 'success' ? '#6EE7B7' : '#FCA5A5'}`,
+                  borderRadius: 8,
+                  padding: '12px 16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 6
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontWeight: 700,
+                    fontSize: 13,
+                    color: workingAgentIngestResult.type === 'success' ? '#047857' : '#B91C1C'
+                  }}>
+                    {workingAgentIngestResult.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
+                    {workingAgentIngestResult.message}
+                  </div>
+                  {workingAgentIngestResult.agents && workingAgentIngestResult.agents.length > 0 && (
+                    <div style={{ fontSize: 11, color: '#065F46', display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 4 }}>
+                      {workingAgentIngestResult.agents.map((ag: any, idx: number) => (
+                        <span key={idx} style={{ background: '#D1FAE5', padding: '3px 8px', borderRadius: 4 }}>
+                          ID: <strong>#{ag.agent_id}</strong> | Name: <strong>{ag.agent_name}</strong> | Function: <strong>{ag.business_function}</strong> ({ag.team}) | Model: <strong>{ag.model}</strong>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Action Submit Button */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+                <button
+                  onClick={handleIngestWorkingAgent}
+                  disabled={isIngestingWorkingAgent}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '11px 22px',
+                    background: '#4F46E5',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: 8,
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: isIngestingWorkingAgent ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 2px 8px rgba(79, 70, 229, 0.35)',
+                    transition: 'background 0.2s'
+                  }}
+                >
+                  <Save size={15} />
+                  {isIngestingWorkingAgent ? 'Ingesting & Saving to DB...' : 'Ingest Working Agent to Database'}
+                </button>
+              </div>
+            </div>
+
+            {/* RIGHT: Schema Specification & Documentation Card */}
+            <div style={{
+              background: '#FFFFFF',
+              border: '1.5px solid #E2E8F0',
+              borderRadius: 12,
+              padding: 22,
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ fontSize: 16, fontWeight: 800, color: '#1E293B', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 7 }}>
+                    <HelpCircle size={17} color="#4F46E5" /> Example Schema &amp; Parameters
+                  </h3>
+                  <div style={{ fontSize: 12, color: '#64748B' }}>
+                    Specification of parameters ingested into company database
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(TICKET_TRIAGE_AGENT_JSON);
+                    setCopiedSchema(true);
+                    setTimeout(() => setCopiedSchema(false), 2000);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    padding: '6px 12px',
+                    background: copiedSchema ? '#ECFDF5' : '#F8FAFC',
+                    border: `1px solid ${copiedSchema ? '#10B981' : '#CBD5E1'}`,
+                    color: copiedSchema ? '#047857' : '#334155',
+                    borderRadius: 6,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  {copiedSchema ? <Check size={13} /> : <Copy size={13} />}
+                  {copiedSchema ? 'Copied Example!' : 'Copy Example JSON'}
+                </button>
+              </div>
+
+              {/* Parameter Specification List */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+                maxHeight: 460,
+                overflowY: 'auto',
+                paddingRight: 4
+              }}>
+                {[
+                  {
+                    key: 'agent_name',
+                    type: 'string',
+                    req: true,
+                    example: '"Ticket Triage Agent"',
+                    desc: 'Unique business display name for the agent.'
+                  },
+                  {
+                    key: 'business_function',
+                    type: 'string',
+                    req: true,
+                    example: '"Eng & IT" | "Customer" | "Finance"',
+                    desc: 'Company organizational department.'
+                  },
+                  {
+                    key: 'team',
+                    type: 'string',
+                    req: true,
+                    example: '"IT Service Desk" | "Software Engineering"',
+                    desc: 'Team owning or utilizing this working agent.'
+                  },
+                  {
+                    key: 'model',
+                    type: 'string',
+                    req: true,
+                    example: '"gpt-4o" | "claude-3-7-sonnet"',
+                    desc: 'Underlying foundation LLM powering the agent loops.'
+                  },
+                  {
+                    key: 'input_token_price_per_1m',
+                    type: 'number (USD)',
+                    req: true,
+                    example: '2.50',
+                    desc: 'LLM pricing per 1 million input tokens ($2.50 for GPT-4o).'
+                  },
+                  {
+                    key: 'output_token_price_per_1m',
+                    type: 'number (USD)',
+                    req: true,
+                    example: '10.00',
+                    desc: 'LLM pricing per 1 million output tokens ($10.00 for GPT-4o).'
+                  },
+                  {
+                    key: 'monthly_infra_cost',
+                    type: 'number (USD)',
+                    req: true,
+                    example: '150.00',
+                    desc: 'Fixed monthly cloud hosting, container & cluster run cost.'
+                  },
+                  {
+                    key: 'monthly_budget',
+                    type: 'number (USD)',
+                    req: true,
+                    example: '500.00',
+                    desc: 'Allocated monthly operational budget limit for cost vs budget performance.'
+                  },
+                  {
+                    key: 'baseline_employee_hours',
+                    type: 'number (hours)',
+                    req: true,
+                    example: '0.5 (30 minutes)',
+                    desc: 'Time human employee previously took to complete 1 manual task.'
+                  },
+                  {
+                    key: 'employee_monthly_rate',
+                    type: 'number (USD)',
+                    req: true,
+                    example: '6500.00',
+                    desc: 'Monthly human salary baseline for labor value calculation.'
+                  },
+                  {
+                    key: 'employee_monthly_working_hours',
+                    type: 'number (hours)',
+                    req: true,
+                    example: '160',
+                    desc: 'Standard monthly employee working hours (used as divisor to derive hourly rate: $6,500 / 160 = $40.63/hr).'
+                  },
+                  {
+                    key: 'category & agent_type',
+                    type: 'string (optional)',
+                    req: false,
+                    example: '"built_with", "workflow_agent"',
+                    desc: 'Taxonomy classification for enterprise governance.'
+                  }
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      background: '#F8FAFC',
+                      border: '1px solid #E2E8F0',
+                      borderRadius: 8,
+                      padding: '10px 12px',
+                      fontSize: 12
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
+                      <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#4F46E5' }}>
+                        {item.key}
+                      </span>
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                        <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'monospace' }}>{item.type}</span>
+                        {item.req ? (
+                          <span style={{ fontSize: 9, fontWeight: 800, color: '#DC2626', background: '#FEE2E2', padding: '1px 5px', borderRadius: 4 }}>
+                            REQUIRED
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: 9, fontWeight: 700, color: '#64748B', background: '#E2E8F0', padding: '1px 5px', borderRadius: 4 }}>
+                            OPTIONAL
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div style={{ color: '#475569', fontSize: 11.5, marginBottom: 3 }}>
+                      {item.desc}
+                    </div>
+                    <div style={{ color: '#0369A1', fontSize: 11, fontFamily: 'monospace', background: '#F0F9FF', padding: '2px 6px', borderRadius: 4, display: 'inline-block' }}>
+                      Example: {item.example}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* BOTTOM: Registered Working Agents Live Table */}
+          <div style={{
+            background: '#FFFFFF',
+            border: '1.5px solid #E2E8F0',
+            borderRadius: 12,
+            padding: 22,
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div>
+                <h3 style={{ fontSize: 17, fontWeight: 800, color: '#1E293B', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Database size={18} color="#4F46E5" />
+                  Currently Ingested Working Agents in Database ({workingAgentsList.length})
+                </h3>
+                <div style={{ fontSize: 12, color: '#64748B' }}>
+                  Live records in SQLite <code style={{ color: '#4F46E5', fontWeight: 700 }}>ai_agent</code> table with linked business functions, teams, and token pricing
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 8 }}>
+                <span style={{
+                  background: '#EEF2FF',
+                  color: '#4338CA',
+                  padding: '5px 12px',
+                  borderRadius: 20,
+                  fontSize: 12,
+                  fontWeight: 700
+                }}>
+                  Company: WaferWire (ID #1)
+                </span>
+              </div>
+            </div>
+
+            {/* Table */}
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 12.5 }}>
+                <thead>
+                  <tr style={{ background: '#F8FAFC', borderBottom: '2px solid #E2E8F0', color: '#475569', fontWeight: 800 }}>
+                    <th style={{ padding: '12px 14px' }}>Agent Name</th>
+                    <th style={{ padding: '12px 14px' }}>Business Function &amp; Team</th>
+                    <th style={{ padding: '12px 14px' }}>LLM Model</th>
+                    <th style={{ padding: '12px 14px' }}>Token Pricing (per 1M)</th>
+                    <th style={{ padding: '12px 14px' }}>Monthly Budget &amp; Infra</th>
+                    <th style={{ padding: '12px 14px' }}>Task Baseline</th>
+                    <th style={{ padding: '12px 14px' }}>Employee Wage &amp; Hours</th>
+                    <th style={{ padding: '12px 14px' }}>Status</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {workingAgentsList.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} style={{ padding: '32px 16px', textAlign: 'center', color: '#94A3B8' }}>
+                        {isLoadingWorkingAgents ? 'Loading agents from database...' : 'No working agents ingested yet. Use the JSON console above to onboard your first agent.'}
+                      </td>
+                    </tr>
+                  ) : (
+                    workingAgentsList.map((ag) => (
+                      <tr key={ag.id} style={{ borderBottom: '1px solid #F1F5F9', transition: 'background 0.15s' }}>
+                        <td style={{ padding: '12px 14px' }}>
+                          <div style={{ fontWeight: 800, color: '#1E293B', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <Bot size={15} color="#4F46E5" />
+                            {ag.name}
+                          </div>
+                          <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
+                            Type: <span style={{ fontFamily: 'monospace' }}>{ag.agent_type || 'workflow_agent'}</span>
+                          </div>
+                        </td>
+
+                        <td style={{ padding: '12px 14px' }}>
+                          <span style={{
+                            background: '#EFF6FF',
+                            color: '#1D4ED8',
+                            padding: '3px 8px',
+                            borderRadius: 6,
+                            fontWeight: 700,
+                            fontSize: 11.5
+                          }}>
+                            {ag.business_function || 'Eng & IT'}
+                          </span>
+                          <div style={{ fontSize: 11, color: '#475569', marginTop: 3 }}>
+                            Team: <strong>{ag.team || 'IT Service Desk'}</strong>
+                          </div>
+                        </td>
+
+                        <td style={{ padding: '12px 14px' }}>
+                          <span style={{
+                            background: '#F5F3FF',
+                            color: '#6D28D9',
+                            padding: '3px 8px',
+                            borderRadius: 6,
+                            fontWeight: 700,
+                            fontFamily: 'monospace',
+                            fontSize: 11.5
+                          }}>
+                            {ag.model || 'gpt-4o'}
+                          </span>
+                        </td>
+
+                        <td style={{ padding: '12px 14px' }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: '#1E293B' }}>
+                            In: <span style={{ color: '#047857' }}>${Number(ag.input_token_price_per_1m || 2.5).toFixed(2)}</span> / 1M
+                          </div>
+                          <div style={{ fontSize: 11.5, fontWeight: 700, color: '#1E293B' }}>
+                            Out: <span style={{ color: '#047857' }}>${Number(ag.output_token_price_per_1m || 10.0).toFixed(2)}</span> / 1M
+                          </div>
+                        </td>
+
+                        <td style={{ padding: '12px 14px' }}>
+                          <div style={{ fontSize: 12.5, fontWeight: 800, color: '#1E293B' }}>
+                            Budget: <span style={{ color: '#4F46E5' }}>${Number(ag.monthly_budget || 500.0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                          </div>
+                          <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
+                            Infra: ${Number(ag.monthly_infra_cost || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / mo
+                          </div>
+                        </td>
+
+                        <td style={{ padding: '12px 14px' }}>
+                          <div style={{ fontWeight: 800, color: '#1E293B', display: 'flex', alignItems: 'center', gap: 5 }}>
+                            <Clock size={13} color="#0284C7" />
+                            {ag.baseline_employee_hours} hrs
+                          </div>
+                          <div style={{ fontSize: 10.5, color: '#64748B' }}>
+                            ({Math.round((ag.baseline_employee_hours || 0.5) * 60)} mins)
+                          </div>
+                        </td>
+
+                        <td style={{ padding: '12px 14px' }}>
+                          <div style={{ fontSize: 12.5, fontWeight: 800, color: '#1E293B' }}>
+                            ${Number(ag.employee_monthly_rate || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / mo
+                          </div>
+                          <div style={{ fontSize: 11, color: '#0369A1', fontWeight: 600, marginTop: 2 }}>
+                            ${((Number(ag.employee_monthly_rate || 6500.0)) / (Number(ag.employee_monthly_working_hours || 160.0))).toFixed(2)}/hr ({ag.employee_monthly_working_hours || 160} hrs/mo)
+                          </div>
+                        </td>
+
+                        <td style={{ padding: '12px 14px' }}>
+                          <span style={{
+                            background: ag.is_active ? '#ECFDF5' : '#F1F5F9',
+                            color: ag.is_active ? '#047857' : '#64748B',
+                            padding: '3px 8px',
+                            borderRadius: 12,
+                            fontWeight: 800,
+                            fontSize: 11
+                          }}>
+                            {ag.is_active ? 'ACTIVE' : 'INACTIVE'}
+                          </span>
+                        </td>
+
+                        <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                          <button
+                            onClick={() => {
+                              const configObj = {
+                                agent_name: ag.name,
+                                business_function: ag.business_function || 'Eng & IT',
+                                team: ag.team || 'IT Service Desk',
+                                model: ag.model || 'gpt-4o',
+                                input_token_price_per_1m: ag.input_token_price_per_1m ?? 2.50,
+                                output_token_price_per_1m: ag.output_token_price_per_1m ?? 10.00,
+                                monthly_infra_cost: ag.monthly_infra_cost ?? 150.00,
+                                monthly_budget: ag.monthly_budget ?? 500.00,
+                                baseline_employee_hours: ag.baseline_employee_hours ?? 0.5,
+                                employee_monthly_rate: ag.employee_monthly_rate ?? 6500.00,
+                                employee_monthly_working_hours: ag.employee_monthly_working_hours ?? 160,
+                                category: ag.category || 'built_with',
+                                agent_type: ag.agent_type || 'workflow_agent',
+                                description: ag.description || ''
+                              };
+                              setWorkingAgentJson(JSON.stringify(configObj, null, 2));
+                              setWorkingAgentIngestResult({
+                                type: 'success',
+                                message: `Loaded configuration for "${ag.name}" into the editor. You can modify parameters and re-ingest.`
+                              });
+                              window.scrollTo({ top: 300, behavior: 'smooth' });
+                            }}
+                            style={{
+                              padding: '5px 12px',
+                              background: '#F8FAFC',
+                              border: '1px solid #CBD5E1',
+                              borderRadius: 6,
+                              color: '#334155',
+                              fontSize: 11,
+                              fontWeight: 700,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Edit in JSON
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

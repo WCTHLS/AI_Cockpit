@@ -17,6 +17,7 @@ export interface AgentScorecardItem {
   eval_pass_rate: number;
   policy_incidents: number;
   days_in_production: number;
+  baseline_employee_hours?: number;
   action: 'accelerate' | 'optimize' | 'experiment' | 'intervene';
   suggested_action?: string;
 }
@@ -207,3 +208,52 @@ export interface DeveloperSeat {
   last_active_at: string;
   updated_at: string;
 }
+
+export interface WorkingAgentConfig {
+  agent_name: string;
+  business_function: string;
+  team: string;
+  model: string;
+  input_token_price_per_1m: number;
+  output_token_price_per_1m: number;
+  monthly_infra_cost: number;
+  monthly_budget?: number;
+  baseline_employee_hours: number;
+  employee_monthly_rate: number;
+  employee_monthly_working_hours?: number;
+  category?: string;
+  agent_type?: string;
+  description?: string;
+}
+
+export interface WorkingAgentItem {
+  id: number;
+  company_id: number;
+  name: string;
+  category: string;
+  agent_type: string;
+  portfolio: string;
+  description?: string;
+  go_live_date?: string;
+  is_active: number;
+  created_at: string;
+  monthly_infra_cost: number;
+  monthly_budget: number;
+  input_token_price_per_1m: number;
+  output_token_price_per_1m: number;
+  model: string;
+  baseline_employee_hours: number;
+  employee_monthly_rate: number;
+  employee_monthly_working_hours: number;
+  business_function: string;
+  team: string;
+  config_json?: string;
+}
+
+export interface WorkingAgentIngestResponse {
+  status: string;
+  saved_count: number;
+  agents: any[];
+  message: string;
+}
+

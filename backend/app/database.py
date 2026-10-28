@@ -101,16 +101,37 @@ def seed_database(conn: sqlite3.Connection):
         VALUES (1, 'WaferWire Cloud Technologies', 'wct', 'USD')
     """)
 
-    mock_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "mock_data.json"))
-    if not os.path.exists(mock_path):
-        return
-
-    with open(mock_path, "r", encoding="utf-8") as f:
-        mock_data = json.load(f)
-
-    agents = mock_data.get("agents", [])
-    costs = mock_data.get("costs", [])
-    seats = mock_data.get("seats", [])
+    # 2. Business Functions & Teams (Clean organizational hierarchy)
+    org_structure = {
+        "Customer": [
+            "Customer Service",
+            "Product Support",
+            "Warranty & Returns",
+            "Field Services"
+        ],
+        "Eng & IT": [
+            "IT Service Desk",
+            "Software Engineering",
+            "DevOps & SRE",
+            "Device Engineering"
+        ],
+        "Sales": [
+            "Sales",
+            "Bids & Proposals",
+            "Channel & Partners",
+            "Marketing"
+        ],
+        "Operations": [
+            "Supply Chain",
+            "Planning",
+            "Procurement",
+            "Manufacturing Quality"
+        ],
+        "Finance": [
+            "Financial Planning & Close",
+            "Accounts Receivable"
+        ]
+    }
 
     dept_rates = {
         "finance": 60.0,
@@ -120,207 +141,154 @@ def seed_database(conn: sqlite3.Connection):
         "operations": 55.0,
     }
 
-    functions_map = {}
-    teams_map = {}
-    agents_map = {}
+    for fn, teams in org_structure.items():
+        cur.execute("INSERT OR IGNORE INTO business_function (company_id, name) VALUES (1, ?)", (fn,))
+        cur.execute("SELECT id FROM business_function WHERE company_id = 1 AND name = ?", (fn,))
+        fid = cur.fetchone()[0]
 
-    for a in agents:
-        fn = a["Function"]
-        tm = a["Team"]
-        ag = a["Agent"]
-
-        if fn not in functions_map:
-            cur.execute("INSERT OR IGNORE INTO business_function (company_id, name) VALUES (1, ?)", (fn,))
-            cur.execute("SELECT id FROM business_function WHERE company_id = 1 AND name = ?", (fn,))
-            functions_map[fn] = cur.fetchone()[0]
-        fid = functions_map[fn]
-
-        if (fid, tm) not in teams_map:
-            cur.execute("INSERT OR IGNORE INTO team (company_id, function_id, name) VALUES (1, ?, ?)", (fid, tm))
+        for tm in teams:
+            cur.execute("INSERT OR IGNORE INTO team (company_id, function_id, name, is_active) VALUES (1, ?, ?, 1)", (fid, tm))
             cur.execute("SELECT id FROM team WHERE company_id = 1 AND function_id = ? AND name = ?", (fid, tm))
             tid = cur.fetchone()[0]
-            teams_map[(fid, tm)] = tid
             hr_rate = dept_rates.get(fn.lower(), 55.0)
             cur.execute("""
                 INSERT OR IGNORE INTO team_hourly_cost_rate 
                 (company_id, team_id, effective_from, hourly_cost, currency) 
                 VALUES (1, ?, '2026-01-01', ?, 'USD')
             """, (tid, hr_rate))
-        tid = teams_map[(fid, tm)]
 
-        if ag not in agents_map:
-            cat = "built_in" if "copilot" in ag.lower() else "built_using" if "gpt" in ag.lower() else "built_with"
-            agent_type = "coding_assistant" if "code" in ag.lower() or "developer" in ag.lower() else "workflow_agent"
-            days = int(a.get("DaysInProduction", 120))
-            ref_date = date(2026, 9, 30)
-            go_live = (ref_date - timedelta(days=days)).isoformat()
-            cur.execute("""
-                INSERT OR IGNORE INTO ai_agent 
-                (company_id, name, category, agent_type, portfolio, go_live_date, is_active)
-                VALUES (1, ?, ?, ?, 'Default', ?, 1)
-            """, (ag, cat, agent_type, go_live))
-            cur.execute("SELECT id FROM ai_agent WHERE company_id = 1 AND name = ?", (ag,))
-            agents_map[ag] = cur.fetchone()[0]
-        aid = agents_map[ag]
-
-        cur.execute("""
-            INSERT OR IGNORE INTO team_agent 
-            (company_id, team_id, agent_id, assigned_from) 
-            VALUES (1, ?, ?, '2026-01-01')
-        """, (tid, aid))
-
-        month = a["Month"]
-        month_start = f"{month}-01"
-        hours = float(a.get("HoursSaved", 0))
-        cost = float(a.get("CostUSD", 0))
-        budget = float(a.get("BudgetUSD", 0))
-        lic = int(a.get("LicensedUsers", 0))
-        act = int(a.get("ActiveUsers", 0))
-        runs = int(a.get("EvalRuns", 0))
-        passed = int(a.get("EvalPassed", 0))
-        incidents = int(a.get("PolicyIncidents", 0))
-
-        cur.execute("""
-            INSERT OR REPLACE INTO value_measurement_month
-            (company_id, month_start, agent_id, team_id, hours_saved, measurement_method, approval_status)
-            VALUES (1, ?, ?, ?, ?, 'measured', 'approved')
-        """, (month_start, aid, tid, hours))
-
-        cur.execute("""
-            INSERT OR REPLACE INTO cost_record
-            (company_id, month_start, agent_id, team_id, cost_category, amount, cost_basis, external_record_key)
-            VALUES (1, ?, ?, ?, 'licence', ?, 'vendor_invoice', ?)
-        """, (month_start, aid, tid, cost, f"{aid}-{tid}-{month_start}-licence"))
-
-        cur.execute("""
-            INSERT OR REPLACE INTO agent_budget_month
-            (company_id, month_start, agent_id, team_id, cost_category, budget_amount)
-            VALUES (1, ?, ?, ?, 'licence', ?)
-        """, (month_start, aid, tid, budget))
-
-        cur.execute("""
-            INSERT OR REPLACE INTO agent_seat_month
-            (company_id, month_start, agent_id, team_id, purchased_seats, assigned_seats, active_seats, cost_per_seat)
-            VALUES (1, ?, ?, ?, ?, ?, ?, 30.0)
-        """, (month_start, aid, tid, lic, lic, act))
-
-        cur.execute("""
-            INSERT OR REPLACE INTO agent_evaluation
-            (company_id, external_eval_id, agent_id, team_id, evaluated_at, total_cases, passed_cases)
-            VALUES (1, ?, ?, ?, ?, ?, ?)
-        """, (f"{aid}-{tid}-{month_start}-eval", aid, tid, f"{month}-15T12:00:00", runs, passed))
-
-        if incidents > 0:
-            for i in range(incidents):
-                cur.execute("""
-                    INSERT OR IGNORE INTO agent_incident
-                    (company_id, external_incident_id, agent_id, team_id, occurred_at, incident_type, severity, status)
-                    VALUES (1, ?, ?, ?, ?, 'policy', 'high', 'open')
-                """, (f"{aid}-{tid}-{month_start}-inc-{i}", aid, tid, f"{month}-10T09:00:00"))
-
-        cur.execute("""
-            INSERT OR IGNORE INTO agent_usage_daily
-            (company_id, usage_date, agent_id, team_id, source_record_key, tasks_count, sessions_count)
-            VALUES (1, ?, ?, ?, ?, ?, ?)
-        """, (f"{month}-15", aid, tid, f"{aid}-{tid}-{month}-usage", 50, act))
-
-    # Seed seat inventory items
+    # 3. Register live IT Support Agent
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS seat_inventory_item (
-            id INTEGER PRIMARY KEY,
-            function TEXT NOT NULL,
-            tool TEXT NOT NULL,
-            inactive_days INTEGER NOT NULL,
-            count INTEGER NOT NULL
-        )
+        INSERT OR IGNORE INTO ai_agent 
+        (company_id, name, category, agent_type, portfolio, go_live_date, is_active)
+        VALUES (1, 'Ticket Triage Agent', 'built_with', 'workflow_agent', 'Default', '2026-01-01', 1)
     """)
-    cur.execute("SELECT COUNT(*) FROM seat_inventory_item")
-    if cur.fetchone()[0] == 0:
-        for s in seats:
+    cur.execute("SELECT id FROM ai_agent WHERE company_id = 1 AND name = 'Ticket Triage Agent'")
+    aid_row = cur.fetchone()
+    if aid_row:
+        aid = aid_row[0]
+        cur.execute("SELECT id FROM team WHERE name = 'IT Service Desk'")
+        tid_row = cur.fetchone()
+        if tid_row:
             cur.execute("""
-                INSERT INTO seat_inventory_item (function, tool, inactive_days, count)
-                VALUES (?, ?, ?, ?)
-            """, (s[0], s[1], int(s[2]), int(s[3])))
+                INSERT OR IGNORE INTO team_agent 
+                (company_id, team_id, agent_id, assigned_from, is_active) 
+                VALUES (1, ?, ?, '2026-01-01', 1)
+            """, (tid_row[0], aid))
 
 def sync_active_agents(conn: sqlite3.Connection):
-    try:
-        mock_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "mock_data.json"))
-        if not os.path.exists(mock_path):
-            return
-        with open(mock_path, "r", encoding="utf-8") as f:
-            mock_data = json.load(f)
-        active_agent_names = list(set(a.get("Agent") for a in mock_data.get("agents", [])))
-        if not active_agent_names:
-            return
-        cur = conn.cursor()
-        cur.execute("UPDATE ai_agent SET is_active = 0")
-        ph = ",".join("?" for _ in active_agent_names)
-        cur.execute(f"UPDATE ai_agent SET is_active = 1 WHERE name IN ({ph})", active_agent_names)
-        cur.execute("""
-            UPDATE team SET is_active = 0 
-            WHERE id NOT IN (
-                SELECT DISTINCT ta.team_id 
-                FROM team_agent ta
-                JOIN ai_agent a ON a.id = ta.agent_id
-                WHERE a.is_active = 1
-            )
-        """)
-        cur.execute("""
-            UPDATE team SET is_active = 1 
-            WHERE id IN (
-                SELECT DISTINCT ta.team_id 
-                FROM team_agent ta
-                JOIN ai_agent a ON a.id = ta.agent_id
-                WHERE a.is_active = 1
-            )
-        """)
-    except Exception as e:
-        print(f"Warning: error syncing active agents: {e}")
+    # Keep only active custom agents (do not resurrect dummy agents from json)
+    pass
 
 def seed_claude_code_employees(conn: sqlite3.Connection):
     try:
-        candidates = [
-            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "claude_code_usage_report_2026-10-01_to_2026-10-07.json")),
-            os.path.abspath(os.path.join(os.getcwd(), "claude_code_usage_report_2026-10-01_to_2026-10-07.json")),
-            os.path.abspath(os.path.join("/app", "..", "claude_code_usage_report_2026-10-01_to_2026-10-07.json")),
-            os.path.abspath(os.path.join("/app", "claude_code_usage_report_2026-10-01_to_2026-10-07.json")),
-        ]
-        json_path = next((c for c in candidates if os.path.exists(c)), None)
-        if not json_path:
-            return
-
-        with open(json_path, "r", encoding="utf-8") as f:
-            raw_data = json.load(f).get("data", [])
-
-        emails = sorted(list(set(
-            d.get("actor", {}).get("email_address") 
-            for d in raw_data 
-            if d.get("actor", {}).get("email_address")
-        )))
-
-        if not emails:
-            return
-
         cur = conn.cursor()
         cur.execute("SELECT id FROM company WHERE LOWER(name) LIKE '%waferwire%' OR id = 1")
         row = cur.fetchone()
         company_id = row[0] if row else 1
 
-        cur.execute("SELECT id FROM team WHERE company_id = ? AND LOWER(name) = 'software engineering'", (company_id,))
-        trow = cur.fetchone()
-        team_id = trow[0] if trow else 6
+        cur.execute("SELECT id, name FROM team WHERE company_id = ?;", (company_id,))
+        teams_map = {r[1]: r[0] for r in cur.fetchall()}
 
-        for email in emails:
+        distribution = {
+            # IT Service Desk (Eng & IT) - 4 employees
+            "aarav@wct.com": ("Aarav Sharma", teams_map.get("IT Service Desk", 5)),
+            "ananya@wct.com": ("Ananya Rao", teams_map.get("IT Service Desk", 5)),
+            "arjun@wct.com": ("Arjun Patel", teams_map.get("IT Service Desk", 5)),
+            "divya@wct.com": ("Divya Nair", teams_map.get("IT Service Desk", 5)),
+
+            # Software Engineering (Eng & IT) - 3 employees
+            "imran@wct.com": ("Imran Khan", teams_map.get("Software Engineering", 6)),
+            "karthik@wct.com": ("Karthik Raman", teams_map.get("Software Engineering", 6)),
+            "kavya@wct.com": ("Kavya Sen", teams_map.get("Software Engineering", 6)),
+
+            # DevOps & SRE (Eng & IT) - 2 employees
+            "meera@wct.com": ("Meera Joshi", teams_map.get("DevOps & SRE", 7)),
+            "neha@wct.com": ("Neha Gupta", teams_map.get("DevOps & SRE", 7)),
+
+            # Device Engineering (Eng & IT) - 1 employee
+            "priya@wct.com": ("Priya Sharma", teams_map.get("Device Engineering", 8)),
+
+            # Customer Service (Customer) - 2 employees
+            "rahul@wct.com": ("Rahul Varma", teams_map.get("Customer Service", 1)),
+            "rohan@wct.com": ("Rohan Kapoor", teams_map.get("Customer Service", 1)),
+
+            # Product Support (Customer) - 1 employee
+            "siddharth@wct.com": ("Siddharth Roy", teams_map.get("Product Support", 2)),
+
+            # Warranty & Returns (Customer) - 1 employee
+            "sneha@wct.com": ("Sneha Reddy", teams_map.get("Warranty & Returns", 3)),
+
+            # Field Services (Customer) - 1 employee
+            "vikram@wct.com": ("Vikram Das", teams_map.get("Field Services", 4)),
+        }
+
+        for email, (full_name, team_id) in distribution.items():
             username = email.split("@")[0]
-            display_name = username.replace(".", " ").replace("_", " ").title()
             external_user_key = f"usr_{username}"
             cur.execute("""
-                INSERT OR IGNORE INTO employee 
+                INSERT INTO employee 
                 (company_id, team_id, external_user_key, display_name, email, is_active, joined_on)
                 VALUES (?, ?, ?, ?, ?, 1, '2026-01-01')
-            """, (company_id, team_id, external_user_key, display_name, email))
+                ON CONFLICT(company_id, external_user_key) 
+                DO UPDATE SET team_id = excluded.team_id, display_name = excluded.display_name;
+            """, (company_id, team_id, external_user_key, full_name, email))
+
+        # Assign IT Service Desk employees to Ticket Triage Agent in employee_agent table
+        cur.execute("SELECT id FROM ai_agent WHERE name = 'Ticket Triage Agent';")
+        agent_row = cur.fetchone()
+        if agent_row:
+            agent_id = agent_row[0]
+            cur.execute("SELECT id FROM employee WHERE team_id = ?;", (teams_map.get("IT Service Desk", 5),))
+            for emp_row in cur.fetchall():
+                cur.execute("""
+                    INSERT OR IGNORE INTO employee_agent 
+                    (company_id, employee_id, agent_id, assigned_from, is_active)
+                    VALUES (?, ?, ?, '2026-01-01', 1);
+                """, (company_id, emp_row[0], agent_id))
+
     except Exception as e:
-        print(f"Warning: error seeding claude code employees: {e}")
+        print(f"Warning: error seeding employees and agent mappings: {e}")
+
+def ensure_ai_agent_columns(conn: sqlite3.Connection):
+    try:
+        cur = conn.cursor()
+        existing = [c[1] for c in cur.execute("PRAGMA table_info(ai_agent)").fetchall()]
+        cols_to_add = [
+            ("monthly_infra_cost", "REAL NOT NULL DEFAULT 0.0"),
+            ("input_token_price_per_1m", "REAL NOT NULL DEFAULT 2.50"),
+            ("output_token_price_per_1m", "REAL NOT NULL DEFAULT 10.00"),
+            ("model", "TEXT NOT NULL DEFAULT 'gpt-4o'"),
+            ("baseline_employee_hours", "REAL NOT NULL DEFAULT 0.5"),
+            ("employee_monthly_rate", "REAL NOT NULL DEFAULT 0.0"),
+            ("employee_monthly_working_hours", "REAL NOT NULL DEFAULT 160.0"),
+            ("monthly_budget", "REAL NOT NULL DEFAULT 500.0"),
+            ("business_function", "TEXT"),
+            ("team", "TEXT"),
+            ("config_json", "TEXT")
+        ]
+        for name, dtype in cols_to_add:
+            if name not in existing:
+                cur.execute(f"ALTER TABLE ai_agent ADD COLUMN {name} {dtype};")
+
+        # Initialize Ticket Triage Agent with company baseline values if not yet configured
+        cur.execute("""
+            UPDATE ai_agent SET
+                monthly_infra_cost = CASE WHEN monthly_infra_cost = 0 THEN 150.0 ELSE monthly_infra_cost END,
+                input_token_price_per_1m = CASE WHEN input_token_price_per_1m = 0 THEN 2.50 ELSE input_token_price_per_1m END,
+                output_token_price_per_1m = CASE WHEN output_token_price_per_1m = 0 THEN 10.00 ELSE output_token_price_per_1m END,
+                model = COALESCE(model, 'gpt-4o'),
+                baseline_employee_hours = CASE WHEN baseline_employee_hours = 0 THEN 0.5 ELSE baseline_employee_hours END,
+                employee_monthly_rate = CASE WHEN employee_monthly_rate = 0 THEN 6500.0 ELSE employee_monthly_rate END,
+                employee_monthly_working_hours = CASE WHEN employee_monthly_working_hours = 0 THEN 160.0 ELSE employee_monthly_working_hours END,
+                monthly_budget = CASE WHEN monthly_budget = 0 THEN 500.0 ELSE monthly_budget END,
+                business_function = COALESCE(business_function, 'Eng & IT'),
+                team = COALESCE(team, 'IT Service Desk'),
+                description = COALESCE(description, 'Automated IT service desk ticket triaging, diagnostic analysis, and resolution suggestions.')
+            WHERE name = 'Ticket Triage Agent';
+        """)
+    except Exception as e:
+        print(f"Warning ensuring ai_agent columns: {e}")
 
 def init_db(seed_if_empty: bool = True):
     db_path = get_db_path()
@@ -333,6 +301,8 @@ def init_db(seed_if_empty: bool = True):
             with open(init_sql_path, "r", encoding="utf-8") as f:
                 conn.executescript(f.read())
 
+        ensure_ai_agent_columns(conn)
+
         if seed_if_empty:
             cur = conn.cursor()
             cur.execute("SELECT COUNT(*) FROM company")
@@ -344,3 +314,36 @@ def init_db(seed_if_empty: bool = True):
 
         # Seed and persist the 15 employees from Claude Code usage telemetry
         seed_claude_code_employees(conn)
+
+        # Seed and persist Ticket Triage Agent daily user usage
+        seed_ticket_triage_user_usage(conn)
+
+def seed_ticket_triage_user_usage(conn: sqlite3.Connection):
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM user_usage;")
+        count = cur.fetchone()[0]
+        if count == 0:
+            cur.execute("SELECT id FROM ai_agent WHERE name = 'Ticket Triage Agent';")
+            agent_row = cur.fetchone()
+            agent_id = agent_row[0] if agent_row else 11
+
+            usage_records = [
+                ("aarav@wct.com", 2, {"agent_id": "it-service-desk", "agent_name": "Ticket Triage Agent", "user_email": "aarav@lenovo.com", "completion_tokens": 1272, "prompt_tokens": 1484, "total_tokens": 2756, "session_count": 2, "agent_completion": 7.43, "date": "2026-10-27", "sucess": 2}),
+                ("ananya@wct.com", 3, {"agent_id": "it-service-desk", "agent_name": "Ticket Triage Agent", "user_email": "ananya@wct.com", "completion_tokens": 2100, "prompt_tokens": 2020, "total_tokens": 4120, "session_count": 3, "agent_completion": 6.85, "date": "2026-10-27", "sucess": 3}),
+                ("arjun@wct.com", 3, {"agent_id": "it-service-desk", "agent_name": "Ticket Triage Agent", "user_email": "arjun@wct.com", "completion_tokens": 1900, "prompt_tokens": 1678, "total_tokens": 3578, "session_count": 3, "agent_completion": 9.81, "date": "2026-10-27", "sucess": 2}),
+                ("divya@wct.com", 1, {"agent_id": "it-service-desk", "agent_name": "Ticket Triage Agent", "user_email": "divya@wct.com", "completion_tokens": 624, "prompt_tokens": 826, "total_tokens": 1450, "session_count": 1, "agent_completion": 5.9, "date": "2026-10-27", "sucess": 1})
+            ]
+
+            for emp_email, sess_cnt, u_json in usage_records:
+                cur.execute("SELECT id FROM employee WHERE email = ? OR email LIKE ?;", (emp_email, f"%{emp_email.split('@')[0]}%"))
+                emp_row = cur.fetchone()
+                if emp_row:
+                    emp_id = emp_row[0]
+                    cur.execute("""
+                        INSERT OR IGNORE INTO user_usage (company_id, employee_id, agent_id, usage_date, sessions_count, daily_usage_json)
+                        VALUES (1, ?, ?, '2026-10-27', ?, ?);
+                    """, (emp_id, agent_id, sess_cnt, json.dumps(u_json)))
+    except Exception as e:
+        print(f"Warning seeding ticket triage user usage: {e}")
+
