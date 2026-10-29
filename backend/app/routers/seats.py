@@ -58,54 +58,6 @@ def _init_m365_table():
 
         conn.execute("DELETE FROM m365_copilot_seats WHERE user_principal_name LIKE '%@wct.com'")
 
-def get_or_create_pseudonym(conn, raw_upn: str, real_name: Optional[str] = None, category: str = "m365") -> tuple[str, str]:
-    """
-    Deterministically maps a real employee email/UPN to an anonymous pseudonym e.g. ("Emp 1", "emp1@company.internal").
-    Guarantees that re-uploading updated reports maps the same employee to the exact same pseudonym.
-    """
-    key = raw_upn.strip().lower()
-
-    # If the upn is already a pseudonym like emp1@company.internal or emp1, retain it
-    if key.startswith("emp") and ("company.internal" in key or "example.com" in key or "@" not in key):
-        num_part = "".join(c for c in key.split("@")[0] if c.isdigit())
-        disp = f"Emp {num_part}" if num_part else (real_name or key)
-        return disp, raw_upn.strip()
-
-    cur = conn.cursor()
-    cur.execute("SELECT display_name, pseudo_email FROM seat_pseudonym_map WHERE real_key = ?", (key,))
-    existing = cur.fetchone()
-    if existing:
-        return existing[0], existing[1]
-
-    # Generate next sequential identifier
-    cur.execute("SELECT pseudo_id FROM seat_pseudonym_map WHERE pseudo_id LIKE 'emp%'")
-    rows = cur.fetchall()
-    max_num = 0
-    for r in rows:
-        pid = r[0] if isinstance(r, (list, tuple)) else r["pseudo_id"]
-        digits = "".join(c for c in str(pid) if c.isdigit())
-        if digits:
-            try:
-                max_num = max(max_num, int(digits))
-            except ValueError:
-                pass
-    next_num = max_num + 1
-
-    pseudo_id = f"emp{next_num}"
-    pseudo_display = f"Emp {next_num}"
-    pseudo_email = f"emp{next_num}@company.internal"
-    now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
-
-    cur.execute("""
-        INSERT INTO seat_pseudonym_map (real_key, pseudo_id, display_name, pseudo_email, category, created_at)
-        VALUES (?, ?, ?, ?, ?, ?)
-        ON CONFLICT(real_key) DO UPDATE SET
-            display_name = excluded.display_name,
-            pseudo_email = excluded.pseudo_email
-    """, (key, pseudo_id, pseudo_display, pseudo_email, category, now_iso))
-
-    return pseudo_display, pseudo_email
-
 @router.get("", response_model=SeatInventorySummary)
 def get_seats_summary(
     function: Optional[str] = Query(None),
@@ -203,14 +155,14 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
     """
     Ingests Microsoft 365 Copilot User Activity report (CSV or Excel .xlsx/.xls)
     exported from M365 Admin Center -> Reports -> Usage -> Microsoft 365 Apps -> Copilot activity.
-    Automatically anonymizes all employee names and emails to pseudonyms (Emp 1, Emp 2, etc.)
-    with a persistent deterministic mapping table so re-uploads maintain consistency.
+    Automatically anonymizes all employee names and emails to pseudonyms (Emp 1, Emp 2, ... Emp N)
+    ensuring sequential numbering with no gaps, matching the exact number of active users.
     """
     _init_m365_table()
     content = await file.read()
     filename = (file.filename or "").lower()
 
-    rows: List[Dict[str, Any]] = []
+    raw_rows: List[Dict[str, Any]] = []
 
     # Check if file is Excel (.xlsx, .xls) or PK zip header
     if filename.endswith((".xlsx", ".xls")) or content.startswith(b"PK\x03\x04"):
@@ -218,7 +170,7 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
             import pandas as pd
             df = pd.read_excel(io.BytesIO(content))
             df = df.where(pd.notnull(df), None)
-            rows = df.to_dict(orient="records")
+            raw_rows = df.to_dict(orient="records")
         except Exception:
             import openpyxl
             wb = openpyxl.load_workbook(io.BytesIO(content), data_only=True)
@@ -228,7 +180,7 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
                 headers = [str(h).strip() if h is not None else f"col_{idx}" for idx, h in enumerate(sheet_data[0])]
                 for r in sheet_data[1:]:
                     row_dict = {headers[i]: r[i] for i in range(min(len(headers), len(r)))}
-                    rows.append(row_dict)
+                    raw_rows.append(row_dict)
     else:
         # CSV file
         try:
@@ -236,26 +188,52 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
         except UnicodeDecodeError:
             decoded = content.decode("latin-1")
         reader = csv.DictReader(io.StringIO(decoded))
-        rows = list(reader)
+        raw_rows = list(reader)
+
+    # 1. Filter out empty or blank rows where UPN is missing
+    valid_rows: List[Dict[str, Any]] = []
+    for r in raw_rows:
+        upn_val = (
+            r.get("User Principal Name") or
+            r.get("UserPrincipalName") or
+            r.get("UPN") or
+            r.get("User email") or
+            r.get("Email")
+        )
+        if not upn_val:
+            continue
+        upn_str = str(upn_val).strip()
+        if "@" not in upn_str and not upn_str.lower().startswith("emp"):
+            continue
+        valid_rows.append(r)
+
+    # 2. Sort by total prompts descending so power users are Emp 1, Emp 2 ... down to idle users
+    def _parse_prompts(r):
+        try:
+            return int(float(r.get("Prompts submitted for All Apps") or r.get("TotalPrompts") or r.get("Total Prompts") or 0))
+        except (ValueError, TypeError):
+            return 0
+
+    valid_rows.sort(key=_parse_prompts, reverse=True)
 
     now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
     today = datetime.date.today()
     inserted = 0
 
     with get_db() as conn:
-        for row in rows:
-            raw_upn = (
+        # Fresh upload replaces previous M365 estate cleanly
+        conn.execute("DELETE FROM m365_copilot_seats")
+        conn.execute("DELETE FROM seat_pseudonym_map WHERE category = 'm365'")
+
+        for i, row in enumerate(valid_rows, 1):
+            raw_upn_val = (
                 row.get("User Principal Name") or
                 row.get("UserPrincipalName") or
                 row.get("UPN") or
                 row.get("User email") or
                 row.get("Email")
             )
-            if not raw_upn:
-                continue
-            raw_upn_str = str(raw_upn).strip()
-            if "@" not in raw_upn_str and not raw_upn_str.lower().startswith("emp"):
-                continue
+            raw_upn_str = str(raw_upn_val).strip()
 
             raw_name = (
                 row.get("Display Name") or
@@ -271,9 +249,7 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
                 combined = f"{raw_upn_str.lower()} {raw_name_str.lower()}"
                 if any(k in combined for k in ["doug", "mohsin", "sales"]):
                     dept = "Sales"
-                elif any(k in combined for k in ["mehul", "madhava", "anudeep", "sidhartha", "rajesh", "karthik"]):
-                    dept = "Eng & IT"
-                elif any(k in combined for k in ["murthy", "balaji", "magnus"]):
+                elif any(k in combined for k in ["mehul", "madhava", "anudeep", "sidhartha", "rajesh", "karthik", "murthy", "balaji", "magnus"]):
                     dept = "Eng & IT"
                 elif any(k in combined for k in ["ted", "finance", "reema"]):
                     dept = "Finance"
@@ -282,8 +258,15 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
             else:
                 dept = str(dept).strip()
 
-            # Map raw credentials to anonymous pseudonym (Emp 1, emp1@company.internal)
-            display_name, upn = get_or_create_pseudonym(conn, raw_upn_str, raw_name_str, category="m365")
+            # Deterministic, strictly sequential pseudonym without gaps (Emp 1 to Emp N)
+            display_name = f"Emp {i}"
+            upn = f"emp{i}@company.internal"
+            pseudo_id = f"emp{i}"
+
+            conn.execute("""
+                INSERT INTO seat_pseudonym_map (real_key, pseudo_id, display_name, pseudo_email, category, created_at)
+                VALUES (?, ?, ?, ?, 'm365', ?)
+            """, (raw_upn_str.lower(), pseudo_id, display_name, upn, now_iso))
 
             last_activity = (
                 row.get("Last Activity Date") or
@@ -296,10 +279,7 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
                 if last_activity in ["", "None", "nan"]:
                     last_activity = None
 
-            try:
-                total_prompts = int(float(row.get("Prompts submitted for All Apps") or row.get("TotalPrompts") or row.get("Total Prompts") or 0))
-            except (ValueError, TypeError):
-                total_prompts = 0
+            total_prompts = _parse_prompts(row)
 
             try:
                 chat_work = int(float(row.get("Prompts submitted for Copilot Chat (work)") or row.get("Work Chat") or 0))
@@ -363,25 +343,6 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
                     word_active, excel_active, powerpoint_active, loop_active,
                     inactive_days, status, recommendation, hours_saved, updated_at
                 ) VALUES (?, ?, ?, 'Microsoft 365 Copilot', ?, 28, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(user_principal_name) DO UPDATE SET
-                    display_name = excluded.display_name,
-                    department = excluded.department,
-                    last_activity_date = excluded.last_activity_date,
-                    total_prompts = excluded.total_prompts,
-                    chat_work_prompts = excluded.chat_work_prompts,
-                    chat_web_prompts = excluded.chat_web_prompts,
-                    active_days = excluded.active_days,
-                    teams_active = excluded.teams_active,
-                    outlook_active = excluded.outlook_active,
-                    word_active = excluded.word_active,
-                    excel_active = excluded.excel_active,
-                    powerpoint_active = excluded.powerpoint_active,
-                    loop_active = excluded.loop_active,
-                    inactive_days = excluded.inactive_days,
-                    status = excluded.status,
-                    recommendation = excluded.recommendation,
-                    hours_saved = excluded.hours_saved,
-                    updated_at = excluded.updated_at
             """, (
                 upn, display_name, dept, last_activity, total_prompts, chat_work, chat_web,
                 active_days, teams_act, outlook_act, word_act, excel_act, ppt_act, loop_act,
@@ -393,7 +354,7 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
 
     return {
         "status": "success",
-        "message": f"Successfully ingested M365 Copilot report: {inserted} anonymous employee seats processed."
+        "message": f"Successfully ingested M365 Copilot report: {inserted} anonymous employee seats processed (Emp 1 to Emp {inserted})."
     }
 
 @router.delete("/m365")
@@ -404,6 +365,7 @@ def clear_m365_seats(user: Dict[str, Any] = Depends(get_current_user)):
     _init_m365_table()
     with get_db() as conn:
         conn.execute("DELETE FROM m365_copilot_seats")
+        conn.execute("DELETE FROM seat_pseudonym_map WHERE category = 'm365'")
         conn.commit()
     return {"status": "success", "message": "All Microsoft 365 Copilot seat telemetry successfully cleared."}
 

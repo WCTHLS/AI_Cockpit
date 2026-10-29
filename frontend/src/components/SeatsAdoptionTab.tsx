@@ -494,8 +494,8 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         gap: 16,
         marginBottom: 20
       }}>
-        {/* Card 1: Licensed Seats */}
-        <div title="Total assigned enterprise seat licenses across developers and knowledge workers" style={{
+        {/* Card 1: Licensed Seats (Context-Aware to Active Tab) */}
+        <div title="Total assigned enterprise seat licenses" style={{
           background: 'linear-gradient(135deg, #00349B 0%, #002266 100%)',
           color: '#FFFFFF',
           borderRadius: 12,
@@ -505,22 +505,24 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#93C5FD' }}>
-              Licensed Seats
+              {activeRosterTab === 'm365' ? 'M365 Licensed Seats' : 'Developer AI Seats'}
             </span>
             <span style={{ fontSize: 11, fontWeight: 700, background: 'rgba(255,255,255,0.15)', padding: '2px 8px', borderRadius: 12 }}>
               Live Roster
             </span>
           </div>
           <div style={{ fontSize: 32, fontWeight: 900, marginTop: 6, fontFamily: 'Figtree, sans-serif' }}>
-            {total}
+            {activeRosterTab === 'm365' ? m365Total : developerSeats.length}
           </div>
           <div style={{ fontSize: 11.5, color: '#BFDBFE', marginTop: 4, fontWeight: 600 }}>
-            Antigravity ({developerSeats.length}) + M365 Copilot ({Math.max(0, total - developerSeats.length)})
+            {activeRosterTab === 'm365'
+              ? `Enterprise Total: ${total} (+${developerSeats.length} Dev Seats)`
+              : `Enterprise Total: ${total} (+${m365Total} M365 Seats)`}
           </div>
         </div>
 
-        {/* Card 2: Active Seats */}
-        <div title={`Calculated as: (${active} active users within past 7 days ÷ ${total} total licensed seats) × 100%`} style={{
+        {/* Card 2: Active Seats (Context-Aware to Active Tab) */}
+        <div title="Active user adoption within past 7 days" style={{
           background: '#FFFFFF',
           border: '1.5px solid #D1FAE5',
           borderRadius: 12,
@@ -530,17 +532,21 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#059669' }}>
-              Active Seats (7 Days)
+              {activeRosterTab === 'm365' ? 'Active M365 Seats (7d)' : 'Active Developers (7d)'}
             </span>
             <span style={{ fontSize: 11, fontWeight: 800, background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: 12 }}>
-              {((active / total) * 100).toFixed(1)}% Utilized
+              {activeRosterTab === 'm365'
+                ? (m365Total > 0 ? ((m365Active / m365Total) * 100).toFixed(1) : '0.0')
+                : (developerSeats.length > 0 ? '100.0' : '0.0')}% Utilized
             </span>
           </div>
           <div style={{ fontSize: 32, fontWeight: 900, marginTop: 6, color: '#0F172A', fontFamily: 'Figtree, sans-serif' }}>
-            {active}
+            {activeRosterTab === 'm365' ? m365Active : developerSeats.length}
           </div>
           <div style={{ fontSize: 11.5, color: '#16A34A', marginTop: 4, fontWeight: 700 }}>
-            Actively utilizing AI within past 7 days
+            {activeRosterTab === 'm365'
+              ? `${m365Active} active knowledge workers this period`
+              : `${developerSeats.length} active AI engineers in IDE`}
           </div>
         </div>
 
