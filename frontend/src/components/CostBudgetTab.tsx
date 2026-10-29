@@ -212,7 +212,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 },
         data: ['Actual cost', 'Budget']
       },
-      grid: { top: 35, right: 65, bottom: 25, left: 140 },
+      grid: { top: 35, right: 65, bottom: 25, left: 20, containLabel: true },
       xAxis: {
         type: 'value',
         axisLine: { show: false },
@@ -397,7 +397,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 },
         data: ['Actual cost', 'Budget']
       },
-      grid: { top: 35, right: 65, bottom: 25, left: 160 },
+      grid: { top: 35, right: 65, bottom: 25, left: 20, containLabel: true },
       xAxis: {
         type: 'value',
         axisLine: { show: false },
@@ -496,7 +496,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         itemHeight: 12,
         textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 }
       },
-      grid: { top: 35, right: 65, bottom: 25, left: 120 },
+      grid: { top: 35, right: 65, bottom: 25, left: 20, containLabel: true },
       xAxis: {
         type: 'value',
         axisLine: { show: false },

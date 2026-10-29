@@ -291,7 +291,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           </div>`;
         }
       },
-      grid: { top: 10, right: 65, bottom: 25, left: 130 },
+      grid: { top: 10, right: 65, bottom: 25, left: 20, containLabel: true },
       xAxis: {
         type: 'value',
         axisLine: { show: false },
@@ -612,7 +612,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           </div>`;
         }
       },
-      grid: { top: 10, right: 80, bottom: 30, left: 180 },
+      grid: { top: 10, right: 80, bottom: 30, left: 20, containLabel: true },
       xAxis: {
         type: 'value',
         axisLine: { lineStyle: { color: '#CBD5E1' } },
