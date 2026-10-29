@@ -147,7 +147,25 @@ def get_daily_telemetry_summary(
     """
     target_date = date
     if not target_date:
-        row = query_one("SELECT MAX(usage_date) as max_date FROM user_usage")
+        if agent_id and str(agent_id).isdigit():
+            row = query_one("SELECT MAX(usage_date) as max_date FROM user_usage WHERE agent_id = ?", (int(agent_id),))
+        elif agent_id:
+            row = query_one("""
+                SELECT MAX(u.usage_date) as max_date 
+                FROM user_usage u 
+                JOIN ai_agent a ON a.id = u.agent_id 
+                WHERE json_extract(u.daily_usage_json, '$.agent_id') = ? OR LOWER(a.name) LIKE ?
+            """, (agent_id, f"%{agent_id.lower()}%"))
+        elif agent_name:
+            row = query_one("""
+                SELECT MAX(u.usage_date) as max_date 
+                FROM user_usage u 
+                JOIN ai_agent a ON a.id = u.agent_id 
+                WHERE LOWER(a.name) LIKE ?
+            """, (f"%{agent_name.lower()}%",))
+        else:
+            row = query_one("SELECT MAX(usage_date) as max_date FROM user_usage")
+
         target_date = row["max_date"] if row and row["max_date"] else datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     sql = """
@@ -173,18 +191,7 @@ def get_daily_telemetry_summary(
     sql += " ORDER BY u.sessions_count DESC, e.display_name ASC"
     rows = query_all(sql, tuple(params))
 
-    # If no rows found for specific filter, fallback to all records on target date
-    if not rows and (agent_id or agent_name):
-        fallback_sql = """
-            SELECT u.id, u.employee_id, e.display_name, e.email, u.agent_id, a.name as agent_name,
-                   u.usage_date, u.sessions_count, u.daily_usage_json, u.updated_at
-            FROM user_usage u
-            JOIN employee e ON e.id = u.employee_id
-            JOIN ai_agent a ON a.id = u.agent_id
-            WHERE u.usage_date = ?
-            ORDER BY u.sessions_count DESC
-        """
-        rows = query_all(fallback_sql, (target_date,))
+    # Note: Do NOT fall back to other agents' records. Each agent must show only its own telemetry.
 
     total_completion_tokens = 0
     total_prompt_tokens = 0
@@ -194,8 +201,24 @@ def get_daily_telemetry_summary(
     weighted_completion_time_sum = 0.0
 
     breakdown = []
-    resolved_agent_name = agent_name or "Ticket Triage Agent"
-    resolved_agent_id = agent_id or "it-service-desk"
+    resolved_agent_name = agent_name or (agent_id if agent_id and not str(agent_id).isdigit() else "AI Agent")
+    resolved_agent_id = agent_id or "ai-agent"
+
+    if rows:
+        resolved_agent_name = rows[0]["agent_name"]
+        resolved_agent_id = str(rows[0]["agent_id"])
+    else:
+        if agent_id and str(agent_id).isdigit():
+            a_row = query_one("SELECT id, name FROM ai_agent WHERE id = ?", (int(agent_id),))
+            if a_row:
+                resolved_agent_name = a_row["name"]
+                resolved_agent_id = str(a_row["id"])
+        elif agent_name or agent_id:
+            search_term = agent_name or agent_id
+            a_row = query_one("SELECT id, name FROM ai_agent WHERE LOWER(name) LIKE ?", (f"%{search_term.lower()}%",))
+            if a_row:
+                resolved_agent_name = a_row["name"]
+                resolved_agent_id = str(a_row["id"])
 
     for r in rows:
         resolved_agent_name = r["agent_name"]
