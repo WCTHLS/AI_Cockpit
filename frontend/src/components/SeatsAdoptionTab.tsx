@@ -435,8 +435,37 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               background: m365Total > 0 ? '#10B981' : '#94A3B8',
               display: 'inline-block'
             }} />
-            {m365Total > 0 ? `${m365Total} M365 SEATS SYNCED` : 'M365 AWAITING INGESTION'}
+            {m365Total > 0 ? `${m365Total} M365 SEATS SYNCED (ANONYMIZED)` : 'M365 AWAITING INGESTION'}
           </span>
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleM365FileUpload}
+            accept=".csv, .xlsx, .xls"
+            style={{ display: 'none' }}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploadingM365}
+            style={{
+              background: '#0284C7',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: 20,
+              padding: '6px 14px',
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: isUploadingM365 ? 'not-allowed' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              boxShadow: '0 1px 3px rgba(2, 132, 199, 0.2)'
+            }}
+          >
+            <UploadCloud size={14} />
+            {isUploadingM365 ? 'Uploading...' : 'Upload M365 (CSV / Excel)'}
+          </button>
         </div>
       </div>
 

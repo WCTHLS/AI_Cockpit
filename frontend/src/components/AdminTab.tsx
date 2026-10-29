@@ -2991,7 +2991,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                       type="file"
                       ref={adminM365FileInputRef}
                       onChange={handleAdminM365Upload}
-                      accept=".csv"
+                      accept=".csv, .xlsx, .xls"
                       style={{ display: 'none' }}
                     />
                     <button
@@ -3012,7 +3012,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                       }}
                     >
                       <UploadCloud size={14} />
-                      {isUploadingAdminM365 ? 'Ingesting...' : 'Upload M365 Copilot CSV'}
+                      {isUploadingAdminM365 ? 'Ingesting...' : 'Upload M365 Copilot (CSV / Excel)'}
                     </button>
 
                     {(adminM365Data?.total_seats ?? 0) > 0 && (

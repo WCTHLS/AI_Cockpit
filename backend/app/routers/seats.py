@@ -12,7 +12,6 @@ router = APIRouter(prefix="/seats", tags=["seats"])
 
 def _init_m365_table():
     with get_db() as conn:
-        # Check if table has new columns
         cur = conn.cursor()
         cur.execute("PRAGMA table_info(m365_copilot_seats)")
         cols = [r[1] for r in cur.fetchall()]
@@ -45,7 +44,67 @@ def _init_m365_table():
                 updated_at TEXT
             )
         """)
+
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS seat_pseudonym_map (
+                real_key TEXT PRIMARY KEY,
+                pseudo_id TEXT UNIQUE,
+                display_name TEXT,
+                pseudo_email TEXT UNIQUE,
+                category TEXT DEFAULT 'm365',
+                created_at TEXT
+            )
+        """)
+
         conn.execute("DELETE FROM m365_copilot_seats WHERE user_principal_name LIKE '%@wct.com'")
+
+def get_or_create_pseudonym(conn, raw_upn: str, real_name: Optional[str] = None, category: str = "m365") -> tuple[str, str]:
+    """
+    Deterministically maps a real employee email/UPN to an anonymous pseudonym e.g. ("Emp 1", "emp1@company.internal").
+    Guarantees that re-uploading updated reports maps the same employee to the exact same pseudonym.
+    """
+    key = raw_upn.strip().lower()
+
+    # If the upn is already a pseudonym like emp1@company.internal or emp1, retain it
+    if key.startswith("emp") and ("company.internal" in key or "example.com" in key or "@" not in key):
+        num_part = "".join(c for c in key.split("@")[0] if c.isdigit())
+        disp = f"Emp {num_part}" if num_part else (real_name or key)
+        return disp, raw_upn.strip()
+
+    cur = conn.cursor()
+    cur.execute("SELECT display_name, pseudo_email FROM seat_pseudonym_map WHERE real_key = ?", (key,))
+    existing = cur.fetchone()
+    if existing:
+        return existing[0], existing[1]
+
+    # Generate next sequential identifier
+    cur.execute("SELECT pseudo_id FROM seat_pseudonym_map WHERE pseudo_id LIKE 'emp%'")
+    rows = cur.fetchall()
+    max_num = 0
+    for r in rows:
+        pid = r[0] if isinstance(r, (list, tuple)) else r["pseudo_id"]
+        digits = "".join(c for c in str(pid) if c.isdigit())
+        if digits:
+            try:
+                max_num = max(max_num, int(digits))
+            except ValueError:
+                pass
+    next_num = max_num + 1
+
+    pseudo_id = f"emp{next_num}"
+    pseudo_display = f"Emp {next_num}"
+    pseudo_email = f"emp{next_num}@company.internal"
+    now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    cur.execute("""
+        INSERT INTO seat_pseudonym_map (real_key, pseudo_id, display_name, pseudo_email, category, created_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(real_key) DO UPDATE SET
+            display_name = excluded.display_name,
+            pseudo_email = excluded.pseudo_email
+    """, (key, pseudo_id, pseudo_display, pseudo_email, category, now_iso))
+
+    return pseudo_display, pseudo_email
 
 @router.get("", response_model=SeatInventorySummary)
 def get_seats_summary(
@@ -142,54 +201,89 @@ def get_seats_summary(
 @router.post("/m365/upload-csv")
 async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = Depends(get_current_user)):
     """
-    Ingests official Microsoft 365 Copilot User Activity report CSV exported from
-    M365 Admin Center -> Reports -> Usage -> Microsoft 365 Apps -> Copilot activity.
+    Ingests Microsoft 365 Copilot User Activity report (CSV or Excel .xlsx/.xls)
+    exported from M365 Admin Center -> Reports -> Usage -> Microsoft 365 Apps -> Copilot activity.
+    Automatically anonymizes all employee names and emails to pseudonyms (Emp 1, Emp 2, etc.)
+    with a persistent deterministic mapping table so re-uploads maintain consistency.
     """
     _init_m365_table()
     content = await file.read()
-    try:
-        decoded = content.decode("utf-8-sig")
-    except UnicodeDecodeError:
-        decoded = content.decode("latin-1")
+    filename = (file.filename or "").lower()
 
-    reader = csv.DictReader(io.StringIO(decoded))
+    rows: List[Dict[str, Any]] = []
+
+    # Check if file is Excel (.xlsx, .xls) or PK zip header
+    if filename.endswith((".xlsx", ".xls")) or content.startswith(b"PK\x03\x04"):
+        try:
+            import pandas as pd
+            df = pd.read_excel(io.BytesIO(content))
+            df = df.where(pd.notnull(df), None)
+            rows = df.to_dict(orient="records")
+        except Exception:
+            import openpyxl
+            wb = openpyxl.load_workbook(io.BytesIO(content), data_only=True)
+            ws = wb.active
+            sheet_data = list(ws.iter_rows(values_only=True))
+            if sheet_data:
+                headers = [str(h).strip() if h is not None else f"col_{idx}" for idx, h in enumerate(sheet_data[0])]
+                for r in sheet_data[1:]:
+                    row_dict = {headers[i]: r[i] for i in range(min(len(headers), len(r)))}
+                    rows.append(row_dict)
+    else:
+        # CSV file
+        try:
+            decoded = content.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            decoded = content.decode("latin-1")
+        reader = csv.DictReader(io.StringIO(decoded))
+        rows = list(reader)
+
     now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
     today = datetime.date.today()
-
     inserted = 0
 
     with get_db() as conn:
-        for row in reader:
-            upn = (
+        for row in rows:
+            raw_upn = (
                 row.get("User Principal Name") or
                 row.get("UserPrincipalName") or
                 row.get("UPN") or
                 row.get("User email") or
                 row.get("Email")
             )
-            if not upn or "@" not in upn:
+            if not raw_upn:
+                continue
+            raw_upn_str = str(raw_upn).strip()
+            if "@" not in raw_upn_str and not raw_upn_str.lower().startswith("emp"):
                 continue
 
-            display_name = (
+            raw_name = (
                 row.get("Display Name") or
                 row.get("DisplayName") or
-                upn.split("@")[0].replace(".", " ").title()
+                row.get("Name") or
+                raw_upn_str.split("@")[0].replace(".", " ").title()
             )
+            raw_name_str = str(raw_name).strip() if raw_name else ""
 
-            # Department derivation
+            # Department derivation using raw credentials before anonymization
             dept = row.get("Department") or row.get("Dept")
-            if not dept or dept == "General":
-                u_lower = upn.lower()
-                if any(k in u_lower for k in ["doug", "mohsin", "sales"]):
+            if not dept or str(dept).strip() in ["", "General", "None", "nan"]:
+                combined = f"{raw_upn_str.lower()} {raw_name_str.lower()}"
+                if any(k in combined for k in ["doug", "mohsin", "sales"]):
                     dept = "Sales"
-                elif any(k in u_lower for k in ["mehul", "madhava", "anudeep", "sidhartha", "rajesh", "karthik"]):
+                elif any(k in combined for k in ["mehul", "madhava", "anudeep", "sidhartha", "rajesh", "karthik"]):
                     dept = "Eng & IT"
-                elif any(k in u_lower for k in ["murthy", "balaji", "magnus"]):
+                elif any(k in combined for k in ["murthy", "balaji", "magnus"]):
                     dept = "Eng & IT"
-                elif any(k in u_lower for k in ["ted", "finance", "reema"]):
+                elif any(k in combined for k in ["ted", "finance", "reema"]):
                     dept = "Finance"
                 else:
                     dept = "Operations"
+            else:
+                dept = str(dept).strip()
+
+            # Map raw credentials to anonymous pseudonym (Emp 1, emp1@company.internal)
+            display_name, upn = get_or_create_pseudonym(conn, raw_upn_str, raw_name_str, category="m365")
 
             last_activity = (
                 row.get("Last Activity Date") or
@@ -197,33 +291,43 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
                 row.get("LastActivityDate") or
                 None
             )
+            if last_activity is not None:
+                last_activity = str(last_activity).strip()
+                if last_activity in ["", "None", "nan"]:
+                    last_activity = None
 
             try:
-                total_prompts = int(row.get("Prompts submitted for All Apps") or row.get("TotalPrompts") or 0)
+                total_prompts = int(float(row.get("Prompts submitted for All Apps") or row.get("TotalPrompts") or row.get("Total Prompts") or 0))
             except (ValueError, TypeError):
                 total_prompts = 0
 
             try:
-                chat_work = int(row.get("Prompts submitted for Copilot Chat (work)") or 0)
+                chat_work = int(float(row.get("Prompts submitted for Copilot Chat (work)") or row.get("Work Chat") or 0))
             except (ValueError, TypeError):
                 chat_work = 0
 
             try:
-                chat_web = int(row.get("Prompts submitted for Copilot Chat (web)") or 0)
+                chat_web = int(float(row.get("Prompts submitted for Copilot Chat (web)") or row.get("Web Chat") or 0))
             except (ValueError, TypeError):
                 chat_web = 0
 
             try:
-                active_days = int(row.get("Active Usage Days for All Apps") or 0)
+                active_days = int(float(row.get("Active Usage Days for All Apps") or row.get("Active Days") or row.get("ActiveDays") or 0))
             except (ValueError, TypeError):
                 active_days = 0
 
-            teams_act = row.get("Last activity date of Teams Copilot (UTC)") or None
-            outlook_act = row.get("Last activity date of Outlook Copilot (UTC)") or None
-            word_act = row.get("Last activity date of Word Copilot (UTC)") or None
-            excel_act = row.get("Last activity date of Excel Copilot (UTC)") or None
-            ppt_act = row.get("Last activity date of PowerPoint Copilot (UTC)") or None
-            loop_act = row.get("Last activity date of Loop Copilot (UTC)") or None
+            def _clean_date(val):
+                if val is None:
+                    return None
+                s = str(val).strip()
+                return s if s and s not in ["None", "nan"] else None
+
+            teams_act = _clean_date(row.get("Last activity date of Teams Copilot (UTC)"))
+            outlook_act = _clean_date(row.get("Last activity date of Outlook Copilot (UTC)"))
+            word_act = _clean_date(row.get("Last activity date of Word Copilot (UTC)"))
+            excel_act = _clean_date(row.get("Last activity date of Excel Copilot (UTC)"))
+            ppt_act = _clean_date(row.get("Last activity date of PowerPoint Copilot (UTC)"))
+            loop_act = _clean_date(row.get("Last activity date of Loop Copilot (UTC)"))
 
             inactive_days = 0
             if last_activity:
@@ -289,7 +393,7 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
 
     return {
         "status": "success",
-        "message": f"Successfully ingested M365 Copilot report: {inserted} active employee seats processed."
+        "message": f"Successfully ingested M365 Copilot report: {inserted} anonymous employee seats processed."
     }
 
 @router.delete("/m365")
@@ -330,7 +434,7 @@ def get_m365_seats(
         sql += " AND department LIKE ?"
         params.append(f"%{department}%")
 
-    sql += " ORDER BY total_prompts DESC, display_name ASC"
+    sql += " ORDER BY total_prompts DESC, id ASC"
     rows = query_all(sql, tuple(params))
 
     all_seats = query_all("SELECT * FROM m365_copilot_seats")
