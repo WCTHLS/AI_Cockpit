@@ -387,10 +387,10 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
           </div>
           <div>
             <div style={{ fontSize: 14, fontWeight: 800, color: '#0C4A6E' }}>
-              Enterprise AI Seat Estate: Microsoft 365 Copilot ({m365Total} Seats) + Antigravity IDE ({developerSeats.length} Seats)
+              Enterprise AI Seat Estate: Microsoft 365 Copilot ({m365Total} Seats) + Developer AI Tooling ({developerSeats.length} Seats)
             </div>
             <div style={{ fontSize: 12, color: '#475569', marginTop: 2 }}>
-              Zero synthetic mock seats. Reflects live developer seats (Swagath Reddy & Nivas) on Antigravity IDE.
+              Consolidated seat utilization across enterprise Microsoft 365 Copilot subscriptions and active developer AI tooling. Upload usage CSV to synchronize telemetry.
             </div>
           </div>
         </div>
@@ -647,7 +647,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               }}
             >
               <Code size={14} />
-              <span>Developer Tooling - Antigravity IDE ({developerSeats.length})</span>
+              <span>Developer AI Tooling ({developerSeats.length})</span>
             </button>
           </div>
         </div>
@@ -713,7 +713,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                       FinOps Optimization: {m365Idle} Dormant Seats Identified (0 Prompts in 28+ Days)
                     </div>
                     <div style={{ fontSize: 12, color: '#7F1D1D', marginTop: 1 }}>
-                      Sidhartha Sankar Mahapatro (37d inactive) & Rajesh Arumugam (97d inactive) have 0 Copilot prompts. Reclaiming these licenses saves <strong>$60.00/mo ($720.00/yr)</strong>.
+                      {m365Idle} assigned enterprise accounts have recorded 0 Copilot prompts in the reporting period. Reallocating or unassigning these licenses saves <strong>$60.00/mo ($720.00/yr)</strong>.
                     </div>
                   </div>
                 </div>
@@ -1131,7 +1131,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         </div>
       </div>
 
-      {/* DRILLDOWN MODAL FOR SWAGATH REDDY */}
+      {/* DEVELOPER SEAT DRILLDOWN MODAL */}
       {drilldownOpen && (
         <div style={{
           position: 'fixed',
