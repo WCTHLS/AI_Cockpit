@@ -516,7 +516,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
       },
       series: [
         {
-          name: 'Oct 2026',
+          name: 'Sep 2026',
           type: 'bar',
           barWidth: 11,
           data: augValues,

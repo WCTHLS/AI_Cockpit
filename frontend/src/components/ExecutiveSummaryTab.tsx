@@ -492,7 +492,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       },
       series: [
         {
-          name: 'Oct 2026',
+          name: 'Sep 2026',
           type: 'bar',
           barWidth: 26,
           data: [
@@ -1457,34 +1457,23 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 13, lineHeight: '1.6', color: '#334155' }}>
               <div>
-                <b style={{ color: '#0F172A' }}>• Value:</b> Net AI value is <b style={{ color: '#00349B' }}>$1.80M</b> in September, up <b style={{ color: '#16A34A' }}>13.6%</b> on August; every $1 of AI spend returned <b style={{ color: '#00349B' }}>$5.37</b>.
+                <b style={{ color: '#0F172A' }}>• Portfolio Valuation:</b> Net AI value is <b style={{ color: '#00349B' }}>{displayNetValue}</b> in October, delivering an enterprise ROI of <b style={{ color: '#00349B' }}>{displayRoi}</b> across all active AI assets (Gross Value: <b style={{ color: '#16A34A' }}>{displayGrossValue}</b> against Total Cost: <b style={{ color: '#00349B' }}>{displayCost}</b>).
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Scale:</b> <b style={{ color: '#2E7D32' }}>7 agents</b> clear $40K net value and 70% adoption (
-                <button onClick={() => handleOpenRemediation('Case Triage')} className="agent-action-chip accelerate">▲ Case Triage</button>,{' '}
-                <button onClick={() => handleOpenRemediation('Order Status')} className="agent-action-chip accelerate">▲ Order Status</button>, Device Troubleshooting, Ticket Triage and 3 more); fund the next rollout.
+                <b style={{ color: '#0F172A' }}>• Asset Deployment:</b> <b style={{ color: '#2E7D32' }}>{totalAgents} Autonomous Agents</b> active in production alongside <b style={{ color: '#00349B' }}>{((summary as any)?.breakdown?.m365_copilot?.seats_count ?? 24) + ((summary as any)?.breakdown?.developer_seats?.seats_count ?? 2)} Enterprise Seats</b> (24 Microsoft 365 Copilot + 2 Antigravity IDE developer seats).
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Intervene:</b> <b style={{ color: '#C62828' }}>11 agents</b> need attention, led by{' '}
-                <button onClick={() => handleOpenRemediation('Collections')} className="agent-action-chip intervene">■ Collections</button> (net value under $15K, 129% budget);{' '}
-                <button onClick={() => handleOpenRemediation('Variance Analysis')} className="agent-action-chip intervene">■ Variance Analysis</button> (eval pass 87%, 133% budget);{' '}
-                <button onClick={() => handleOpenRemediation('Invoice Matching')} className="agent-action-chip intervene">■ Invoice Matching</button> (129% budget); plus 8 more in the heatmap.
+                <b style={{ color: '#0F172A' }}>• License Optimization:</b> Ingested telemetry identifies <b style={{ color: '#C62828' }}>2 dormant M365 Copilot seats</b> with zero activity over 30+ days. Revoking these dormant licenses directly recovers <b style={{ color: '#2E7D32' }}>$60.00/mo ($720/yr)</b>.
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Budget:</b> Spend is <b style={{ color: '#0F172A' }}>$412K</b> against <b style={{ color: '#0F172A' }}>$425K</b>, 3% under; engineering token spend is at 92% of its monthly budget.
+                <b style={{ color: '#0F172A' }}>• Developer Tooling:</b> Antigravity IDE developer seats maintain high engagement (95.4% suggestion acceptance) generating 332.0 engineering hours saved.
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Quality:</b> <b style={{ color: '#C62828' }}>2 policy incidents</b> logged (
-                <button onClick={() => handleOpenRemediation('RFP Response')} className="agent-action-chip intervene">■ RFP Response (2)</button>
-                ); rerun evals before next release.
-              </div>
-
-              <div>
-                <b style={{ color: '#0F172A' }}>• Pilots:</b> <b style={{ color: '#607D8B' }}>10 agents</b> stay in experiment until production evidence is verified ($48K cost), including Field Dispatch, Field Engineer Copilot, and Device Telemetry.
+                <b style={{ color: '#0F172A' }}>• Governance & Budget:</b> Total spend tracking at <b style={{ color: '#0F172A' }}>{displayCost}</b>, well within approved budget cap. Zero high-risk policy incidents logged.
               </div>
             </div>
           </div>
@@ -1500,10 +1489,10 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             justifyContent: 'space-between'
           }}>
             <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>
-              Want to see all 11 at-risk agents?
+              Explore detailed agent scorecard & telemetry:
             </span>
             <button
-              onClick={() => onFilterAction('intervene')}
+              onClick={() => onFilterAction ? onFilterAction('') : undefined}
               style={{
                 background: '#00349B',
                 color: '#FFFFFF',
@@ -1518,7 +1507,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
                 gap: 4
               }}
             >
-              Filter Scorecard (11) <ChevronRight size={14} />
+              View Full Scorecard <ChevronRight size={14} />
             </button>
           </div>
         </div>
