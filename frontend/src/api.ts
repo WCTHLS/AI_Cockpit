@@ -379,6 +379,18 @@ export async function fetchDeveloperSeats(): Promise<{ total: number; seats: Dev
   return res.json();
 }
 
+export async function deleteDeveloperSeat(developerId: string | number): Promise<{ status: string; message: string; developer_id: string }> {
+  const res = await fetch(`${API_BASE}/admin/developer-tools/seats/${encodeURIComponent(String(developerId))}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to delete developer seat');
+  }
+  return res.json();
+}
+
 export async function fetchDeveloperDrilldown(developerId?: string): Promise<any> {
   const q = developerId ? `?developer_id=${encodeURIComponent(developerId)}` : '';
   const res = await fetch(`${API_BASE}/admin/developer-tools/drilldown${q}`, {

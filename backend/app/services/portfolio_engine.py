@@ -40,9 +40,17 @@ def get_developer_tools_summary(effective_function: Optional[str] = None, cost_p
         }
 
     try:
-        dev_seats = query_all("SELECT * FROM developer_seats WHERE developer_id NOT LIKE '%waferwire.com%'")
+        dev_seats = query_all("""
+            SELECT * FROM developer_seats 
+            WHERE developer_id NOT LIKE '%waferwire.com%'
+              AND LOWER(developer_id) NOT IN (SELECT LOWER(developer_id) FROM deleted_developer_seats)
+              AND LOWER(developer_email) NOT IN (SELECT LOWER(developer_email) FROM deleted_developer_seats)
+        """)
     except Exception:
-        dev_seats = []
+        try:
+            dev_seats = query_all("SELECT * FROM developer_seats WHERE developer_id NOT LIKE '%waferwire.com%'")
+        except Exception:
+            dev_seats = []
 
     if not dev_seats:
         return {

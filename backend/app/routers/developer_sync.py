@@ -115,12 +115,27 @@ def _init_developer_tables():
             )
         """)
 
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS deleted_developer_seats (
+                developer_id TEXT PRIMARY KEY,
+                developer_email TEXT,
+                deleted_at TEXT
+            )
+        """)
+
+        # Query deleted developer seats to prevent resurrection
+        deleted_rows = conn.execute("SELECT developer_id, developer_email FROM deleted_developer_seats").fetchall()
+        deleted_keys = set()
+        for dr in deleted_rows:
+            if dr[0]: deleted_keys.add(dr[0].lower().strip())
+            if dr[1]: deleted_keys.add(dr[1].lower().strip())
+
         # Auto-seed Swagath Reddy & Nivas from tracked json files so fresh clones/pulls work immediately
         now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
         
         # 1. Swagath Reddy
         swagath_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "antigravity_telemetry.json")
-        if os.path.exists(swagath_path):
+        if os.path.exists(swagath_path) and "swagathreddy00@gmail.com" not in deleted_keys:
             try:
                 with open(swagath_path, "r", encoding="utf-8") as f:
                     s_data = json.load(f)
@@ -152,7 +167,7 @@ def _init_developer_tables():
 
         # 2. Nivas
         nivas_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "nivas_telemetry.json")
-        if os.path.exists(nivas_path):
+        if os.path.exists(nivas_path) and "mattanivas@gmail.com" not in deleted_keys:
             try:
                 with open(nivas_path, "r", encoding="utf-8") as f:
                     n_data = json.load(f)
@@ -594,40 +609,116 @@ def sync_developer_telemetry(req: Optional[DeveloperSyncRequest] = None, user: D
 @router.get("/seats")
 def get_developer_seats(user: Dict[str, Any] = Depends(get_current_user)):
     _init_developer_tables()
-    rows = query_all("SELECT * FROM developer_seats WHERE developer_id NOT LIKE '%waferwire.com%' ORDER BY updated_at DESC")
+    with get_db() as conn:
+        deleted_rows = conn.execute("SELECT developer_id, developer_email FROM deleted_developer_seats").fetchall()
+        deleted_keys = set()
+        for dr in deleted_rows:
+            if dr[0]: deleted_keys.add(dr[0].lower().strip())
+            if dr[1]: deleted_keys.add(dr[1].lower().strip())
+
+    all_rows = query_all("SELECT * FROM developer_seats WHERE developer_id NOT LIKE '%waferwire.com%' ORDER BY updated_at DESC")
+    rows = [r for r in all_rows if (r.get("developer_id") or "").lower().strip() not in deleted_keys and (r.get("developer_email") or "").lower().strip() not in deleted_keys]
+
     if not rows:
         stats = _extract_antigravity_stats()
-        now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
-        with get_db() as conn:
-            conn.execute("""
-                INSERT OR REPLACE INTO developer_seats (
-                    developer_id, developer_name, developer_email, department, role,
-                    provider, license_tier, editor, status, sessions_count,
-                    prompts_count, suggestions_generated, suggestions_accepted,
-                    acceptance_rate_pct, hours_saved, last_active_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                stats["developer_email"],
-                stats["developer_name"],
-                stats["developer_email"],
-                stats["department"],
-                stats["role"],
-                stats["provider"],
-                "Antigravity Enterprise",
-                stats["editor"],
-                stats["status"],
-                stats["sessions_count"],
-                stats["total_user_prompts"],
-                stats["tool_actions_generated"],
-                stats["tool_actions_accepted"],
-                stats["acceptance_rate_pct"],
-                stats["estimated_hours_saved"],
-                stats["last_active_at"],
-                now_iso
-            ))
-        rows = query_all("SELECT * FROM developer_seats WHERE developer_id NOT LIKE '%waferwire.com%' ORDER BY updated_at DESC")
+        stats_email = stats.get("developer_email", "").lower().strip()
+        if stats_email not in deleted_keys:
+            now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+            with get_db() as conn:
+                conn.execute("""
+                    INSERT OR REPLACE INTO developer_seats (
+                        developer_id, developer_name, developer_email, department, role,
+                        provider, license_tier, editor, status, sessions_count,
+                        prompts_count, suggestions_generated, suggestions_accepted,
+                        acceptance_rate_pct, hours_saved, last_active_at, updated_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    stats["developer_email"],
+                    stats["developer_name"],
+                    stats["developer_email"],
+                    stats["department"],
+                    stats["role"],
+                    stats["provider"],
+                    "Antigravity Enterprise",
+                    stats["editor"],
+                    stats["status"],
+                    stats["sessions_count"],
+                    stats["total_user_prompts"],
+                    stats["tool_actions_generated"],
+                    stats["tool_actions_accepted"],
+                    stats["acceptance_rate_pct"],
+                    stats["estimated_hours_saved"],
+                    stats["last_active_at"],
+                    now_iso
+                ))
+            all_rows = query_all("SELECT * FROM developer_seats WHERE developer_id NOT LIKE '%waferwire.com%' ORDER BY updated_at DESC")
+            rows = [r for r in all_rows if (r.get("developer_id") or "").lower().strip() not in deleted_keys and (r.get("developer_email") or "").lower().strip() not in deleted_keys]
 
     return {"total": len(rows), "seats": rows}
+
+
+@router.delete("/seats/{developer_id}")
+def delete_developer_seat(
+    developer_id: str,
+    user: Dict[str, Any] = Depends(get_current_user)
+):
+    """
+    Permanently deletes a developer AI seat and its associated drilldown trajectories.
+    Requires administrator privileges.
+    Records the deletion in deleted_developer_seats so startup seeding will never resurrect it.
+    """
+    if user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(
+            status_code=403, 
+            detail="Forbidden: Administrator privileges required to delete developer AI seats."
+        )
+
+    _init_developer_tables()
+    clean_id = developer_id.strip()
+
+    # Find developer seat
+    seat = query_one(
+        "SELECT * FROM developer_seats WHERE developer_id = ? OR developer_email = ? OR id = ?",
+        (clean_id, clean_id, int(clean_id) if clean_id.isdigit() else -1)
+    )
+    if not seat:
+        seat = query_one(
+            "SELECT * FROM developer_seats WHERE LOWER(developer_id) = ? OR LOWER(developer_email) = ?",
+            (clean_id.lower(), clean_id.lower())
+        )
+
+    if not seat:
+        raise HTTPException(status_code=404, detail=f"Developer seat '{developer_id}' not found.")
+
+    dev_id = seat["developer_id"]
+    dev_email = seat.get("developer_email") or dev_id
+    dev_name = seat.get("developer_name") or dev_email
+    now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    with get_db() as conn:
+        # 1. Record tombstone
+        conn.execute("""
+            INSERT OR REPLACE INTO deleted_developer_seats (developer_id, developer_email, deleted_at)
+            VALUES (?, ?, ?)
+        """, (dev_id, dev_email, now_iso))
+
+        # 2. Delete seat record
+        conn.execute(
+            "DELETE FROM developer_seats WHERE LOWER(developer_id) = ? OR LOWER(developer_email) = ?",
+            (dev_id.lower(), dev_email.lower())
+        )
+
+        # 3. Delete drilldown record
+        conn.execute(
+            "DELETE FROM developer_drilldowns WHERE LOWER(developer_id) = ? OR LOWER(developer_email) = ?",
+            (dev_id.lower(), dev_email.lower())
+        )
+
+    return {
+        "status": "success",
+        "message": f"Successfully deleted developer AI seat for {dev_name} ({dev_email}).",
+        "developer_id": dev_id
+    }
 
 
 @router.get("/drilldown")
@@ -951,6 +1042,7 @@ async def upload_teammate_zip(
 
     # Save to SQLite database: developer_seats AND developer_drilldowns
     with get_db() as conn:
+        conn.execute("DELETE FROM deleted_developer_seats WHERE LOWER(developer_id) = ? OR LOWER(developer_email) = ?", (clean_email, clean_email))
         conn.execute("""
             INSERT INTO developer_drilldowns (developer_id, developer_email, drilldown_json, updated_at)
             VALUES (?, ?, ?, ?)

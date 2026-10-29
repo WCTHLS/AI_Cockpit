@@ -38,6 +38,7 @@ import {
   formatUSD, 
   formatPct, 
   fetchDeveloperSeats, 
+  deleteDeveloperSeat,
   fetchDeveloperDrilldown, 
   uploadM365Csv,
   clearM365Seats,
@@ -70,10 +71,12 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
   selectedFunction = '',
   customCostPerSeat = 30,
   onCostPerSeatChange, 
-  theme = 'light' 
+  theme = 'light',
+  user
 }) => {
   const isLight = theme === 'light';
   const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
+  const isAdmin = user?.role === 'admin';
 
   // Cost per seat slider state
   const [seatCost, setSeatCost] = useState<number>(customCostPerSeat || 30);
@@ -88,6 +91,26 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
 
   // Live Developer AI Seats
   const [developerSeats, setDeveloperSeats] = useState<DeveloperSeat[]>([]);
+  const [seatToDelete, setSeatToDelete] = useState<DeveloperSeat | null>(null);
+  const [isDeletingSeat, setIsDeletingSeat] = useState<boolean>(false);
+
+  const handleDeleteDeveloperSeat = async () => {
+    if (!seatToDelete) return;
+    setIsDeletingSeat(true);
+    try {
+      const res = await deleteDeveloperSeat(seatToDelete.developer_id);
+      const updated = await fetchDeveloperSeats();
+      setDeveloperSeats(updated.seats || []);
+      setActionToast(res.message || `Deleted Antigravity developer seat for ${seatToDelete.developer_name}.`);
+      setTimeout(() => setActionToast(null), 5000);
+      setSeatToDelete(null);
+    } catch (err: any) {
+      setActionToast(err.message || 'Failed to delete developer seat');
+      setTimeout(() => setActionToast(null), 5000);
+    } finally {
+      setIsDeletingSeat(false);
+    }
+  };
   const [selectedDeveloper, setSelectedDeveloper] = useState<DeveloperSeat | null>(null);
   const [drilldownOpen, setDrilldownOpen] = useState<boolean>(false);
   const [drilldownData, setDrilldownData] = useState<any | null>(null);
@@ -1116,27 +1139,63 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                         </span>
                       </td>
                       <td style={{ textAlign: 'center', padding: '12px 14px' }}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenDrilldown(seat);
-                          }}
-                          style={{
-                            background: '#0284C7',
-                            color: '#FFFFFF',
-                            border: 'none',
-                            borderRadius: 6,
-                            padding: '5px 10px',
-                            fontSize: 11,
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 4
-                          }}
-                        >
-                          View Details <ChevronRight size={12} />
-                        </button>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenDrilldown(seat);
+                            }}
+                            style={{
+                              background: '#0284C7',
+                              color: '#FFFFFF',
+                              border: 'none',
+                              borderRadius: 6,
+                              padding: '5px 10px',
+                              fontSize: 11,
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4
+                            }}
+                          >
+                            View Details <ChevronRight size={12} />
+                          </button>
+                          {isAdmin && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSeatToDelete(seat);
+                              }}
+                              title={`Delete ${seat.developer_name} developer seat`}
+                              style={{
+                                background: '#FEE2E2',
+                                color: '#DC2626',
+                                border: '1px solid #FECACA',
+                                borderRadius: 6,
+                                padding: '5px 8px',
+                                fontSize: 11,
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                transition: 'all 0.15s'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#DC2626';
+                                e.currentTarget.style.color = '#FFFFFF';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#FEE2E2';
+                                e.currentTarget.style.color = '#DC2626';
+                              }}
+                            >
+                              <Trash2 size={12} />
+                              Delete
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -1448,6 +1507,121 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+      {/* CONFIRM DELETE DEVELOPER SEAT MODAL (ADMIN ONLY) */}
+      {seatToDelete && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10002,
+          padding: 20
+        }}>
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: 14,
+            width: '100%',
+            maxWidth: 480,
+            padding: 24,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
+            position: 'relative',
+            border: '1px solid #E2E8F0'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 16 }}>
+              <div style={{
+                background: '#FEE2E2',
+                color: '#DC2626',
+                borderRadius: '50%',
+                width: 44,
+                height: 44,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <Trash2 size={22} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 17, fontWeight: 800, color: '#0F172A', marginBottom: 4 }}>
+                  Delete Antigravity Developer Seat?
+                </div>
+                <div style={{ fontSize: 13, color: '#64748B', lineHeight: 1.5 }}>
+                  Are you sure you want to remove the developer AI tooling seat for <strong style={{ color: '#0F172A' }}>{seatToDelete.developer_name}</strong> (<span style={{ color: '#0284C7' }}>{seatToDelete.developer_email}</span>)?
+                </div>
+              </div>
+            </div>
+
+            <div style={{
+              background: '#FFF1F2',
+              border: '1px solid #FFE4E6',
+              borderRadius: 8,
+              padding: '12px 14px',
+              marginBottom: 20,
+              fontSize: 12,
+              color: '#9F1239',
+              lineHeight: 1.5
+            }}>
+              <strong>Warning:</strong> This will remove their sessions, prompt telemetry, and {seatToDelete.hours_saved || 0} hrs saved from the active telemetry roster. Only administrators have permission to perform this deletion.
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => setSeatToDelete(null)}
+                disabled={isDeletingSeat}
+                style={{
+                  padding: '9px 16px',
+                  borderRadius: 7,
+                  border: '1px solid #CBD5E1',
+                  background: '#FFFFFF',
+                  color: '#475569',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: isDeletingSeat ? 'not-allowed' : 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteDeveloperSeat}
+                disabled={isDeletingSeat}
+                style={{
+                  padding: '9px 18px',
+                  borderRadius: 7,
+                  border: 'none',
+                  background: isDeletingSeat ? '#94A3B8' : '#DC2626',
+                  color: '#FFFFFF',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: isDeletingSeat ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}
+              >
+                {isDeletingSeat ? (
+                  <>
+                    <RefreshCw size={14} className="animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 size={14} />
+                    Confirm Delete
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
