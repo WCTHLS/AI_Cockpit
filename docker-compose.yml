@@ -10,6 +10,10 @@ services:
       SQLITE_DB_PATH: /app/db/cockpit.db
       JWT_SECRET: ${JWT_SECRET:-wct-dev-secret-change-in-prod}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000,http://localhost:8080}
+      AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
+      AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
+      AZURE_OPENAI_DEPLOYMENT: ${AZURE_OPENAI_DEPLOYMENT:-it-agent-model}
+      AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION:-2024-08-01-preview}
     ports:
       - "8000:8000"
     volumes:

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.46.1.21595",
-      "templateHash": "12795701901687000066"
+      "templateHash": "3120800269729185210"
     }
   },
   "parameters": {
@@ -131,6 +131,10 @@
             {
               "name": "acr-password",
               "value": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName')), '2023-07-01').passwords[0].value]"
+            },
+            {
+              "name": "openai-key",
+              "value": "[parameters('azureOpenAIApiKey')]"
             }
           ],
           "registries": [

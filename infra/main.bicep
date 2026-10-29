@@ -82,6 +82,10 @@ resource apiApp 'Microsoft.App/containerApps@2023-05-01' = {
           name: 'acr-password'
           value: acr.listCredentials().passwords[0].value
         }
+        {
+          name: 'openai-key'
+          value: azureOpenAIApiKey
+        }
       ]
       registries: [
         {

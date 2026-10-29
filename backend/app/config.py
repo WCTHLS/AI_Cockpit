@@ -44,6 +44,12 @@ class Settings(BaseSettings):
             return [x.strip() for x in v_stripped.split(",") if x.strip()]
         return v
 
-    model_config = SettingsConfigDict(case_sensitive=True, extra="ignore")
+    # Azure OpenAI Configuration for Autonomous Agents
+    AZURE_OPENAI_ENDPOINT: str = os.getenv("AZURE_OPENAI_ENDPOINT", "")
+    AZURE_OPENAI_API_KEY: str = os.getenv("AZURE_OPENAI_API_KEY", "")
+    AZURE_OPENAI_DEPLOYMENT: str = os.getenv("AZURE_OPENAI_DEPLOYMENT", "it-agent-model")
+    AZURE_OPENAI_API_VERSION: str = os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=True, extra="ignore")
 
 settings = Settings()
