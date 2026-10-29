@@ -173,19 +173,12 @@ def get_unified_summary(target_month: Optional[str] = None, effective_function: 
     tot_hours = round(agent_hours + dev_stats['hours_saved'] + m365_stats['hours_saved'], 1)
     roi = round(tot_gross / tot_cost, 2) if tot_cost > 0 else 0.0
 
+    # Action counts strictly reflect custom autonomous agents portfolio
     action_counts = {'accelerate': 0, 'optimize': 0, 'experiment': 0, 'intervene': 0}
     for a in agents:
-        act = a.get('action')
+        act = (a.get('action') or '').lower()
         if act in action_counts:
             action_counts[act] += 1
-
-    for k, v in dev_stats['action_counts'].items():
-        action_counts[k] += v
-
-    for k, v in m365_stats['action_counts'].items():
-        action_counts[k] += v
-
-    total_ai_systems = len(agents) + (1 if dev_stats['seats_count'] > 0 else 0) + (1 if m365_stats['seats_count'] > 0 else 0)
 
     return {
         'month': month,
@@ -193,7 +186,7 @@ def get_unified_summary(target_month: Optional[str] = None, effective_function: 
         'total_gross_value': tot_gross,
         'total_cost': tot_cost,
         'roi_ratio': roi,
-        'active_agents': total_ai_systems,
+        'active_agents': len(agents),
         'total_hours_saved': tot_hours,
         'action_counts': action_counts,
         'breakdown': {

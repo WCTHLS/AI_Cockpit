@@ -79,14 +79,14 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
 
   const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
 
-  // Status breakdown calculations
+  // Status breakdown strictly for custom autonomous agents
   const statusCounts = {
-    accelerate: summary?.action_counts?.accelerate ?? agents.filter(a => a.action?.toLowerCase() === 'accelerate').length,
-    optimize: summary?.action_counts?.optimize ?? agents.filter(a => a.action?.toLowerCase() === 'optimize').length,
-    intervene: summary?.action_counts?.intervene ?? agents.filter(a => a.action?.toLowerCase() === 'intervene').length,
-    experiment: summary?.action_counts?.experiment ?? agents.filter(a => a.action?.toLowerCase() === 'experiment').length,
+    accelerate: agents.filter(a => (a.action || '').toLowerCase() === 'accelerate').length,
+    optimize: agents.filter(a => (a.action || '').toLowerCase() === 'optimize').length,
+    intervene: agents.filter(a => (a.action || '').toLowerCase() === 'intervene').length,
+    experiment: agents.filter(a => (a.action || '').toLowerCase() === 'experiment').length,
   };
-  const totalAgents = summary?.active_agents ?? (agents.length + 1);
+  const totalAgents = agents.length;
 
   // Month-aware historical vs live close detection
   const isPrior = currentMonth === '2026-09';
@@ -737,7 +737,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ fontSize: 12, color: '#64748B' }}>
-            Scope: <b style={{ color: '#00349B' }}>{selectedFunction}</b> · {totalAgents} Active AI Systems Tracked
+            Scope: <b style={{ color: '#00349B' }}>{selectedFunction || 'Enterprise Portfolio'}</b> · {totalAgents} Custom Agents
           </div>
 
           <button
@@ -1062,12 +1062,28 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
                 padding: '2px 7px',
                 borderRadius: 12
               }}>
-                {isPrior ? '3,358 / 4,600' : '3,588 / 4,600'}
+                {(() => {
+                  const devSeats = (summary as any)?.breakdown?.developer_seats?.seats_count ?? 2;
+                  const devActive = (summary as any)?.breakdown?.developer_seats?.active_count ?? 2;
+                  const m365Seats = (summary as any)?.breakdown?.m365_copilot?.seats_count ?? 24;
+                  const m365Active = (summary as any)?.breakdown?.m365_copilot?.active_count ?? 22;
+                  const totalSeats = devSeats + m365Seats;
+                  const activeSeats = devActive + m365Active;
+                  return `${activeSeats} / ${totalSeats} Seats`;
+                })()}
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
               <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
-                78%
+                {(() => {
+                  const devSeats = (summary as any)?.breakdown?.developer_seats?.seats_count ?? 2;
+                  const devActive = (summary as any)?.breakdown?.developer_seats?.active_count ?? 2;
+                  const m365Seats = (summary as any)?.breakdown?.m365_copilot?.seats_count ?? 24;
+                  const m365Active = (summary as any)?.breakdown?.m365_copilot?.active_count ?? 22;
+                  const totalSeats = devSeats + m365Seats;
+                  const activeSeats = devActive + m365Active;
+                  return totalSeats > 0 ? `${Math.round((activeSeats / totalSeats) * 100)}%` : '0%';
+                })()}
               </div>
               <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
                 <path d="M2 18 L16 16 L30 11 L44 8 L58 5" stroke="#00349B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
