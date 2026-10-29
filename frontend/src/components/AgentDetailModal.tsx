@@ -115,7 +115,9 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
               {agent.name}
             </h2>
             <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8', marginTop: 3 }}>
-              Production Age: <b>{(agent as any).days_in_production || 180} days</b> • Tier-1 Enterprise Agent
+              Production Age: <b>{(agent as any).days_in_production || 180} days</b> • Tier-1 Enterprise Agent{isCopilotStudio && (
+                <> • <a href="http://localhost:8000/api/v1/copilot-studio/ui" target="_blank" rel="noopener noreferrer" style={{ color: '#5B5FC7', textDecoration: 'none', fontWeight: 700 }}>Teams Chat &rarr;</a></>
+              )}
             </div>
           </div>
           <button 
@@ -302,72 +304,6 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
                 DB Synced
               </span>
             </div>
-
-            {/* Microsoft Teams Copilot Studio Banner */}
-            {isCopilotStudio && (
-              <div style={{
-                background: isLight ? 'linear-gradient(135deg, #F3F0F9 0%, #EDE7F6 100%)' : 'linear-gradient(135deg, #1E1B4B 0%, #17133C 100%)',
-                border: isLight ? '1.5px solid #D1C4E9' : '1.5px solid #4338CA',
-                borderRadius: 8,
-                padding: '12px 14px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 12,
-                marginBottom: 12
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 8,
-                    background: '#5B5FC7',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#FFF',
-                    fontSize: 16,
-                    fontWeight: 800,
-                    flexShrink: 0
-                  }}>
-                    🤖
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: isLight ? '#311B92' : '#C7D2FE', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span>Microsoft Teams Copilot Studio Canvas</span>
-                      <span style={{ fontSize: 10, background: '#5B5FC7', color: '#FFF', padding: '1px 6px', borderRadius: 8, fontWeight: 700 }}>
-                        Live M365 Agent
-                      </span>
-                    </div>
-                    <div style={{ fontSize: 11, color: isLight ? '#5E35B1' : '#A5B4FC', marginTop: 2 }}>
-                      Interactive enterprise webchat in Microsoft Teams. Employees track SAP shipments, warehouse stock, and RMA dispatches in real-time.
-                    </div>
-                  </div>
-                </div>
-                <a
-                  href="http://localhost:8000/api/v1/copilot-studio/ui"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    background: '#5B5FC7',
-                    color: '#FFFFFF',
-                    padding: '7px 13px',
-                    borderRadius: 6,
-                    fontSize: 11.5,
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    whiteSpace: 'nowrap',
-                    boxShadow: '0 2px 6px rgba(91, 95, 199, 0.3)'
-                  }}
-                >
-                  <span>Open Teams Chat</span>
-                  &rarr;
-                </a>
-              </div>
-            )}
 
             {/* 4 Core Daily KPI Metrics Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
