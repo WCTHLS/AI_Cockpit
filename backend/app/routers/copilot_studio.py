@@ -379,192 +379,723 @@ def get_supply_chain_metrics():
 @router.get("/ui", response_class=HTMLResponse)
 def get_interactive_bot_ui():
     """
-    Renders an authentic, embedded Teams/Copilot Studio Webchat interface
-    for live demonstration and testing of the Supply Chain Agent.
+    Renders an authentic Microsoft Teams & Copilot Studio Enterprise Webchat interface
+    simulating how supply chain employees (Chen Wei, Sarah Miller, Marcus Vance, Priya Patel)
+    interact with the Global Supply Chain & Order Dispatch Bot in Teams.
     """
-    return """
-<!DOCTYPE html>
+    html_content = """<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Lenovo Global Supply Chain & Order Dispatch Agent (Copilot Studio)</title>
+  <title>Microsoft Teams - Global Supply Chain & Order Dispatch Bot (Copilot Studio)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #0E1117; color: #E2E8F0; display: flex; height: 100vh; overflow: hidden; }
-    .sidebar { width: 340px; background: #161B22; border-right: 1px solid #30363D; display: flex; flex-direction: column; }
-    .sidebar-header { padding: 20px; border-bottom: 1px solid #30363D; }
-    .badge { background: #238636; color: #FFF; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
-    .status-dot { width: 8px; height: 8px; background: #3FB950; border-radius: 50%; display: inline-block; margin-right: 6px; }
-    .metrics-panel { padding: 18px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
-    .kpi-card { background: #21262D; border: 1px solid #30363D; border-radius: 8px; padding: 12px 14px; }
-    .kpi-title { font-size: 11px; color: #8B949E; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
-    .kpi-val { font-size: 20px; font-weight: 800; color: #58A6FF; margin-top: 4px; }
-    .chat-area { flex: 1; display: flex; flex-direction: column; background: #0D1117; }
-    .chat-header { padding: 16px 24px; border-bottom: 1px solid #30363D; background: #161B22; display: flex; justify-content: space-between; align-items: center; }
-    .messages { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
-    .msg { max-width: 80%; padding: 12px 16px; border-radius: 10px; font-size: 13.5px; line-height: 1.5; }
-    .msg.user { align-self: flex-end; background: #1F6FEB; color: #FFF; border-bottom-right-radius: 2px; }
-    .msg.bot { align-self: flex-start; background: #21262D; border: 1px solid #30363D; color: #E6EDF3; border-bottom-left-radius: 2px; }
-    .input-bar { padding: 16px 24px; border-top: 1px solid #30363D; background: #161B22; display: flex; gap: 10px; }
-    .input-bar input { flex: 1; background: #0D1117; border: 1px solid #30363D; border-radius: 6px; padding: 10px 14px; color: #FFF; font-size: 13.5px; outline: none; }
-    .btn { background: #238636; color: #FFF; border: none; border-radius: 6px; padding: 10px 18px; font-size: 13px; font-weight: 700; cursor: pointer; }
-    .btn:hover { background: #2EA043; }
-    .btn-secondary { background: #30363D; color: #C9D1D9; }
-    .btn-secondary:hover { background: #3C444D; }
-    .scenario-pill { background: #21262D; border: 1px solid #30363D; color: #58A6FF; font-size: 11.5px; padding: 6px 12px; border-radius: 16px; cursor: pointer; transition: 0.2s; }
-    .scenario-pill:hover { background: #1F6FEB; color: #FFF; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+    body { background: #EBEBEB; color: #242424; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    
+    /* Top Teams App Bar */
+    .teams-top-bar {
+      background: #464775;
+      color: #FFFFFF;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .teams-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .teams-logo-badge {
+      background: #5B5FC7;
+      border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .employee-switcher-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .employee-select {
+      background: #FFFFFF;
+      color: #242424;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Main Workspace */
+    .workspace {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 48px);
+      overflow: hidden;
+    }
+
+    /* Sidebar - Copilot Studio & Capacity Pack Telemetry */
+    .telemetry-sidebar {
+      width: 330px;
+      background: #F3F2F1;
+      border-right: 1px solid #D2D0CE;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .sidebar-header {
+      padding: 16px 18px;
+      background: #FFFFFF;
+      border-bottom: 1px solid #E1DFDD;
+    }
+    .copilot-badge {
+      background: #E8EBFA;
+      color: #5B5FC7;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      border: 1px solid #C5CBF3;
+    }
+    .sidebar-body {
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .kpi-card {
+      background: #FFFFFF;
+      border: 1px solid #E1DFDD;
+      border-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .kpi-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #605E5C;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .kpi-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: #5B5FC7;
+      margin-top: 3px;
+    }
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      color: #107C41;
+      font-weight: 600;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #107C41;
+      border-radius: 50%;
+    }
+
+    /* Main Chat Canvas (Teams Style) */
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #FFFFFF;
+    }
+    .chat-header {
+      padding: 12px 24px;
+      border-bottom: 1px solid #EDEBE9;
+      background: #FAFAFA;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .messages-area {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      background: #F5F5F7;
+    }
+    .msg-row {
+      display: flex;
+      gap: 12px;
+      max-width: 85%;
+    }
+    .msg-row.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+    .msg-row.bot {
+      align-self: flex-start;
+    }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: #FFFFFF;
+      flex-shrink: 0;
+    }
+    .avatar.bot { background: #5B5FC7; }
+    .avatar.user { background: #0078D4; }
+    
+    .msg-bubble {
+      background: #FFFFFF;
+      border: 1px solid #E1DFDD;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: #242424;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .msg-row.user .msg-bubble {
+      background: #E8EBFA;
+      border-color: #C5CBF3;
+      color: #1F1F1F;
+    }
+
+    /* Teams Adaptive Card Styles */
+    .adaptive-card {
+      background: #FFFFFF;
+      border: 1.5px solid #C5CBF3;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-top: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #EDEBE9;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+    .card-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #5B5FC7;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+    .badge-resolved { background: #DFF6DD; color: #107C41; }
+    .badge-escalated { background: #FDE7E9; color: #A80000; }
+    
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 14px;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    .card-grid-item-label { color: #605E5C; font-weight: 600; }
+    .card-grid-item-val { color: #242424; font-weight: 700; margin-top: 2px; }
+    
+    .progress-bar-container {
+      background: #EDEBE9;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 8px 0 12px 0;
+    }
+    .progress-bar-fill {
+      background: #107C41;
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #EDEBE9;
+    }
+    .card-btn {
+      background: #FAFAFA;
+      border: 1px solid #D2D0CE;
+      color: #323130;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .card-btn:hover { background: #F3F2F1; border-color: #5B5FC7; color: #5B5FC7; }
+
+    /* Suggested Chips */
+    .chips-bar {
+      padding: 10px 24px;
+      background: #FAFAFA;
+      border-top: 1px solid #EDEBE9;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+    }
+    .chip {
+      background: #FFFFFF;
+      border: 1px solid #D2D0CE;
+      color: #5B5FC7;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chip:hover { background: #5B5FC7; color: #FFFFFF; border-color: #5B5FC7; }
+
+    /* Input Footer */
+    .input-bar {
+      padding: 14px 24px;
+      background: #FFFFFF;
+      border-top: 1px solid #EDEBE9;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .input-bar input {
+      flex: 1;
+      background: #F5F5F7;
+      border: 1.5px solid #E1DFDD;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      color: #242424;
+      outline: none;
+      transition: border 0.15s;
+    }
+    .input-bar input:focus { border-color: #5B5FC7; background: #FFFFFF; }
+    
+    .btn-send {
+      background: #5B5FC7;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .btn-send:hover { background: #464775; }
+
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #605E5C;
+      font-size: 12px;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:14px; font-weight:800; color:#FFF;">Copilot Studio Telemetry</span>
-        <span class="badge">Power Platform</span>
-      </div>
-      <div style="font-size:12px; color:#8B949E; margin-top:6px; display:flex; align-items:center;">
-        <span class="status-dot"></span> Live Dataverse OData Stream
-      </div>
+
+  <!-- Top Teams Bar -->
+  <div class="teams-top-bar">
+    <div class="teams-brand">
+      <div class="teams-logo-badge">T</div>
+      <span>Microsoft Teams &bull; Copilot Studio Agent Canvas</span>
     </div>
-
-    <div class="metrics-panel">
-      <div class="kpi-card">
-        <div class="kpi-title">Capacity Pack FinOps</div>
-        <div class="kpi-val">$200.00 / mo</div>
-        <div style="font-size:11px; color:#8B949E; margin-top:4px;">1 Pack (25,000 Messages included)</div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-title">Live Resolution Rate</div>
-        <div class="kpi-val" id="res-rate">92.9%</div>
-        <div style="font-size:11px; color:#3FB950; margin-top:4px;">Deflecting tier-1 supply chain traces</div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-title">Labor Hours Saved</div>
-        <div class="kpi-val" id="hours-saved">4.3 hrs</div>
-        <div style="font-size:11px; color:#8B949E; margin-top:4px;">Baseline: 20 mins per SAP order lookup</div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-title">Net Value Delivered</div>
-        <div class="kpi-val" id="net-val" style="color:#3FB950;">+$193.50</div>
-        <div style="font-size:11px; color:#8B949E; margin-top:4px;">Loaded labor rate: $45.00/hr</div>
-      </div>
-
-      <div style="margin-top:10px;">
-        <button class="btn btn-secondary" style="width:100%; padding:10px;" onclick="simulateBatch()">
-          ? Simulate 8 Live SAP Webhook Sessions
-        </button>
-      </div>
+    <div class="employee-switcher-box">
+      <span>Chatting as:</span>
+      <select id="userSelector" class="employee-select" onchange="switchEmployee(this.value)">
+        <option value="chen.wei@lenovo.com">Chen Wei (Senior Supply Planner)</option>
+        <option value="sarah.miller@lenovo.com">Sarah Miller (Logistics Coordinator)</option>
+        <option value="marcus.vance@lenovo.com">Marcus Vance (Procurement Specialist)</option>
+        <option value="priya.patel@lenovo.com">Priya Patel (Fulfillment Lead)</option>
+      </select>
     </div>
   </div>
 
-  <div class="chat-area">
-    <div class="chat-header">
-      <div>
-        <div style="font-size:15px; font-weight:800; color:#FFF; display:flex; align-items:center; gap:8px;">
-          <span>?? Global Supply Chain &amp; Order Dispatch Bot</span>
-          <span style="font-size:11px; background:#1F6FEB; color:#FFF; padding:2px 7px; border-radius:10px;">Copilot Studio</span>
+  <div class="workspace">
+    <!-- Left Sidebar: Copilot Studio & Capacity Pack Telemetry -->
+    <div class="telemetry-sidebar">
+      <div class="sidebar-header">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:13.5px; font-weight:800; color:#242424;">Copilot Studio Telemetry</span>
+          <span class="copilot-badge">Power Platform</span>
         </div>
-        <div style="font-size:12px; color:#8B949E; margin-top:3px;">
-          Connected to Lenovo SAP S/4HANA &amp; FedEx Freight Logistics APIs
+        <div style="margin-top:6px;" class="status-indicator">
+          <span class="status-dot"></span>
+          <span>Live Dataverse OData Stream</span>
         </div>
       </div>
-      <div>
-        <a href="/api/v1/copilot-studio/dataverse/conversationtranscripts" target="_blank" style="font-size:12px; color:#58A6FF; text-decoration:none; margin-right:12px;">
-          ?? View Dataverse OData
-        </a>
+
+      <div class="sidebar-body">
+        <div class="kpi-card">
+          <div class="kpi-title">Capacity Pack Billing (Tenant)</div>
+          <div class="kpi-val">$200.00 / mo</div>
+          <div style="font-size:11px; color:#605E5C; margin-top:3px;">1 Pack (25,000 Messages included flat)</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-title">Billed Queries Consumed</div>
+          <div class="kpi-val" id="billed-queries">52 queries</div>
+          <div style="font-size:11px; color:#107C41; margin-top:3px;" id="pack-util">Pack Utilization: 0.21% of 25k</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-title">Resolution Rate (Autonomous)</div>
+          <div class="kpi-val" id="res-rate" style="color:#107C41;">92.9%</div>
+          <div style="font-size:11px; color:#605E5C; margin-top:3px;">Automated SAP &amp; FedEx resolution</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-title">Labor Capacity Recovered</div>
+          <div class="kpi-val" id="hours-saved">84.0 hrs</div>
+          <div style="font-size:11px; color:#605E5C; margin-top:3px;">~0.5 FTE supply planner deflection</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-title">Net AI Value Delivered</div>
+          <div class="kpi-val" id="net-val" style="color:#107C41;">+$376.49 / mo</div>
+          <div style="font-size:11px; color:#605E5C; margin-top:3px;">Labor rate: $45.00/hr ($576.49 gross)</div>
+        </div>
+
+        <div style="margin-top:6px;">
+          <a href="/api/v1/copilot-studio/dataverse/conversationtranscripts" target="_blank" style="display:block; text-align:center; font-size:12px; color:#5B5FC7; text-decoration:none; font-weight:700; padding:8px; background:#FFFFFF; border:1px solid #D2D0CE; border-radius:6px;">
+            Inspect Dataverse OData Transcripts &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
-    <div class="messages" id="msgs">
-      <div class="msg bot">
-        <strong>Supply Chain Copilot:</strong> Hello! I am the Lenovo Global Supply Chain &amp; Logistics Assistant. I can track international factory shipments, issue RMA return labels, check component warehouse stock, or escalate supply disruptions. How can I help you today?
+    <!-- Main Teams Chat Area -->
+    <div class="chat-container">
+      <div class="chat-header">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="avatar bot" style="width:38px; height:38px; font-size:16px;">🤖</div>
+          <div>
+            <div style="font-size:15px; font-weight:800; color:#242424; display:flex; align-items:center; gap:8px;">
+              <span>Global Supply Chain &amp; Order Dispatch Bot</span>
+              <span style="font-size:11px; background:#5B5FC7; color:#FFF; padding:2px 7px; border-radius:10px; font-weight:700;">Copilot Studio</span>
+            </div>
+            <div style="font-size:12px; color:#605E5C; margin-top:2px;">
+              Enterprise Agent &bull; Connected to SAP S/4HANA ERP, FedEx Logistics &amp; ServiceNow RMA
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div style="padding:10px 24px; display:flex; gap:8px; flex-wrap:wrap; background:#161B22; border-top:1px solid #30363D;">
-      <span style="font-size:12px; color:#8B949E; line-height:28px;">Quick Scenarios:</span>
-      <button class="scenario-pill" onclick="sendPrompt('Track PO-98412: 2,000 ThinkPad X1 Carbon units from Kunshan to Morrisville')">?? Track Kunshan PO</button>
-      <button class="scenario-pill" onclick="sendPrompt('Issue expedited return authorization for 150 failed ThinkPad battery packs (Batch B-88)')">?? Issue Battery RMA</button>
-      <button class="scenario-pill" onclick="sendPrompt('Check safety stock and allocation for Intel Core Ultra 7 processors in Memphis warehouse')">?? Check Intel Stock</button>
-      <button class="scenario-pill" onclick="sendPrompt('Display supplier panel manufacturer reports 4-week factory shutdown on 4K OLED screens')">?? Supplier Delay</button>
-    </div>
+      <!-- Messages Thread -->
+      <div class="messages-area" id="msgs">
+        <!-- Bot Greeting -->
+        <div class="msg-row bot">
+          <div class="avatar bot">🤖</div>
+          <div class="msg-bubble">
+            <strong>Supply Chain Copilot:</strong> Hello! I am your autonomous Supply Chain &amp; Order Dispatch Assistant.
+            I can track international factory shipments in SAP, issue expedited RMA return authorizations, inspect warehouse safety stock, or escalate supply disruptions. How can I assist you today?
+          </div>
+        </div>
+      </div>
 
-    <div class="input-bar">
-      <input type="text" id="userInput" placeholder="Ask about shipment status, RMA numbers, or factory lead times..." onkeydown="if(event.key==='Enter') handleSend()">
-      <button class="btn" onclick="handleSend()">Send to Agent</button>
+      <!-- Suggested Scenarios Bar -->
+      <div class="chips-bar">
+        <span style="font-size:12px; color:#605E5C; font-weight:600;">Quick Scenarios:</span>
+        <button class="chip" onclick="sendPrompt('Track PO-98412: 2,000 ThinkPad X1 Carbon units from Kunshan to Morrisville')">📦 Track Kunshan PO-98412</button>
+        <button class="chip" onclick="sendPrompt('Issue expedited return authorization for 150 failed ThinkPad battery packs (Batch B-88)')">⚡ Issue Battery RMA</button>
+        <button class="chip" onclick="sendPrompt('Check safety stock and allocation for Intel Core Ultra 7 processors in Memphis warehouse')">🏭 Check Intel Stock</button>
+        <button class="chip" onclick="sendPrompt('Display supplier panel manufacturer reports 4-week factory shutdown on 4K OLED screens')">⚠️ Escalate Supplier Delay</button>
+      </div>
+
+      <!-- Input Bar -->
+      <div class="input-bar">
+        <input type="text" id="userInput" placeholder="Ask Copilot about SAP shipment tracking, warehouse inventory, or RMA labels..." onkeydown="if(event.key==='Enter') handleSend()">
+        <button class="btn-send" onclick="handleSend()">Send to Agent</button>
+      </div>
     </div>
   </div>
 
   <script>
-    async function refreshMetrics() {
-      try {
-        const res = await fetch('/api/v1/copilot-studio/metrics');
-        const data = await res.json();
-        if (data.resolution_rate_pct !== undefined) {
-          document.getElementById('res-rate').innerText = data.resolution_rate_pct + '%';
-          document.getElementById('hours-saved').innerText = data.hours_saved + ' hrs';
-          document.getElementById('net-val').innerText = (data.net_value_usd >= 0 ? '+$' : '-$') + Math.abs(data.net_value_usd).toFixed(2);
-        }
-      } catch (e) {
-        console.error(e);
-      }
+    let activeEmail = 'chen.wei@lenovo.com';
+    let activeName = 'Chen Wei';
+
+    function switchEmployee(email) {
+      activeEmail = email;
+      const sel = document.getElementById('userSelector');
+      activeName = sel.options[sel.selectedIndex].text.split(' (')[0];
+      appendSystemNotice(`Switched active Teams user context to ${activeName} (${activeEmail})`);
     }
 
-    async function sendPrompt(text) {
-      document.getElementById('userInput').value = text;
-      handleSend();
+    function appendSystemNotice(text) {
+      const msgs = document.getElementById('msgs');
+      const row = document.createElement('div');
+      row.style.textAlign = 'center';
+      row.style.fontSize = '11.5px';
+      row.style.color = '#605E5C';
+      row.style.margin = '4px 0';
+      row.innerHTML = `<span style="background:#EDEBE9; padding:3px 10px; border-radius:12px;">${text}</span>`;
+      msgs.appendChild(row);
+      msgs.scrollTop = msgs.scrollHeight;
     }
 
     async function handleSend() {
       const input = document.getElementById('userInput');
       const text = input.value.trim();
       if (!text) return;
-
-      const msgs = document.getElementById('msgs');
-      msgs.innerHTML += `<div class="msg user"><strong>You (Chen Wei):</strong> ${text}</div>`;
       input.value = '';
+      await sendPrompt(text);
+    }
+
+    async function sendPrompt(text) {
+      const msgs = document.getElementById('msgs');
+
+      // 1. Append User Message Bubble
+      const userRow = document.createElement('div');
+      userRow.className = 'msg-row user';
+      userRow.innerHTML = `
+        <div class="avatar user">${activeName.split(' ').map(n=>n[0]).join('')}</div>
+        <div class="msg-bubble">
+          <strong>${activeName}:</strong> ${text}
+        </div>
+      `;
+      msgs.appendChild(userRow);
       msgs.scrollTop = msgs.scrollHeight;
 
+      // 2. Typing indicator
+      const typingRow = document.createElement('div');
+      typingRow.className = 'msg-row bot';
+      typingRow.id = 'typing-indicator';
+      typingRow.innerHTML = `
+        <div class="avatar bot">🤖</div>
+        <div class="msg-bubble typing-indicator">
+          <span>Querying SAP S/4HANA & Logistics APIs...</span>
+        </div>
+      `;
+      msgs.appendChild(typingRow);
+      msgs.scrollTop = msgs.scrollHeight;
+
+      // Determine topic
+      let topic = 'SAP_Shipment_Tracking';
+      let outcome = 'Resolved';
+      let csat = 5;
+      if (text.toLowerCase().includes('battery') || text.toLowerCase().includes('rma')) {
+        topic = 'RMA_Defect_Authorization';
+      } else if (text.toLowerCase().includes('intel') || text.toLowerCase().includes('stock')) {
+        topic = 'Warehouse_Inventory_Check';
+      } else if (text.toLowerCase().includes('delay') || text.toLowerCase().includes('shutdown') || text.toLowerCase().includes('oled')) {
+        topic = 'Supplier_Contract_Delay';
+        outcome = 'Escalated';
+        csat = 4;
+      }
+
       try {
-        const res = await fetch('/api/v1/copilot-studio/simulate', {
+        const resp = await fetch('/api/v1/copilot-studio/simulate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_email: 'chen.wei@lenovo.com', topic_name: null, outcome: text.includes('Delay') ? 'Escalated' : 'Resolved' })
+          body: JSON.stringify({
+            user_email: activeEmail,
+            topic_name: topic,
+            outcome: outcome,
+            csat_score: csat,
+            billed_queries: 4
+          })
         });
-        const data = await res.json();
+        const data = await resp.json();
 
-        msgs.innerHTML += `
-          <div class="msg bot">
-            <strong>Supply Chain Copilot:</strong> ${data.bot_response}
-            <div style="font-size:11px; color:#58A6FF; margin-top:6px; border-top:1px solid #30363D; padding-top:4px;">
-              ? Connectors: [${data.actions_triggered.join(', ')}] | Outcome: <strong>${data.outcome}</strong> | Time Saved: ${data.handling_minutes_saved} mins
+        // Remove typing
+        const t = document.getElementById('typing-indicator');
+        if (t) t.remove();
+
+        // 3. Render Adaptive Card
+        const botRow = document.createElement('div');
+        botRow.className = 'msg-row bot';
+        
+        let cardHtml = '';
+        if (topic === 'SAP_Shipment_Tracking') {
+          cardHtml = `
+            <div class="adaptive-card">
+              <div class="card-header">
+                <span class="card-title">📦 SAP S/4HANA &bull; Shipment PO-98412</span>
+                <span class="card-badge badge-resolved">IN TRANSIT &bull; CUSTOMS CLEARED</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: 75%;"></div>
+              </div>
+              <div class="card-grid">
+                <div>
+                  <div class="card-grid-item-label">Part / Order:</div>
+                  <div class="card-grid-item-val">2,000 ThinkPad X1 Carbon Gen 12</div>
+                </div>
+                <div>
+                  <div class="card-grid-item-label">Vessel & Carrier:</div>
+                  <div class="card-grid-item-val">MSC Leni (Voyage 881-E)</div>
+                </div>
+                <div>
+                  <div class="card-grid-item-label">Current Milestone:</div>
+                  <div class="card-grid-item-val">Cleared Customs (Port of Savannah)</div>
+                </div>
+                <div>
+                  <div class="card-grid-item-label">Est. Destination Arrival:</div>
+                  <div class="card-grid-item-val">Oct 31, 2026 &bull; 14:00 EST (Morrisville)</div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="card-btn" onclick="alert('Opening SAP S/4HANA Purchase Order #PO-98412...')">🔍 View in SAP S/4HANA</button>
+                <button class="card-btn" onclick="alert('Tracking Ocean Vessel MSC Leni via Maritime Satellite GPS...')">🚢 Live Vessel Tracking</button>
+                <button class="card-btn" onclick="alert('Notification sent to Morrisville Hub Receiving Dock!')">📬 Notify Warehouse Dock</button>
+              </div>
             </div>
+          `;
+        } else if (topic === 'RMA_Defect_Authorization') {
+          cardHtml = `
+            <div class="adaptive-card">
+              <div class="card-header">
+                <span class="card-title">⚡ ServiceNow &bull; RMA #RMA-2026-88192</span>
+                <span class="card-badge badge-resolved">EXPEDITED RETURN AUTHORIZED</span>
+              </div>
+              <div class="card-grid">
+                <div>
+                  <div class="card-grid-item-label">Defect Scope:</div>
+                  <div class="card-grid-item-val">150 Failed Battery Packs (Batch B-88)</div>
+                </div>
+                <div>
+                  <div class="card-grid-item-label">Pre-paid Waybill:</div>
+                  <div class="card-grid-item-val">FedEx Freight FX-77491-0021-NC</div>
+                </div>
+                <div>
+                  <div class="card-grid-item-label">Dispatch Destination:</div>
+                  <div class="card-grid-item-val">Morrisville Battery Analysis Lab</div>
+                </div>
+                <div>
+                  <div class="card-grid-item-label">Replacement Batch:</div>
+                  <div class="card-grid-item-val">Released from Memphis Hub (Batch B-90)</div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="card-btn" onclick="alert('Pre-paid FedEx Freight Shipping Label Downloaded!')">🏷️ Print FedEx Label</button>
+                <button class="card-btn" onclick="alert('ServiceNow RMA #88192 updated with lab priority.')">📋 ServiceNow Ticket</button>
+              </div>
+            </div>
+          `;
+        } else if (topic === 'Warehouse_Inventory_Check') {
+          cardHtml = `
+            <div class="adaptive-card">
+              <div class="card-header">
+                <span class="card-title">🏭 SAP MRP &bull; Memphis Central Warehouse</span>
+                <span class="card-badge badge-resolved">STOCK LEVEL NORMAL</span>
+              </div>
+              <div class="card-grid">
+                <div>
+                  <div class="card-grid-item-label">Component SKU:</div>
+                  <div class="card-grid-item-val">Intel Core Ultra 7 155H CPUs</div>
+                </div>
+                <div>
+                  <div class="card-grid-item-label">Available Physical Stock:</div>
+                  <div class="card-grid-item-val">4,200 units on-hand</div>
+                </div>
+                <div>
+                  <div class="card-grid-item-label">Allocated to BTO Batch:</div>
+                  <div class="card-grid-item-val">1,800 units (#BTO-4412)</div>
+                </div>
+                <div>
+                  <div class="card-grid-item-label">Buffer Available:</div>
+                  <div class="card-grid-item-val">2,400 units (Above safety buffer)</div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="card-btn" onclick="alert('Reserved 500 units for Assembly Line 3 in SAP.')">📦 Allocate to Production</button>
+              </div>
+            </div>
+          `;
+        } else {
+          cardHtml = `
+            <div class="adaptive-card" style="border-color:#FCA5A5;">
+              <div class="card-header">
+                <span class="card-title" style="color:#DC2626;">⚠️ Procurement Escalation Notice</span>
+                <span class="card-badge badge-escalated">ESCALATED TO PROCUREMENT LEAD</span>
+              </div>
+              <div style="font-size:12px; color:#374151; margin-bottom:10px;">
+                Critical supplier panel manufacturer reports 4-week shutdown on 4K OLED screens. Automated impact assessment generated and routed to <strong>Marcus Vance</strong> (Procurement Lead).
+              </div>
+              <div class="card-actions">
+                <button class="card-btn" onclick="alert('Teams Urgent Notification dispatched to Marcus Vance!')">🚨 View Teams Channel Alert</button>
+              </div>
+            </div>
+          `;
+        }
+
+        botRow.innerHTML = `
+          <div class="avatar bot">🤖</div>
+          <div class="msg-bubble">
+            <strong>Supply Chain Copilot:</strong> ${data.bot_response}
+            ${cardHtml}
           </div>
         `;
+        msgs.appendChild(botRow);
         msgs.scrollTop = msgs.scrollHeight;
+
+        // Refresh live sidebar telemetry
         refreshMetrics();
       } catch (err) {
-        msgs.innerHTML += `<div class="msg bot" style="color:#F85149;">Error communicating with agent service.</div>`;
+        console.error(err);
       }
     }
 
-    async function simulateBatch() {
+    async function refreshMetrics() {
       try {
-        const btn = event.target;
-        btn.innerText = 'Simulating...';
-        const res = await fetch('/api/v1/copilot-studio/generate-batch?batch_size=8', { method: 'POST' });
-        const data = await res.json();
-        alert('Simulated ' + data.batch_size + ' autonomous Copilot Studio sessions across SAP webhooks!');
-        btn.innerText = '? Simulate 8 Live SAP Webhook Sessions';
-        refreshMetrics();
-      } catch (e) {
-        alert('Simulation error: ' + e);
-      }
+        const resp = await fetch('/api/v1/copilot-studio/metrics');
+        const m = await resp.json();
+        if (m.billed_queries_consumed !== undefined) {
+          document.getElementById('billed-queries').innerText = `${m.billed_queries_consumed} queries`;
+          document.getElementById('pack-util').innerText = `Pack Utilization: ${m.pack_utilization_pct}% of 25k`;
+          document.getElementById('res-rate').innerText = `${m.resolution_rate_pct}%`;
+          document.getElementById('hours-saved').innerText = `${m.hours_saved} hrs`;
+          document.getElementById('net-val').innerText = `+$${m.net_value_usd.toFixed(2)} / mo`;
+        }
+      } catch(e) {}
     }
 
     refreshMetrics();
@@ -572,3 +1103,4 @@ def get_interactive_bot_ui():
 </body>
 </html>
 """
+    return HTMLResponse(content=html_content, media_type="text/html; charset=utf-8")

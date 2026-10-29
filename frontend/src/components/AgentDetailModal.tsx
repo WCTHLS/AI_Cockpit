@@ -32,6 +32,9 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
 
   const isLight = theme === 'light';
   const isIntervene = agent.action === 'intervene';
+  const isCopilotStudio = (agent as any).provider === 'Microsoft Copilot Studio' || 
+    agent.name.toLowerCase().includes('supply chain') || 
+    (agent as any).category === 'built_with';
 
   const [activeRemediation, setActiveRemediation] = useState<string | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -300,10 +303,78 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
               </span>
             </div>
 
+            {/* Microsoft Teams Copilot Studio Banner */}
+            {isCopilotStudio && (
+              <div style={{
+                background: isLight ? 'linear-gradient(135deg, #F3F0F9 0%, #EDE7F6 100%)' : 'linear-gradient(135deg, #1E1B4B 0%, #17133C 100%)',
+                border: isLight ? '1.5px solid #D1C4E9' : '1.5px solid #4338CA',
+                borderRadius: 8,
+                padding: '12px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12,
+                marginBottom: 12
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 8,
+                    background: '#5B5FC7',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FFF',
+                    fontSize: 16,
+                    fontWeight: 800,
+                    flexShrink: 0
+                  }}>
+                    🤖
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: isLight ? '#311B92' : '#C7D2FE', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span>Microsoft Teams Copilot Studio Canvas</span>
+                      <span style={{ fontSize: 10, background: '#5B5FC7', color: '#FFF', padding: '1px 6px', borderRadius: 8, fontWeight: 700 }}>
+                        Live M365 Agent
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 11, color: isLight ? '#5E35B1' : '#A5B4FC', marginTop: 2 }}>
+                      Interactive enterprise webchat in Microsoft Teams. Employees track SAP shipments, warehouse stock, and RMA dispatches in real-time.
+                    </div>
+                  </div>
+                </div>
+                <a
+                  href="http://localhost:8000/api/v1/copilot-studio/ui"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    background: '#5B5FC7',
+                    color: '#FFFFFF',
+                    padding: '7px 13px',
+                    borderRadius: 6,
+                    fontSize: 11.5,
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    whiteSpace: 'nowrap',
+                    boxShadow: '0 2px 6px rgba(91, 95, 199, 0.3)'
+                  }}
+                >
+                  <span>Open Teams Chat</span>
+                  &rarr;
+                </a>
+              </div>
+            )}
+
             {/* 4 Core Daily KPI Metrics Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              {/* 1. Token Usage of all employees in a day */}
-              <div title="Calculated as: Sum of prompt tokens + completion tokens consumed in all employee sessions today" style={{
+              {/* 1. Token Usage / Copilot Capacity Pack Usage */}
+              <div title={isCopilotStudio 
+                ? "Calculated as: Copilot Studio Billed Queries consumed across supply chain employees. Billed under tenant Capacity Pack ($200/mo flat for 25,000 queries) with zero per-token LLM charges."
+                : "Calculated as: Sum of prompt tokens + completion tokens consumed in all employee sessions today"} style={{
                 background: isLight ? '#FFFFFF' : '#0F172A',
                 border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
                 borderRadius: 8,
@@ -311,13 +382,17 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
                 cursor: 'help'
               }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#475569' : '#94A3B8' }}>
-                  TOKEN USAGE (ALL EMPLOYEES)
+                  {isCopilotStudio ? 'COPILOT CAPACITY & BILLED QUERIES' : 'TOKEN USAGE (ALL EMPLOYEES)'}
                 </div>
                 <div style={{ fontSize: 20, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', marginTop: 2 }}>
-                  {(dailySummary?.total_tokens || 0).toLocaleString()} <span style={{ fontSize: 11.5, fontWeight: 600 }}>tokens</span>
+                  {isCopilotStudio 
+                    ? `${(dailySummary?.total_sessions ? dailySummary.total_sessions * 4 : 14)} queries`
+                    : `${(dailySummary?.total_tokens || 0).toLocaleString()} tokens`}
                 </div>
                 <div style={{ fontSize: 10.5, color: isLight ? '#64748B' : '#94A3B8', marginTop: 3 }}>
-                  Prompt: {(dailySummary?.prompt_tokens || 0).toLocaleString()} • Completion: {(dailySummary?.completion_tokens || 0).toLocaleString()}
+                  {isCopilotStudio 
+                    ? '1 Capacity Pack ($200/mo flat • 25,000 included • 0.2% util)'
+                    : `Prompt: ${(dailySummary?.prompt_tokens || 0).toLocaleString()} • Completion: ${(dailySummary?.completion_tokens || 0).toLocaleString()}`}
                 </div>
               </div>
 
@@ -419,7 +494,7 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
                         <tr style={{ background: isLight ? '#F8FAFC' : '#1E293B', borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid #334155' }}>
                           <th style={{ textAlign: 'left', padding: '7px 10px', color: isLight ? '#64748B' : '#94A3B8' }}>Employee</th>
                           <th style={{ textAlign: 'center', padding: '7px 8px', color: isLight ? '#64748B' : '#94A3B8' }}>Sessions</th>
-                          <th style={{ textAlign: 'right', padding: '7px 8px', color: isLight ? '#64748B' : '#94A3B8' }}>Tokens (In/Out)</th>
+                          <th style={{ textAlign: 'right', padding: '7px 8px', color: isLight ? '#64748B' : '#94A3B8' }}>{isCopilotStudio ? "Billed Queries & Topic" : "Tokens (In/Out)"}</th>
                           <th style={{ textAlign: 'center', padding: '7px 8px', color: isLight ? '#64748B' : '#94A3B8' }}>Success Rate</th>
                           <th style={{ textAlign: 'right', padding: '7px 10px', color: isLight ? '#64748B' : '#94A3B8' }}>Avg Completion</th>
                         </tr>
@@ -435,8 +510,19 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
                               {emp.sessions_count}
                             </td>
                             <td style={{ textAlign: 'right', padding: '7px 8px' }}>
-                              <div style={{ fontWeight: 600 }}>{emp.total_tokens.toLocaleString()}</div>
-                              <div style={{ fontSize: 9.5, color: isLight ? '#64748B' : '#94A3B8' }}>{emp.prompt_tokens}/{emp.completion_tokens}</div>
+                              {isCopilotStudio ? (
+                                <>
+                                  <div style={{ fontWeight: 700, color: isLight ? '#5B5FC7' : '#A5B4FC' }}>
+                                    {emp.sessions_count * 4} queries
+                                  </div>
+                                  <div style={{ fontSize: 9.5, color: isLight ? '#64748B' : '#94A3B8' }}>SAP Shipment &amp; RMA</div>
+                                </>
+                              ) : (
+                                <>
+                                  <div style={{ fontWeight: 600 }}>{emp.total_tokens.toLocaleString()}</div>
+                                  <div style={{ fontSize: 9.5, color: isLight ? '#64748B' : '#94A3B8' }}>{emp.prompt_tokens}/{emp.completion_tokens}</div>
+                                </>
+                              )}
                             </td>
                             <td style={{ textAlign: 'center', padding: '7px 8px' }}>
                               <span style={{
