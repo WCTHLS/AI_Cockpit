@@ -409,6 +409,59 @@ export async function uploadM365Csv(file: File): Promise<any> {
   return res.json();
 }
 
+export interface M365SeatItem {
+  id: number;
+  user_principal_name: string;
+  display_name: string;
+  department: string;
+  assigned_license: string;
+  last_activity_date: string;
+  report_period: number;
+  total_prompts: number;
+  chat_work_prompts: number;
+  chat_web_prompts: number;
+  active_days: number;
+  teams_active?: string;
+  outlook_active?: string;
+  word_active?: string;
+  excel_active?: string;
+  powerpoint_active?: string;
+  loop_active?: string;
+  inactive_days: number;
+  status: 'ACTIVE' | 'LAPSING' | 'IDLE';
+  recommendation: string;
+  hours_saved: number;
+  updated_at: string;
+}
+
+export interface M365SeatsResponse {
+  total_seats: number;
+  active_seats: number;
+  lapsing_seats: number;
+  idle_seats: number;
+  adoption_rate_pct: number;
+  total_prompts: number;
+  total_hours_saved: number;
+  monthly_license_spend: number;
+  avoidable_waste_monthly: number;
+  app_adoption: Record<string, number>;
+  seats: M365SeatItem[];
+}
+
+export async function fetchM365Seats(params?: { search?: string; status?: string; department?: string }): Promise<M365SeatsResponse> {
+  const query = new URLSearchParams();
+  if (params?.search) query.set('search', params.search);
+  if (params?.status) query.set('status', params.status);
+  if (params?.department) query.set('department', params.department);
+  const res = await fetch(`${API_BASE}/seats/m365?${query.toString()}`, {
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) {
+    throw new Error('Failed to fetch M365 seats');
+  }
+  return res.json();
+}
+
 export async function uploadTeammateZip(
   file: File,
   developerName: string,
