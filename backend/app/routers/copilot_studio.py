@@ -70,7 +70,6 @@ def get_dataverse_conversation_transcripts(
     GET https://<org-env>.api.crm.dynamics.com/api/data/v9.2/conversationtranscripts
     Used by enterprises to harvest raw Copilot Studio conversation transcripts.
     """
-    cur_month = datetime.now(timezone.utc).strftime("%Y-%m")
     rows = query_all("""
         SELECT u.id, u.usage_date, u.sessions_count, u.daily_usage_json, e.email, e.display_name
         FROM user_usage u
@@ -98,11 +97,13 @@ def get_dataverse_conversation_transcripts(
             "schemaVersion": "1.0",
             "botId": "bot-lenovo-supply-chain-v2",
             "botName": "Global Supply Chain & Order Dispatch Bot",
+            "environment": "Lenovo-Production-US (org-supplychain.crm.dynamics.com)",
+            "channel": "msteams",
             "userPrincipalName": r["email"],
             "displayName": r["display_name"],
             "department": "Global Supply Chain",
             "sessionDate": r["usage_date"],
-            "turnsCount": sessions_cnt * 3,
+            "turnsCount": sessions_cnt * 4,
             "billedQueries": int(parsed.get("billed_queries", sessions_cnt * 4)),
             "outcome": outcome,
             "csatScore": csat,
@@ -179,6 +180,7 @@ def simulate_session(req: SimulateSessionRequest):
     """
     Simulates a live Copilot Studio session for Global Supply Chain Bot.
     Writes real-time session outcome directly to SQLite `user_usage` table.
+    Returns rich enterprise connector execution trace & JSON payloads for demo transparency.
     """
     today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
@@ -264,6 +266,105 @@ def simulate_session(req: SimulateSessionRequest):
             VALUES (1, ?, ?, ?, 1, ?)
         """, (emp_id, agent_id, today_str, json.dumps(new_json)))
 
+    # Real enterprise connector trace & payload details
+    transcript_uuid = str(uuid.uuid4())
+    connector_map = {
+        "SAP_Shipment_Tracking": {
+            "connector": "SAP S/4HANA Cloud (BAPI / OData v4)",
+            "api_endpoint": "https://sap-s4hana.lenovo.internal/sap/opu/odata/sap/API_PURCHASEORDER_PROCESS_SRV/A_PurchaseOrder('PO-98412')",
+            "carrier_endpoint": "https://api.oceanlogistics.msc.com/v2/tracking/vessels/MSC-LENI-881E",
+            "request_payload": {
+                "PurchaseOrder": "PO-98412",
+                "Vendor": "Foxconn Precision Electronics (Kunshan Plant 2)",
+                "Material": "ThinkPad X1 Carbon Gen 12",
+                "Quantity": 2000,
+                "DeliveryDestination": "Morrisville Hub, NC"
+            },
+            "response_payload": {
+                "ShipmentStatus": "In Transit - Customs Cleared",
+                "PortOfClearance": "Port of Savannah, GA (Terminal 4)",
+                "VesselName": "MSC Leni (Voyage 881-E)",
+                "EstimatedArrivalDate": "2026-10-31T14:00:00EST",
+                "SAP_Document_Number": "5000192841"
+            },
+            "trace_steps": [
+                {"step": 1, "name": "NLP Intent & Entity Recognition", "detail": "Extracted PO 'PO-98412' & Destination 'Morrisville Hub'", "latency_ms": 42},
+                {"step": 2, "name": "SAP S/4HANA OData Query", "detail": "BAPI_PO_GETDETAIL2 executed over authenticated SAP Gateway", "latency_ms": 195},
+                {"step": 3, "name": "Ocean Carrier GPS Cross-check", "detail": "MSC Vessel Telematics & Savannah Port Clearance validated", "latency_ms": 68},
+                {"step": 4, "name": "Adaptive Card Delivery", "detail": "Delivered Teams Adaptive Card with Action.Submit buttons", "latency_ms": 105}
+            ]
+        },
+        "RMA_Defect_Authorization": {
+            "connector": "ServiceNow ITSM & FedEx Freight Gateway",
+            "api_endpoint": "https://lenovo.service-now.com/api/now/table/sn_customerservice_rma_case",
+            "carrier_endpoint": "https://apis.fedex.com/ship/v1/freight/shipments/labels",
+            "request_payload": {
+                "DefectCategory": "Battery Subsystem Degradation",
+                "BatchCode": "B-88",
+                "UnitsCount": 150,
+                "Priority": "Expedited"
+            },
+            "response_payload": {
+                "RMANumber": "RMA-2026-88192",
+                "FedExTracking": "FX-77491-0021-NC",
+                "LabDestination": "Morrisville Battery Diagnostic Facility",
+                "ReplacementRelease": "Approved from Memphis Hub (Batch B-90)"
+            },
+            "trace_steps": [
+                {"step": 1, "name": "NLP Intent & Entity Recognition", "detail": "Identified Batch 'B-88' & 150 units for return authorization", "latency_ms": 38},
+                {"step": 2, "name": "ServiceNow RMA Case Creation", "detail": "Automated ticket #RMA-2026-88192 created via REST API", "latency_ms": 180},
+                {"step": 3, "name": "FedEx Pre-paid Freight API", "detail": "Waybill FX-77491-0021-NC and hazmat manifest generated", "latency_ms": 115},
+                {"step": 4, "name": "Adaptive Card Delivery", "detail": "Delivered Teams Card with Pre-Paid Label action button", "latency_ms": 95}
+            ]
+        },
+        "Warehouse_Inventory_Check": {
+            "connector": "SAP S/4HANA MRP & Memphis WMS",
+            "api_endpoint": "https://sap-s4hana.lenovo.internal/sap/opu/odata/sap/API_MATERIAL_STOCK_SRV/A_MaterialStock",
+            "carrier_endpoint": "https://wms.memphis.lenovo.internal/api/v3/bins/inventory/intel-ultra-7",
+            "request_payload": {
+                "MaterialSKU": "Intel Core Ultra 7 155H CPUs",
+                "Plant": "Memphis Central (Site 4410)",
+                "StorageLocation": "BTO Subassembly Buffer"
+            },
+            "response_payload": {
+                "PhysicalStock": 4200,
+                "AllocatedToProduction": 1800,
+                "FreeBufferAvailable": 2400,
+                "SafetyStockThreshold": "NORMAL (Min: 1,500 units)"
+            },
+            "trace_steps": [
+                {"step": 1, "name": "NLP Intent & Entity Recognition", "detail": "Extracted SKU 'Intel Core Ultra 7' & Plant 'Memphis Central'", "latency_ms": 35},
+                {"step": 2, "name": "SAP MRP Stock Verification", "detail": "OData A_MaterialStock fetched 4,200 units on-hand", "latency_ms": 175},
+                {"step": 3, "name": "WMS Reservation Cross-check", "detail": "Verified 1,800 units committed to Batch #BTO-4412", "latency_ms": 60},
+                {"step": 4, "name": "Adaptive Card Delivery", "detail": "Delivered Stock Normal Card with Allocate button", "latency_ms": 102}
+            ]
+        },
+        "Supplier_Contract_Delay": {
+            "connector": "Procurement Disruption Engine & Teams Webhook",
+            "api_endpoint": "https://procurement.lenovo.internal/api/v2/disruptions/escalate",
+            "carrier_endpoint": "https://teams.microsoft.com/l/channel/procurement-alerts/LenovoSupplyChain",
+            "request_payload": {
+                "Commodity": "4K OLED Display Panels",
+                "VendorImpact": "Factory 4-week unscheduled maintenance shutdown",
+                "Severity": "Critical - High Impact to X1 Carbon Lines"
+            },
+            "response_payload": {
+                "EscalationTarget": "Marcus Vance (Procurement Lead)",
+                "TeamsChannelAlertSent": True,
+                "AlternativeVendorsQueried": ["LG Display", "Samsung Display Corporation"],
+                "MitigationTaskCreated": "TASK-SC-99120"
+            },
+            "trace_steps": [
+                {"step": 1, "name": "NLP Intent & Entity Recognition", "detail": "Detected critical 4-week shutdown delay keyword", "latency_ms": 40},
+                {"step": 2, "name": "Impact Assessment Engine", "detail": "Determined X1 Carbon line impact & buffer shortfall", "latency_ms": 145},
+                {"step": 3, "name": "Teams Urgent Channel Dispatch", "detail": "Pushed high-priority alert to Marcus Vance channel", "latency_ms": 110},
+                {"step": 4, "name": "Adaptive Card Delivery", "detail": "Delivered Escalation Notice Card with View Alert button", "latency_ms": 90}
+            ]
+        }
+    }
+
+    details = connector_map.get(chosen_scenario["topic"], connector_map["SAP_Shipment_Tracking"])
+
     return {
         "status": "success",
         "message": f"Copilot Studio session simulated for {req.user_email}.",
@@ -273,7 +374,15 @@ def simulate_session(req: SimulateSessionRequest):
         "outcome": req.outcome,
         "actions_triggered": chosen_scenario["actions"],
         "billed_queries_consumed": billed_q,
-        "handling_minutes_saved": minutes_saved
+        "handling_minutes_saved": minutes_saved,
+        "connector_name": details["connector"],
+        "api_endpoint": details["api_endpoint"],
+        "request_payload": details["request_payload"],
+        "response_payload": details["response_payload"],
+        "trace_steps": details["trace_steps"],
+        "dataverse_transcript_id": transcript_uuid,
+        "environment": "Lenovo-Production-US (org-supplychain.crm.dynamics.com)",
+        "channel": "Microsoft Teams (msteams)"
     }
 
 @router.post("/generate-batch")
@@ -286,7 +395,6 @@ def generate_batch_telemetry(batch_size: int = Query(8, ge=1, le=50)):
     for _ in range(batch_size):
         emp = random.choice(EMPLOYEES)
         scen = random.choice(SCENARIOS)
-        # 85% chance of resolution, 15% escalation
         outcome = "Resolved" if random.random() < 0.85 else "Escalated"
         csat = 5 if outcome == "Resolved" else random.choice([3, 4])
         res = simulate_session(SimulateSessionRequest(
@@ -382,6 +490,7 @@ def get_interactive_bot_ui():
     Renders an authentic Microsoft Teams & Copilot Studio Enterprise Webchat interface
     simulating how supply chain employees (Chen Wei, Sarah Miller, Marcus Vance, Priya Patel)
     interact with the Global Supply Chain & Order Dispatch Bot in Teams.
+    Includes live enterprise connector status, real-time execution traces, and raw JSON payload inspectors.
     """
     html_content = """<!DOCTYPE html>
 <html lang="en">
@@ -389,7 +498,7 @@ def get_interactive_bot_ui():
   <meta charset="UTF-8">
   <title>Microsoft Teams - Global Supply Chain & Order Dispatch Bot (Copilot Studio)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
     body { background: #EBEBEB; color: #242424; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -398,12 +507,12 @@ def get_interactive_bot_ui():
     .teams-top-bar {
       background: #464775;
       color: #FFFFFF;
-      height: 48px;
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 18px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      padding: 0 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       flex-shrink: 0;
       z-index: 10;
     }
@@ -418,20 +527,32 @@ def get_interactive_bot_ui():
     .teams-logo-badge {
       background: #5B5FC7;
       border-radius: 6px;
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 14px;
+      font-size: 15px;
+    }
+    .env-channel-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 11.5px;
+    }
+    .env-tag {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
     }
     .employee-switcher-box {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       background: rgba(255, 255, 255, 0.15);
-      padding: 5px 12px;
+      padding: 4px 10px;
       border-radius: 6px;
       font-size: 12px;
     }
@@ -451,13 +572,13 @@ def get_interactive_bot_ui():
     .workspace {
       display: flex;
       flex: 1;
-      height: calc(100vh - 48px);
+      height: calc(100vh - 52px);
       overflow: hidden;
     }
 
     /* Sidebar - Copilot Studio & Capacity Pack Telemetry */
     .telemetry-sidebar {
-      width: 330px;
+      width: 360px;
       background: #F3F2F1;
       border-right: 1px solid #D2D0CE;
       display: flex;
@@ -465,7 +586,7 @@ def get_interactive_bot_ui():
       flex-shrink: 0;
     }
     .sidebar-header {
-      padding: 16px 18px;
+      padding: 14px 18px;
       background: #FFFFFF;
       border-bottom: 1px solid #E1DFDD;
     }
@@ -479,7 +600,7 @@ def get_interactive_bot_ui():
       border: 1px solid #C5CBF3;
     }
     .sidebar-body {
-      padding: 16px;
+      padding: 14px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -505,19 +626,118 @@ def get_interactive_bot_ui():
       color: #5B5FC7;
       margin-top: 3px;
     }
-    .status-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+
+    /* Connectors Section */
+    .connector-box {
+      background: #FFFFFF;
+      border: 1px solid #E1DFDD;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .connector-title {
       font-size: 11.5px;
-      color: #107C41;
-      font-weight: 600;
+      font-weight: 800;
+      color: #323130;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .connector-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .connector-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      padding: 5px 8px;
+      background: #F8F9FA;
+      border-radius: 4px;
+      border: 1px solid #EDEBE9;
+    }
+    .connector-item.active {
+      background: #F0FDF4;
+      border-color: #86EFAC;
     }
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       background: #107C41;
       border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    /* Live Execution Trace Box */
+    .trace-box {
+      background: #FFFFFF;
+      border: 1.5px solid #5B5FC7;
+      border-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: 0 2px 8px rgba(91, 95, 199, 0.1);
+    }
+    .trace-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #EDEBE9;
+      padding-bottom: 6px;
+    }
+    .trace-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #5B5FC7;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .trace-badge {
+      background: #5B5FC7;
+      color: #FFFFFF;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 8px;
+    }
+    .trace-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 11px;
+    }
+    .trace-step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 4px 6px;
+      background: #F8F9FA;
+      border-radius: 4px;
+      line-height: 1.4;
+    }
+    .trace-step-num {
+      background: #E8EBFA;
+      color: #5B5FC7;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+    .trace-step-latency {
+      margin-left: auto;
+      font-weight: 700;
+      color: #107C41;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      flex-shrink: 0;
     }
 
     /* Main Chat Canvas (Teams Style) */
@@ -547,7 +767,7 @@ def get_interactive_bot_ui():
     .msg-row {
       display: flex;
       gap: 12px;
-      max-width: 85%;
+      max-width: 88%;
     }
     .msg-row.user {
       align-self: flex-end;
@@ -665,6 +885,40 @@ def get_interactive_bot_ui():
     }
     .card-btn:hover { background: #F3F2F1; border-color: #5B5FC7; color: #5B5FC7; }
 
+    /* Collapsible Payload Inspector */
+    .payload-toggle-btn {
+      background: none;
+      border: none;
+      color: #5B5FC7;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .payload-container {
+      margin-top: 8px;
+      background: #0F172A;
+      color: #F8FAFC;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+    }
+    .payload-section-title {
+      color: #38BDF8;
+      font-weight: 700;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+    }
+
     /* Suggested Chips */
     .chips-bar {
       padding: 10px 24px;
@@ -748,8 +1002,14 @@ def get_interactive_bot_ui():
       <div class="teams-logo-badge">T</div>
       <span>Microsoft Teams &bull; Copilot Studio Agent Canvas</span>
     </div>
+    
+    <div class="env-channel-pill">
+      <div class="env-tag">🌐 Env: <b>Lenovo-Production-US</b> (org-supplychain.crm.dynamics.com)</div>
+      <div class="env-tag">💬 Channel: <b>msteams</b> (Entra ID SSO)</div>
+    </div>
+
     <div class="employee-switcher-box">
-      <span>Chatting as:</span>
+      <span>Active User:</span>
       <select id="userSelector" class="employee-select" onchange="switchEmployee(this.value)">
         <option value="chen.wei@lenovo.com">Chen Wei (Senior Supply Planner)</option>
         <option value="sarah.miller@lenovo.com">Sarah Miller (Logistics Coordinator)</option>
@@ -764,16 +1024,79 @@ def get_interactive_bot_ui():
     <div class="telemetry-sidebar">
       <div class="sidebar-header">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:13.5px; font-weight:800; color:#242424;">Copilot Studio Telemetry</span>
+          <span style="font-size:13px; font-weight:800; color:#242424;">Copilot Studio Telemetry</span>
           <span class="copilot-badge">Power Platform</span>
         </div>
-        <div style="margin-top:6px;" class="status-indicator">
-          <span class="status-dot"></span>
-          <span>Live Dataverse OData Stream</span>
+        <div style="font-size:11px; color:#605E5C; margin-top:4px;">
+          Dynamics 365 Dataverse &bull; Enterprise Tenant
         </div>
       </div>
 
       <div class="sidebar-body">
+        <!-- Enterprise Connectors -->
+        <div class="connector-box">
+          <div class="connector-title">
+            <span>Enterprise Integrations (Active)</span>
+            <span style="font-size:10px; background:#DFF6DD; color:#107C41; padding:1px 6px; border-radius:10px;">4 Online</span>
+          </div>
+          <div class="connector-list">
+            <div class="connector-item active" id="conn-sap">
+              <span><span class="status-dot"></span><b>SAP S/4HANA</b> (BAPI / OData v4)</span>
+              <span style="font-size:10px; color:#107C41; font-weight:700;">CONNECTED</span>
+            </div>
+            <div class="connector-item active" id="conn-fedex">
+              <span><span class="status-dot"></span><b>FedEx Freight</b> Tracking API</span>
+              <span style="font-size:10px; color:#107C41; font-weight:700;">CONNECTED</span>
+            </div>
+            <div class="connector-item active" id="conn-snow">
+              <span><span class="status-dot"></span><b>ServiceNow</b> RMA Management</span>
+              <span style="font-size:10px; color:#107C41; font-weight:700;">CONNECTED</span>
+            </div>
+            <div class="connector-item active" id="conn-dataverse">
+              <span><span class="status-dot"></span><b>MS Dataverse</b> Transcripts</span>
+              <span style="font-size:10px; color:#107C41; font-weight:700;">LIVE SYNC</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Execution Trace Box -->
+        <div class="trace-box" id="traceBox">
+          <div class="trace-header">
+            <span class="trace-title">⚡ Live Agent Execution Trace</span>
+            <span class="trace-badge" id="traceBadge">4 Billed Queries</span>
+          </div>
+          <div style="font-size:11px; color:#475569; margin-bottom:6px;" id="tracePrompt">
+            Prompt: <i>Check safety stock & allocation for Intel CPUs</i>
+          </div>
+          <div class="trace-steps" id="traceStepsList">
+            <div class="trace-step-item">
+              <span class="trace-step-num">1</span>
+              <div><b>NLP Entity Parsing:</b> Extracted SKU & Plant</div>
+              <span class="trace-step-latency">42ms</span>
+            </div>
+            <div class="trace-step-item">
+              <span class="trace-step-num">2</span>
+              <div><b>Connector Invocation:</b> SAP_MRP_InventoryLookup</div>
+              <span class="trace-step-latency">195ms</span>
+            </div>
+            <div class="trace-step-item">
+              <span class="trace-step-num">3</span>
+              <div><b>Business Logic:</b> Cross-checked BTO Batch #4412</div>
+              <span class="trace-step-latency">68ms</span>
+            </div>
+            <div class="trace-step-item">
+              <span class="trace-step-num">4</span>
+              <div><b>Adaptive Card Delivery:</b> Delivered to Teams</div>
+              <span class="trace-step-latency">105ms</span>
+            </div>
+          </div>
+          <div style="margin-top:8px; padding-top:6px; border-top:1px solid #EDEBE9; font-size:10.5px; color:#605E5C; display:flex; justify-content:space-between;">
+            <span>Total Latency: <b id="traceTotalLatency" style="color:#107C41;">410ms</b></span>
+            <span>Dataverse: <b style="color:#5B5FC7;">Logged</b></span>
+          </div>
+        </div>
+
+        <!-- Capacity Pack Billing -->
         <div class="kpi-card">
           <div class="kpi-title">Capacity Pack Billing (Tenant)</div>
           <div class="kpi-val">$200.00 / mo</div>
@@ -782,30 +1105,24 @@ def get_interactive_bot_ui():
 
         <div class="kpi-card">
           <div class="kpi-title">Billed Queries Consumed</div>
-          <div class="kpi-val" id="billed-queries">52 queries</div>
-          <div style="font-size:11px; color:#107C41; margin-top:3px;" id="pack-util">Pack Utilization: 0.21% of 25k</div>
+          <div class="kpi-val" id="billed-queries">68 queries</div>
+          <div style="font-size:11px; color:#107C41; margin-top:3px;" id="pack-util">Pack Utilization: 0.27% of 25k</div>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-title">Resolution Rate (Autonomous)</div>
+          <div class="kpi-title">Autonomous Deflection Rate</div>
           <div class="kpi-val" id="res-rate" style="color:#107C41;">92.9%</div>
           <div style="font-size:11px; color:#605E5C; margin-top:3px;">Automated SAP &amp; FedEx resolution</div>
         </div>
 
         <div class="kpi-card">
           <div class="kpi-title">Labor Capacity Recovered</div>
-          <div class="kpi-val" id="hours-saved">84.0 hrs</div>
+          <div class="kpi-val" id="hours-saved">85.5 hrs</div>
           <div style="font-size:11px; color:#605E5C; margin-top:3px;">~0.5 FTE supply planner deflection</div>
         </div>
 
-        <div class="kpi-card">
-          <div class="kpi-title">Net AI Value Delivered</div>
-          <div class="kpi-val" id="net-val" style="color:#107C41;">+$376.49 / mo</div>
-          <div style="font-size:11px; color:#605E5C; margin-top:3px;">Labor rate: $45.00/hr ($576.49 gross)</div>
-        </div>
-
-        <div style="margin-top:6px;">
-          <a href="/api/v1/copilot-studio/dataverse/conversationtranscripts" target="_blank" style="display:block; text-align:center; font-size:12px; color:#5B5FC7; text-decoration:none; font-weight:700; padding:8px; background:#FFFFFF; border:1px solid #D2D0CE; border-radius:6px;">
+        <div style="margin-top:4px;">
+          <a href="/api/v1/copilot-studio/dataverse/conversationtranscripts" target="_blank" style="display:block; text-align:center; font-size:11.5px; color:#5B5FC7; text-decoration:none; font-weight:700; padding:8px; background:#FFFFFF; border:1px solid #D2D0CE; border-radius:6px;">
             Inspect Dataverse OData Transcripts &rarr;
           </a>
         </div>
@@ -866,7 +1183,7 @@ def get_interactive_bot_ui():
       activeEmail = email;
       const sel = document.getElementById('userSelector');
       activeName = sel.options[sel.selectedIndex].text.split(' (')[0];
-      appendSystemNotice(`Switched active Teams user context to ${activeName} (${activeEmail})`);
+      appendSystemNotice(`Switched active Teams user context to ${activeName} (${activeEmail}) &bull; Entra ID Authenticated`);
     }
 
     function appendSystemNotice(text) {
@@ -889,8 +1206,16 @@ def get_interactive_bot_ui():
       await sendPrompt(text);
     }
 
+    function togglePayload(idx) {
+      const el = document.getElementById(`payload-${idx}`);
+      if (el) {
+        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+      }
+    }
+
     async function sendPrompt(text) {
       const msgs = document.getElementById('msgs');
+      const promptIdx = Date.now();
 
       // 1. Append User Message Bubble
       const userRow = document.createElement('div');
@@ -911,7 +1236,7 @@ def get_interactive_bot_ui():
       typingRow.innerHTML = `
         <div class="avatar bot">🤖</div>
         <div class="msg-bubble typing-indicator">
-          <span>Querying SAP S/4HANA & Logistics APIs...</span>
+          <span>Querying SAP S/4HANA & Logistics Connectors...</span>
         </div>
       `;
       msgs.appendChild(typingRow);
@@ -979,7 +1304,7 @@ def get_interactive_bot_ui():
                 </div>
                 <div>
                   <div class="card-grid-item-label">Est. Destination Arrival:</div>
-                  <div class="card-grid-item-val">Oct 31, 2026 &bull; 14:00 EST (Morrisville)</div>
+                  <div class="card-grid-item-val">Oct 31, 2026 &bull; 14:00 EST (Morrisville Hub)</div>
                 </div>
               </div>
               <div class="card-actions">
@@ -1007,7 +1332,7 @@ def get_interactive_bot_ui():
                 </div>
                 <div>
                   <div class="card-grid-item-label">Dispatch Destination:</div>
-                  <div class="card-grid-item-val">Morrisville Battery Analysis Lab</div>
+                  <div class="card-grid-item-val">Morrisville Battery Diagnostic Facility</div>
                 </div>
                 <div>
                   <div class="card-grid-item-label">Replacement Batch:</div>
@@ -1067,21 +1392,71 @@ def get_interactive_bot_ui():
           `;
         }
 
+        // Add Connector Payload Inspector
+        const payloadHtml = `
+          <div>
+            <button class="payload-toggle-btn" onclick="togglePayload('${promptIdx}')">
+              <span>🔍 View Enterprise Connector Request &amp; Raw JSON Payload</span> &darr;
+            </button>
+            <div class="payload-container" id="payload-${promptIdx}">
+              <div class="payload-section-title">&bull; Enterprise Connector Endpoint:</div>
+              <div style="color:#A7F3D0; margin-bottom:6px;">${data.api_endpoint || 'SAP_S4HANA_OData_Gateway'}</div>
+              <div class="payload-section-title">&bull; Outbound Request Payload (Copilot -> ERP):</div>
+              <pre style="margin-bottom:6px; color:#E2E8F0;">${JSON.stringify(data.request_payload || {}, null, 2)}</pre>
+              <div class="payload-section-title">&bull; Inbound ERP Response Payload (SAP -> Copilot):</div>
+              <pre style="margin-bottom:6px; color:#FDE047;">${JSON.stringify(data.response_payload || {}, null, 2)}</pre>
+              <div class="payload-section-title">&bull; Dataverse Conversation Transcript UUID:</div>
+              <div style="color:#C4B5FD;">${data.dataverse_transcript_id || 'uuid-lenovo-sc-session'}</div>
+            </div>
+          </div>
+        `;
+
         botRow.innerHTML = `
           <div class="avatar bot">🤖</div>
           <div class="msg-bubble">
             <strong>Supply Chain Copilot:</strong> ${data.bot_response}
             ${cardHtml}
+            ${payloadHtml}
           </div>
         `;
         msgs.appendChild(botRow);
         msgs.scrollTop = msgs.scrollHeight;
+
+        // Update Live Execution Trace Box in Left Panel
+        updateTraceBox(text, data);
 
         // Refresh live sidebar telemetry
         refreshMetrics();
       } catch (err) {
         console.error(err);
       }
+    }
+
+    function updateTraceBox(promptText, data) {
+      document.getElementById('tracePrompt').innerHTML = `Prompt: <i>${promptText.length > 40 ? promptText.substring(0, 40) + '...' : promptText}</i>`;
+      
+      const steps = data.trace_steps || [
+        {step: 1, name: 'NLP Entity Parsing', detail: 'Intent & Entity recognition', latency_ms: 42},
+        {step: 2, name: 'Connector Call', detail: data.connector_name || 'SAP S/4HANA BAPI', latency_ms: 195},
+        {step: 3, name: 'Business Verification', detail: 'Safety stock & buffer validated', latency_ms: 68},
+        {step: 4, name: 'Adaptive Card Synthesis', detail: 'Delivered Teams Card v1.5', latency_ms: 105}
+      ];
+
+      let stepsHtml = '';
+      let totalLat = 0;
+      steps.forEach(s => {
+        totalLat += (s.latency_ms || 50);
+        stepsHtml += `
+          <div class="trace-step-item">
+            <span class="trace-step-num">${s.step}</span>
+            <div><b>${s.name}:</b> ${s.detail}</div>
+            <span class="trace-step-latency">${s.latency_ms}ms</span>
+          </div>
+        `;
+      });
+
+      document.getElementById('traceStepsList').innerHTML = stepsHtml;
+      document.getElementById('traceTotalLatency').innerText = `${totalLat}ms`;
     }
 
     async function refreshMetrics() {
@@ -1093,7 +1468,6 @@ def get_interactive_bot_ui():
           document.getElementById('pack-util').innerText = `Pack Utilization: ${m.pack_utilization_pct}% of 25k`;
           document.getElementById('res-rate').innerText = `${m.resolution_rate_pct}%`;
           document.getElementById('hours-saved').innerText = `${m.hours_saved} hrs`;
-          document.getElementById('net-val').innerText = `+$${m.net_value_usd.toFixed(2)} / mo`;
         }
       } catch(e) {}
     }

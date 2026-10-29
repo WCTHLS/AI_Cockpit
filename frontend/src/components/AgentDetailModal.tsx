@@ -391,7 +391,7 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
                 </div>
                 <div style={{ fontSize: 10.5, color: isLight ? '#64748B' : '#94A3B8', marginTop: 3 }}>
                   {isCopilotStudio 
-                    ? '1 Capacity Pack ($200/mo flat • 25,000 included • 0.2% util)'
+                    ? '1 Pack ($200/mo flat • 25k queries • 0.2% util)'
                     : `Prompt: ${(dailySummary?.prompt_tokens || 0).toLocaleString()} • Completion: ${(dailySummary?.completion_tokens || 0).toLocaleString()}`}
                 </div>
               </div>
