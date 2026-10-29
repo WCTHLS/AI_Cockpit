@@ -462,6 +462,17 @@ export async function fetchM365Seats(params?: { search?: string; status?: string
   return res.json();
 }
 
+export async function clearM365Seats(): Promise<{ status: string; message: string }> {
+  const res = await fetch(`${API_BASE}/seats/m365`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
+  if (!res.ok) {
+    throw new Error('Failed to clear M365 seats');
+  }
+  return res.json();
+}
+
 export async function uploadTeammateZip(
   file: File,
   developerName: string,

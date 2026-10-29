@@ -292,6 +292,17 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
         "message": f"Successfully ingested M365 Copilot report: {inserted} active employee seats processed."
     }
 
+@router.delete("/m365")
+def clear_m365_seats(user: Dict[str, Any] = Depends(get_current_user)):
+    """
+    Clears all ingested Microsoft 365 Copilot usage records from the database.
+    """
+    _init_m365_table()
+    with get_db() as conn:
+        conn.execute("DELETE FROM m365_copilot_seats")
+        conn.commit()
+    return {"status": "success", "message": "All Microsoft 365 Copilot seat telemetry successfully cleared."}
+
 @router.get("/m365")
 def get_m365_seats(
     search: Optional[str] = Query(None),
