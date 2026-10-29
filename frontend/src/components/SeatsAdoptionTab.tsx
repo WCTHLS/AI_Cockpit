@@ -410,68 +410,33 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               Enterprise AI Seat Estate: Microsoft 365 Copilot ({m365Total} Seats) + Developer AI Tooling ({developerSeats.length} Seats)
             </div>
             <div style={{ fontSize: 12, color: '#475569', marginTop: 2 }}>
-              Consolidated seat utilization across enterprise Microsoft 365 Copilot subscriptions and active developer AI tooling. Upload usage CSV to synchronize telemetry.
+              Consolidated seat utilization across enterprise Microsoft 365 Copilot subscriptions and active developer AI tooling. Ingest and manage telemetry in Admin & Config.
             </div>
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleM365FileUpload} 
-            accept=".csv" 
-            style={{ display: 'none' }} 
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isUploadingM365}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              background: '#0284C7',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: 6,
-              padding: '8px 14px',
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: isUploadingM365 ? 'not-allowed' : 'pointer'
-            }}
-          >
-            <UploadCloud size={14} />
-            {isUploadingM365 ? 'Uploading...' : "Upload M365 Copilot CSV"}
-          </button>
-
-          <button
-            onClick={() => {
-              if (m365Total === 0) {
-                setActionToast('No Microsoft 365 Copilot records currently loaded.');
-                setTimeout(() => setActionToast(null), 4000);
-              } else {
-                setShowClearM365Modal(true);
-              }
-            }}
-            title="Clear all Microsoft 365 Copilot seat records from database"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 5,
-              background: m365Total > 0 ? '#FEF2F2' : '#F8FAFC',
-              color: m365Total > 0 ? '#DC2626' : '#94A3B8',
-              border: m365Total > 0 ? '1.5px solid #FECACA' : '1px solid #E2E8F0',
-              borderRadius: 6,
-              padding: '8px 12px',
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: m365Total > 0 ? 'pointer' : 'default',
-              transition: 'all 0.15s'
-            }}
-          >
-            <Trash2 size={13} />
-            Clear M365 Data {m365Total > 0 ? `(${m365Total})` : ''}
-          </button>
+          <span style={{
+            background: m365Total > 0 ? '#ECFDF5' : '#F1F5F9',
+            border: m365Total > 0 ? '1.5px solid #A7F3D0' : '1.5px solid #CBD5E1',
+            color: m365Total > 0 ? '#065F46' : '#64748B',
+            padding: '6px 14px',
+            borderRadius: 20,
+            fontSize: 12,
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
+          }}>
+            <span style={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              background: m365Total > 0 ? '#10B981' : '#94A3B8',
+              display: 'inline-block'
+            }} />
+            {m365Total > 0 ? `${m365Total} M365 SEATS SYNCED` : 'M365 AWAITING INGESTION'}
+          </span>
         </div>
       </div>
 
@@ -871,7 +836,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                       <td colSpan={10} style={{ textAlign: 'center', padding: '40px 20px', color: '#64748B' }}>
                         <div style={{ fontSize: 14, fontWeight: 800, color: '#0C4A6E' }}>No Microsoft 365 Copilot usage records currently loaded</div>
                         <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>
-                          Click the <strong>"Upload M365 Copilot CSV"</strong> button above to ingest your organization's user activity report.
+                          Upload and manage Microsoft 365 Copilot usage reports in the <strong>Admin & Config</strong> portal.
                         </div>
                       </td>
                     </tr>
@@ -1189,90 +1154,6 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
           <div ref={histogramChartRef} style={{ width: '100%', height: 260 }} />
         </div>
       </div>
-
-      {/* CLEAR M365 DATA CONFIRMATION MODAL */}
-      {showClearM365Modal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(15, 23, 42, 0.65)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 99999,
-          padding: 20
-        }}>
-          <div style={{
-            background: '#FFFFFF',
-            borderRadius: 14,
-            maxWidth: 440,
-            width: '100%',
-            padding: 24,
-            boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
-            border: '1.5px solid #FCA5A5',
-            fontFamily: 'Figtree, sans-serif'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-              <div style={{ background: '#FEE2E2', color: '#DC2626', padding: 10, borderRadius: 10 }}>
-                <Trash2 size={22} />
-              </div>
-              <div>
-                <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: '#991B1B' }}>
-                  Clear M365 Copilot Telemetry?
-                </h3>
-                <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
-                  Database reset action
-                </div>
-              </div>
-            </div>
-
-            <p style={{ fontSize: 13, color: '#334155', lineHeight: 1.5, margin: '0 0 20px 0' }}>
-              Are you sure you want to delete all <strong>{m365Total} employee seat records</strong> from the database? 
-              This will reset prompt counts, active app badges, and hours saved. You can upload a new CSV report at any time.
-            </p>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-              <button
-                onClick={() => setShowClearM365Modal(false)}
-                disabled={isClearingM365}
-                style={{
-                  padding: '9px 16px',
-                  borderRadius: 7,
-                  border: '1px solid #CBD5E1',
-                  background: '#FFFFFF',
-                  color: '#475569',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleClearM365}
-                disabled={isClearingM365}
-                style={{
-                  padding: '9px 18px',
-                  borderRadius: 7,
-                  border: 'none',
-                  background: '#DC2626',
-                  color: '#FFFFFF',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: isClearingM365 ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}
-              >
-                <Trash2 size={14} />
-                {isClearingM365 ? 'Clearing Records...' : 'Yes, Delete All M365 Data'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* DEVELOPER SEAT DRILLDOWN MODAL */}
       {drilldownOpen && (

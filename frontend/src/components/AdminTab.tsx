@@ -555,10 +555,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
   const [devError, setDevError] = useState<string | null>(null);
   const [devSuccessMessage, setDevSuccessMessage] = useState<string | null>(null);
 
-  // Accordion Toggle States (neat dropdown-style collapsible panels)
+  // Accordion Toggle States (neat dropdown-style collapsible panels - default closed)
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
-    api_creds: true,
-    local_workspace: false,
+    api_creds: false,
     teammate_import: false,
     m365_admin: false
   });
@@ -2699,142 +2698,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             )}
           </div>
 
-          {/* ACCORDION 2: LOCAL DEVELOPER HOST & WORKSPACE SETTINGS */}
-          <div style={{
-            background: '#FFFFFF',
-            border: '1.5px solid #E2E8F0',
-            borderRadius: 10,
-            marginBottom: 16,
-            overflow: 'hidden',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
-          }}>
-            <button
-              onClick={() => toggleAccordion('local_workspace')}
-              style={{
-                width: '100%',
-                padding: '16px 20px',
-                background: openAccordions.local_workspace ? '#F8FAFC' : '#FFFFFF',
-                border: 'none',
-                borderBottom: openAccordions.local_workspace ? '1px solid #E2E8F0' : 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                cursor: 'pointer',
-                textAlign: 'left'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ background: '#0284C7', color: '#FFFFFF', padding: '6px 8px', borderRadius: 6 }}>
-                  <Terminal size={16} />
-                </div>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: '#1E293B', fontFamily: 'Figtree, sans-serif' }}>
-                    Local Developer Host & Workspace Directory
-                  </div>
-                  <div style={{ fontSize: 12, color: '#64748B', marginTop: 1 }}>
-                    Configure local Antigravity IDE workspace log paths and assigned developer account email.
-                  </div>
-                </div>
-              </div>
+          {/* ACCORDION 2: IMPORT TEAMMATE ANTIGRAVITY LOGS (BRAIN.ZIP) - Antigravity IDE Only */}
+          {devProvider === 'gemini_antigravity' && (
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{
-                  background: '#F0F9FF',
-                  border: '1px solid #BAE6FD',
-                  color: '#0369A1',
-                  padding: '3px 8px',
-                  borderRadius: 12,
-                  fontSize: 11,
-                  fontWeight: 700
-                }}>
-                  HOST EXTRACTION
-                </span>
-                {openAccordions.local_workspace ? <ChevronUp size={18} color="#64748B" /> : <ChevronDown size={18} color="#64748B" />}
-              </div>
-            </button>
-
-            {openAccordions.local_workspace && (
-              <div style={{ padding: 20, background: '#FFFFFF' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
-                      Connection Mode
-                    </label>
-                    <select
-                      value={devConnectionMode}
-                      onChange={(e) => setDevConnectionMode(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '9px 12px',
-                        borderRadius: 6,
-                        border: '1px solid #CBD5E1',
-                        fontSize: 13,
-                        background: '#FFFFFF'
-                      }}
-                    >
-                      <option value="local_antigravity">Antigravity IDE Workspace Logs (Direct Host Extraction)</option>
-                      <option value="live_api">Live Provider Developer API</option>
-                      <option value="custom_gateway">Custom Enterprise AI Proxy / Gateway</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
-                      Assigned Developer Email
-                    </label>
-                    <input
-                      type="email"
-                      value={devEmail}
-                      onChange={(e) => setDevEmail(e.target.value)}
-                      placeholder="developer@company.com"
-                      style={{
-                        width: '100%',
-                        padding: '9px 12px',
-                        borderRadius: 6,
-                        border: '1px solid #CBD5E1',
-                        fontSize: 13,
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
-                      Antigravity IDE Host Logs Directory
-                    </label>
-                    <input
-                      type="text"
-                      value={devLocalPath}
-                      onChange={(e) => setDevLocalPath(e.target.value)}
-                      placeholder="C:\Users\Admin\.gemini\antigravity-ide"
-                      style={{
-                        width: '100%',
-                        padding: '9px 12px',
-                        borderRadius: 6,
-                        border: '1px solid #CBD5E1',
-                        fontSize: 13,
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <input
-                    type="checkbox"
-                    id="devAutoSyncLocal"
-                    checked={devAutoSync}
-                    onChange={(e) => setDevAutoSync(e.target.checked)}
-                    style={{ width: 16, height: 16, accentColor: '#0284C7' }}
-                  />
-                  <label htmlFor="devAutoSyncLocal" style={{ fontSize: 13, color: '#334155', fontWeight: 600, cursor: 'pointer' }}>
-                    Automatically refresh and synchronize local developer logs on dashboard reload
-                  </label>
-                </div>
-              </div>
-            )}
-          </div>
-          {/* ACCORDION 3: IMPORT TEAMMATE ANTIGRAVITY LOGS (BRAIN.ZIP) */}
           <div style={{
             background: '#FFFFFF',
             border: '1.5px solid #BAE6FD',
@@ -3039,6 +2905,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               </div>
             )}
           </div>
+          )}
 
           {/* ACCORDION 4: MICROSOFT 365 COPILOT ESTATE & DATA MANAGEMENT */}
           <div style={{
