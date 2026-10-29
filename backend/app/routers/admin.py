@@ -377,7 +377,7 @@ def ingest_working_agent(
 
                 for eid in team_emps:
                     cur.execute("""
-                        INSERT OR IGNORE INTO employee_agent (company_id, employee_id, agent_id, assigned_date, is_active)
+                        INSERT OR IGNORE INTO employee_agent (company_id, employee_id, agent_id, assigned_from, is_active)
                         VALUES (1, ?, ?, '2026-08-01', 1)
                     """, (eid, agent_id))
 

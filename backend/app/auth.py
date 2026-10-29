@@ -26,7 +26,7 @@ DEMO_USERS = {
         "email": "finops@wct.com",
         "display_name": "Lead FinOps Analyst",
         "role": "finops",
-        "function_name": None,
+        "function_name": "Finance",
         "team_name": None
     },
     "admin@wct.com": {

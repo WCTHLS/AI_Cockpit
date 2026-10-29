@@ -380,6 +380,11 @@ def get_m365_seats(
     Returns employee-level M365 Copilot usage, adoption telemetry, and license reclamation advice.
     """
     _init_m365_table()
+    # RBAC: Department Heads & FinOps are locked to their functional scope
+    eff_dept = department
+    if user.get("role") in ["function_head", "finops"] and user.get("function_name"):
+        eff_dept = user["function_name"]
+
     sql = "SELECT * FROM m365_copilot_seats WHERE 1=1"
     params = []
 
@@ -392,14 +397,17 @@ def get_m365_seats(
         sql += " AND status = ?"
         params.append(status.upper())
 
-    if department and department != "All Functions":
+    if eff_dept and eff_dept != "All Functions":
         sql += " AND department LIKE ?"
-        params.append(f"%{department}%")
+        params.append(f"%{eff_dept}%")
 
     sql += " ORDER BY total_prompts DESC, id ASC"
     rows = query_all(sql, tuple(params))
 
-    all_seats = query_all("SELECT * FROM m365_copilot_seats")
+    if eff_dept and eff_dept != "All Functions":
+        all_seats = query_all("SELECT * FROM m365_copilot_seats WHERE department LIKE ?", (f"%{eff_dept}%",))
+    else:
+        all_seats = query_all("SELECT * FROM m365_copilot_seats")
     total_cnt = len(all_seats)
     active_cnt = sum(1 for s in all_seats if s.get("status") == "ACTIVE")
     lapsing_cnt = sum(1 for s in all_seats if s.get("status") == "LAPSING")

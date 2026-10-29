@@ -618,6 +618,14 @@ def get_developer_seats(user: Dict[str, Any] = Depends(get_current_user)):
 
     all_rows = query_all("SELECT * FROM developer_seats WHERE developer_id NOT LIKE '%waferwire.com%' ORDER BY updated_at DESC")
     rows = [r for r in all_rows if (r.get("developer_id") or "").lower().strip() not in deleted_keys and (r.get("developer_email") or "").lower().strip() not in deleted_keys]
+    
+    # RBAC: Department Heads & FinOps are locked to their functional scope
+    if user.get("role") in ["function_head", "finops"] and user.get("function_name"):
+        target_dept = user["function_name"].lower()
+        if "eng" in target_dept or "it" in target_dept:
+            rows = [r for r in rows if "eng" in (r.get("department") or "").lower() or "it" in (r.get("department") or "").lower()]
+        else:
+            rows = [r for r in rows if target_dept in (r.get("department") or "").lower()]
 
     if not rows:
         stats = _extract_antigravity_stats()
@@ -653,6 +661,14 @@ def get_developer_seats(user: Dict[str, Any] = Depends(get_current_user)):
                 ))
             all_rows = query_all("SELECT * FROM developer_seats WHERE developer_id NOT LIKE '%waferwire.com%' ORDER BY updated_at DESC")
             rows = [r for r in all_rows if (r.get("developer_id") or "").lower().strip() not in deleted_keys and (r.get("developer_email") or "").lower().strip() not in deleted_keys]
+    
+    # RBAC: Department Heads & FinOps are locked to their functional scope
+    if user.get("role") in ["function_head", "finops"] and user.get("function_name"):
+        target_dept = user["function_name"].lower()
+        if "eng" in target_dept or "it" in target_dept:
+            rows = [r for r in rows if "eng" in (r.get("department") or "").lower() or "it" in (r.get("department") or "").lower()]
+        else:
+            rows = [r for r in rows if target_dept in (r.get("department") or "").lower()]
 
     return {"total": len(rows), "seats": rows}
 

@@ -19,7 +19,7 @@ def get_executive_summary(
     user: Dict[str, Any] = Depends(get_current_user)
 ):
     effective_function = function
-    if user.get("role") == "function_head" and user.get("function_name"):
+    if user.get("role") in ["function_head", "finops"] and user.get("function_name"):
         effective_function = user["function_name"]
 
     target_month = month or (store.get_months()[-1] if store.get_months() else "2026-09")
@@ -40,7 +40,7 @@ def get_cost_breakdown(
     user: Dict[str, Any] = Depends(get_current_user)
 ):
     effective_function = function
-    if user.get("role") == "function_head" and user.get("function_name"):
+    if user.get("role") in ["function_head", "finops"] and user.get("function_name"):
         effective_function = user["function_name"]
 
     target_month = month or (store.get_months()[-1] if store.get_months() else "2026-09")
@@ -52,7 +52,7 @@ def get_trend(
     user: Dict[str, Any] = Depends(get_current_user)
 ):
     effective_function = function
-    if user.get("role") == "function_head" and user.get("function_name"):
+    if user.get("role") in ["function_head", "finops"] and user.get("function_name"):
         effective_function = user["function_name"]
 
     return get_unified_trend(effective_function=effective_function)
@@ -65,7 +65,7 @@ def get_where_to_act(
 ):
     target_month = month or (store.get_months()[-1] if store.get_months() else "2026-09")
     effective_function = function
-    if user.get("role") == "function_head" and user.get("function_name"):
+    if user.get("role") in ["function_head", "finops"] and user.get("function_name"):
         effective_function = user["function_name"]
 
     agents = store.get_processed_agents(target_month, effective_function)

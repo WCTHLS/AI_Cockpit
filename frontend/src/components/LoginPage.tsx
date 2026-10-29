@@ -42,8 +42,8 @@ const PRESET_USERS = [
     badgeBg: '#ECFDF5',
     badgeBorder: '#A7F3D0',
     icon: DollarSign,
-    scope: 'Spend & License Optimization',
-    desc: 'FinOps Treemap spend allocation, inactivity tracking, and authorization to execute 1-click seat reclaims.'
+    scope: 'Locked to "Finance" Only',
+    desc: 'Finance department agent portfolio, financial spend optimization, and Finance seat reclamation.'
   },
   {
     email: 'admin@wct.com',

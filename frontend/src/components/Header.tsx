@@ -31,7 +31,8 @@ export const Header: React.FC<HeaderProps> = ({
   onThemeChange
 }) => {
   const isLight = theme === 'light';
-  const isDeptHead = user.role === 'function_head';
+  const isDeptLocked = user.role === 'function_head' || user.role === 'finops';
+  const lockedDeptName = user.role === 'finops' ? 'Finance' : (user.function_name || 'Eng & IT');
 
   const getRoleMeta = (role: string) => {
     switch (role) {
@@ -54,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({
       case 'finops':
         return {
           shortLabel: 'FinOps',
-          badgeText: 'Spend Authority',
+          badgeText: 'Finance Only',
           color: '#059669',
           bg: '#ECFDF5',
           border: '#A7F3D0'
@@ -182,7 +183,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Business Function Filter */}
-          {isDeptHead ? (
+          {isDeptLocked ? (
             <div
               title="Locked to Eng & IT by Role-Based Access Control policy."
               style={{
@@ -199,7 +200,7 @@ export const Header: React.FC<HeaderProps> = ({
               }}
             >
               <Lock size={13} />
-              <span>Eng & IT (Locked)</span>
+              <span>{lockedDeptName} (Locked)</span>
             </div>
           ) : (
             <select

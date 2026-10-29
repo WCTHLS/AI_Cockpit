@@ -75,7 +75,6 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
   user
 }) => {
   const isLight = theme === 'light';
-  const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
   const isAdmin = user?.role === 'admin';
 
   // Cost per seat slider state
@@ -146,10 +145,17 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const effectiveDept = (user?.role === 'finops' 
+    ? 'Finance' 
+    : (user?.role === 'function_head' ? (user?.function_name || 'Eng & IT') : selectedFunction)) || '';
+  const isScoped = Boolean(effectiveDept && effectiveDept !== 'All Functions');
+
   const loadM365Data = async () => {
     setIsLoadingM365(true);
     try {
-      const res = await fetchM365Seats();
+      const res = await fetchM365Seats({
+        department: isScoped ? effectiveDept : undefined
+      });
       setM365Data(res);
     } catch (err) {
       console.error('Failed to load M365 seats:', err);
@@ -164,7 +170,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
       .catch(err => console.error('Failed to load developer seats:', err));
 
     loadM365Data();
-  }, []);
+  }, [selectedFunction, user?.role, user?.function_name]);
 
   const handleOpenDrilldown = async (seat: DeveloperSeat) => {
     setSelectedDeveloper(seat);
@@ -203,15 +209,57 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
   const histogramChartRef = useRef<HTMLDivElement>(null);
   const adoptRankingChartRef = useRef<HTMLDivElement>(null);
 
-  // DYNAMIC SEAT METRICS (Derived strictly from real streams: Antigravity + M365 Copilot)
-  const m365Total = m365Data?.total_seats ?? 0;
-  const m365Active = m365Data?.active_seats ?? 0;
-  const m365Idle = m365Data?.idle_seats ?? 0;
+  // RBAC SCOPING: Scoped lists to strictly isolate departments
+  const displayedM365Seats = (m365Data?.seats || []).filter(seat => {
+    if (isScoped) {
+      const dept = (seat.department || '').toLowerCase();
+      const target = effectiveDept.toLowerCase();
+      if (target === 'eng & it' || target.includes('eng') || target.includes('it')) {
+        if (!dept.includes('eng') && !dept.includes('it')) return false;
+      } else if (!dept.includes(target)) {
+        return false;
+      }
+    }
+    const matchesSearch = !m365Search ||
+      seat.display_name.toLowerCase().includes(m365Search.toLowerCase()) ||
+      seat.user_principal_name.toLowerCase().includes(m365Search.toLowerCase()) ||
+      (seat.department && seat.department.toLowerCase().includes(m365Search.toLowerCase()));
+    const matchesStatus = m365StatusFilter === 'ALL' || seat.status === m365StatusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
-  const total = developerSeats.length + m365Total;
-  const active = developerSeats.length + m365Active;
+  const displayedDevSeats = (developerSeats || []).filter(seat => {
+    if (isScoped) {
+      const dept = (seat.department || '').toLowerCase();
+      const target = effectiveDept.toLowerCase();
+      if (target === 'eng & it' || target.includes('eng') || target.includes('it')) {
+        if (!dept.includes('eng') && !dept.includes('it')) return false;
+      } else if (!dept.includes(target)) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  // DYNAMIC SEAT METRICS (Derived strictly from real streams: Antigravity + M365 Copilot)
+  const m365Total = displayedM365Seats.length;
+  const m365Active = displayedM365Seats.filter(s => s.status === 'ACTIVE').length;
+  const m365Idle = displayedM365Seats.filter(s => s.status === 'IDLE').length;
+  const totalPromptsSubmitted = displayedM365Seats.reduce((acc, s) => acc + (s.total_prompts || 0), 0);
+  const totalHumanHoursSaved = Number((displayedM365Seats.reduce((acc, s) => acc + (s.hours_saved || 0), 0)).toFixed(1));
+
+  const total = displayedDevSeats.length + m365Total;
+  const active = displayedDevSeats.length + m365Active;
   const lapsing = 0;
   const idle = m365Idle;
+
+  const chatAppCount = displayedM365Seats.filter(s => (s.chat_work_prompts ?? 0) > 0).length;
+  const teamsAppCount = displayedM365Seats.filter(s => !!s.teams_active).length;
+  const outlookAppCount = displayedM365Seats.filter(s => !!s.outlook_active).length;
+  const loopAppCount = displayedM365Seats.filter(s => !!s.loop_active).length;
+  const wordAppCount = displayedM365Seats.filter(s => !!s.word_active).length;
+  const excelAppCount = displayedM365Seats.filter(s => !!s.excel_active).length;
+  const pptAppCount = displayedM365Seats.filter(s => !!s.powerpoint_active).length;
 
   const monthlyIdleCost = idle * seatCost;
   const annualIdleCost = monthlyIdleCost * 12;
@@ -430,7 +478,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
           </div>
           <div>
             <div style={{ fontSize: 14, fontWeight: 800, color: '#0C4A6E' }}>
-              Enterprise AI Seat Estate: Microsoft 365 Copilot ({m365Total} Seats) + Developer AI Tooling ({developerSeats.length} Seats)
+              Enterprise AI Seat Estate: Microsoft 365 Copilot ({m365Total} Seats) + Developer AI Tooling ({displayedDevSeats.length} Seats)
             </div>
             <div style={{ fontSize: 12, color: '#475569', marginTop: 2 }}>
               Consolidated seat utilization across enterprise Microsoft 365 Copilot subscriptions and active developer AI tooling. Ingest and manage telemetry in Admin & Config.
@@ -719,7 +767,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               }}
             >
               <Code size={14} />
-              <span>Developer AI Tooling ({developerSeats.length})</span>
+              <span>Developer AI Tooling ({displayedDevSeats.length})</span>
             </button>
           </div>
         </div>
@@ -737,7 +785,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               <div style={{ background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: 8, padding: '12px 14px' }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#0369A1', textTransform: 'uppercase' }}>Total Prompts Submitted</div>
                 <div style={{ fontSize: 22, fontWeight: 900, color: '#0C4A6E', marginTop: 2 }}>
-                  {m365Data?.total_prompts?.toLocaleString() || '0'}
+                  {totalPromptsSubmitted.toLocaleString()}
                 </div>
                 <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>Across all M365 apps (28-day window)</div>
               </div>
@@ -745,7 +793,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 8, padding: '12px 14px' }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#15803D', textTransform: 'uppercase' }}>Human Hours Saved</div>
                 <div style={{ fontSize: 22, fontWeight: 900, color: '#166534', marginTop: 2 }}>
-                  {m365Data?.total_hours_saved || 0} hrs
+                  {totalHumanHoursSaved} hrs
                 </div>
                 <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>5 min saved / Copilot interaction</div>
               </div>
@@ -753,13 +801,13 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: '12px 14px' }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#7E22CE', textTransform: 'uppercase' }}>Active App Adoption Footprint</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, background: '#F5F3FF', color: '#6D28D9', padding: '2px 8px', borderRadius: 4, border: '1px solid #DDD6FE' }}>Chat: {m365Data?.app_adoption?.['Copilot Chat'] ?? 0}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, background: '#EEF2FF', color: '#4338CA', padding: '2px 8px', borderRadius: 4, border: '1px solid #C7D2FE' }}>Teams: {m365Data?.app_adoption?.['Teams'] ?? 0}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, background: '#E0F2FE', color: '#0369A1', padding: '2px 8px', borderRadius: 4, border: '1px solid #BAE6FD' }}>Outlook: {m365Data?.app_adoption?.['Outlook'] ?? 0}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, background: '#FAF5FF', color: '#7E22CE', padding: '2px 8px', borderRadius: 4, border: '1px solid #E9D5FF' }}>Loop: {m365Data?.app_adoption?.['Loop'] ?? 0}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, background: '#EFF6FF', color: '#1D4ED8', padding: '2px 8px', borderRadius: 4, border: '1px solid #BFDBFE' }}>Word: {m365Data?.app_adoption?.['Word'] ?? 0}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, background: '#F0FDF4', color: '#15803D', padding: '2px 8px', borderRadius: 4, border: '1px solid #BBF7D0' }}>Excel: {m365Data?.app_adoption?.['Excel'] ?? 0}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, background: '#FFF7ED', color: '#C2410C', padding: '2px 8px', borderRadius: 4, border: '1px solid #FED7AA' }}>PPT: {m365Data?.app_adoption?.['PowerPoint'] ?? 0}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, background: '#F5F3FF', color: '#6D28D9', padding: '2px 8px', borderRadius: 4, border: '1px solid #DDD6FE' }}>Chat: {chatAppCount}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, background: '#EEF2FF', color: '#4338CA', padding: '2px 8px', borderRadius: 4, border: '1px solid #C7D2FE' }}>Teams: {teamsAppCount}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, background: '#E0F2FE', color: '#0369A1', padding: '2px 8px', borderRadius: 4, border: '1px solid #BAE6FD' }}>Outlook: {outlookAppCount}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, background: '#FAF5FF', color: '#7E22CE', padding: '2px 8px', borderRadius: 4, border: '1px solid #E9D5FF' }}>Loop: {loopAppCount}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, background: '#EFF6FF', color: '#1D4ED8', padding: '2px 8px', borderRadius: 4, border: '1px solid #BFDBFE' }}>Word: {wordAppCount}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, background: '#F0FDF4', color: '#15803D', padding: '2px 8px', borderRadius: 4, border: '1px solid #BBF7D0' }}>Excel: {excelAppCount}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, background: '#FFF7ED', color: '#C2410C', padding: '2px 8px', borderRadius: 4, border: '1px solid #FED7AA' }}>PPT: {pptAppCount}</span>
                 </div>
               </div>
             </div>
@@ -889,7 +937,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {(m365Data?.seats || []).length === 0 && (
+                  {displayedM365Seats.length === 0 && (
                     <tr>
                       <td colSpan={10} style={{ textAlign: 'center', padding: '40px 20px', color: '#64748B' }}>
                         <div style={{ fontSize: 14, fontWeight: 800, color: '#0C4A6E' }}>No Microsoft 365 Copilot usage records currently loaded</div>
@@ -899,16 +947,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                       </td>
                     </tr>
                   )}
-                  {(m365Data?.seats || [])
-                    .filter(seat => {
-                      const matchesSearch = !m365Search ||
-                        seat.display_name.toLowerCase().includes(m365Search.toLowerCase()) ||
-                        seat.user_principal_name.toLowerCase().includes(m365Search.toLowerCase()) ||
-                        (seat.department && seat.department.toLowerCase().includes(m365Search.toLowerCase()));
-                      const matchesStatus = m365StatusFilter === 'ALL' || seat.status === m365StatusFilter;
-                      return matchesSearch && matchesStatus;
-                    })
-                    .map(seat => {
+                  {displayedM365Seats.map(seat => {
                       const isReclaimed = reclaimedSeats[seat.user_principal_name];
                       return (
                         <tr
@@ -1065,7 +1104,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {developerSeats.map(seat => (
+                  {displayedDevSeats.map(seat => (
                     <tr 
                       key={seat.developer_id} 
                       onClick={() => handleOpenDrilldown(seat)}

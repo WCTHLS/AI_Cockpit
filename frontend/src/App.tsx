@@ -92,7 +92,9 @@ export const App: React.FC = () => {
   });
 
   // Department scoping: function_head is locked to their department (e.g. Eng & IT)
-  const effFunc = currentUser.role === 'function_head' ? (currentUser.function_name || 'Eng & IT') : selectedFunction;
+  const isDeptLocked = currentUser.role === 'function_head' || currentUser.role === 'finops';
+  const lockedDeptName = currentUser.role === 'finops' ? 'Finance' : (currentUser.role === 'function_head' ? (currentUser.function_name || 'Eng & IT') : '');
+  const effFunc = isDeptLocked ? lockedDeptName : selectedFunction;
 
   // Enterprise Subscription and Labor Config state
   const [subscriptionConfig, setSubscriptionConfig] = useState<SubscriptionConfig>(() => {
@@ -112,6 +114,13 @@ export const App: React.FC = () => {
       return DEFAULT_LABOR_CONFIG;
     }
   });
+
+    // Redirect non-admin users away from admin tab
+  useEffect(() => {
+    if (currentUser.role !== 'admin' && activeTab === 'admin') {
+      setActiveTab('summary');
+    }
+  }, [currentUser.role, activeTab]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [summary, setSummary] = useState<SummaryKPI | null>(null);
@@ -279,13 +288,15 @@ export const App: React.FC = () => {
             <Users size={16} />
             Seats &amp; Adoption
           </button>
-                    <button
-            className={`tab-button ${activeTab === 'admin' ? 'active' : ''}`}
-            onClick={() => setActiveTab('admin')}
-          >
-            <Settings size={16} />
-            Admin &amp; Config
-          </button>
+                    {currentUser.role === 'admin' && (
+            <button
+              className={`tab-button ${activeTab === 'admin' ? 'active' : ''}`}
+              onClick={() => setActiveTab('admin')}
+            >
+              <Settings size={16} />
+              Admin &amp; Config
+            </button>
+          )}
         </div>
       </div>
 
