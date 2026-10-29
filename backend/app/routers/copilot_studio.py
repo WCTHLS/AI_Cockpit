@@ -671,74 +671,7 @@ def get_interactive_bot_ui():
       margin-right: 5px;
     }
 
-    /* Live Execution Trace Box */
-    .trace-box {
-      background: #FFFFFF;
-      border: 1.5px solid #5B5FC7;
-      border-radius: 8px;
-      padding: 12px 14px;
-      box-shadow: 0 2px 8px rgba(91, 95, 199, 0.1);
-    }
-    .trace-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      border-bottom: 1px solid #EDEBE9;
-      padding-bottom: 6px;
-    }
-    .trace-title {
-      font-size: 12px;
-      font-weight: 800;
-      color: #5B5FC7;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .trace-badge {
-      background: #5B5FC7;
-      color: #FFFFFF;
-      font-size: 10.5px;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 8px;
-    }
-    .trace-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 11px;
-    }
-    .trace-step-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      padding: 4px 6px;
-      background: #F8F9FA;
-      border-radius: 4px;
-      line-height: 1.4;
-    }
-    .trace-step-num {
-      background: #E8EBFA;
-      color: #5B5FC7;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 10px;
-      flex-shrink: 0;
-    }
-    .trace-step-latency {
-      margin-left: auto;
-      font-weight: 700;
-      color: #107C41;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      flex-shrink: 0;
-    }
+
 
     /* Main Chat Canvas (Teams Style) */
     .chat-container {
@@ -1056,43 +989,6 @@ def get_interactive_bot_ui():
               <span><span class="status-dot"></span><b>MS Dataverse</b> Transcripts</span>
               <span style="font-size:10px; color:#107C41; font-weight:700;">LIVE SYNC</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Live Execution Trace Box -->
-        <div class="trace-box" id="traceBox">
-          <div class="trace-header">
-            <span class="trace-title">⚡ Live Agent Execution Trace</span>
-            <span class="trace-badge" id="traceBadge">4 Billed Queries</span>
-          </div>
-          <div style="font-size:11px; color:#475569; margin-bottom:6px;" id="tracePrompt">
-            Prompt: <i>Check safety stock & allocation for Intel CPUs</i>
-          </div>
-          <div class="trace-steps" id="traceStepsList">
-            <div class="trace-step-item">
-              <span class="trace-step-num">1</span>
-              <div><b>NLP Entity Parsing:</b> Extracted SKU & Plant</div>
-              <span class="trace-step-latency">42ms</span>
-            </div>
-            <div class="trace-step-item">
-              <span class="trace-step-num">2</span>
-              <div><b>Connector Invocation:</b> SAP_MRP_InventoryLookup</div>
-              <span class="trace-step-latency">195ms</span>
-            </div>
-            <div class="trace-step-item">
-              <span class="trace-step-num">3</span>
-              <div><b>Business Logic:</b> Cross-checked BTO Batch #4412</div>
-              <span class="trace-step-latency">68ms</span>
-            </div>
-            <div class="trace-step-item">
-              <span class="trace-step-num">4</span>
-              <div><b>Adaptive Card Delivery:</b> Delivered to Teams</div>
-              <span class="trace-step-latency">105ms</span>
-            </div>
-          </div>
-          <div style="margin-top:8px; padding-top:6px; border-top:1px solid #EDEBE9; font-size:10.5px; color:#605E5C; display:flex; justify-content:space-between;">
-            <span>Total Latency: <b id="traceTotalLatency" style="color:#107C41;">410ms</b></span>
-            <span>Dataverse: <b style="color:#5B5FC7;">Logged</b></span>
           </div>
         </div>
 
@@ -1422,41 +1318,12 @@ def get_interactive_bot_ui():
         msgs.appendChild(botRow);
         msgs.scrollTop = msgs.scrollHeight;
 
-        // Update Live Execution Trace Box in Left Panel
-        updateTraceBox(text, data);
 
         // Refresh live sidebar telemetry
         refreshMetrics();
       } catch (err) {
         console.error(err);
       }
-    }
-
-    function updateTraceBox(promptText, data) {
-      document.getElementById('tracePrompt').innerHTML = `Prompt: <i>${promptText.length > 40 ? promptText.substring(0, 40) + '...' : promptText}</i>`;
-      
-      const steps = data.trace_steps || [
-        {step: 1, name: 'NLP Entity Parsing', detail: 'Intent & Entity recognition', latency_ms: 42},
-        {step: 2, name: 'Connector Call', detail: data.connector_name || 'SAP S/4HANA BAPI', latency_ms: 195},
-        {step: 3, name: 'Business Verification', detail: 'Safety stock & buffer validated', latency_ms: 68},
-        {step: 4, name: 'Adaptive Card Synthesis', detail: 'Delivered Teams Card v1.5', latency_ms: 105}
-      ];
-
-      let stepsHtml = '';
-      let totalLat = 0;
-      steps.forEach(s => {
-        totalLat += (s.latency_ms || 50);
-        stepsHtml += `
-          <div class="trace-step-item">
-            <span class="trace-step-num">${s.step}</span>
-            <div><b>${s.name}:</b> ${s.detail}</div>
-            <span class="trace-step-latency">${s.latency_ms}ms</span>
-          </div>
-        `;
-      });
-
-      document.getElementById('traceStepsList').innerHTML = stepsHtml;
-      document.getElementById('traceTotalLatency').innerText = `${totalLat}ms`;
     }
 
     async function refreshMetrics() {
