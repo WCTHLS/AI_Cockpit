@@ -15,7 +15,7 @@ import {
   Sparkles,
   AlertTriangle
 } from 'lucide-react';
-import { CostBreakdownItem, AgentScorecardItem } from '../types';
+import { CostBreakdownItem, AgentScorecardItem, SummaryKPI } from '../types';
 import { formatUSD, formatPct } from '../api';
 
 interface CostBudgetTabProps {
@@ -23,8 +23,11 @@ interface CostBudgetTabProps {
   agents: AgentScorecardItem[];
   selectedFunction?: string;
   customTotalCost?: number;
+  customGrossValue?: number;
+  customHoursSaved?: number;
   customLicenseCost?: number;
   theme?: 'dark' | 'light';
+  summary?: SummaryKPI | null;
 }
 
 interface CostFactorDetail {
@@ -44,8 +47,11 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
   agents = [], 
   selectedFunction = '',
   customTotalCost,
+  customGrossValue,
+  customHoursSaved,
   customLicenseCost,
-  theme = 'light' 
+  theme = 'light',
+  summary
 }) => {
   const isLight = theme === 'light';
   const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
@@ -110,9 +116,9 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
   const budgetVariance = totalBudget - totalActualCost;
   const budgetPctSaved = totalBudget > 0 ? ((budgetVariance / totalBudget) * 100).toFixed(1) : '0';
 
-  // Real Gross Value: Agents gross ($702.26) + Antigravity Developer Tool Gross ($8,300) = $9,002.26
-  const grossVal = effectiveAgents.reduce((s, a) => s + (a.gross_value || 0), 0) + (isScoped ? 0 : 8300.00);
-  const totalHoursSaved = effectiveAgents.reduce((s, a) => s + (a.hours_saved || 0), 0) + (isScoped ? 0 : 332.0);
+  // Real Gross Value: computed dynamically from unified portfolio summary or active agents
+  const grossVal = customGrossValue ?? summary?.total_gross_value ?? (effectiveAgents.reduce((s, a) => s + (a.gross_value || 0), 0));
+  const totalHoursSaved = customHoursSaved ?? summary?.total_hours_saved ?? (effectiveAgents.reduce((s, a) => s + (a.hours_saved || 0), 0));
   
   const valuePerDollar = totalActualCost > 0 ? (grossVal / totalActualCost) : 0;
   const costPerHourSaved = totalHoursSaved > 0 ? (totalActualCost / totalHoursSaved) : 0;
@@ -141,13 +147,29 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
     teamsMap[a.team].budget += a.budget || a.cost || 1;
   });
 
-  if (!teamsMap['Software Engineering'] && (!isScoped || effectiveAgents.some(a => a.function === 'Eng & IT'))) {
+  const devBreakdown = (summary as any)?.breakdown?.developer_seats;
+  if (devBreakdown && devBreakdown.seats_count > 0 && (!isScoped || effectiveAgents.some(a => a.function === 'Eng & IT') || selectedFunction === 'Eng & IT')) {
     teamsMap['Software Engineering (Antigravity IDE)'] = {
       team: 'Software Engineering (Antigravity IDE)',
-      cost: 60.00,
-      budget: 100.00,
+      cost: devBreakdown.cost,
+      budget: devBreakdown.budget,
       function: 'Eng & IT'
     };
+  }
+
+  const m365Depts = (summary as any)?.breakdown?.m365_copilot?.department_breakdown;
+  if (m365Depts) {
+    Object.entries(m365Depts).forEach(([deptName, dData]: [string, any]) => {
+      if (!isScoped || effectiveAgents.some(a => a.function === deptName) || selectedFunction === deptName) {
+        const teamName = `Microsoft 365 Copilot (${deptName})`;
+        teamsMap[teamName] = {
+          team: teamName,
+          cost: dData.cost,
+          budget: dData.budget,
+          function: deptName
+        };
+      }
+    });
   }
   const teamSpendData = Object.values(teamsMap);
 

@@ -324,8 +324,11 @@ export const App: React.FC = () => {
             agents={agents}
             selectedFunction={effFunc}
             customTotalCost={dynamicTotalCost}
+            customGrossValue={dynamicGrossValue}
+            customHoursSaved={totalHours}
             customLicenseCost={dynamicLicenseCost}
             theme={theme}
+            summary={summary}
           />
         )}
 

@@ -597,6 +597,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     try {
       const res = await uploadM365Csv(file);
       await loadAdminM365();
+      if (onThresholdsUpdated) onThresholdsUpdated();
       setDevSuccessMessage(res.message);
       setTimeout(() => setDevSuccessMessage(null), 5000);
     } catch (err: any) {
@@ -613,6 +614,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     try {
       const res = await clearM365Seats();
       await loadAdminM365();
+      if (onThresholdsUpdated) onThresholdsUpdated();
       setShowAdminM365ClearModal(false);
       setDevSuccessMessage(res.message);
       setTimeout(() => setDevSuccessMessage(null), 5000);
@@ -945,11 +947,11 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
   );
 
   // Live portfolio valuation dynamically connected to actual database summary
-  const dynamicTotalCost = summary?.total_cost || 145913;
-  const baselineHoursSaved = summary?.total_hours_saved || 9875;
-  const simulatedGrossValue = summary?.total_gross_value || (baselineHoursSaved * blendedHourlyRate);
-  const simulatedNetValue = summary?.total_net_value || (simulatedGrossValue - dynamicTotalCost);
-  const simulatedRoiMultiplier = summary?.roi_ratio || (dynamicTotalCost > 0 ? (simulatedGrossValue / dynamicTotalCost) : 0);
+  const dynamicTotalCost = summary?.total_cost || 0;
+  const baselineHoursSaved = summary?.total_hours_saved || 0;
+  const simulatedGrossValue = Math.round(baselineHoursSaved * blendedHourlyRate);
+  const simulatedNetValue = Math.round(simulatedGrossValue - dynamicTotalCost);
+  const simulatedRoiMultiplier = dynamicTotalCost > 0 ? Number((simulatedGrossValue / dynamicTotalCost).toFixed(2)) : 0;
   const simulatedFtesUnlocked = Math.round(baselineHoursSaved / (laborRates.monthlyFteHours || 160));
 
   const handleSaveAll = async () => {

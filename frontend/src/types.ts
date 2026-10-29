@@ -36,6 +36,11 @@ export interface SummaryKPI {
     experiment: number;
     intervene: number;
   };
+  breakdown?: {
+    autonomous_agents?: any;
+    developer_seats?: any;
+    m365_copilot?: any;
+  };
 }
 
 export interface FunctionSummary {

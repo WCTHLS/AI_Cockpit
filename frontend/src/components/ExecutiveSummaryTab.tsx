@@ -543,11 +543,55 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
     if (!teamBarChartRef.current) return;
     const chart = echarts.init(teamBarChartRef.current);
 
-    const teamValues = [
-      { name: 'IT Service Desk (Ticket Triage)', val: 111.52, agents: 1, isCopilot: false },
-      { name: 'Supply Chain (Order Dispatch)', val: 344.90, agents: 1, isCopilot: false },
-      { name: 'Software Engineering (Antigravity IDE)', val: 8240.00, agents: 2, isCopilot: false },
-    ];
+    const teamValues: Array<{ name: string; val: number; agents: number; isCopilot: boolean }> = [];
+
+    // 1. Autonomous agent teams
+    const agentTeamsMap: Record<string, { val: number; count: number }> = {};
+    agents.forEach(a => {
+      const t = a.team || a.name;
+      if (!agentTeamsMap[t]) agentTeamsMap[t] = { val: 0, count: 0 };
+      agentTeamsMap[t].val += (a.net_value || 0);
+      agentTeamsMap[t].count += 1;
+    });
+    Object.entries(agentTeamsMap).forEach(([tName, tData]) => {
+      teamValues.push({
+        name: tName,
+        val: Math.round(tData.val * 100) / 100,
+        agents: tData.count,
+        isCopilot: false
+      });
+    });
+
+    // 2. Developer Tooling (Antigravity IDE)
+    const devBreakdown = (summary as any)?.breakdown?.developer_seats;
+    if (devBreakdown && devBreakdown.seats_count > 0) {
+      teamValues.push({
+        name: 'Software Engineering (Antigravity IDE)',
+        val: devBreakdown.net_value,
+        agents: devBreakdown.seats_count,
+        isCopilot: false
+      });
+    }
+
+    // 3. Microsoft 365 Copilot by Department
+    const m365Depts = (summary as any)?.breakdown?.m365_copilot?.department_breakdown;
+    if (m365Depts) {
+      Object.entries(m365Depts).forEach(([deptName, dData]: [string, any]) => {
+        teamValues.push({
+          name: `Microsoft 365 Copilot (${deptName})`,
+          val: dData.net_value,
+          agents: dData.seats,
+          isCopilot: true
+        });
+      });
+    }
+
+    if (teamValues.length === 0) {
+      teamValues.push({ name: 'Enterprise AI Operations', val: summary?.total_net_value || 0, agents: 1, isCopilot: false });
+    }
+
+    // Sort ascending for horizontal bar chart so highest values are at top of y-axis
+    teamValues.sort((a, b) => a.val - b.val);
 
     chart.setOption({
       backgroundColor: 'transparent',

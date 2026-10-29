@@ -34,6 +34,7 @@ class SummaryKPI(BaseModel):
     active_agents: int
     total_hours_saved: float
     action_counts: Dict[str, int]
+    breakdown: Optional[Dict[str, Any]] = None
 
 class FunctionSummary(BaseModel):
     function_name: str
