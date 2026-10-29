@@ -156,7 +156,7 @@ export const Header: React.FC<HeaderProps> = ({
             borderRadius: 20,
             padding: 3
           }}>
-            {['2026-08', '2026-09'].map(m => {
+            {['2026-09', '2026-10'].map(m => {
               const active = currentMonth === m;
               return (
                 <button
@@ -175,7 +175,7 @@ export const Header: React.FC<HeaderProps> = ({
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  {m === '2026-08' ? 'Aug 2026' : 'Sep 2026 (Live)'}
+                  {m === '2026-09' ? 'Sep 2026' : 'Oct 2026 (Live)'}
                 </button>
               );
             })}

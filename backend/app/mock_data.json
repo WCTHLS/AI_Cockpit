@@ -697,6 +697,48 @@
       "SubFactor": "Enablement",
       "CostUSD": 24000,
       "BudgetUSD": 25000
+    },
+    {
+      "Month": "2026-10",
+      "Factor": "Licences",
+      "SubFactor": "Licences",
+      "CostUSD": 168000,
+      "BudgetUSD": 170000
+    },
+    {
+      "Month": "2026-10",
+      "Factor": "Consumption",
+      "SubFactor": "Engineering tokens",
+      "CostUSD": 55200,
+      "BudgetUSD": 60000
+    },
+    {
+      "Month": "2026-10",
+      "Factor": "Consumption",
+      "SubFactor": "Other tokens",
+      "CostUSD": 40800,
+      "BudgetUSD": 40000
+    },
+    {
+      "Month": "2026-10",
+      "Factor": "Platform",
+      "SubFactor": "Platform",
+      "CostUSD": 72000,
+      "BudgetUSD": 75000
+    },
+    {
+      "Month": "2026-10",
+      "Factor": "Build and run",
+      "SubFactor": "Build and run",
+      "CostUSD": 52000,
+      "BudgetUSD": 55000
+    },
+    {
+      "Month": "2026-10",
+      "Factor": "Enablement",
+      "SubFactor": "Enablement",
+      "CostUSD": 24000,
+      "BudgetUSD": 25000
     }
   ],
   "seats": [

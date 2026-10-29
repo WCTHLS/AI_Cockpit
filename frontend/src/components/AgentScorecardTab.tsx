@@ -442,7 +442,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           color: '#00349B'
         }}>
           <span>Reporting Month:</span>
-          <span style={{ fontWeight: 800 }}>Sep 2026 (Live Close)</span>
+          <span style={{ fontWeight: 800 }}>Oct 2026 (Live Close)</span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

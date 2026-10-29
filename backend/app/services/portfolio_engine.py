@@ -381,7 +381,7 @@ def get_unified_trend(effective_function: Optional[str] = None) -> List[Dict[str
     current_count = summary['active_agents']
 
     trajectory_ratios = [0.45, 0.58, 0.70, 0.82, 0.92, 1.00]
-    months = ['2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09']
+    months = ['2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10']
 
     results = []
     for m, ratio in zip(months, trajectory_ratios):

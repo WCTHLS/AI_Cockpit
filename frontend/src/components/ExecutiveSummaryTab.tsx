@@ -51,7 +51,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   summary,
   byFunction,
   agents = [],
-  currentMonth = '2026-09',
+  currentMonth = '2026-10',
   selectedFunction = 'All Functions',
   customNetValue,
   customTotalCost,
@@ -89,7 +89,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   const totalAgents = summary?.active_agents ?? (agents.length + 1);
 
   // Month-aware historical vs live close detection
-  const isAug = currentMonth === '2026-08';
+  const isPrior = currentMonth === '2026-09';
 
   // Dynamic values directly from database-backed summary and active agents
   const currentNetValNum = customNetValue != null
@@ -119,7 +119,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
 
   // Dynamic Delta Calculations vs Prior Month and Budget
   const augNetValBenchmark = 1590000;
-  const netDeltaPct = isAug ? 11.8 : (((currentNetValNum - augNetValBenchmark) / augNetValBenchmark) * 100);
+  const netDeltaPct = isPrior ? 11.8 : (((currentNetValNum - augNetValBenchmark) / augNetValBenchmark) * 100);
   const isNetPositive = netDeltaPct >= 0;
 
   const costBudgetCap = 425000;
@@ -128,7 +128,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   const costVariancePct = Math.abs((costDiff / costBudgetCap) * 100);
 
   const augHoursBenchmark = 23650;
-  const hoursDeltaPct = isAug ? 8.2 : (((currentHoursNum - augHoursBenchmark) / augHoursBenchmark) * 100);
+  const hoursDeltaPct = isPrior ? 8.2 : (((currentHoursNum - augHoursBenchmark) / augHoursBenchmark) * 100);
 
   // Pre-configured diagnostic database for agents highlighted in executive brief
   const diagnosticProfiles: Record<string, RemediationAgentInfo> = {
@@ -444,7 +444,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
     };
   }, [statusCounts, totalAgents, onFilterAction]);
 
-  // Chart 3: August vs September Comparison (Grouped Bar Chart)
+  // Chart 3: September vs October Comparison (Grouped Bar Chart)
   useEffect(() => {
     if (!augVsSepChartRef.current) return;
     const chart = echarts.init(augVsSepChartRef.current);
@@ -492,7 +492,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       },
       series: [
         {
-          name: 'Aug 2026',
+          name: 'Oct 2026',
           type: 'bar',
           barWidth: 26,
           data: [
@@ -506,7 +506,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           }
         },
         {
-          name: 'Sep 2026',
+          name: 'Oct 2026',
           type: 'bar',
           barWidth: 26,
           data: [
@@ -715,7 +715,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             color: '#00349B'
           }}>
             <span>Reporting Cycle:</span>
-            {isAug ? <span style={{ fontWeight: 800 }}>Aug 2026 (Historical Close)</span> : <span style={{ fontWeight: 800 }}>Sep 2026 (Live Close)</span>}
+            {isPrior ? <span style={{ fontWeight: 800 }}>Sep 2026 (Historical Close)</span> : <span style={{ fontWeight: 800 }}>Oct 2026 (Live Close)</span>}
           </div>
 
           <div style={{
@@ -953,7 +953,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             marginTop: 6
           }}>
             {isNetPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-            <span>{isAug ? '+11.8% vs Jul ($1.42M)' : `${isNetPositive ? '+' : ''}${netDeltaPct.toFixed(1)}% vs Aug ($1.59M)`}</span>
+            <span>{isPrior ? '+11.8% vs Jul ($1.42M)' : `${isNetPositive ? '+' : ''}${netDeltaPct.toFixed(1)}% vs Sep ($1.59M)`}</span>
           </div>
         </div>
 
@@ -1015,7 +1015,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#16A34A', marginTop: 6 }}>
-            <ArrowUpRight size={14} /> {isAug ? '+8.2% vs Jul (21.8K)' : `+${hoursDeltaPct.toFixed(1)}% vs Aug (23.6K)`}
+            <ArrowUpRight size={14} /> {isPrior ? '+8.2% vs Jul (21.8K)' : `+${hoursDeltaPct.toFixed(1)}% vs Sep (23.6K)`}
           </div>
         </div>
 
@@ -1062,7 +1062,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
                 padding: '2px 7px',
                 borderRadius: 12
               }}>
-                {isAug ? '3,358 / 4,600' : '3,588 / 4,600'}
+                {isPrior ? '3,358 / 4,600' : '3,588 / 4,600'}
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
@@ -1076,7 +1076,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: '#16A34A', marginTop: 6 }}>
-            <ArrowUpRight size={14} /> {isAug ? '+4.0 pts vs Jul' : '+5.0 pts vs Aug'}
+            <ArrowUpRight size={14} /> {isPrior ? '+4.0 pts vs Jul' : '+5.0 pts vs Sep'}
           </div>
         </div>
 
@@ -1361,7 +1361,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           <div ref={portfolioDonutChartRef} style={{ height: 260, width: '100%' }} />
         </div>
 
-        {/* Chart 3: August vs September */}
+        {/* Chart 3: September vs October */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
@@ -1371,7 +1371,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         }}>
           <div style={{ marginBottom: 12 }}>
             <h3 style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-              August vs September
+              September vs October
             </h3>
             <span style={{ fontSize: 11, color: '#64748B' }}>
               Both months · ignores Month slicer

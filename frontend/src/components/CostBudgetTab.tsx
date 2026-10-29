@@ -462,7 +462,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
     };
   }, [teamSpendData]);
 
-  // Chart 4: Cost by Factor, Aug vs Sep (Grouped Bar Chart)
+  // Chart 4: Cost by Factor, Sep vs Oct (Grouped Bar Chart)
   useEffect(() => {
     if (!momCompareChartRef.current) return;
     const chart = echarts.init(momCompareChartRef.current);
@@ -516,7 +516,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
       },
       series: [
         {
-          name: 'Aug 2026',
+          name: 'Oct 2026',
           type: 'bar',
           barWidth: 11,
           data: augValues,
@@ -526,7 +526,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           }
         },
         {
-          name: 'Sep 2026',
+          name: 'Oct 2026',
           type: 'bar',
           barWidth: 11,
           data: sepValues,
@@ -571,7 +571,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           color: '#00349B'
         }}>
           <span>Reporting Month:</span>
-          <span style={{ fontWeight: 800 }}>Sep 2026</span>
+          <span style={{ fontWeight: 800 }}>Oct 2026</span>
         </div>
 
         <div style={{ fontSize: 12, color: '#64748B' }}>
@@ -669,7 +669,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#93C5FD', marginTop: 6 }}>
-            <ArrowUpRight size={14} /> +3.2% vs Aug ($399K)
+            <ArrowUpRight size={14} /> +3.2% vs Sep ($1,025)
           </div>
         </div>
 
@@ -1025,7 +1025,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           <div ref={teamBulletChartRef} style={{ height: 380, width: '100%' }} />
         </div>
 
-        {/* Cost by Factor, Aug vs Sep */}
+        {/* Cost by Factor, Sep vs Oct */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
           border: '1.5px solid #D6E2FA',
@@ -1035,7 +1035,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         }}>
           <div style={{ marginBottom: 12 }}>
             <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#00349B', fontFamily: 'Satoshi, sans-serif' }}>
-              Cost by factor, Aug vs Sep
+              Cost by factor, Sep vs Oct
             </h4>
             <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 2 }}>
               Both months · ignores Month slicer

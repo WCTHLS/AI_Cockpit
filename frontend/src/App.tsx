@@ -64,7 +64,7 @@ export const App: React.FC = () => {
   });
 
   const [activeTab, setActiveTab] = useState<'summary' | 'scorecard' | 'costs' | 'seats' | 'admin'>('summary');
-  const [currentMonth, setCurrentMonth] = useState<string>('2026-09');
+  const [currentMonth, setCurrentMonth] = useState<string>('2026-10');
   const [selectedFunction, setSelectedFunction] = useState<string>('');
 
   const [currentUser, setCurrentUser] = useState<UserProfile>(() => {
