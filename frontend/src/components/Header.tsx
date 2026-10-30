@@ -103,18 +103,24 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Brand & Left Section */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
-            width: 38,
-            height: 38,
+            width: 42,
+            height: 42,
             borderRadius: 10,
-            background: 'linear-gradient(135deg, #00349B 0%, #0284C7 100%)',
+            background: '#FFFFFF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#FFFFFF',
-            boxShadow: '0 4px 12px rgba(0, 52, 155, 0.25)',
-            flexShrink: 0
+            boxShadow: isLight ? '0 2px 8px rgba(0, 52, 155, 0.12)' : '0 2px 8px rgba(0, 0, 0, 0.4)',
+            border: isLight ? '1.5px solid #E2E8F0' : '1.5px solid #334155',
+            padding: 3,
+            flexShrink: 0,
+            overflow: 'hidden'
           }}>
-            <Activity size={22} />
+            <img 
+              src="/WCT_logo.png" 
+              alt="WCT Logo" 
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+            />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

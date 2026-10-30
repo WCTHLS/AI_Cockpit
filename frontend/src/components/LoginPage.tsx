@@ -133,18 +133,24 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, theme }) =
             {/* Header Badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
               <div style={{
-                width: 40,
-                height: 40,
+                width: 44,
+                height: 44,
                 borderRadius: 10,
-                background: 'linear-gradient(135deg, #00349B 0%, #0284C7 100%)',
+                background: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#FFF',
-                boxShadow: '0 4px 12px rgba(0,52,155,0.3)',
-                flexShrink: 0
+                boxShadow: isLight ? '0 2px 8px rgba(0,52,155,0.15)' : '0 2px 8px rgba(0,0,0,0.4)',
+                border: isLight ? '1.5px solid #E2E8F0' : '1.5px solid #334155',
+                padding: 4,
+                flexShrink: 0,
+                overflow: 'hidden'
               }}>
-                <Shield size={22} />
+                <img 
+                  src="/WCT_logo.png" 
+                  alt="WCT Logo" 
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                />
               </div>
               <div>
                 <div style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.3px', color: isLight ? '#00349B' : '#60A5FA' }}>
