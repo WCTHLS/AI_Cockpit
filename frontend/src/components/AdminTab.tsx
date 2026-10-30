@@ -214,13 +214,13 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     output_token_price_per_1m: 0.0,
     description: 'Autonomous low-code workflow assistant built in Copilot Studio for enterprise shipment queries and automated RMA workflows.',
     // Option A: Azure Application Insights
-    app_insights_app_id: '7a12b345-6789-4abc-def0-123456789abc',
+    app_insights_app_id: '',
     app_insights_key: '',
     copilot_bot_id: '701c468f-8db2-4972-abaa-cdd76a76f9b7',
     // Option B: Microsoft Dataverse OData
     dataverse_url: 'https://org46960896.crm.dynamics.com',
-    tenant_id: 'e6e6c779-4c40-45d8-9921-00f00a06d3a8',
-    client_id: 'd9b73461-8261-4f10-9b30-192a8374a2b1',
+    tenant_id: '',
+    client_id: '',
     client_secret: '',
     // Azure OpenAI
     api_endpoint: 'https://contoso-ai.openai.azure.com',
@@ -245,8 +245,13 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         input_token_price_per_1m: 0.0,
         output_token_price_per_1m: 0.0,
         description: 'Autonomous low-code workflow assistant built in Copilot Studio for enterprise shipment queries and automated RMA workflows.',
-        dataverse_url: 'https://contoso-logistics.api.crm.dynamics.com',
-        app_insights_app_id: 'app-insights-lenovo-sc-prod'
+        dataverse_url: 'https://org46960896.crm.dynamics.com',
+        app_insights_app_id: '',
+        app_insights_key: '',
+        tenant_id: '',
+        client_id: '',
+        client_secret: '',
+        copilot_bot_id: '701c468f-8db2-4972-abaa-cdd76a76f9b7'
       }));
     } else if (provider === 'azure_openai') {
       setNewAgentForm(prev => ({

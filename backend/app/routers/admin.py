@@ -459,62 +459,211 @@ def test_agent_connection(req: TestConnectionRequest, user: Dict[str, Any] = Dep
 
     if "copilot" in provider or "studio" in provider:
         method = req.copilot_method or "option_a"
-        bot_id = (req.copilot_bot_id or "701c468f-8db2-4972-abaa-cdd76a76f9b7").strip()
+        bot_id = (req.copilot_bot_id or "").strip()
 
         if method == "option_a":
             app_id = (req.app_insights_app_id or "").strip()
             app_key = (req.app_insights_key or "").strip()
 
-            if not app_id and not app_key:
-                return {
-                    "status": "warning",
-                    "connected": False,
-                    "mode": "sandbox",
-                    "message": "No Application Insights credentials provided. Sandbox telemetry emulation mode active."
-                }
-
-            if len(app_id) >= 6 or len(app_key) >= 6 or bot_id:
-                return {
-                    "status": "success",
-                    "connected": True,
-                    "mode": "live",
-                    "latency_ms": 118,
-                    "message": f"Successfully verified Azure Application Insights connection for Bot '{bot_id}'. Real-time KQL stream connected."
-                }
-            else:
+            if not app_id:
                 return {
                     "status": "error",
                     "connected": False,
                     "mode": "error",
-                    "message": "Invalid Application Insights App ID or API Key format."
+                    "message": "Missing Application Insights App ID. Please provide your Application ID from Azure Portal."
+                }
+            if not app_key:
+                return {
+                    "status": "error",
+                    "connected": False,
+                    "mode": "error",
+                    "message": "Missing Application Insights API Key. Both App ID and API Key are required to authenticate with Azure Monitor."
+                }
+            if not bot_id:
+                return {
+                    "status": "error",
+                    "connected": False,
+                    "mode": "error",
+                    "message": "Missing Copilot Studio Agent / Bot Schema ID."
+                }
+
+            # Execute REAL live HTTP query to Azure Application Insights REST API
+            start_t = time.time()
+            ai_url = f"https://api.applicationinsights.io/v1/apps/{app_id}/query"
+            kql_body = json.dumps({"query": "customEvents | take 1"}).encode("utf-8")
+            ai_req = urllib.request.Request(
+                ai_url,
+                data=kql_body,
+                headers={
+                    "x-api-key": app_key,
+                    "Content-Type": "application/json",
+                    "User-Agent": "WCT-AICockpit/1.0"
+                }
+            )
+            try:
+                with urllib.request.urlopen(ai_req, timeout=6) as ai_resp:
+                    latency = int((time.time() - start_t) * 1000)
+                    if ai_resp.status == 200:
+                        return {
+                            "status": "success",
+                            "connected": True,
+                            "mode": "live",
+                            "latency_ms": latency,
+                            "message": f"Successfully verified live Azure Application Insights stream for Bot '{bot_id}'. Authenticated with Azure Monitor."
+                        }
+                    else:
+                        return {
+                            "status": "error",
+                            "connected": False,
+                            "mode": "error",
+                            "message": f"Azure Application Insights returned HTTP {ai_resp.status}."
+                        }
+            except urllib.error.HTTPError as http_err:
+                latency = int((time.time() - start_t) * 1000)
+                err_body = http_err.read().decode("utf-8", errors="ignore")
+                msg = f"Azure Monitor Authentication Failed (HTTP {http_err.code}): Invalid App ID or API Key."
+                try:
+                    parsed = json.loads(err_body)
+                    if "error" in parsed and "message" in parsed["error"]:
+                        msg = f"Azure Monitor Error ({http_err.code}): {parsed['error']['message']}"
+                except Exception:
+                    pass
+                return {
+                    "status": "error",
+                    "connected": False,
+                    "mode": "error",
+                    "latency_ms": latency,
+                    "message": msg
+                }
+            except Exception as e:
+                return {
+                    "status": "error",
+                    "connected": False,
+                    "mode": "error",
+                    "message": f"Connection to Azure Monitor failed: {str(e)}"
                 }
         else:
-            url = (req.dataverse_url or "").strip()
+            url = (req.dataverse_url or "").strip().rstrip("/")
             tenant = (req.tenant_id or "").strip()
             client_id = (req.client_id or "").strip()
+            client_secret = (req.client_secret or "").strip()
 
-            if not url and not client_id:
-                return {
-                    "status": "warning",
-                    "connected": False,
-                    "mode": "sandbox",
-                    "message": "No Dataverse Environment URL provided. Sandbox telemetry mode active."
-                }
-
-            if "dynamics.com" in url or "http" in url:
-                return {
-                    "status": "success",
-                    "connected": True,
-                    "mode": "live",
-                    "latency_ms": 142,
-                    "message": f"Successfully verified Microsoft Dataverse OData v9.2 endpoint '{url}' for Bot '{bot_id}'. conversationtranscripts stream ready."
-                }
-            else:
+            if not url:
                 return {
                     "status": "error",
                     "connected": False,
                     "mode": "error",
-                    "message": "Invalid Dataverse URL format. Expected: https://<org-env>.api.crm.dynamics.com"
+                    "message": "Missing Dataverse Environment URL (e.g. https://orgXXXXX.crm.dynamics.com)."
+                }
+            if not tenant:
+                return {
+                    "status": "error",
+                    "connected": False,
+                    "mode": "error",
+                    "message": "Missing Azure Entra ID Tenant ID."
+                }
+            if not client_id:
+                return {
+                    "status": "error",
+                    "connected": False,
+                    "mode": "error",
+                    "message": "Missing Azure Entra ID Client ID (App Registration)."
+                }
+            if not client_secret:
+                return {
+                    "status": "error",
+                    "connected": False,
+                    "mode": "error",
+                    "message": "Missing Client Secret for Azure App Registration."
+                }
+            if not bot_id:
+                return {
+                    "status": "error",
+                    "connected": False,
+                    "mode": "error",
+                    "message": "Missing Copilot Studio Agent / Bot Schema ID."
+                }
+
+            # Execute REAL live OAuth2 authentication with Microsoft Entra ID
+            start_t = time.time()
+            token_url = f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+            scope_url = f"{url}/.default"
+            if "api.crm" not in url and ".crm" in url:
+                scope_url = f"{url.replace('.api.crm', '.crm')}/.default"
+            
+            auth_body = urllib.parse.urlencode({
+                "grant_type": "client_credentials",
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "scope": scope_url
+            }).encode("utf-8")
+            auth_req = urllib.request.Request(
+                token_url,
+                data=auth_body,
+                headers={"Content-Type": "application/x-www-form-urlencoded"}
+            )
+            try:
+                with urllib.request.urlopen(auth_req, timeout=6) as auth_resp:
+                    token_data = json.loads(auth_resp.read().decode("utf-8"))
+                    access_token = token_data.get("access_token")
+                    if not access_token:
+                        return {
+                            "status": "error",
+                            "connected": False,
+                            "mode": "error",
+                            "message": "Failed to obtain Bearer token from Microsoft Entra ID."
+                        }
+
+                    # Real live query to Dataverse OData v9.2 endpoint
+                    query_host = url
+                    if "api.crm" not in url and ".crm" in url:
+                        parts = url.split("://")
+                        query_host = f"{parts[0]}://{parts[1].replace('.crm', '.api.crm')}"
+                    dv_url = f"{query_host}/api/data/v9.2/conversationtranscripts?$top=1"
+
+                    dv_req = urllib.request.Request(
+                        dv_url,
+                        headers={
+                            "Authorization": f"Bearer {access_token}",
+                            "Accept": "application/json",
+                            "OData-MaxVersion": "4.0",
+                            "OData-Version": "4.0"
+                        }
+                    )
+                    with urllib.request.urlopen(dv_req, timeout=6) as dv_resp:
+                        latency = int((time.time() - start_t) * 1000)
+                        return {
+                            "status": "success",
+                            "connected": True,
+                            "mode": "live",
+                            "latency_ms": latency,
+                            "message": f"Successfully authenticated with Microsoft Dataverse OData v9.2 for Bot '{bot_id}'. Live stream confirmed."
+                        }
+            except urllib.error.HTTPError as http_err:
+                latency = int((time.time() - start_t) * 1000)
+                err_body = http_err.read().decode("utf-8", errors="ignore")
+                msg = f"Dataverse/Entra ID Error (HTTP {http_err.code}): Authentication failed."
+                try:
+                    parsed = json.loads(err_body)
+                    if "error_description" in parsed:
+                        msg = f"Entra ID Error: {parsed['error_description']}"
+                    elif "error" in parsed and isinstance(parsed["error"], dict) and "message" in parsed["error"]:
+                        msg = f"Dataverse Error: {parsed['error']['message']}"
+                except Exception:
+                    pass
+                return {
+                    "status": "error",
+                    "connected": False,
+                    "mode": "error",
+                    "latency_ms": latency,
+                    "message": msg
+                }
+            except Exception as e:
+                return {
+                    "status": "error",
+                    "connected": False,
+                    "mode": "error",
+                    "message": f"Dataverse connection failed: {str(e)}"
                 }
 
     elif "azure" in provider or "openai" in provider:
