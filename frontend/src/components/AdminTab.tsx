@@ -1427,7 +1427,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             transition: 'all 0.2s'
           }}
         >
-          <Bot size={15} /> Working Agents Onboarding
+          <Bot size={15} /> Agents Onboarding
           <span style={{
             background: activeSection === 'working_agents' ? '#E0E7FF' : '#EEF2FF',
             color: activeSection === 'working_agents' ? '#3730A3' : '#4F46E5',
@@ -3317,19 +3317,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                 }}>
                   <Cpu size={13} color="#FFFFFF" /> Enterprise Agent Registry &amp; Ingestion
                 </span>
-                <span style={{
-                  background: '#10B981',
-                  color: '#FFFFFF',
-                  padding: '3px 8px',
-                  borderRadius: 12,
-                  fontSize: 11,
-                  fontWeight: 800
-                }}>
-                  Live DB Table: ai_agent
-                </span>
               </div>
               <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 6px 0', letterSpacing: '-0.02em', color: '#FFFFFF' }}>
-                Working Agents Onboarding &amp; FinOps Governance
+                Agents Onboarding &amp; FinOps Governance
               </h2>
               <p style={{ fontSize: 13, color: '#E0E7FF', margin: 0, lineHeight: 1.5 }}>
                 Admin console to ingest working AI agents into the company scorecard. Define monthly infrastructure costs, LLM token economics (input &amp; output per 1M tokens), baseline human task hours, employee wage rates, business functions, and teams.
@@ -3402,7 +3392,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               <div>
                 <h3 style={{ fontSize: 17, fontWeight: 800, color: '#1E293B', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Database size={18} color="#4F46E5" />
-                  Currently Ingested Working Agents in Database ({workingAgentsList.length})
+                  Currently Ingested Agents in Database ({workingAgentsList.length})
                 </h3>
                 <div style={{ fontSize: 12, color: '#64748B' }}>
                   Live records in SQLite <code style={{ color: '#4F46E5', fontWeight: 700 }}>ai_agent</code> table with linked business functions, teams, and token pricing
