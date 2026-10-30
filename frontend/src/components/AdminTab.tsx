@@ -384,6 +384,64 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
   };
 
 
+  const [isEditingExistingAgent, setIsEditingExistingAgent] = useState<boolean>(false);
+
+  const handleOpenTelemetryModal = (ag: WorkingAgentItem) => {
+    let configObj: any = null;
+    if (ag.config_json) {
+      try {
+        configObj = JSON.parse(ag.config_json);
+      } catch (e) {
+        configObj = null;
+      }
+    }
+
+    const tel = configObj?.telemetry_config || {};
+    const isCopilotStudio = ag.category === 'built_with' || 
+      ag.name.toLowerCase().includes('supply chain') || 
+      ag.name.toLowerCase().includes('copilot') || 
+      ag.name.toLowerCase().includes('policy') ||
+      tel.provider === 'copilot_studio';
+
+    const provider = isCopilotStudio ? 'copilot_studio' : (tel.provider || 'azure_openai');
+    const method = (tel.copilot_method as 'option_a' | 'option_b') || 'option_a';
+
+    setCopilotMethod(method);
+    setIsEditingExistingAgent(true);
+    setNewAgentForm({
+      provider,
+      copilot_method: method,
+      agent_name: ag.name,
+      business_function: ag.business_function || configObj?.business_function || 'Operations',
+      team: ag.team || configObj?.team || 'Supply Chain',
+      category: ag.category || configObj?.category || 'built_with',
+      agent_type: ag.agent_type || configObj?.agent_type || 'workflow_agent',
+      model: ag.model || configObj?.model || (isCopilotStudio ? 'copilot-studio-v2' : 'gpt-4o'),
+      monthly_infra_cost: ag.monthly_infra_cost ?? configObj?.monthly_infra_cost ?? (ag.name.includes('Supply Chain') ? 200.0 : 45.0),
+      monthly_budget: ag.monthly_budget ?? configObj?.monthly_budget ?? (ag.name.includes('Supply Chain') ? 300.0 : 100.0),
+      baseline_employee_hours: ag.baseline_employee_hours ?? configObj?.baseline_employee_hours ?? (ag.name.includes('Supply Chain') ? 0.33 : 0.25),
+      employee_monthly_rate: ag.employee_monthly_rate ?? configObj?.employee_monthly_rate ?? (ag.name.includes('Supply Chain') ? 1100.0 : 900.0),
+      employee_monthly_working_hours: ag.employee_monthly_working_hours ?? configObj?.employee_monthly_working_hours ?? 160,
+      target_eval_sla: configObj?.target_eval_sla ?? 92.0,
+      assigned_users: configObj?.assigned_users ?? 4,
+      input_token_price_per_1m: ag.input_token_price_per_1m ?? configObj?.input_token_price_per_1m ?? 2.50,
+      output_token_price_per_1m: ag.output_token_price_per_1m ?? configObj?.output_token_price_per_1m ?? 10.00,
+      description: ag.description || configObj?.description || '',
+      app_insights_app_id: tel.app_insights_app_id || '',
+      app_insights_key: tel.app_insights_key || '',
+      copilot_bot_id: tel.copilot_bot_id || '',
+      dataverse_url: tel.dataverse_url || '',
+      tenant_id: tel.tenant_id || '',
+      client_id: tel.client_id || '',
+      client_secret: tel.client_secret || '',
+      api_endpoint: tel.api_endpoint || '',
+      api_key: tel.api_key || '',
+      deployment_name: tel.deployment_name || 'gpt-4o'
+    });
+    setConnectionTestResult({ status: null, message: '' });
+    setIsAddAgentModalOpen(true);
+  };
+
   // Dedicated In-UI Direct Agent Values Editor Modal
   const [editingAgent, setEditingAgent] = useState<WorkingAgentItem | null>(null);
   const [agentFormValues, setAgentFormValues] = useState<{
@@ -3280,7 +3338,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
               <button
-                onClick={() => setIsAddAgentModalOpen(true)}
+                onClick={() => { setIsEditingExistingAgent(false); setIsAddAgentModalOpen(true); }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -3353,7 +3411,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
               <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                 <button
-                  onClick={() => setIsAddAgentModalOpen(true)}
+                  onClick={() => { setIsEditingExistingAgent(false); setIsAddAgentModalOpen(true); }}
                   style={{
                     background: 'linear-gradient(135deg, #4F46E5, #6366F1)',
                     color: '#FFFFFF',
@@ -3506,6 +3564,30 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
                         <td style={{ padding: '12px 14px', textAlign: 'right', whiteSpace: 'nowrap' }}>
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>
+                            <button
+                              onClick={() => handleOpenTelemetryModal(ag)}
+                              title="Configure live telemetry endpoints using Option A (Azure App Insights) or Option B (Dataverse OData)"
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                padding: '6px 12px',
+                                background: '#0284C7',
+                                border: 'none',
+                                borderRadius: 6,
+                                color: '#FFFFFF',
+                                fontSize: 11,
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                boxShadow: '0 1px 3px rgba(2, 132, 199, 0.25)',
+                                transition: 'all 0.15s ease'
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = '#0369A1'}
+                              onMouseLeave={e => e.currentTarget.style.background = '#0284C7'}
+                            >
+                              <Radio size={12} />
+                              Configure Endpoints (A/B)
+                            </button>
                             <button
                               onClick={() => handleOpenEditModal(ag)}
                               style={{
@@ -4467,10 +4549,12 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                     </div>
                     <div>
                       <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: '#0F172A' }}>
-                        Connect New Live Agent / API Integration
+                        {isEditingExistingAgent ? `Configure Telemetry: ${newAgentForm.agent_name}` : 'Connect New Live Agent / API Integration'}
                       </h3>
                       <p style={{ margin: '3px 0 0 0', fontSize: 12, color: '#64748B' }}>
-                        Register a new enterprise agent, configure FinOps benchmarks, and connect its live telemetry or emulation feed.
+                        {isEditingExistingAgent
+                          ? 'Configure Option A (Azure App Insights) or Option B (Dataverse OData) endpoints, test live connectivity, and link directly to this agent.'
+                          : 'Register a new enterprise agent, configure FinOps benchmarks, and connect its live telemetry or emulation feed.'}
                       </p>
                     </div>
                   </div>
