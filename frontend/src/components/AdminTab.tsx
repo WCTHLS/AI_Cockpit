@@ -3245,6 +3245,8 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <span style={{
                   background: 'rgba(255, 255, 255, 0.18)',
+                  color: '#FFFFFF',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
                   padding: '4px 10px',
                   borderRadius: 20,
                   fontSize: 11,
@@ -3255,7 +3257,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                   alignItems: 'center',
                   gap: 6
                 }}>
-                  <Cpu size={13} /> Enterprise Agent Registry &amp; Ingestion
+                  <Cpu size={13} color="#FFFFFF" /> Enterprise Agent Registry &amp; Ingestion
                 </span>
                 <span style={{
                   background: '#10B981',
@@ -3268,10 +3270,10 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                   Live DB Table: ai_agent
                 </span>
               </div>
-              <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 6px 0', letterSpacing: '-0.02em' }}>
+              <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 6px 0', letterSpacing: '-0.02em', color: '#FFFFFF' }}>
                 Working Agents Onboarding &amp; FinOps Governance
               </h2>
-              <p style={{ fontSize: 13, color: '#C7D2FE', margin: 0, lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13, color: '#E0E7FF', margin: 0, lineHeight: 1.5 }}>
                 Admin console to ingest working AI agents into the company scorecard. Define monthly infrastructure costs, LLM token economics (input &amp; output per 1M tokens), baseline human task hours, employee wage rates, business functions, and teams.
               </p>
             </div>
