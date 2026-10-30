@@ -196,9 +196,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
   const [newAgentForm, setNewAgentForm] = useState({
     provider: 'copilot_studio',
     copilot_method: 'option_a' as 'option_a' | 'option_b',
-    agent_name: 'Global Logistics & Dispatch Copilot',
+    agent_name: '',
     business_function: 'Operations',
-    team: 'Supply Chain',
+    team: '',
     category: 'built_with',
     agent_type: 'workflow_agent',
     model: 'copilot-studio-v2',
@@ -212,18 +212,18 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     assigned_users: 4,
     input_token_price_per_1m: 0.0,
     output_token_price_per_1m: 0.0,
-    description: 'Autonomous low-code workflow assistant built in Copilot Studio for enterprise shipment queries and automated RMA workflows.',
+    description: '',
     // Option A: Azure Application Insights
     app_insights_app_id: '',
     app_insights_key: '',
-    copilot_bot_id: '701c468f-8db2-4972-abaa-cdd76a76f9b7',
+    copilot_bot_id: '',
     // Option B: Microsoft Dataverse OData
-    dataverse_url: 'https://org46960896.crm.dynamics.com',
+    dataverse_url: '',
     tenant_id: '',
     client_id: '',
     client_secret: '',
     // Azure OpenAI
-    api_endpoint: 'https://contoso-ai.openai.azure.com',
+    api_endpoint: '',
     api_key: '',
     deployment_name: 'gpt-4o'
   });
@@ -233,9 +233,6 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
       setNewAgentForm(prev => ({
         ...prev,
         provider,
-        agent_name: 'Global Logistics & Dispatch Copilot',
-        business_function: 'Operations',
-        team: 'Supply Chain',
         category: 'built_with',
         model: 'copilot-studio-v2',
         monthly_infra_cost: 200.0,
@@ -244,22 +241,18 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         employee_monthly_rate: 1100.0,
         input_token_price_per_1m: 0.0,
         output_token_price_per_1m: 0.0,
-        description: 'Autonomous low-code workflow assistant built in Copilot Studio for enterprise shipment queries and automated RMA workflows.',
-        dataverse_url: 'https://org46960896.crm.dynamics.com',
+        dataverse_url: '',
         app_insights_app_id: '',
         app_insights_key: '',
         tenant_id: '',
         client_id: '',
         client_secret: '',
-        copilot_bot_id: '701c468f-8db2-4972-abaa-cdd76a76f9b7'
+        copilot_bot_id: ''
       }));
     } else if (provider === 'azure_openai') {
       setNewAgentForm(prev => ({
         ...prev,
         provider,
-        agent_name: 'Customer Support Autonomous Agent',
-        business_function: 'Eng & IT',
-        team: 'IT Service Desk',
         category: 'built_using',
         model: 'gpt-4o',
         monthly_infra_cost: 45.0,
@@ -268,17 +261,13 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         employee_monthly_rate: 900.0,
         input_token_price_per_1m: 2.50,
         output_token_price_per_1m: 10.0,
-        description: 'Code-first autonomous agent powered by Azure OpenAI GPT-4o with tool calling and vector retrieval.',
-        api_endpoint: 'https://contoso-ai.openai.azure.com',
+        api_endpoint: '',
         deployment_name: 'gpt-4o'
       }));
     } else if (provider === 'anthropic_claude') {
       setNewAgentForm(prev => ({
         ...prev,
         provider,
-        agent_name: 'Code Review & PR Synthesis Agent',
-        business_function: 'Eng & IT',
-        team: 'Software Engineering',
         category: 'built_with',
         model: 'claude-3-5-sonnet',
         monthly_infra_cost: 50.0,
@@ -286,16 +275,12 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         baseline_employee_hours: 0.50,
         employee_monthly_rate: 3500.0,
         input_token_price_per_1m: 3.00,
-        output_token_price_per_1m: 15.0,
-        description: 'Autonomous software engineering assistant for automated pull request synthesis and code reviews.'
+        output_token_price_per_1m: 15.0
       }));
     } else {
       setNewAgentForm(prev => ({
         ...prev,
         provider,
-        agent_name: 'Developer Tooling Copilot',
-        business_function: 'Eng & IT',
-        team: 'Software Engineering',
         category: 'built_with',
         model: 'copilot-business',
         monthly_infra_cost: 30.0,
@@ -303,8 +288,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         baseline_employee_hours: 0.50,
         employee_monthly_rate: 4000.0,
         input_token_price_per_1m: 0.0,
-        output_token_price_per_1m: 0.0,
-        description: 'Developer productivity tool assisting engineers with boilerplate generation and test suites.'
+        output_token_price_per_1m: 0.0
       }));
     }
     setConnectionTestResult({ status: null, message: '' });
@@ -4385,14 +4369,16 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               <div style={{
                 background: '#FFFFFF',
                 borderRadius: 16,
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+                boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.35)',
                 width: '100%',
-                maxWidth: 820,
+                maxWidth: 840,
                 maxHeight: '92vh',
                 overflowY: 'auto',
                 display: 'flex',
                 flexDirection: 'column',
-                border: '1px solid #E2E8F0'
+                border: '1px solid #E2E8F0',
+                fontFamily: 'var(--font-body, Figtree, -apple-system, sans-serif)',
+                letterSpacing: '-0.01em'
               }}>
                 {/* Modal Header */}
                 <div style={{
