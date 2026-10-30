@@ -2321,7 +2321,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               onClick={() => {
                 setDevProvider('gemini_antigravity');
                 setDevEndpointUrl('https://generativelanguage.googleapis.com');
-                setDevConnectionMode('local_antigravity');
+                setDevConnectionMode('live_api');
               }}
               style={{
                 flex: 1,
@@ -4550,8 +4550,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                             border: '1.5px solid #CBD5E1',
                             borderRadius: 8,
                             fontSize: 13,
-                            fontWeight: 700,
-                            color: '#0F172A'
+                            fontWeight: 500,
+                            color: '#0F172A',
+                            fontFamily: 'inherit'
                           }}
                         />
                       </div>
@@ -4614,8 +4615,10 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                           padding: '8px 12px',
                           border: '1.5px solid #CBD5E1',
                           borderRadius: 8,
-                          fontSize: 12.5,
-                          color: '#334155'
+                          fontSize: 13,
+                          fontWeight: 500,
+                          color: '#334155',
+                          fontFamily: 'inherit'
                         }}
                       />
                     </div>

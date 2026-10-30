@@ -695,3 +695,15 @@ h1, h2, h3, h4, .font-heading {
     break-inside: avoid;
   }
 }
+
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  font-family: inherit !important;
+  font-size: 12.5px !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  color: #94A3B8 !important;
+  opacity: 1 !important;
+  letter-spacing: normal !important;
+}
