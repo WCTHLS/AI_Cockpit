@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  X, 
+  X,
+  RefreshCw, 
   CheckCircle, 
   AlertTriangle, 
   ShieldAlert, 
@@ -26,9 +27,10 @@ interface AgentDetailModalProps {
   agent: AgentScorecardItem | null;
   onClose: () => void;
   theme?: 'dark' | 'light';
+  onRefreshMetrics?: (agentName?: string) => Promise<void> | void;
 }
 
-export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClose, theme = 'light' }) => {
+export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClose, theme = 'light', onRefreshMetrics }) => {
   if (!agent) return null;
 
   const isLight = theme === 'light';
@@ -58,6 +60,26 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
   const [dailySummary, setDailySummary] = useState<AgentDailyTelemetrySummary | null>(null);
   const [isLoadingDaily, setIsLoadingDaily] = useState<boolean>(true);
   const [showEmployeeBreakdown, setShowEmployeeBreakdown] = useState<boolean>(true);
+  const [isRefreshingMetrics, setIsRefreshingMetrics] = useState<boolean>(false);
+  const [refreshSuccess, setRefreshSuccess] = useState<boolean>(false);
+
+  const handleRefreshAgentMetrics = async () => {
+    setIsRefreshingMetrics(true);
+    setRefreshSuccess(false);
+    try {
+      const summary = await fetchAgentDailySummary(agent.name);
+      setDailySummary(summary);
+      if (onRefreshMetrics) {
+        await onRefreshMetrics(agent.name);
+      }
+      setRefreshSuccess(true);
+      setTimeout(() => setRefreshSuccess(false), 3000);
+    } catch (err) {
+      console.error('Failed to refresh agent metrics:', err);
+    } finally {
+      setIsRefreshingMetrics(false);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -130,8 +152,8 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
             <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8', marginTop: 3 }}>
               Production Age: <b>{(agent as any).days_in_production || 180} days</b> • Tier-1 Enterprise Agent
             </div>
-            {liveAgentUrl && (
-              <div style={{ marginTop: 10 }}>
+            <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              {liveAgentUrl && (
                 <a
                   href={liveAgentUrl}
                   target="_blank"
@@ -156,8 +178,55 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
                   <ExternalLink size={13} />
                   Open Live Agent ↗
                 </a>
-              </div>
-            )}
+              )}
+
+              <button
+                onClick={handleRefreshAgentMetrics}
+                disabled={isRefreshingMetrics}
+                title="Refresh metrics, user sessions, and telemetry for this agent"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 13px',
+                  borderRadius: 6,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  background: isLight ? '#F1F5F9' : '#1E293B',
+                  color: isLight ? '#0F172A' : '#F8FAFC',
+                  border: isLight ? '1px solid #CBD5E1' : '1px solid #334155',
+                  cursor: isRefreshingMetrics ? 'wait' : 'pointer',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = isLight ? '#E2E8F0' : '#334155';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = isLight ? '#F1F5F9' : '#1E293B';
+                }}
+              >
+                <RefreshCw size={13} className={isRefreshingMetrics ? 'animate-spin' : ''} />
+                <span>{isRefreshingMetrics ? 'Refreshing...' : 'Refresh Metrics'}</span>
+              </button>
+
+              {refreshSuccess && (
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  color: '#16A34A',
+                  background: '#DCFCE7',
+                  padding: '3px 8px',
+                  borderRadius: 6
+                }}>
+                  <CheckCircle2 size={12} color="#16A34A" />
+                  Metrics Refreshed
+                </span>
+              )}
+            </div>
           </div>
           <button 
             onClick={onClose}
@@ -327,21 +396,44 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
                   </div>
                 </div>
               </div>
-              <span style={{
-                fontSize: 10.5,
-                fontWeight: 700,
-                padding: '3px 8px',
-                borderRadius: 12,
-                background: '#DCFCE7',
-                color: '#15803D',
-                border: '1px solid #86EFAC',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4
-              }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A' }} />
-                DB Synced
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button
+                  onClick={handleRefreshAgentMetrics}
+                  disabled={isRefreshingMetrics}
+                  title="Sync latest DB telemetry"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: isRefreshingMetrics ? 'wait' : 'pointer',
+                    color: isLight ? '#00349B' : '#60A5FA',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    padding: '2px 6px',
+                    borderRadius: 4
+                  }}
+                >
+                  <RefreshCw size={11} className={isRefreshingMetrics ? 'animate-spin' : ''} />
+                  <span>Sync</span>
+                </button>
+                <span style={{
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                  padding: '3px 8px',
+                  borderRadius: 12,
+                  background: '#DCFCE7',
+                  color: '#15803D',
+                  border: '1px solid #86EFAC',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4
+                }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A' }} />
+                  DB Synced
+                </span>
+              </div>
             </div>
 
             {/* 4 Core Daily KPI Metrics Grid */}

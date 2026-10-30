@@ -404,7 +404,7 @@ def sync_claude_telemetry(req: Optional[ClaudeSyncRequest] = None, user: Dict[st
             if not aid:
                 cur.execute("""
                     INSERT INTO ai_agent (company_id, name, category, agent_type, portfolio, go_live_date, is_active)
-                    VALUES (1, ?, 'built_with', 'workflow_agent', 'Claude Enterprise', '2026-01-01', 1)
+                    VALUES (1, ?, 'built_with', 'workflow_agent', 'Claude Enterprise', '2026-01-01', 0)
                 """, (ag_name,))
                 aid = cur.lastrowid
                 agent_id_map[ag_name_clean] = aid

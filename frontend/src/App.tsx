@@ -179,6 +179,13 @@ export const App: React.FC = () => {
       setAgents(agentList);
       setSeats(seatData);
       setThresholds(thresh);
+
+      // Keep open selectedAgent in sync with freshly fetched metrics
+      setSelectedAgent(prev => {
+        if (!prev) return null;
+        const fresh = agentList.find((a: any) => a.id === prev.id || a.name === prev.name);
+        return fresh || prev;
+      });
     } catch (err) {
       console.error('Error fetching Cockpit dashboard telemetry:', err);
     } finally {
@@ -376,6 +383,9 @@ export const App: React.FC = () => {
       <AgentDetailModal
         agent={selectedAgent}
         onClose={() => setSelectedAgent(null)}
+        onRefreshMetrics={async () => {
+          await loadDashboardData(false);
+        }}
         theme={theme}
       />
     </div>

@@ -11,7 +11,6 @@ import {
   Sparkles,
   ShieldAlert,
   Cpu,
-  Sliders,
   PlayCircle,
   Printer
 } from 'lucide-react';
@@ -74,8 +73,6 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
 
   // What-If Simulation State
-  const [showSimulator, setShowSimulator] = useState<boolean>(false);
-  const [adoptionBoost, setAdoptionBoost] = useState<number>(5);
 
   const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
 
@@ -741,27 +738,6 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           </div>
 
           <button
-            onClick={() => setShowSimulator(!showSimulator)}
-            style={{
-              background: showSimulator ? '#00349B' : '#FFFFFF',
-              color: showSimulator ? '#FFFFFF' : '#00349B',
-              border: '1px solid #D6E2FA',
-              borderRadius: 6,
-              padding: '5px 12px',
-              fontSize: 12,
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <Sliders size={13} />
-            <span>ROI Simulator</span>
-          </button>
-
-          <button
             onClick={handleExportBrief}
             title="Export 1-Page Board Executive Brief (PDF / Print)"
             style={{
@@ -785,65 +761,6 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           </button>
         </div>
       </div>
-
-      {/* Collapsible Executive What-If Simulator */}
-      {showSimulator && (
-        <div style={{
-          background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)',
-          border: '1px solid #BFDBFE',
-          borderRadius: 8,
-          padding: '16px 20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 16
-        }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Sparkles size={16} color="#2563EB" />
-              <span style={{ fontSize: 14, fontWeight: 800, color: '#1E3A8A' }}>
-                Executive AI Value Multiplier Simulator
-              </span>
-            </div>
-            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#475569' }}>
-              Simulate enterprise net value impact if custom agent adoption increases across knowledge workers.
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#334155' }}>Adoption Lift:</span>
-              <input 
-                type="range" 
-                min={2} 
-                max={15} 
-                value={adoptionBoost}
-                onChange={e => setAdoptionBoost(Number(e.target.value))}
-                style={{ width: 120, accentColor: '#00349B', cursor: 'pointer' }}
-              />
-              <span style={{ fontSize: 13, fontWeight: 800, color: '#00349B', minWidth: 40 }}>
-                +{adoptionBoost}%
-              </span>
-            </div>
-
-            <div style={{
-              background: '#FFFFFF',
-              border: '1px solid #BFDBFE',
-              borderRadius: 6,
-              padding: '6px 14px',
-              textAlign: 'right'
-            }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
-                Projected Value Add
-              </div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#16A34A' }}>
-                +${(adoptionBoost * 23.4).toFixed(1)}K / mo
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Scoped Function Indicator Banner */}
       {isScoped && (

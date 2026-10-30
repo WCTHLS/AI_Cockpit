@@ -3304,24 +3304,28 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               <button
                 onClick={loadWorkingAgents}
                 disabled={isLoadingWorkingAgents}
+                title="Refresh registered working agents from database"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 6,
-                  padding: '10px 16px',
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  border: '1.5px solid rgba(255, 255, 255, 0.35)',
+                  gap: 7,
+                  padding: '10px 18px',
+                  background: 'rgba(255, 255, 255, 0.22)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.55)',
                   borderRadius: 8,
                   color: '#FFFFFF',
-                  fontSize: 12.5,
+                  fontSize: 13,
                   fontWeight: 800,
                   cursor: isLoadingWorkingAgents ? 'not-allowed' : 'pointer',
-                  backdropFilter: 'blur(4px)',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                  backdropFilter: 'blur(8px)',
                   transition: 'all 0.15s ease'
                 }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.32)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.22)'}
               >
-                <RefreshCw size={13} className={isLoadingWorkingAgents ? 'animate-spin' : ''} />
-                Refresh DB ({workingAgentsList.length})
+                <RefreshCw size={13.5} className={isLoadingWorkingAgents ? 'animate-spin' : ''} />
+                Refresh DB Agents ({workingAgentsList.length})
               </button>
             </div>
           </div>

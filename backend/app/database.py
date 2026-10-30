@@ -179,11 +179,24 @@ def seed_database(conn: sqlite3.Connection):
 def sync_active_agents(conn: sqlite3.Connection):
     try:
         cur = conn.cursor()
+        # Deactivate synthetic Claude workspace catch-alls and platform overhead
         cur.execute("""
             UPDATE ai_agent 
             SET is_active = 0 
-            WHERE name NOT IN ('Ticket Triage Agent', 'Global Supply Chain & Order Dispatch Bot') 
-              AND (config_json IS NULL OR config_json = '');
+            WHERE portfolio = 'Claude Enterprise' 
+               OR name LIKE '%Overhead%' 
+               OR name LIKE '%Unattributed%';
+        """)
+        # Ensure the 4 primary enterprise agents remain active
+        cur.execute("""
+            UPDATE ai_agent 
+            SET is_active = 1 
+            WHERE name IN (
+                'Ticket Triage Agent', 
+                'Global Supply Chain & Order Dispatch Bot',
+                'Invoice Exception & SAP 3-Way Match Bot',
+                'Global HR Benefits & Policy Copilot'
+            );
         """)
     except Exception as e:
         print(f"Warning in sync_active_agents: {e}")
@@ -317,8 +330,7 @@ def init_db(seed_if_empty: bool = True):
             count = cur.fetchone()[0]
             if count == 0:
                 seed_database(conn)
-            else:
-                sync_active_agents(conn)
+            sync_active_agents(conn)
 
         # Seed and persist the 15 employees from Claude Code usage telemetry
         seed_claude_code_employees(conn)

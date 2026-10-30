@@ -4,6 +4,10 @@ from pydantic import BaseModel
 import io
 import csv
 import json
+import time
+import urllib.request
+import urllib.parse
+import urllib.error
 from datetime import date
 from ..schemas import ThresholdConfig
 from ..data_store import store
@@ -196,6 +200,9 @@ def get_working_agents(user: Dict[str, Any] = Depends(get_current_user)):
         LEFT JOIN team t ON t.id = ta.team_id
         LEFT JOIN business_function bf ON bf.id = t.function_id
         WHERE a.is_active = 1
+          AND (a.portfolio IS NULL OR a.portfolio NOT IN ('Claude Enterprise', 'Overhead', 'Unattributed'))
+          AND a.name NOT LIKE '%Overhead%'
+          AND a.name NOT LIKE '%Unattributed%'
         GROUP BY a.id
         ORDER BY a.name ASC;
     """)
