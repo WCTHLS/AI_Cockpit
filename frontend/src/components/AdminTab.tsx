@@ -3564,6 +3564,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
                         <td style={{ padding: '12px 14px', textAlign: 'right', whiteSpace: 'nowrap' }}>
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>
+                            {Boolean(ag.category === 'built_with' || ag.name.includes('Supply Chain') || ag.name.includes('Copilot')) && (
                             <button
                               onClick={() => handleOpenTelemetryModal(ag)}
                               title="Configure live telemetry endpoints using Option A (Azure App Insights) or Option B (Dataverse OData)"
@@ -3588,6 +3589,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                               <Radio size={12} />
                               Configure Endpoints (A/B)
                             </button>
+                            )}
                             <button
                               onClick={() => handleOpenEditModal(ag)}
                               style={{
