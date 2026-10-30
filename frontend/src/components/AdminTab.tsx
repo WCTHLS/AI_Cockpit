@@ -192,6 +192,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
   }>({ status: null, message: '' });
   const [isSubmittingNewAgent, setIsSubmittingNewAgent] = useState<boolean>(false);
   const [copilotMethod, setCopilotMethod] = useState<'option_a' | 'option_b'>('option_a');
+  const [showJsonIngest, setShowJsonIngest] = useState<boolean>(false);
 
   const [newAgentForm, setNewAgentForm] = useState({
     provider: 'copilot_studio',
@@ -595,6 +596,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
   useEffect(() => {
     loadAdminM365();
+    loadWorkingAgents();
   }, []);
 
   const handleAdminM365Upload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1377,7 +1379,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             borderRadius: 10,
             marginLeft: 2
           }}>
-            JSON INGEST
+            REGISTRY
           </span>
         </button>
       </div>
@@ -3274,7 +3276,31 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               </p>
             </div>
 
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <button
+                onClick={() => setIsAddAgentModalOpen(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 7,
+                  padding: '10px 20px',
+                  background: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: 8,
+                  color: '#312E81',
+                  fontSize: 13,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.18)',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-1px)')}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+              >
+                <Plus size={16} color="#4F46E5" />
+                Connect New Agent
+              </button>
+
               <button
                 onClick={loadWorkingAgents}
                 disabled={isLoadingWorkingAgents}
@@ -3282,424 +3308,21 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '9px 16px',
-                  background: 'rgba(255, 255, 255, 0.15)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  padding: '10px 16px',
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.35)',
                   borderRadius: 8,
                   color: '#FFFFFF',
-                  fontSize: 12,
-                  fontWeight: 700,
+                  fontSize: 12.5,
+                  fontWeight: 800,
                   cursor: isLoadingWorkingAgents ? 'not-allowed' : 'pointer',
-                  transition: 'background 0.2s'
+                  backdropFilter: 'blur(4px)',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 <RefreshCw size={13} className={isLoadingWorkingAgents ? 'animate-spin' : ''} />
-                Refresh DB Agents ({workingAgentsList.length})
+                Refresh DB ({workingAgentsList.length})
               </button>
-            </div>
-          </div>
-
-          {/* Two-Column Grid: Ingestion Console (Left) + Schema Specification & Examples (Right) */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(420px, 1.25fr) minmax(360px, 1fr)',
-            gap: 24,
-            alignItems: 'start'
-          }}>
-            {/* LEFT: JSON Editor & Ingestion Console */}
-            <div style={{
-              background: '#FFFFFF',
-              border: '1.5px solid #E2E8F0',
-              borderRadius: 12,
-              padding: 22,
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 16
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-                <div>
-                  <h3 style={{ fontSize: 16, fontWeight: 800, color: '#1E293B', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 7 }}>
-                    <FileText size={17} color="#4F46E5" /> Agent Input JSON
-                  </h3>
-                  <div style={{ fontSize: 12, color: '#64748B' }}>
-                    Paste or customize working agent configuration JSON
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  <button
-                    onClick={() => {
-                      setWorkingAgentJson(TICKET_TRIAGE_AGENT_JSON);
-                      setJsonValidationError(null);
-                    }}
-                    style={{
-                      padding: '5px 10px',
-                      background: '#EEF2FF',
-                      border: '1px solid #C7D2FE',
-                      borderRadius: 6,
-                      color: '#4338CA',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Ticket Triage Preset
-                  </button>
-                  <button
-                    onClick={() => {
-                      setWorkingAgentJson(SUPPLY_CHAIN_COPILOT_AGENT_JSON);
-                      setJsonValidationError(null);
-                    }}
-                    style={{
-                      padding: '5px 10px',
-                      background: '#F0FDF4',
-                      border: '1px solid #BBF7D0',
-                      borderRadius: 6,
-                      color: '#15803D',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Supply Chain Preset (Copilot Studio)
-                  </button>
-                  <a
-                    href="http://localhost:8000/api/v1/copilot-studio/ui"
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      padding: '5px 10px',
-                      background: '#0F172A',
-                      border: '1px solid #334155',
-                      borderRadius: 6,
-                      color: '#38BDF8',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      textDecoration: 'none',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4
-                    }}
-                  >
-                    ? Open Copilot Studio Bot Console
-                  </a>
-                  <button
-                    onClick={handleFormatJson}
-                    style={{
-                      padding: '5px 10px',
-                      background: '#F1F5F9',
-                      border: '1px solid #CBD5E1',
-                      borderRadius: 6,
-                      color: '#334155',
-                      fontSize: 11,
-                      fontWeight: 600,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Format
-                  </button>
-                  <button
-                    onClick={handleValidateJson}
-                    style={{
-                      padding: '5px 10px',
-                      background: '#F1F5F9',
-                      border: '1px solid #CBD5E1',
-                      borderRadius: 6,
-                      color: '#334155',
-                      fontSize: 11,
-                      fontWeight: 600,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Validate
-                  </button>
-                </div>
-              </div>
-
-              {/* Monospace Code Editor */}
-              <div style={{ position: 'relative' }}>
-                <textarea
-                  value={workingAgentJson}
-                  onChange={(e) => {
-                    setWorkingAgentJson(e.target.value);
-                    if (jsonValidationError) setJsonValidationError(null);
-                  }}
-                  rows={17}
-                  spellCheck={false}
-                  style={{
-                    width: '100%',
-                    background: '#0F172A',
-                    color: '#38BDF8',
-                    fontFamily: 'Consolas, Monaco, "Courier New", monospace',
-                    fontSize: 12.5,
-                    lineHeight: '1.5',
-                    padding: '14px 16px',
-                    borderRadius: 8,
-                    border: jsonValidationError ? '1.5px solid #EF4444' : '1.5px solid #334155',
-                    boxSizing: 'border-box',
-                    outline: 'none',
-                    resize: 'vertical'
-                  }}
-                />
-              </div>
-
-              {/* Validation Status message */}
-              {jsonValidationError && (
-                <div style={{
-                  background: '#FEF2F2',
-                  border: '1px solid #FCA5A5',
-                  borderRadius: 6,
-                  padding: '8px 12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  fontSize: 12,
-                  color: '#B91C1C'
-                }}>
-                  <AlertCircle size={15} />
-                  <span>{jsonValidationError}</span>
-                </div>
-              )}
-
-              {/* Ingestion Result Banner */}
-              {workingAgentIngestResult && (
-                <div style={{
-                  background: workingAgentIngestResult.type === 'success' ? '#ECFDF5' : '#FEF2F2',
-                  border: `1px solid ${workingAgentIngestResult.type === 'success' ? '#6EE7B7' : '#FCA5A5'}`,
-                  borderRadius: 8,
-                  padding: '12px 16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 6
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    fontWeight: 700,
-                    fontSize: 13,
-                    color: workingAgentIngestResult.type === 'success' ? '#047857' : '#B91C1C'
-                  }}>
-                    {workingAgentIngestResult.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
-                    {workingAgentIngestResult.message}
-                  </div>
-                  {workingAgentIngestResult.agents && workingAgentIngestResult.agents.length > 0 && (
-                    <div style={{ fontSize: 11, color: '#065F46', display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 4 }}>
-                      {workingAgentIngestResult.agents.map((ag: any, idx: number) => (
-                        <span key={idx} style={{ background: '#D1FAE5', padding: '3px 8px', borderRadius: 4 }}>
-                          ID: <strong>#{ag.agent_id}</strong> | Name: <strong>{ag.agent_name}</strong> | Function: <strong>{ag.business_function}</strong> ({ag.team}) | Model: <strong>{ag.model}</strong>
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Action Submit Button */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
-                <button
-                  onClick={handleIngestWorkingAgent}
-                  disabled={isIngestingWorkingAgent}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '11px 22px',
-                    background: '#4F46E5',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: 8,
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: isIngestingWorkingAgent ? 'not-allowed' : 'pointer',
-                    boxShadow: '0 2px 8px rgba(79, 70, 229, 0.35)',
-                    transition: 'background 0.2s'
-                  }}
-                >
-                  <Save size={15} />
-                  {isIngestingWorkingAgent ? 'Ingesting & Saving to DB...' : 'Ingest Working Agent to Database'}
-                </button>
-              </div>
-            </div>
-
-            {/* RIGHT: Schema Specification & Documentation Card */}
-            <div style={{
-              background: '#FFFFFF',
-              border: '1.5px solid #E2E8F0',
-              borderRadius: 12,
-              padding: 22,
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 16
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h3 style={{ fontSize: 16, fontWeight: 800, color: '#1E293B', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 7 }}>
-                    <HelpCircle size={17} color="#4F46E5" /> Example Schema &amp; Parameters
-                  </h3>
-                  <div style={{ fontSize: 12, color: '#64748B' }}>
-                    Specification of parameters ingested into company database
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(TICKET_TRIAGE_AGENT_JSON);
-                    setCopiedSchema(true);
-                    setTimeout(() => setCopiedSchema(false), 2000);
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    padding: '6px 12px',
-                    background: copiedSchema ? '#ECFDF5' : '#F8FAFC',
-                    border: `1px solid ${copiedSchema ? '#10B981' : '#CBD5E1'}`,
-                    color: copiedSchema ? '#047857' : '#334155',
-                    borderRadius: 6,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                >
-                  {copiedSchema ? <Check size={13} /> : <Copy size={13} />}
-                  {copiedSchema ? 'Copied Example!' : 'Copy Example JSON'}
-                </button>
-              </div>
-
-              {/* Parameter Specification List */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
-                maxHeight: 460,
-                overflowY: 'auto',
-                paddingRight: 4
-              }}>
-                {[
-                  {
-                    key: 'agent_name',
-                    type: 'string',
-                    req: true,
-                    example: '"Ticket Triage Agent"',
-                    desc: 'Unique business display name for the agent.'
-                  },
-                  {
-                    key: 'business_function',
-                    type: 'string',
-                    req: true,
-                    example: '"Eng & IT" | "Customer" | "Finance"',
-                    desc: 'Company organizational department.'
-                  },
-                  {
-                    key: 'team',
-                    type: 'string',
-                    req: true,
-                    example: '"IT Service Desk" | "Software Engineering"',
-                    desc: 'Team owning or utilizing this working agent.'
-                  },
-                  {
-                    key: 'model',
-                    type: 'string',
-                    req: true,
-                    example: '"gpt-4o" | "claude-3-7-sonnet"',
-                    desc: 'Underlying foundation LLM powering the agent loops.'
-                  },
-                  {
-                    key: 'input_token_price_per_1m',
-                    type: 'number (USD)',
-                    req: true,
-                    example: '2.50',
-                    desc: 'LLM pricing per 1 million input tokens ($2.50 for GPT-4o).'
-                  },
-                  {
-                    key: 'output_token_price_per_1m',
-                    type: 'number (USD)',
-                    req: true,
-                    example: '10.00',
-                    desc: 'LLM pricing per 1 million output tokens ($10.00 for GPT-4o).'
-                  },
-                  {
-                    key: 'monthly_infra_cost',
-                    type: 'number (USD)',
-                    req: true,
-                    example: '45.00',
-                    desc: 'Fixed monthly cloud hosting, container & cluster run cost.'
-                  },
-                  {
-                    key: 'monthly_budget',
-                    type: 'number (USD)',
-                    req: true,
-                    example: '100.00',
-                    desc: 'Allocated monthly operational budget limit for cost vs budget performance.'
-                  },
-                  {
-                    key: 'baseline_employee_hours',
-                    type: 'number (hours)',
-                    req: true,
-                    example: '0.25 (15 minutes)',
-                    desc: 'Time human employee previously took to complete 1 manual task.'
-                  },
-                  {
-                    key: 'employee_monthly_rate',
-                    type: 'number (USD)',
-                    req: true,
-                    example: '900.00',
-                    desc: 'Monthly human salary baseline for labor value calculation (~?75k/mo fully loaded).'
-                  },
-                  {
-                    key: 'employee_monthly_working_hours',
-                    type: 'number (hours)',
-                    req: true,
-                    example: '160',
-                    desc: 'Standard monthly employee working hours (used as divisor to derive hourly rate: $900 / 160 = $5.63/hr).'
-                  },
-                  {
-                    key: 'category & agent_type',
-                    type: 'string (optional)',
-                    req: false,
-                    example: '"built_with", "workflow_agent"',
-                    desc: 'Taxonomy classification for enterprise governance.'
-                  }
-                ].map((item, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      background: '#F8FAFC',
-                      border: '1px solid #E2E8F0',
-                      borderRadius: 8,
-                      padding: '10px 12px',
-                      fontSize: 12
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
-                      <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#4F46E5' }}>
-                        {item.key}
-                      </span>
-                      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                        <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'monospace' }}>{item.type}</span>
-                        {item.req ? (
-                          <span style={{ fontSize: 9, fontWeight: 800, color: '#DC2626', background: '#FEE2E2', padding: '1px 5px', borderRadius: 4 }}>
-                            REQUIRED
-                          </span>
-                        ) : (
-                          <span style={{ fontSize: 9, fontWeight: 700, color: '#64748B', background: '#E2E8F0', padding: '1px 5px', borderRadius: 4 }}>
-                            OPTIONAL
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div style={{ color: '#475569', fontSize: 11.5, marginBottom: 3 }}>
-                      {item.desc}
-                    </div>
-                    <div style={{ color: '#0369A1', fontSize: 11, fontFamily: 'monospace', background: '#F0F9FF', padding: '2px 6px', borderRadius: 4, display: 'inline-block' }}>
-                      Example: {item.example}
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 
@@ -3953,6 +3576,439 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Advanced JSON Ingestion Console (Collapsible for Technical Operators) */}
+          <div style={{ marginTop: 4 }}>
+            <button
+              type="button"
+              onClick={() => setShowJsonIngest(!showJsonIngest)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '7px 14px',
+                background: '#F1F5F9',
+                border: '1px solid #CBD5E1',
+                borderRadius: 8,
+                fontSize: 12,
+                fontWeight: 700,
+                color: '#475569',
+                cursor: 'pointer',
+                marginBottom: showJsonIngest ? 16 : 0,
+                transition: 'all 0.15s'
+              }}
+            >
+              <FileText size={14} color="#64748B" />
+              <span>{showJsonIngest ? 'Hide Advanced JSON Ingestion Console' : 'Show Advanced JSON Ingestion & Raw Schema Tool'}</span>
+              {showJsonIngest ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+
+            {showJsonIngest && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(420px, 1.25fr) minmax(360px, 1fr)',
+              gap: 24,
+              alignItems: 'start'
+            }}>
+              {/* LEFT: JSON Editor & Ingestion Console */}
+              <div style={{
+                background: '#FFFFFF',
+                border: '1.5px solid #E2E8F0',
+                borderRadius: 12,
+                padding: 22,
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                  <div>
+                    <h3 style={{ fontSize: 16, fontWeight: 800, color: '#1E293B', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 7 }}>
+                      <FileText size={17} color="#4F46E5" /> Agent Input JSON
+                    </h3>
+                    <div style={{ fontSize: 12, color: '#64748B' }}>
+                      Paste or customize working agent configuration JSON
+                    </div>
+                  </div>
+  
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    <button
+                      onClick={() => {
+                        setWorkingAgentJson(TICKET_TRIAGE_AGENT_JSON);
+                        setJsonValidationError(null);
+                      }}
+                      style={{
+                        padding: '5px 10px',
+                        background: '#EEF2FF',
+                        border: '1px solid #C7D2FE',
+                        borderRadius: 6,
+                        color: '#4338CA',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Ticket Triage Preset
+                    </button>
+                    <button
+                      onClick={() => {
+                        setWorkingAgentJson(SUPPLY_CHAIN_COPILOT_AGENT_JSON);
+                        setJsonValidationError(null);
+                      }}
+                      style={{
+                        padding: '5px 10px',
+                        background: '#F0FDF4',
+                        border: '1px solid #BBF7D0',
+                        borderRadius: 6,
+                        color: '#15803D',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Supply Chain Preset (Copilot Studio)
+                    </button>
+                    <a
+                      href="http://localhost:8000/api/v1/copilot-studio/ui"
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        padding: '5px 10px',
+                        background: '#0F172A',
+                        border: '1px solid #334155',
+                        borderRadius: 6,
+                        color: '#38BDF8',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        textDecoration: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4
+                      }}
+                    >
+                      ? Open Copilot Studio Bot Console
+                    </a>
+                    <button
+                      onClick={handleFormatJson}
+                      style={{
+                        padding: '5px 10px',
+                        background: '#F1F5F9',
+                        border: '1px solid #CBD5E1',
+                        borderRadius: 6,
+                        color: '#334155',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Format
+                    </button>
+                    <button
+                      onClick={handleValidateJson}
+                      style={{
+                        padding: '5px 10px',
+                        background: '#F1F5F9',
+                        border: '1px solid #CBD5E1',
+                        borderRadius: 6,
+                        color: '#334155',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Validate
+                    </button>
+                  </div>
+                </div>
+  
+                {/* Monospace Code Editor */}
+                <div style={{ position: 'relative' }}>
+                  <textarea
+                    value={workingAgentJson}
+                    onChange={(e) => {
+                      setWorkingAgentJson(e.target.value);
+                      if (jsonValidationError) setJsonValidationError(null);
+                    }}
+                    rows={17}
+                    spellCheck={false}
+                    style={{
+                      width: '100%',
+                      background: '#0F172A',
+                      color: '#38BDF8',
+                      fontFamily: 'Consolas, Monaco, "Courier New", monospace',
+                      fontSize: 12.5,
+                      lineHeight: '1.5',
+                      padding: '14px 16px',
+                      borderRadius: 8,
+                      border: jsonValidationError ? '1.5px solid #EF4444' : '1.5px solid #334155',
+                      boxSizing: 'border-box',
+                      outline: 'none',
+                      resize: 'vertical'
+                    }}
+                  />
+                </div>
+  
+                {/* Validation Status message */}
+                {jsonValidationError && (
+                  <div style={{
+                    background: '#FEF2F2',
+                    border: '1px solid #FCA5A5',
+                    borderRadius: 6,
+                    padding: '8px 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 12,
+                    color: '#B91C1C'
+                  }}>
+                    <AlertCircle size={15} />
+                    <span>{jsonValidationError}</span>
+                  </div>
+                )}
+  
+                {/* Ingestion Result Banner */}
+                {workingAgentIngestResult && (
+                  <div style={{
+                    background: workingAgentIngestResult.type === 'success' ? '#ECFDF5' : '#FEF2F2',
+                    border: `1px solid ${workingAgentIngestResult.type === 'success' ? '#6EE7B7' : '#FCA5A5'}`,
+                    borderRadius: 8,
+                    padding: '12px 16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 6
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      fontWeight: 700,
+                      fontSize: 13,
+                      color: workingAgentIngestResult.type === 'success' ? '#047857' : '#B91C1C'
+                    }}>
+                      {workingAgentIngestResult.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
+                      {workingAgentIngestResult.message}
+                    </div>
+                    {workingAgentIngestResult.agents && workingAgentIngestResult.agents.length > 0 && (
+                      <div style={{ fontSize: 11, color: '#065F46', display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 4 }}>
+                        {workingAgentIngestResult.agents.map((ag: any, idx: number) => (
+                          <span key={idx} style={{ background: '#D1FAE5', padding: '3px 8px', borderRadius: 4 }}>
+                            ID: <strong>#{ag.agent_id}</strong> | Name: <strong>{ag.agent_name}</strong> | Function: <strong>{ag.business_function}</strong> ({ag.team}) | Model: <strong>{ag.model}</strong>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+  
+                {/* Action Submit Button */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+                  <button
+                    onClick={handleIngestWorkingAgent}
+                    disabled={isIngestingWorkingAgent}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '11px 22px',
+                      background: '#4F46E5',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: 8,
+                      fontSize: 13,
+                      fontWeight: 700,
+                      cursor: isIngestingWorkingAgent ? 'not-allowed' : 'pointer',
+                      boxShadow: '0 2px 8px rgba(79, 70, 229, 0.35)',
+                      transition: 'background 0.2s'
+                    }}
+                  >
+                    <Save size={15} />
+                    {isIngestingWorkingAgent ? 'Ingesting & Saving to DB...' : 'Ingest Working Agent to Database'}
+                  </button>
+                </div>
+              </div>
+  
+              {/* RIGHT: Schema Specification & Documentation Card */}
+              <div style={{
+                background: '#FFFFFF',
+                border: '1.5px solid #E2E8F0',
+                borderRadius: 12,
+                padding: 22,
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h3 style={{ fontSize: 16, fontWeight: 800, color: '#1E293B', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 7 }}>
+                      <HelpCircle size={17} color="#4F46E5" /> Example Schema &amp; Parameters
+                    </h3>
+                    <div style={{ fontSize: 12, color: '#64748B' }}>
+                      Specification of parameters ingested into company database
+                    </div>
+                  </div>
+  
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(TICKET_TRIAGE_AGENT_JSON);
+                      setCopiedSchema(true);
+                      setTimeout(() => setCopiedSchema(false), 2000);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      padding: '6px 12px',
+                      background: copiedSchema ? '#ECFDF5' : '#F8FAFC',
+                      border: `1px solid ${copiedSchema ? '#10B981' : '#CBD5E1'}`,
+                      color: copiedSchema ? '#047857' : '#334155',
+                      borderRadius: 6,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {copiedSchema ? <Check size={13} /> : <Copy size={13} />}
+                    {copiedSchema ? 'Copied Example!' : 'Copy Example JSON'}
+                  </button>
+                </div>
+  
+                {/* Parameter Specification List */}
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10,
+                  maxHeight: 460,
+                  overflowY: 'auto',
+                  paddingRight: 4
+                }}>
+                  {[
+                    {
+                      key: 'agent_name',
+                      type: 'string',
+                      req: true,
+                      example: '"Ticket Triage Agent"',
+                      desc: 'Unique business display name for the agent.'
+                    },
+                    {
+                      key: 'business_function',
+                      type: 'string',
+                      req: true,
+                      example: '"Eng & IT" | "Customer" | "Finance"',
+                      desc: 'Company organizational department.'
+                    },
+                    {
+                      key: 'team',
+                      type: 'string',
+                      req: true,
+                      example: '"IT Service Desk" | "Software Engineering"',
+                      desc: 'Team owning or utilizing this working agent.'
+                    },
+                    {
+                      key: 'model',
+                      type: 'string',
+                      req: true,
+                      example: '"gpt-4o" | "claude-3-7-sonnet"',
+                      desc: 'Underlying foundation LLM powering the agent loops.'
+                    },
+                    {
+                      key: 'input_token_price_per_1m',
+                      type: 'number (USD)',
+                      req: true,
+                      example: '2.50',
+                      desc: 'LLM pricing per 1 million input tokens ($2.50 for GPT-4o).'
+                    },
+                    {
+                      key: 'output_token_price_per_1m',
+                      type: 'number (USD)',
+                      req: true,
+                      example: '10.00',
+                      desc: 'LLM pricing per 1 million output tokens ($10.00 for GPT-4o).'
+                    },
+                    {
+                      key: 'monthly_infra_cost',
+                      type: 'number (USD)',
+                      req: true,
+                      example: '45.00',
+                      desc: 'Fixed monthly cloud hosting, container & cluster run cost.'
+                    },
+                    {
+                      key: 'monthly_budget',
+                      type: 'number (USD)',
+                      req: true,
+                      example: '100.00',
+                      desc: 'Allocated monthly operational budget limit for cost vs budget performance.'
+                    },
+                    {
+                      key: 'baseline_employee_hours',
+                      type: 'number (hours)',
+                      req: true,
+                      example: '0.25 (15 minutes)',
+                      desc: 'Time human employee previously took to complete 1 manual task.'
+                    },
+                    {
+                      key: 'employee_monthly_rate',
+                      type: 'number (USD)',
+                      req: true,
+                      example: '900.00',
+                      desc: 'Monthly human salary baseline for labor value calculation (~?75k/mo fully loaded).'
+                    },
+                    {
+                      key: 'employee_monthly_working_hours',
+                      type: 'number (hours)',
+                      req: true,
+                      example: '160',
+                      desc: 'Standard monthly employee working hours (used as divisor to derive hourly rate: $900 / 160 = $5.63/hr).'
+                    },
+                    {
+                      key: 'category & agent_type',
+                      type: 'string (optional)',
+                      req: false,
+                      example: '"built_with", "workflow_agent"',
+                      desc: 'Taxonomy classification for enterprise governance.'
+                    }
+                  ].map((item, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        background: '#F8FAFC',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: 8,
+                        padding: '10px 12px',
+                        fontSize: 12
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
+                        <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#4F46E5' }}>
+                          {item.key}
+                        </span>
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                          <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'monospace' }}>{item.type}</span>
+                          {item.req ? (
+                            <span style={{ fontSize: 9, fontWeight: 800, color: '#DC2626', background: '#FEE2E2', padding: '1px 5px', borderRadius: 4 }}>
+                              REQUIRED
+                            </span>
+                          ) : (
+                            <span style={{ fontSize: 9, fontWeight: 700, color: '#64748B', background: '#E2E8F0', padding: '1px 5px', borderRadius: 4 }}>
+                              OPTIONAL
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div style={{ color: '#475569', fontSize: 11.5, marginBottom: 3 }}>
+                        {item.desc}
+                      </div>
+                      <div style={{ color: '#0369A1', fontSize: 11, fontFamily: 'monospace', background: '#F0F9FF', padding: '2px 6px', borderRadius: 4, display: 'inline-block' }}>
+                        Example: {item.example}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+  
+            )}
           </div>
 
           {/* DEDICATED DIRECT AGENT VALUES EDITOR MODAL */}
@@ -4487,7 +4543,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                           type="text"
                           value={newAgentForm.agent_name}
                           onChange={(e) => setNewAgentForm({ ...newAgentForm, agent_name: e.target.value })}
-                          placeholder="e.g. EMEA Logistics & Dispatch Copilot"
+                          placeholder="e.g. Mailbox Async Agent"
                           style={{
                             width: '100%',
                             padding: '8px 12px',
