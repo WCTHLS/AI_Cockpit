@@ -16,7 +16,8 @@ import {
   Activity,
   ChevronDown,
   ChevronUp,
-  Cpu
+  Cpu,
+  ExternalLink
 } from 'lucide-react';
 import { AgentScorecardItem } from '../types';
 import { formatUSD, formatPct, fetchAgentDailySummary, AgentDailyTelemetrySummary } from '../api';
@@ -35,6 +36,18 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
   const isCopilotStudio = (agent as any).provider === 'Microsoft Copilot Studio' || 
     agent.name.toLowerCase().includes('supply chain') || 
     (agent as any).category === 'built_with';
+
+  const isTicketTriage = agent.name.toLowerCase().includes('ticket triage') || 
+    agent.name.toLowerCase().includes('it service desk') || 
+    agent.name.toLowerCase().includes('it support');
+
+  const isAzure = typeof window !== 'undefined' && window.location.hostname.includes('azurecontainerapps.io');
+  
+  const liveAgentUrl = isCopilotStudio
+    ? '/api/v1/copilot-studio/ui'
+    : isTicketTriage
+      ? (isAzure ? 'https://wct-it-agent.kindbay-88317352.eastus2.azurecontainerapps.io/' : 'http://localhost:8080/')
+      : null;
 
   const [activeRemediation, setActiveRemediation] = useState<string | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -115,10 +128,36 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
               {agent.name}
             </h2>
             <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8', marginTop: 3 }}>
-              Production Age: <b>{(agent as any).days_in_production || 180} days</b> • Tier-1 Enterprise Agent{isCopilotStudio && (
-                <> • <a href="http://localhost:8000/api/v1/copilot-studio/ui" target="_blank" rel="noopener noreferrer" style={{ color: '#5B5FC7', textDecoration: 'none', fontWeight: 700 }}>Teams Chat &rarr;</a></>
-              )}
+              Production Age: <b>{(agent as any).days_in_production || 180} days</b> • Tier-1 Enterprise Agent
             </div>
+            {liveAgentUrl && (
+              <div style={{ marginTop: 10 }}>
+                <a
+                  href={liveAgentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '6px 14px',
+                    borderRadius: 6,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    background: isCopilotStudio ? '#464EB8' : '#0284C7',
+                    color: '#FFFFFF',
+                    textDecoration: 'none',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.18)',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1.0'}
+                >
+                  <ExternalLink size={13} />
+                  Open Live Agent ↗
+                </a>
+              </div>
+            )}
           </div>
           <button 
             onClick={onClose}

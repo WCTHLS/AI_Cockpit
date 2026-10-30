@@ -983,6 +983,19 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                               const ragCvb = getRagCvb(agent.cost / (agent.budget || agent.cost || 1));
                               const ragEval = getRagEval(agent.eval_pass_rate / 100);
 
+                              const isCopilotStudio = (agent as any).provider === 'Microsoft Copilot Studio' || 
+                                agent.name.toLowerCase().includes('supply chain') || 
+                                (agent as any).category === 'built_with';
+                              const isTicketTriage = agent.name.toLowerCase().includes('ticket triage') || 
+                                agent.name.toLowerCase().includes('it service desk') || 
+                                agent.name.toLowerCase().includes('it support');
+                              const isAzure = typeof window !== 'undefined' && window.location.hostname.includes('azurecontainerapps.io');
+                              const liveAgentUrl = isCopilotStudio
+                                ? '/api/v1/copilot-studio/ui'
+                                : isTicketTriage
+                                  ? (isAzure ? 'https://wct-it-agent.kindbay-88317352.eastus2.azurecontainerapps.io/' : 'http://localhost:8080/')
+                                  : null;
+
                               const ragDot = (ragType: string) => {
                                 const color = ragType === 'g' ? '#2E7D32' : ragType === 'a' ? '#E0A100' : '#C62828';
                                 return <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: color, marginRight: 5 }} />;
@@ -1003,8 +1016,36 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                 >
                                   <td style={{ padding: '7px 14px 7px 64px', color: '#1A1A1A', fontSize: 13, fontWeight: 500 }}>
-                                    <span style={{ color: '#00349B', marginRight: 4 }}>•</span> {agent.name}
-                                  </td>
+                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                       <span><span style={{ color: '#00349B', marginRight: 4 }}>•</span> {agent.name}</span>
+                                       {liveAgentUrl && (
+                                         <a
+                                           href={liveAgentUrl}
+                                           target="_blank"
+                                           rel="noopener noreferrer"
+                                           onClick={e => e.stopPropagation()}
+                                           title={`Open live ${agent.name}`}
+                                           style={{
+                                             display: 'inline-flex',
+                                             alignItems: 'center',
+                                             gap: 3,
+                                             padding: '2px 8px',
+                                             borderRadius: 4,
+                                             fontSize: 11,
+                                             fontWeight: 700,
+                                             background: isCopilotStudio ? '#EEF2FF' : '#E0F2FE',
+                                             color: isCopilotStudio ? '#4338CA' : '#0369A1',
+                                             border: isCopilotStudio ? '1px solid #C7D2FE' : '1px solid #BAE6FD',
+                                             textDecoration: 'none',
+                                             marginLeft: 8,
+                                             cursor: 'pointer'
+                                           }}
+                                         >
+                                           Live Agent ↗
+                                         </a>
+                                       )}
+                                     </div>
+                                   </td>
                                   <td title={`Net Value = Gross Value (${formatUSD(agent.gross_value || agent.net_value + agent.cost)}) - Actual Cost (${formatUSD(agent.cost)}) = ${formatUSD(agent.net_value)}`} style={{ textAlign: 'right', padding: '7px 12px', fontWeight: 600, cursor: 'help' }}>
                                     {ragDot(ragNet)}
                                     <span>{formatUSD(agent.net_value)}</span>
