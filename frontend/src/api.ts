@@ -549,7 +549,10 @@ export async function ingestWorkingAgent(payload: any): Promise<any> {
 
 export async function testAgentConnection(payload: {
   provider: string;
+  copilot_method?: string;
+  copilot_bot_id?: string;
   dataverse_url?: string;
+  tenant_id?: string;
   client_id?: string;
   client_secret?: string;
   app_insights_app_id?: string;

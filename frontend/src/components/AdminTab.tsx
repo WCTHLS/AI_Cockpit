@@ -191,30 +191,40 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     latency_ms?: number;
   }>({ status: null, message: '' });
   const [isSubmittingNewAgent, setIsSubmittingNewAgent] = useState<boolean>(false);
+  const [copilotMethod, setCopilotMethod] = useState<'option_a' | 'option_b'>('option_a');
 
   const [newAgentForm, setNewAgentForm] = useState({
     provider: 'copilot_studio',
+    copilot_method: 'option_a' as 'option_a' | 'option_b',
     agent_name: 'Global Logistics & Dispatch Copilot',
     business_function: 'Operations',
     team: 'Supply Chain',
     category: 'built_with',
     agent_type: 'workflow_agent',
     model: 'copilot-studio-v2',
+    // FinOps Benchmarks
     monthly_infra_cost: 200.0,
     monthly_budget: 300.0,
     baseline_employee_hours: 0.33,
     employee_monthly_rate: 1100.0,
     employee_monthly_working_hours: 160,
+    target_eval_sla: 92.0,
+    assigned_users: 4,
     input_token_price_per_1m: 0.0,
     output_token_price_per_1m: 0.0,
     description: 'Autonomous low-code workflow assistant built in Copilot Studio for enterprise shipment queries and automated RMA workflows.',
-    dataverse_url: 'https://contoso-logistics.api.crm.dynamics.com',
+    // Option A: Azure Application Insights
+    app_insights_app_id: '7a12b345-6789-4abc-def0-123456789abc',
+    app_insights_key: '',
+    copilot_bot_id: '701c468f-8db2-4972-abaa-cdd76a76f9b7',
+    // Option B: Microsoft Dataverse OData
+    dataverse_url: 'https://org46960896.crm.dynamics.com',
+    tenant_id: 'e6e6c779-4c40-45d8-9921-00f00a06d3a8',
     client_id: 'd9b73461-8261-4f10-9b30-192a8374a2b1',
-    client_secret: '••••••••••••••••••••••••••••••••',
-    app_insights_app_id: 'app-insights-lenovo-sc-prod',
-    app_insights_key: '••••••••••••••••••••••••••••••••',
+    client_secret: '',
+    // Azure OpenAI
     api_endpoint: 'https://contoso-ai.openai.azure.com',
-    api_key: '••••••••••••••••••••••••••••••••',
+    api_key: '',
     deployment_name: 'gpt-4o'
   });
 
@@ -301,7 +311,10 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     try {
       const res = await testAgentConnection({
         provider: newAgentForm.provider,
+        copilot_method: copilotMethod,
+        copilot_bot_id: newAgentForm.copilot_bot_id,
         dataverse_url: newAgentForm.dataverse_url,
+        tenant_id: newAgentForm.tenant_id,
         client_id: newAgentForm.client_id,
         client_secret: newAgentForm.client_secret,
         app_insights_app_id: newAgentForm.app_insights_app_id,
@@ -344,12 +357,17 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         baseline_employee_hours: Number(newAgentForm.baseline_employee_hours),
         employee_monthly_rate: Number(newAgentForm.employee_monthly_rate),
         employee_monthly_working_hours: Number(newAgentForm.employee_monthly_working_hours),
+        target_eval_sla: Number(newAgentForm.target_eval_sla || 92.0),
+        assigned_users: Number(newAgentForm.assigned_users || 4),
         input_token_price_per_1m: Number(newAgentForm.input_token_price_per_1m),
         output_token_price_per_1m: Number(newAgentForm.output_token_price_per_1m),
         description: newAgentForm.description,
         telemetry_config: {
           provider: newAgentForm.provider,
+          copilot_method: copilotMethod,
+          copilot_bot_id: newAgentForm.copilot_bot_id,
           dataverse_url: newAgentForm.dataverse_url,
+          tenant_id: newAgentForm.tenant_id,
           client_id: newAgentForm.client_id,
           app_insights_app_id: newAgentForm.app_insights_app_id,
           api_endpoint: newAgentForm.api_endpoint,
@@ -4627,43 +4645,206 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
                     {/* Conditional Fields based on Provider */}
                     {newAgentForm.provider === 'copilot_studio' ? (
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                        <div style={{ gridColumn: 'span 2' }}>
-                          <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
-                            Microsoft Dataverse OData URL (ConversationTranscripts Endpoint)
+                      <div>
+                        {/* Option A vs Option B Selector */}
+                        <div style={{ marginBottom: 14 }}>
+                          <label style={{ display: 'block', fontSize: 12, fontWeight: 800, color: '#334155', marginBottom: 8 }}>
+                            Select Copilot Studio Telemetry Method:
                           </label>
-                          <input
-                            type="text"
-                            value={newAgentForm.dataverse_url}
-                            onChange={(e) => setNewAgentForm({ ...newAgentForm, dataverse_url: e.target.value })}
-                            placeholder="https://<org-env>.api.crm.dynamics.com"
-                            style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
-                          />
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                            {/* Option A Card */}
+                            <div
+                              onClick={() => {
+                                setCopilotMethod('option_a');
+                                setNewAgentForm(prev => ({ ...prev, copilot_method: 'option_a' }));
+                                setConnectionTestResult({ status: null, message: '' });
+                              }}
+                              style={{
+                                border: copilotMethod === 'option_a' ? '2px solid #2563EB' : '1.5px solid #CBD5E1',
+                                background: copilotMethod === 'option_a' ? '#EFF6FF' : '#FFFFFF',
+                                borderRadius: 10,
+                                padding: '12px 14px',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s ease'
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                                <span style={{ fontSize: 13, fontWeight: 800, color: copilotMethod === 'option_a' ? '#1D4ED8' : '#1E293B' }}>
+                                  Option A: Azure App Insights
+                                </span>
+                                <span style={{
+                                  fontSize: 10,
+                                  fontWeight: 800,
+                                  background: copilotMethod === 'option_a' ? '#DBEAFE' : '#F1F5F9',
+                                  color: copilotMethod === 'option_a' ? '#1E40AF' : '#64748B',
+                                  padding: '2px 7px',
+                                  borderRadius: 4
+                                }}>
+                                  Recommended
+                                </span>
+                              </div>
+                              <div style={{ fontSize: 11, color: '#64748B', lineHeight: 1.4 }}>
+                                Live event streaming via Azure Monitor KQL. Captures user turns, latency, and sessions.
+                              </div>
+                            </div>
+
+                            {/* Option B Card */}
+                            <div
+                              onClick={() => {
+                                setCopilotMethod('option_b');
+                                setNewAgentForm(prev => ({ ...prev, copilot_method: 'option_b' }));
+                                setConnectionTestResult({ status: null, message: '' });
+                              }}
+                              style={{
+                                border: copilotMethod === 'option_b' ? '2px solid #4F46E5' : '1.5px solid #CBD5E1',
+                                background: copilotMethod === 'option_b' ? '#EEF2FF' : '#FFFFFF',
+                                borderRadius: 10,
+                                padding: '12px 14px',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s ease'
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                                <span style={{ fontSize: 13, fontWeight: 800, color: copilotMethod === 'option_b' ? '#4338CA' : '#1E293B' }}>
+                                  Option B: Dataverse OData
+                                </span>
+                                <span style={{
+                                  fontSize: 10,
+                                  fontWeight: 800,
+                                  background: copilotMethod === 'option_b' ? '#E0E7FF' : '#F1F5F9',
+                                  color: copilotMethod === 'option_b' ? '#3730A3' : '#64748B',
+                                  padding: '2px 7px',
+                                  borderRadius: 4
+                                }}>
+                                  Power Platform Native
+                                </span>
+                              </div>
+                              <div style={{ fontSize: 11, color: '#64748B', lineHeight: 1.4 }}>
+                                Queries conversationtranscript and msdyn_botsession tables via OAuth2 service principal.
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
-                            Azure Entra ID Client ID (App Registration)
-                          </label>
-                          <input
-                            type="text"
-                            value={newAgentForm.client_id}
-                            onChange={(e) => setNewAgentForm({ ...newAgentForm, client_id: e.target.value })}
-                            placeholder="e.g. d9b73461-8261-4f10-9b30-..."
-                            style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
-                          />
-                        </div>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
-                            Azure Application Insights App ID (Real-Time Streams)
-                          </label>
-                          <input
-                            type="text"
-                            value={newAgentForm.app_insights_app_id}
-                            onChange={(e) => setNewAgentForm({ ...newAgentForm, app_insights_app_id: e.target.value })}
-                            placeholder="e.g. app-insights-lenovo-sc-prod"
-                            style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
-                          />
-                        </div>
+
+                        {/* Option A Input Fields */}
+                        {copilotMethod === 'option_a' && (
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                                Azure Application Insights App ID *
+                              </label>
+                              <input
+                                type="text"
+                                value={newAgentForm.app_insights_app_id}
+                                onChange={(e) => setNewAgentForm({ ...newAgentForm, app_insights_app_id: e.target.value })}
+                                placeholder="e.g. 7a12b345-6789-4abc-def0-..."
+                                style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                              />
+                              <div style={{ fontSize: 10.5, color: '#64748B', marginTop: 3 }}>
+                                Azure Portal → Application Insights → API Access → Application ID
+                              </div>
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                                Application Insights API Key *
+                              </label>
+                              <input
+                                type="password"
+                                value={newAgentForm.app_insights_key}
+                                onChange={(e) => setNewAgentForm({ ...newAgentForm, app_insights_key: e.target.value })}
+                                placeholder="e.g. v1_aBcDeF123456789..."
+                                style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                              />
+                              <div style={{ fontSize: 10.5, color: '#64748B', marginTop: 3 }}>
+                                Read telemetry key generated in API Access tab
+                              </div>
+                            </div>
+                            <div style={{ gridColumn: 'span 2' }}>
+                              <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                                Copilot Studio Agent / Bot Schema ID *
+                              </label>
+                              <input
+                                type="text"
+                                value={newAgentForm.copilot_bot_id}
+                                onChange={(e) => setNewAgentForm({ ...newAgentForm, copilot_bot_id: e.target.value })}
+                                placeholder="e.g. 701c468f-8db2-4972-abaa-cdd76a76f9b7"
+                                style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                              />
+                              <div style={{ fontSize: 10.5, color: '#64748B', marginTop: 3 }}>
+                                Bot ID visible in your Copilot Studio URL: <code>web.powerva.microsoft.com/.../agents/&lt;BOT_ID&gt;</code>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Option B Input Fields */}
+                        {copilotMethod === 'option_b' && (
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                            <div style={{ gridColumn: 'span 2' }}>
+                              <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                                Microsoft Dataverse Environment URL *
+                              </label>
+                              <input
+                                type="text"
+                                value={newAgentForm.dataverse_url}
+                                onChange={(e) => setNewAgentForm({ ...newAgentForm, dataverse_url: e.target.value })}
+                                placeholder="https://org46960896.crm.dynamics.com"
+                                style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                              />
+                              <div style={{ fontSize: 10.5, color: '#64748B', marginTop: 3 }}>
+                                Power Platform Admin Center → Environments → Environment URL
+                              </div>
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                                Azure Entra ID Tenant ID *
+                              </label>
+                              <input
+                                type="text"
+                                value={newAgentForm.tenant_id}
+                                onChange={(e) => setNewAgentForm({ ...newAgentForm, tenant_id: e.target.value })}
+                                placeholder="e.g. e6e6c779-4c40-45d8-9921-..."
+                                style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                                Azure Entra ID Client ID (App Registration) *
+                              </label>
+                              <input
+                                type="text"
+                                value={newAgentForm.client_id}
+                                onChange={(e) => setNewAgentForm({ ...newAgentForm, client_id: e.target.value })}
+                                placeholder="e.g. d9b73461-8261-4f10-9b30-..."
+                                style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                                Client Secret *
+                              </label>
+                              <input
+                                type="password"
+                                value={newAgentForm.client_secret}
+                                onChange={(e) => setNewAgentForm({ ...newAgentForm, client_secret: e.target.value })}
+                                placeholder="••••••••••••••••"
+                                style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                                Copilot Studio Agent / Bot Schema ID *
+                              </label>
+                              <input
+                                type="text"
+                                value={newAgentForm.copilot_bot_id}
+                                onChange={(e) => setNewAgentForm({ ...newAgentForm, copilot_bot_id: e.target.value })}
+                                placeholder="e.g. 701c468f-8db2-4972-abaa-cdd76a76f9b7"
+                                style={{ width: '100%', padding: '8px 12px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5 }}
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ) : newAgentForm.provider === 'azure_openai' ? (
                       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12 }}>
@@ -4713,7 +4894,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                     <div style={{ fontSize: 13, fontWeight: 800, color: '#1E293B', marginBottom: 12 }}>
                       4. FinOps Infrastructure &amp; Human Capital Benchmarks
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                       <div>
                         <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
                           Monthly Infra / Pack Fee ($)
@@ -4725,6 +4906,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                           onChange={(e) => setNewAgentForm({ ...newAgentForm, monthly_infra_cost: parseFloat(e.target.value) || 0 })}
                           style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5, fontWeight: 700 }}
                         />
+                        <div style={{ fontSize: 10, color: '#64748B', marginTop: 2 }}>
+                          Copilot Studio Pack ($200) or Azure host
+                        </div>
                       </div>
                       <div>
                         <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
@@ -4737,6 +4921,39 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                           onChange={(e) => setNewAgentForm({ ...newAgentForm, monthly_budget: parseFloat(e.target.value) || 0 })}
                           style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5, fontWeight: 700 }}
                         />
+                        <div style={{ fontSize: 10, color: '#64748B', marginTop: 2 }}>
+                          Hard monthly FinOps cap
+                        </div>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Target Eval Pass SLA (%)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.5"
+                          value={newAgentForm.target_eval_sla}
+                          onChange={(e) => setNewAgentForm({ ...newAgentForm, target_eval_sla: parseFloat(e.target.value) || 90.0 })}
+                          style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5, fontWeight: 700 }}
+                        />
+                        <div style={{ fontSize: 10, color: '#2563EB', marginTop: 2 }}>
+                          Benchmark target (e.g. 92% SLA)
+                        </div>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
+                          Assigned Team Users
+                        </label>
+                        <input
+                          type="number"
+                          step="1"
+                          value={newAgentForm.assigned_users}
+                          onChange={(e) => setNewAgentForm({ ...newAgentForm, assigned_users: parseInt(e.target.value) || 1 })}
+                          style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #CBD5E1', borderRadius: 8, fontSize: 12.5, fontWeight: 700 }}
+                        />
+                        <div style={{ fontSize: 10, color: '#64748B', marginTop: 2 }}>
+                          Licensed seats for adoption rate
+                        </div>
                       </div>
                       <div>
                         <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>
