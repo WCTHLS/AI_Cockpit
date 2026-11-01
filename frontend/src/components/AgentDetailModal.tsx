@@ -121,7 +121,8 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
       <div 
         className="executive-drawer"
         style={{
-          width: 560,
+          width: 'min(560px, 100vw)',
+          maxWidth: '100vw',
           background: isLight ? '#FFFFFF' : '#0B132B',
           color: isLight ? '#0F172A' : '#F8FAFC',
           borderLeft: isLight ? '1.5px solid #CBD5E1' : '1px solid #1E293B'

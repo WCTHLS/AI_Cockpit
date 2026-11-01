@@ -354,17 +354,26 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         top: 0,
         textStyle: { color: isLight ? '#475569' : '#94A3B8', fontSize: 11 }
       },
-      grid: { left: '3%', right: '4%', bottom: '3%', top: '35px', containLabel: true },
+      grid: { left: 10, right: 35, bottom: 25, top: 35, containLabel: true },
       xAxis: {
         type: 'value',
+        splitNumber: 4,
         axisLine: { lineStyle: { color: isLight ? '#E2E8F0' : '#334155' } },
-        splitLine: { lineStyle: { color: isLight ? '#F1F5F9' : '#1E293B' } }
+        splitLine: { lineStyle: { color: isLight ? '#F1F5F9' : '#1E293B' } },
+        axisLabel: { color: '#64748B', fontSize: 10 }
       },
       yAxis: {
         type: 'category',
         data: names,
         axisLine: { lineStyle: { color: isLight ? '#E2E8F0' : '#334155' } },
-        axisLabel: { color: isLight ? '#1E293B' : '#E2E8F0', fontWeight: 600 }
+        axisLabel: {
+          color: isLight ? '#1E293B' : '#E2E8F0',
+          fontWeight: 600,
+          fontSize: 11,
+          width: 95,
+          overflow: 'truncate',
+          ellipsis: '…'
+        }
       },
       series: [
         { name: 'Active (<7d)', type: 'bar', stack: 'total', data: activeVals, itemStyle: { color: '#00349B' } },
@@ -559,12 +568,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
       )}
 
       {/* TOP ROW: 5 DYNAMIC KPI CARDS */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-        gap: 16,
-        marginBottom: 20
-      }}>
+      <div className="kpi-grid-6" style={{ marginBottom: 20 }}>
         {/* Card 1: Licensed Seats (Context-Aware to Active Tab) */}
         <div title="Total assigned enterprise seat licenses" style={{
           background: 'linear-gradient(135deg, #00349B 0%, #002266 100%)',
@@ -878,7 +882,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               marginBottom: 14
             }}>
               {/* Search */}
-              <div style={{ position: 'relative', minWidth: 280, flex: 1, maxWidth: 450 }}>
+              <div style={{ position: 'relative', minWidth: 'min(100%, 240px)', flex: 1, maxWidth: 450 }}>
                 <Search size={15} color="#94A3B8" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }} />
                 <input
                   type="text"
@@ -920,7 +924,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               </div>
             </div>
             {/* Employee M365 Table */}
-            <div style={{ overflowX: 'auto' }}>
+            <div className="responsive-table-wrapper">
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'Figtree, sans-serif' }}>
                 <thead>
                   <tr style={{ background: '#F8FAFC', color: '#334155', textAlign: 'left', fontWeight: 700, borderBottom: '1.5px solid #E2E8F0' }}>
@@ -1087,7 +1091,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
             </div>
 
             {/* Developer Seats Table */}
-            <div style={{ overflowX: 'auto' }}>
+            <div className="responsive-table-wrapper">
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'Figtree, sans-serif' }}>
                 <thead>
                   <tr style={{ background: '#F8FAFC', color: '#334155', textAlign: 'left', fontWeight: 700, borderBottom: '1.5px solid #E2E8F0' }}>
@@ -1247,12 +1251,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
 
       
 {/* TWO CHARTS ROW */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
-        gap: 16,
-        marginBottom: 20
-      }}>
+      <div className="scorecard-analytics-grid" style={{ marginBottom: 20 }}>
         {/* Chart 1 */}
         <div style={{
           background: '#FFFFFF',

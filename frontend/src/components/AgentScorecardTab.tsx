@@ -263,18 +263,20 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
         textStyle: { color: '#475569', fontSize: 12, fontFamily: 'Satoshi, sans-serif' },
         data: ['Accelerate', 'Optimize', 'Intervene', 'Experiment']
       },
-      grid: { left: 55, right: 30, top: 40, bottom: 40 },
+      grid: { left: 10, right: 25, top: 40, bottom: 35, containLabel: true },
       xAxis: {
         type: 'value',
         min: 0,
         max: 100,
-        axisLabel: { formatter: '{value}%', color: '#475569', fontSize: 11 },
+        splitNumber: 4,
+        axisLabel: { formatter: '{value}%', color: '#475569', fontSize: 10.5 },
         splitLine: { lineStyle: { color: '#E6ECF8' } },
         axisLine: { lineStyle: { color: '#BFD0FF' } }
       },
       yAxis: {
         type: 'value',
-        axisLabel: { formatter: (v: number) => `$${Math.round(v / 1000)}K`, color: '#475569', fontSize: 11 },
+        splitNumber: 4,
+        axisLabel: { formatter: (v: number) => `$${Math.round(v / 1000)}K`, color: '#475569', fontSize: 10.5 },
         splitLine: { lineStyle: { color: '#E6ECF8' } },
         axisLine: { show: false }
       },
@@ -365,18 +367,19 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           </div>`;
         }
       },
-      grid: { left: 160, right: 60, top: 20, bottom: 30 },
+      grid: { left: 10, right: 45, top: 20, bottom: 30, containLabel: true },
       xAxis: {
         type: 'value',
         min: 80,
         max: 100,
-        axisLabel: { formatter: '{value}%', color: '#475569', fontSize: 11 },
+        splitNumber: 4,
+        axisLabel: { formatter: '{value}%', color: '#475569', fontSize: 10.5 },
         splitLine: { lineStyle: { color: '#E6ECF8' } }
       },
       yAxis: {
         type: 'category',
         data: teamEvals.map(t => t.team),
-        axisLabel: { color: '#1A1A1A', fontSize: 11.5, fontWeight: 500 },
+        axisLabel: { color: '#1A1A1A', fontSize: 11, fontWeight: 500, width: 100, overflow: 'truncate', ellipsis: '…' },
         axisLine: { lineStyle: { color: '#BFD0FF' } },
         axisTick: { show: false }
       },
@@ -454,11 +457,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
       </div>
 
       {/* Top 4 Governance Action Summary Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-        gap: 16
-      }}>
+      <div className="scorecard-status-grid">
         {(['accelerate', 'optimize', 'intervene', 'experiment'] as const).map(statusKey => {
           const cfg = STATUS_CONFIG[statusKey];
           const group = statusGroups[statusKey] || [];
@@ -669,7 +668,8 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             border: '1px solid #CBD5E1',
             borderRadius: 6,
             padding: '6px 12px',
-            minWidth: 260
+            flex: 1,
+            minWidth: 'min(100%, 220px)'
           }}>
             <Search size={14} color="#64748B" />
             <input
@@ -789,7 +789,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
         </div>
 
         {/* Tree Table */}
-        <div style={{ overflowX: 'auto' }}>
+        <div className="responsive-table-wrapper">
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'Satoshi, Figtree, sans-serif' }}>
             <thead>
               <tr style={{ background: '#00349B', color: '#FFFFFF', textAlign: 'left', fontSize: 12, fontWeight: 700 }}>
@@ -1148,11 +1148,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
       </div>
 
       {/* Two Side-by-Side Analytics Charts */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))',
-        gap: 18
-      }}>
+      <div className="scorecard-analytics-grid">
         {/* Value vs Adoption Scatter Chart */}
         <div className="executive-card" style={{
           background: '#FFFFFF',

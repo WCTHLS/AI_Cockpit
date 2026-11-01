@@ -101,19 +101,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, theme }) =
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '32px 20px',
+      padding: '20px 12px',
       background: isLight 
         ? 'linear-gradient(135deg, #F0F4F8 0%, #E2E8F0 100%)' 
         : 'radial-gradient(circle at 50% 10%, #0F172A 0%, #030712 100%)',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       color: isLight ? '#0F172A' : '#F8FAFC'
     }}>
-      <div style={{
-        width: '100%',
+      <div className="login-modal-grid" style={{
         maxWidth: 1060,
-        display: 'grid',
-        gridTemplateColumns: '1fr 1.25fr',
-        borderRadius: 20,
+        borderRadius: 16,
         background: isLight ? '#FFFFFF' : '#0B132B',
         border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
         boxShadow: isLight 
@@ -123,7 +120,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, theme }) =
       }}>
         {/* Left Column: Brand & Credentials Form */}
         <div style={{
-          padding: '40px 36px',
+          padding: '28px 24px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',

@@ -288,14 +288,15 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           </div>`;
         }
       },
-      grid: { top: 10, right: 65, bottom: 25, left: 20, containLabel: true },
+      grid: { top: 10, right: 65, bottom: 25, left: 15, containLabel: true },
       xAxis: {
         type: 'value',
+        splitNumber: 3,
         axisLine: { show: false },
         splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
         axisLabel: {
           color: '#64748B',
-          fontSize: 11,
+          fontSize: 10.5,
           formatter: (v: number) => `$${(v / 1000).toFixed(0)}K`
         }
       },
@@ -306,8 +307,11 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         axisTick: { show: false },
         axisLabel: {
           color: '#0F172A',
-          fontSize: 12,
-          fontWeight: 600
+          fontSize: 11,
+          fontWeight: 600,
+          width: 95,
+          overflow: 'truncate',
+          ellipsis: '…'
         }
       },
       series: [
@@ -609,9 +613,10 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           </div>`;
         }
       },
-      grid: { top: 10, right: 80, bottom: 30, left: 20, containLabel: true },
+      grid: { top: 10, right: 75, bottom: 30, left: 15, containLabel: true },
       xAxis: {
         type: 'value',
+        splitNumber: 3,
         axisLine: { lineStyle: { color: '#CBD5E1' } },
         splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
         axisLabel: {
@@ -632,7 +637,10 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         axisLabel: {
           color: '#0F172A',
           fontSize: 11,
-          fontWeight: 600
+          fontWeight: 600,
+          width: 100,
+          overflow: 'truncate',
+          ellipsis: '…'
         }
       },
       series: [
@@ -788,11 +796,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       )}
 
       {/* 6 Executive KPI Cards Across */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
-        gap: 14
-      }}>
+      <div className="kpi-grid-6">
         {/* KPI 1: NET AI VALUE (Hero Midnight Gradient Card with Sparkline) */}
         <div className="executive-card" title="Calculated as: Total Gross Labor Value Created ($2.21M) - Total AI Cost ($412K) = Net AI Value ($1.80M)&#10;ROI Ratio = Gross Value ÷ Total AI Cost" style={{
           background: 'linear-gradient(135deg, #0A2540 0%, #00349B 100%)',
@@ -843,7 +847,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
-              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.03em', color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
+              <div className="kpi-val-text" style={{ letterSpacing: '-0.03em', color: '#FFFFFF' }}>
                 {displayNetValue}
               </div>
               {/* Mini Sparkline SVG */}
@@ -922,7 +926,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
-              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+              <div className="kpi-val-text" style={{ color: '#0F172A' }}>
                 {displayHours}
               </div>
               <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
@@ -991,7 +995,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
-              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+              <div className="kpi-val-text" style={{ color: '#0F172A' }}>
                 {(() => {
                   const devSeats = (summary as any)?.breakdown?.developer_seats?.seats_count ?? 2;
                   const devActive = (summary as any)?.breakdown?.developer_seats?.active_count ?? 2;
@@ -1060,7 +1064,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
-              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+              <div className="kpi-val-text" style={{ color: '#0F172A' }}>
                 {displayCost}
               </div>
               <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
@@ -1134,7 +1138,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
-              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+              <div className="kpi-val-text" style={{ color: '#0F172A' }}>
                 94%
               </div>
               <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
@@ -1194,7 +1198,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
-              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#DC2626', fontFamily: 'Outfit, sans-serif' }}>
+              <div className="kpi-val-text" style={{ color: '#DC2626' }}>
                 2
               </div>
               <span style={{
@@ -1217,11 +1221,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       </div>
 
       {/* Middle Row: 3 Charts Side-by-Side */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1.2fr 1fr 1fr',
-        gap: 16
-      }}>
+      <div className="executive-charts-grid-3">
         {/* Chart 1: Net AI Value by Function */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
@@ -1315,11 +1315,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       </div>
 
       {/* Bottom Row: Net AI Value by Team & Where to Act this Month */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1.4fr 1fr',
-        gap: 16
-      }}>
+      <div className="executive-bottom-grid-2">
         {/* Net AI Value by Team (Ranking Bar Chart) */}
         <div className="executive-card" style={{
           background: '#FFFFFF',

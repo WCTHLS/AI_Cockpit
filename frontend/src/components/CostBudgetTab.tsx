@@ -131,6 +131,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
 
   // Diagnostic Drawer State
   const [selectedFactor, setSelectedFactor] = useState<CostFactorDetail | null>(null);
+  const [factorViewMode, setFactorViewMode] = useState<'donut' | 'treemap' | 'table'>('donut');
 
   // Team Cost vs Budget Calculation from real agents data
   const teamsMap: Record<string, { team: string; cost: number; budget: number; function: string }> = {};
@@ -212,15 +213,21 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 },
         data: ['Actual cost', 'Budget']
       },
-      grid: { top: 35, right: 65, bottom: 25, left: 20, containLabel: true },
+      grid: { top: 35, right: 50, bottom: 25, left: 10, containLabel: true },
       xAxis: {
         type: 'value',
+        splitNumber: 3,
         axisLine: { show: false },
         splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
         axisLabel: {
           color: '#64748B',
-          fontSize: 11,
-          formatter: (v: number) => `$${(v / 1000).toFixed(0)}K`
+          fontSize: 10,
+          formatter: (v: number) => {
+            if (v === 0) return '$0';
+            if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
+            if (v >= 1000) return `$${(v / 1000).toFixed(0)}k`;
+            return `$${v}`;
+          }
         }
       },
       yAxis: {
@@ -228,7 +235,14 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         data: sorted.map(f => f.name),
         axisLine: { lineStyle: { color: '#CBD5E1' } },
         axisTick: { show: false },
-        axisLabel: { color: '#0F172A', fontSize: 12, fontWeight: 600 }
+        axisLabel: {
+          color: '#0F172A',
+          fontSize: 11,
+          fontWeight: 600,
+          width: 110,
+          overflow: 'truncate',
+          ellipsis: '…'
+        }
       },
       series: [
         {
@@ -276,77 +290,155 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
     };
   }, []);
 
-  // Chart 2: AI Cost by Factor (ECharts Treemap)
+  // Chart 2: AI Cost by Factor (Donut / Treemap with tooltip confinement)
   useEffect(() => {
-    if (!treemapChartRef.current) return;
+    if (factorViewMode === 'table' || !treemapChartRef.current) return;
     const chart = echarts.init(treemapChartRef.current);
 
-    const treemapData = factorData.map((f, idx) => {
-      const colors = ['#00349B', '#0A2540', '#1713FD', '#1E40AF', '#2563EB', '#607D8B'];
-      return {
-        name: f.name,
-        value: f.actual,
-        pct: f.pctOfTotal,
-        itemStyle: {
-          color: colors[idx % colors.length],
-          borderColor: '#FFFFFF',
-          borderWidth: 2
-        }
-      };
-    });
-
-    chart.setOption({
-      backgroundColor: 'transparent',
-      tooltip: {
-        trigger: 'item',
-        backgroundColor: '#FFFFFF',
-        borderColor: '#D6E2FA',
-        borderWidth: 1,
-        textStyle: { color: '#0F172A' },
-        formatter: (params: any) => {
-          return `<div style="padding: 4px;">
-            <b style="color: #00349B; font-size: 13px;">${params.name}</b><br/>
-            Monthly Cost: <b>${formatUSD(params.value)}</b><br/>
-            Share of Total Spend: <b>${params.data.pct}%</b>
-          </div>`;
-        }
-      },
-      series: [
-        {
-          name: 'AI Cost by Factor',
-          type: 'treemap',
-          width: '100%',
-          height: '100%',
-          roam: false,
-          nodeClick: false,
-          breadcrumb: { show: false },
-          label: {
-            show: true,
-            position: 'insideTopLeft',
-            formatter: (p: any) => {
-              return `{name|${p.name}}\n{val|${formatUSD(p.value)} · ${p.data.pct}%}`;
+    if (factorViewMode === 'donut') {
+      const palette = ['#00349B', '#2563EB', '#10B981', '#F59E0B', '#8B5CF6'];
+      chart.setOption({
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'item',
+          confine: true,
+          backgroundColor: '#FFFFFF',
+          borderColor: '#D6E2FA',
+          borderWidth: 1,
+          textStyle: { color: '#0F172A', fontFamily: 'Figtree, sans-serif' },
+          formatter: (params: any) => {
+            return `<div style="padding: 4px;">
+              <b style="color: ${params.color}; font-size: 13px;">${params.name}</b><br/>
+              Monthly Cost: <b>${formatUSD(params.value)}</b><br/>
+              Share of Spend: <b>${params.percent}%</b>
+            </div>`;
+          }
+        },
+        legend: {
+          bottom: 0,
+          left: 'center',
+          itemWidth: 10,
+          itemHeight: 10,
+          textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 }
+        },
+        series: [
+          {
+            name: 'AI Cost by Factor',
+            type: 'pie',
+            radius: ['48%', '74%'],
+            center: ['50%', '42%'],
+            avoidLabelOverlap: true,
+            itemStyle: {
+              borderRadius: 4,
+              borderColor: '#FFFFFF',
+              borderWidth: 2
             },
-            rich: {
-              name: {
-                color: '#FFFFFF',
-                fontSize: 12.5,
-                fontWeight: 700,
-                lineHeight: 18
-              },
-              val: {
-                color: 'rgba(255, 255, 255, 0.85)',
-                fontSize: 11,
-                fontWeight: 600
-              }
+            label: {
+              show: false
+            },
+            data: factorData.map((f, idx) => ({
+              name: f.name,
+              value: f.actual,
+              itemStyle: { color: palette[idx % palette.length] }
+            }))
+          }
+        ],
+        graphic: [
+          {
+            type: 'text',
+            left: 'center',
+            top: '36%',
+            style: {
+              text: formatUSD(totalActualCost),
+              fill: '#00349B',
+              fontSize: 19,
+              fontWeight: 800,
+              fontFamily: 'Outfit, sans-serif'
             }
           },
+          {
+            type: 'text',
+            left: 'center',
+            top: '47%',
+            style: {
+              text: 'Monthly Spend',
+              fill: '#64748B',
+              fontSize: 10.5,
+              fontWeight: 600
+            }
+          }
+        ]
+      });
+    } else {
+      const treemapData = factorData.map((f, idx) => {
+        const colors = ['#00349B', '#1D4ED8', '#2563EB', '#3B82F6', '#60A5FA', '#93C5FD'];
+        return {
+          name: f.name,
+          value: f.actual,
+          pct: f.pctOfTotal,
           itemStyle: {
-            borderRadius: 4
-          },
-          data: treemapData
-        }
-      ]
-    });
+            color: colors[idx % colors.length],
+            borderColor: '#FFFFFF',
+            borderWidth: 2
+          }
+        };
+      });
+
+      chart.setOption({
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'item',
+          confine: true,
+          backgroundColor: '#FFFFFF',
+          borderColor: '#D6E2FA',
+          borderWidth: 1,
+          textStyle: { color: '#0F172A' },
+          formatter: (params: any) => {
+            return `<div style="padding: 4px;">
+              <b style="color: #00349B; font-size: 13px;">${params.name}</b><br/>
+              Monthly Cost: <b>${formatUSD(params.value)}</b><br/>
+              Share of Total Spend: <b>${params.data.pct}%</b>
+            </div>`;
+          }
+        },
+        series: [
+          {
+            name: 'AI Cost by Factor',
+            type: 'treemap',
+            width: '100%',
+            height: '100%',
+            roam: false,
+            nodeClick: false,
+            breadcrumb: { show: false },
+            visibleMin: 20,
+            label: {
+              show: true,
+              position: 'insideTopLeft',
+              formatter: (p: any) => {
+                return `{name|${p.name}}\n{val|${formatUSD(p.value)} · ${p.data.pct}%}`;
+              },
+              rich: {
+                name: {
+                  color: '#FFFFFF',
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  lineHeight: 16
+                },
+                val: {
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  fontSize: 10,
+                  fontWeight: 600
+                }
+              }
+            },
+            itemStyle: {
+              borderRadius: 4
+            },
+            data: treemapData
+          }
+        ]
+      });
+    }
 
     chart.on('click', (params: any) => {
       const found = factorData.find(f => f.name === params.name);
@@ -359,7 +451,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, []);
+  }, [factorViewMode, factorData, totalActualCost]);
 
   // Chart 3: Cost vs Budget by Team (Horizontal Bullet Bar Chart)
   useEffect(() => {
@@ -397,15 +489,21 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 },
         data: ['Actual cost', 'Budget']
       },
-      grid: { top: 35, right: 65, bottom: 25, left: 20, containLabel: true },
+      grid: { top: 35, right: 50, bottom: 25, left: 10, containLabel: true },
       xAxis: {
         type: 'value',
+        splitNumber: 3,
         axisLine: { show: false },
         splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
         axisLabel: {
           color: '#64748B',
           fontSize: 10,
-          formatter: (v: number) => formatUSD(v)
+          formatter: (v: number) => {
+            if (v === 0) return '$0';
+            if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
+            if (v >= 1000) return `$${(v / 1000).toFixed(0)}k`;
+            return `$${v}`;
+          }
         }
       },
       yAxis: {
@@ -413,7 +511,14 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         data: topTeams.map(t => t.team),
         axisLine: { lineStyle: { color: '#CBD5E1' } },
         axisTick: { show: false },
-        axisLabel: { color: '#0F172A', fontSize: 11.5, fontWeight: 600 }
+        axisLabel: {
+          color: '#0F172A',
+          fontSize: 10.5,
+          fontWeight: 600,
+          width: 110,
+          overflow: 'truncate',
+          ellipsis: '…'
+        }
       },
       series: [
         {
@@ -496,15 +601,21 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         itemHeight: 12,
         textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 }
       },
-      grid: { top: 35, right: 65, bottom: 25, left: 20, containLabel: true },
+      grid: { top: 35, right: 50, bottom: 25, left: 10, containLabel: true },
       xAxis: {
         type: 'value',
+        splitNumber: 3,
         axisLine: { show: false },
         splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
         axisLabel: {
           color: '#64748B',
           fontSize: 10,
-          formatter: (v: number) => formatUSD(v)
+          formatter: (v: number) => {
+            if (v === 0) return '$0';
+            if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
+            if (v >= 1000) return `$${(v / 1000).toFixed(0)}k`;
+            return `$${v}`;
+          }
         }
       },
       yAxis: {
@@ -512,7 +623,14 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         data: categories,
         axisLine: { lineStyle: { color: '#CBD5E1' } },
         axisTick: { show: false },
-        axisLabel: { color: '#0F172A', fontSize: 11.5, fontWeight: 600 }
+        axisLabel: {
+          color: '#0F172A',
+          fontSize: 10.5,
+          fontWeight: 600,
+          width: 110,
+          overflow: 'truncate',
+          ellipsis: '…'
+        }
       },
       series: [
         {
@@ -605,11 +723,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
       )}
 
       {/* Top 5 FinOps KPI Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: 14
-      }}>
+      <div className="kpi-grid-6">
         {/* KPI 1: TOTAL AI COST (Hero Midnight Gradient Card) */}
         <div className="executive-card" title="Calculated as: Sum of (Token Costs + Cloud Infra Costs + M365/Copilot Seat Licenses) across all departments" style={{
           background: 'linear-gradient(135deg, #0A2540 0%, #00349B 100%)',
@@ -917,11 +1031,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
       </div>
       
       {/* Middle Row: Cost vs Budget by Factor & AI Cost by Factor Treemap */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))',
-        gap: 16
-      }}>
+      <div className="cost-charts-grid">
         {/* Cost vs Budget by Factor */}
         <div className="executive-card" style={{
           background: '#FFFFFF',
@@ -963,49 +1073,108 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
                 Share of monthly AI cost · not filtered by Function or Portfolio
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <button style={{
-                background: '#F1F5F9',
-                border: '1px solid #CBD5E1',
-                borderRadius: 4,
-                padding: '3px 8px',
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#475569',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                cursor: 'pointer'
-              }}>
-                <TableIcon size={12} /> Table
+            <div style={{ display: 'inline-flex', background: '#F1F5F9', padding: 2, borderRadius: 6, border: '1px solid #CBD5E1' }}>
+              <button
+                onClick={() => setFactorViewMode('donut')}
+                style={{
+                  background: factorViewMode === 'donut' ? '#00349B' : 'transparent',
+                  color: factorViewMode === 'donut' ? '#FFFFFF' : '#475569',
+                  border: 'none',
+                  borderRadius: 4,
+                  padding: '3px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                Donut
               </button>
-              <button style={{
-                background: '#F1F5F9',
-                border: '1px solid #CBD5E1',
-                borderRadius: 4,
-                padding: '3px 8px',
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#475569',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                cursor: 'pointer'
-              }}>
-                <Maximize2 size={12} /> Focus
+              <button
+                onClick={() => setFactorViewMode('treemap')}
+                style={{
+                  background: factorViewMode === 'treemap' ? '#00349B' : 'transparent',
+                  color: factorViewMode === 'treemap' ? '#FFFFFF' : '#475569',
+                  border: 'none',
+                  borderRadius: 4,
+                  padding: '3px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                Treemap
+              </button>
+              <button
+                onClick={() => setFactorViewMode('table')}
+                style={{
+                  background: factorViewMode === 'table' ? '#00349B' : 'transparent',
+                  color: factorViewMode === 'table' ? '#FFFFFF' : '#475569',
+                  border: 'none',
+                  borderRadius: 4,
+                  padding: '3px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 3
+                }}
+              >
+                <TableIcon size={11} /> Table
               </button>
             </div>
           </div>
-          <div ref={treemapChartRef} style={{ height: 280, width: '100%' }} />
+
+          {factorViewMode === 'table' ? (
+            <div style={{ overflowX: 'auto', maxHeight: 280, WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', minWidth: 420, borderCollapse: 'collapse', fontSize: 12, textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ background: '#F8FAFC', borderBottom: '1.5px solid #E2E8F0', color: '#475569', fontWeight: 700 }}>
+                    <th style={{ padding: '8px 10px' }}>Cost Factor</th>
+                    <th style={{ padding: '8px 10px' }}>Monthly Spend</th>
+                    <th style={{ padding: '8px 10px' }}>Share</th>
+                    <th style={{ padding: '8px 10px' }}>Budget</th>
+                    <th style={{ padding: '8px 10px' }}>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {factorData.map(f => (
+                    <tr
+                      key={f.name}
+                      onClick={() => setSelectedFactor(f)}
+                      style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 0.15s' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <td style={{ padding: '8px 10px', fontWeight: 700, color: '#00349B' }}>{f.name}</td>
+                      <td style={{ padding: '8px 10px', fontWeight: 600 }}>{formatUSD(f.actual)}</td>
+                      <td style={{ padding: '8px 10px', color: '#64748B' }}>{f.pctOfTotal}%</td>
+                      <td style={{ padding: '8px 10px', color: '#475569' }}>{formatUSD(f.budget)}</td>
+                      <td style={{ padding: '8px 10px' }}>
+                        <span style={{
+                          background: f.status === 'overrun' ? '#FEE2E2' : '#DCFCE7',
+                          color: f.status === 'overrun' ? '#DC2626' : '#16A34A',
+                          padding: '2px 6px',
+                          borderRadius: 4,
+                          fontSize: 10.5,
+                          fontWeight: 700
+                        }}>
+                          {f.pctOfBudget}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div ref={treemapChartRef} style={{ height: 280, width: '100%' }} />
+          )}
         </div>
       </div>
 
       {/* Bottom Row: Cost vs Budget by Team & Cost by Factor Aug vs Sep */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))',
-        gap: 16
-      }}>
+      <div className="cost-charts-grid">
         {/* Cost vs Budget by Team */}
         <div className="executive-card" style={{
           background: '#FFFFFF',

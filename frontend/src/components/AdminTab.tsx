@@ -1075,20 +1075,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         </div>
       )}
       {/* Top Header Card */}
-      <div style={{
-        background: '#FFFFFF',
-        border: '1.5px solid #D6E2FA',
-        borderRadius: 12,
-        padding: '20px 24px',
-        boxShadow: '0 4px 16px rgba(0, 52, 155, 0.06)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: 16
-      }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div className="configurator-header-card">
+        <div style={{ flex: '1 1 300px' }}>
+          <div className="configurator-title-wrap">
             <div style={{
               width: 36,
               height: 36,
@@ -1097,7 +1086,8 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#FFFFFF'
+              color: '#FFFFFF',
+              flexShrink: 0
             }}>
               <Sliders size={20} />
             </div>
@@ -1112,7 +1102,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="configurator-btn-wrap">
           <button
             onClick={handleResetDefaults}
             style={{
@@ -1122,11 +1112,12 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               background: '#F1F5F9',
               border: '1px solid #CBD5E1',
               borderRadius: 20,
-              padding: '7px 14px',
+              padding: '8px 16px',
               fontSize: 12.5,
               fontWeight: 700,
               color: '#475569',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
             }}
           >
             <RotateCcw size={14} /> Reset Defaults
@@ -1143,11 +1134,12 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               color: '#FFFFFF',
               border: 'none',
               borderRadius: 20,
-              padding: '8px 18px',
+              padding: '9px 20px',
               fontSize: 13,
               fontWeight: 800,
               cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(0, 52, 155, 0.25)'
+              boxShadow: '0 4px 12px rgba(0, 52, 155, 0.25)',
+              whiteSpace: 'nowrap'
             }}
           >
             {isAdmin ? <Save size={15} /> : <Lock size={15} />} {isSaving ? 'Saving...' : isAdmin ? 'Save & Recalculate Portfolio' : 'Admin Authority Required'}
@@ -1174,16 +1166,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
       )}
 
       {/* Real-time Valuation Sandbox Impact Card */}
-      <div style={{
-        background: 'linear-gradient(135deg, #0A2540 0%, #00349B 100%)',
-        borderRadius: 12,
-        padding: '20px 24px',
-        color: '#FFFFFF',
-        boxShadow: '0 8px 24px -4px rgba(0, 52, 155, 0.28)',
-        border: '1px solid rgba(255, 255, 255, 0.14)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
+      <div className="sandbox-impact-card">
         <div style={{
           position: 'absolute',
           top: 0,
@@ -1193,7 +1176,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
           background: 'linear-gradient(90deg, #38BDF8, #818CF8)'
         }} />
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Sparkles size={18} color="#38BDF8" />
             <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#93C5FD' }}>
@@ -1207,14 +1190,14 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: 16
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
+          gap: 12
         }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#93C5FD', textTransform: 'uppercase' }}>
               Blended Labor Rate
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, fontFamily: 'Outfit, sans-serif', marginTop: 3 }}>
+            <div className="sandbox-val-num">
               ${blendedHourlyRate.toFixed(2)} <span style={{ fontSize: 13, fontWeight: 500, color: '#CBD5E1' }}>/ hr</span>
             </div>
             <div style={{ fontSize: 11, color: '#CBD5E1', marginTop: 2 }}>
@@ -1226,7 +1209,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             <div style={{ fontSize: 11, fontWeight: 700, color: '#93C5FD', textTransform: 'uppercase' }}>
               Gross Value ({Math.round(baselineHoursSaved).toLocaleString()} hrs)
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, fontFamily: 'Outfit, sans-serif', marginTop: 3 }}>
+            <div className="sandbox-val-num">
               {formatUSD(simulatedGrossValue)}
             </div>
             <div style={{ fontSize: 11, color: '#CBD5E1', marginTop: 2 }}>
@@ -1238,7 +1221,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             <div style={{ fontSize: 11, fontWeight: 700, color: '#93C5FD', textTransform: 'uppercase' }}>
               Net AI Value
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: '#6EE7B7', fontFamily: 'Outfit, sans-serif', marginTop: 3 }}>
+            <div className="sandbox-val-num" style={{ color: '#6EE7B7' }}>
               {formatUSD(simulatedNetValue)}
             </div>
             <div style={{ fontSize: 11, color: '#CBD5E1', marginTop: 2 }}>
@@ -1250,7 +1233,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             <div style={{ fontSize: 11, fontWeight: 700, color: '#93C5FD', textTransform: 'uppercase' }}>
               ROI Multiplier
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: '#FCD34D', fontFamily: 'Outfit, sans-serif', marginTop: 3 }}>
+            <div className="sandbox-val-num" style={{ color: '#FCD34D' }}>
               {simulatedRoiMultiplier.toFixed(2)}x
             </div>
             <div style={{ fontSize: 11, color: '#CBD5E1', marginTop: 2 }}>
@@ -1262,7 +1245,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             <div style={{ fontSize: 11, fontWeight: 700, color: '#93C5FD', textTransform: 'uppercase' }}>
               Labor Capacity Unlocked
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: '#FFFFFF', fontFamily: 'Outfit, sans-serif', marginTop: 3 }}>
+            <div className="sandbox-val-num">
               ~{simulatedFtesUnlocked.toFixed(0)} FTEs
             </div>
             <div style={{ fontSize: 11, color: '#CBD5E1', marginTop: 2 }}>
@@ -1273,12 +1256,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
       </div>
 
       {/* Section Selector Pills */}
-      <div style={{
-        display: 'flex',
-        gap: 8,
-        borderBottom: '1.5px solid #E2E8F0',
-        paddingBottom: 4
-      }}>
+      <div className="admin-subnav-scroll">
         <button
           onClick={() => setActiveSection('subs')}
           style={{
@@ -3388,7 +3366,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             padding: 22,
             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14, marginBottom: 16 }}>
               <div>
                 <h3 style={{ fontSize: 17, fontWeight: 800, color: '#1E293B', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Database size={18} color="#4F46E5" />
@@ -3399,7 +3377,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                 <button
                   onClick={() => { setIsEditingExistingAgent(false); setIsAddAgentModalOpen(true); }}
                   style={{
@@ -3437,8 +3415,8 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             </div>
 
             {/* Table */}
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 12.5 }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', minWidth: 800, borderCollapse: 'collapse', textAlign: 'left', fontSize: 12.5 }}>
                 <thead>
                   <tr style={{ background: '#F8FAFC', borderBottom: '2px solid #E2E8F0', color: '#475569', fontWeight: 800 }}>
                     <th style={{ padding: '12px 14px' }}>Agent Name</th>
