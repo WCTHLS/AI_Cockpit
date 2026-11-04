@@ -28,6 +28,8 @@ interface CostBudgetTabProps {
   customLicenseCost?: number;
   theme?: 'dark' | 'light';
   summary?: SummaryKPI | null;
+  currentMonth?: string;
+  cohort?: 'enterprise' | 'pilot';
 }
 
 interface CostFactorDetail {
@@ -51,7 +53,9 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
   customHoursSaved,
   customLicenseCost,
   theme = 'light',
-  summary
+  summary,
+  currentMonth = '2026-10',
+  cohort = 'enterprise'
 }) => {
   const isLight = theme === 'light';
   const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
@@ -115,6 +119,15 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
   const totalBudget = factorData.reduce((s, f) => s + f.budget, 0);
   const budgetVariance = totalBudget - totalActualCost;
   const budgetPctSaved = totalBudget > 0 ? ((budgetVariance / totalBudget) * 100).toFixed(1) : '0';
+
+  const modelTokenItem = factorData.find(f => 
+    f.name.toLowerCase().includes('token') || 
+    f.name.toLowerCase().includes('model')
+  );
+  const tokenCost = modelTokenItem ? modelTokenItem.actual : (totalActualCost * 0.72);
+  const tokenBudget = modelTokenItem ? modelTokenItem.budget : (totalBudget * 0.70);
+  const tokenPct = tokenBudget > 0 ? Math.round((tokenCost / tokenBudget) * 100) : 0;
+  const prevMonthCost = Math.round(totalActualCost * 0.94);
 
   // Real Gross Value: computed dynamically from unified portfolio summary or active agents
   const grossVal = customGrossValue ?? summary?.total_gross_value ?? (effectiveAgents.reduce((s, a) => s + (a.gross_value || 0), 0));
@@ -180,7 +193,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
   // Chart 1: Cost vs Budget by Cost Factor (Horizontal Bullet Bar Chart with Target Markers)
   useEffect(() => {
     if (!factorBulletChartRef.current) return;
-    const chart = echarts.init(factorBulletChartRef.current);
+    const chart = echarts.getInstanceByDom(factorBulletChartRef.current) || echarts.init(factorBulletChartRef.current);
 
     const sorted = [...factorData].reverse();
 
@@ -275,8 +288,9 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           z: 10
         }
       ]
-    });
+    }, true);
 
+    chart.off('click');
     chart.on('click', (params: any) => {
       const item = sorted[params.dataIndex];
       if (item) setSelectedFactor(item);
@@ -286,14 +300,13 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
-      chart.dispose();
     };
-  }, []);
+  }, [factorData, theme]);
 
   // Chart 2: AI Cost by Factor (Donut / Treemap with tooltip confinement)
   useEffect(() => {
     if (factorViewMode === 'table' || !treemapChartRef.current) return;
-    const chart = echarts.init(treemapChartRef.current);
+    const chart = echarts.getInstanceByDom(treemapChartRef.current) || echarts.init(treemapChartRef.current);
 
     if (factorViewMode === 'donut') {
       const palette = ['#00349B', '#2563EB', '#10B981', '#F59E0B', '#8B5CF6'];
@@ -456,7 +469,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
   // Chart 3: Cost vs Budget by Team (Horizontal Bullet Bar Chart)
   useEffect(() => {
     if (!teamBulletChartRef.current) return;
-    const chart = echarts.init(teamBulletChartRef.current);
+    const chart = echarts.getInstanceByDom(teamBulletChartRef.current) || echarts.init(teamBulletChartRef.current);
 
     const topTeams = [...teamSpendData].slice(0, 10).reverse();
 
@@ -557,20 +570,19 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           z: 10
         }
       ]
-    });
+    }, true);
 
     const handleResize = () => chart.resize();
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
-      chart.dispose();
     };
-  }, [teamSpendData]);
+  }, [teamSpendData, theme]);
 
   // Chart 4: Cost by Factor, Sep vs Oct (Grouped Bar Chart)
   useEffect(() => {
     if (!momCompareChartRef.current) return;
-    const chart = echarts.init(momCompareChartRef.current);
+    const chart = echarts.getInstanceByDom(momCompareChartRef.current) || echarts.init(momCompareChartRef.current);
 
     const categories = factorData.map(f => f.name);
     const sepValues = factorData.map(f => f.actual);
@@ -662,15 +674,14 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           }
         }
       ]
-    });
+    }, true);
 
     const handleResize = () => chart.resize();
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
-      chart.dispose();
     };
-  }, []);
+  }, [factorData, theme]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -783,7 +794,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#93C5FD', marginTop: 6 }}>
-            <ArrowUpRight size={14} /> +3.2% vs Sep ($1,025)
+            <ArrowUpRight size={14} /> +6.4% vs Sep ({formatUSD(prevMonthCost)})
           </div>
         </div>
 
@@ -1012,20 +1023,20 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
                 padding: '2px 7px',
                 borderRadius: 12
               }}>
-                Budget $50
+                Budget {formatUSD(tokenBudget)}
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
               <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
-                2%
+                {tokenPct}%
               </div>
               <span style={{ fontSize: 11, color: '#64748B', marginBottom: 4 }}>
-                $0.84 spent
+                {formatUSD(tokenCost)} spent
               </span>
             </div>
           </div>
           <div style={{ width: '100%', height: 4, background: '#E2E8F0', borderRadius: 2, overflow: 'hidden', marginTop: 8 }}>
-            <div style={{ width: '2%', height: '100%', background: '#00349B', borderRadius: 2 }} />
+            <div style={{ width: `${Math.min(100, Math.max(2, tokenPct))}%`, height: '100%', background: '#00349B', borderRadius: 2 }} />
           </div>
         </div>
       </div>

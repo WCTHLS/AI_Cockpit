@@ -389,6 +389,8 @@ export const App: React.FC = () => {
             customLicenseCost={dynamicLicenseCost}
             theme={theme}
             summary={summary}
+            currentMonth={currentMonth}
+            cohort={cohort}
           />
         )}
 
