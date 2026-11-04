@@ -396,8 +396,8 @@ INSERT OR IGNORE INTO config_threshold(key, numeric_value, description) VALUES
  ('experiment_days', 60, 'Days in production below which action is Experiment'),
  ('intervene_eval_pass_pct', 88, 'Intervene if weighted evaluation pass rate is below this percentage'),
  ('intervene_cost_budget_pct', 110, 'Intervene if cost is above this percentage of budget'),
- ('intervene_net_value_min', 15000, 'Intervene if net value is below this amount'),
- ('accelerate_net_value_min', 40000, 'Accelerate if net value is at least this amount'),
+ ('intervene_net_value_min', 0, 'Intervene if net value is below this amount'),
+ ('accelerate_net_value_min', 2500, 'Accelerate if net value is at least this amount'),
  ('accelerate_adoption_min_pct', 70, 'Accelerate if adoption is at least this percentage');
 
 -- 12. Monthly scorecard view.

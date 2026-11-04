@@ -57,10 +57,11 @@ export async function loginUser(email: string, password: string = 'demo'): Promi
   return { token, user };
 }
 
-export async function fetchSummary(month?: string, functionName?: string): Promise<SummaryKPI> {
+export async function fetchSummary(month?: string, functionName?: string, cohort?: string): Promise<SummaryKPI> {
   const params = new URLSearchParams();
   if (month) params.append('month', month);
   if (functionName) params.append('function', functionName);
+  if (cohort) params.append('cohort', cohort);
   
   const res = await fetch(`${API_BASE}/summary?${params.toString()}`, {
     headers: getAuthHeaders()
@@ -69,9 +70,10 @@ export async function fetchSummary(month?: string, functionName?: string): Promi
   return res.json();
 }
 
-export async function fetchByFunction(month?: string): Promise<FunctionSummary[]> {
+export async function fetchByFunction(month?: string, cohort?: string): Promise<FunctionSummary[]> {
   const params = new URLSearchParams();
   if (month) params.append('month', month);
+  if (cohort) params.append('cohort', cohort);
   const res = await fetch(`${API_BASE}/summary/by-function?${params.toString()}`, {
     headers: getAuthHeaders()
   });
@@ -79,9 +81,10 @@ export async function fetchByFunction(month?: string): Promise<FunctionSummary[]
   return res.json();
 }
 
-export async function fetchCostBreakdown(month?: string): Promise<CostBreakdownItem[]> {
+export async function fetchCostBreakdown(month?: string, cohort?: string): Promise<CostBreakdownItem[]> {
   const params = new URLSearchParams();
   if (month) params.append('month', month);
+  if (cohort) params.append('cohort', cohort);
   const res = await fetch(`${API_BASE}/summary/cost-breakdown?${params.toString()}`, {
     headers: getAuthHeaders()
   });
@@ -89,9 +92,10 @@ export async function fetchCostBreakdown(month?: string): Promise<CostBreakdownI
   return res.json();
 }
 
-export async function fetchTrend(functionName?: string): Promise<TrendMonth[]> {
+export async function fetchTrend(functionName?: string, cohort?: string): Promise<TrendMonth[]> {
   const params = new URLSearchParams();
   if (functionName) params.append('function', functionName);
+  if (cohort) params.append('cohort', cohort);
   const res = await fetch(`${API_BASE}/summary/trend?${params.toString()}`, {
     headers: getAuthHeaders()
   });
@@ -99,10 +103,11 @@ export async function fetchTrend(functionName?: string): Promise<TrendMonth[]> {
   return res.json();
 }
 
-export async function fetchWhereToAct(month?: string, functionName?: string): Promise<AgentScorecardItem[]> {
+export async function fetchWhereToAct(month?: string, functionName?: string, cohort?: string): Promise<AgentScorecardItem[]> {
   const params = new URLSearchParams();
   if (month) params.append('month', month);
   if (functionName) params.append('function', functionName);
+  if (cohort) params.append('cohort', cohort);
   const res = await fetch(`${API_BASE}/summary/where-to-act?${params.toString()}`, {
     headers: getAuthHeaders()
   });
@@ -113,6 +118,7 @@ export async function fetchWhereToAct(month?: string, functionName?: string): Pr
 export async function fetchAgents(params: {
   month?: string;
   function?: string;
+  cohort?: string;
   action?: string;
   search?: string;
   sort_by?: string;
@@ -121,6 +127,7 @@ export async function fetchAgents(params: {
   const q = new URLSearchParams();
   if (params.month) q.append('month', params.month);
   if (params.function) q.append('function', params.function);
+  if (params.cohort) q.append('cohort', params.cohort);
   if (params.action) q.append('action', params.action);
   if (params.search) q.append('search', params.search);
   if (params.sort_by) q.append('sort_by', params.sort_by);

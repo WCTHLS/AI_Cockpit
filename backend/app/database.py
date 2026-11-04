@@ -331,6 +331,13 @@ def init_db(seed_if_empty: bool = True):
             if count == 0:
                 seed_database(conn)
             sync_active_agents(conn)
+            try:
+                cur.execute("SELECT COUNT(*) FROM ai_agent")
+                if cur.fetchone()[0] < 100:
+                    from ..db.seed_enterprise_fleet import seed_enterprise_fleet
+                    seed_enterprise_fleet(db_path)
+            except Exception as e:
+                print(f"Warning auto-seeding enterprise fleet: {e}")
 
         # Seed and persist the 15 employees from Claude Code usage telemetry
         seed_claude_code_employees(conn)

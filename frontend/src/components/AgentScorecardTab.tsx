@@ -61,8 +61,17 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
     : agents;
   const [selectedStatus, setSelectedStatus] = useState<string>(initialActionFilter ? initialActionFilter.toLowerCase() : '');
   const [collapsedFunctions, setCollapsedFunctions] = useState<Set<string>>(new Set());
-  const [collapsedTeams, setCollapsedTeams] = useState<Set<string>>(new Set());
-  const [viewMode, setViewMode] = useState<'all' | 'teams' | 'functions'>('all');
+  const [collapsedTeams, setCollapsedTeams] = useState<Set<string>>(() => {
+    if (agents.length > 50) {
+      const initialTeams = new Set<string>();
+      agents.forEach(a => initialTeams.add(`${a.function}|${a.team}`));
+      return initialTeams;
+    }
+    return new Set();
+  });
+  const [viewMode, setViewMode] = useState<'all' | 'teams' | 'functions'>(() => {
+    return agents.length > 50 ? 'teams' : 'all';
+  });
 
   // Search and Productivity Quick Filter State
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -106,7 +115,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
     // 3. Productivity Quick Filter
     if (productivityFilter === 'top-drivers') {
-      return (a.net_value || 0) >= 40000;
+      return (a.net_value || 0) >= 3000;
     }
     if (productivityFilter === 'intervene') {
       return a.action?.toLowerCase() === 'intervene';
@@ -732,7 +741,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                 gap: 4
               }}
             >
-              🚀 Top Value Drivers ($40K+)
+              🚀 Top Value Drivers ($3K+)
             </button>
 
             <button
@@ -1017,7 +1026,36 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                 >
                                   <td style={{ padding: '7px 14px 7px 64px', color: '#1A1A1A', fontSize: 13, fontWeight: 500 }}>
                                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                       <span><span style={{ color: '#00349B', marginRight: 4 }}>•</span> {agent.name}</span>
+                                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                                         <span><span style={{ color: '#00349B', marginRight: 4 }}>•</span> {agent.name}</span>
+                                         {(agent.portfolio === 'Live Pilot' || liveAgentUrl) && (
+                                           <span style={{
+                                             fontSize: 9.5,
+                                             fontWeight: 800,
+                                             background: '#DCFCE7',
+                                             color: '#15803D',
+                                             border: '1px solid #86EFAC',
+                                             padding: '1px 6px',
+                                             borderRadius: 10,
+                                             letterSpacing: '0.2px'
+                                           }}>
+                                             LIVE PILOT
+                                           </span>
+                                         )}
+                                         {agent.model && (
+                                           <span style={{
+                                             fontSize: 10,
+                                             fontWeight: 600,
+                                             background: '#F1F5F9',
+                                             color: '#475569',
+                                             border: '1px solid #E2E8F0',
+                                             padding: '1px 5px',
+                                             borderRadius: 4
+                                           }}>
+                                             {agent.model}
+                                           </span>
+                                         )}
+                                       </div>
                                        {liveAgentUrl && (
                                          <a
                                            href={liveAgentUrl}

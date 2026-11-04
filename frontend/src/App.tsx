@@ -66,6 +66,7 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'summary' | 'scorecard' | 'costs' | 'seats' | 'admin'>('summary');
   const [currentMonth, setCurrentMonth] = useState<string>('2026-10');
   const [selectedFunction, setSelectedFunction] = useState<string>('');
+  const [cohort, setCohort] = useState<'enterprise' | 'pilot'>('enterprise');
 
   const [currentUser, setCurrentUser] = useState<UserProfile>(() => {
     try {
@@ -157,14 +158,15 @@ export const App: React.FC = () => {
         await syncClaudeTelemetry().catch((err) => console.log('Auto Claude sync skipped/error:', err));
       }
       const [sumData, funcData, costData, trendData, actData, agentList, seatData, thresh] = await Promise.all([
-        fetchSummary(currentMonth, effFunc).catch(() => null),
-        fetchByFunction(currentMonth).catch(() => []),
-        fetchCostBreakdown(currentMonth).catch(() => []),
-        fetchTrend(effFunc).catch(() => []),
-        fetchWhereToAct(currentMonth, effFunc).catch(() => []),
+        fetchSummary(currentMonth, effFunc, cohort).catch(() => null),
+        fetchByFunction(currentMonth, cohort).catch(() => []),
+        fetchCostBreakdown(currentMonth, cohort).catch(() => []),
+        fetchTrend(effFunc, cohort).catch(() => []),
+        fetchWhereToAct(currentMonth, effFunc, cohort).catch(() => []),
         fetchAgents({
           month: currentMonth,
           function: effFunc,
+          cohort: cohort,
           action: scorecardActionFilter
         }).catch(() => []),
         fetchSeats(effFunc, subscriptionConfig.m365CopilotPrice).catch(() => null),
@@ -197,7 +199,7 @@ export const App: React.FC = () => {
     if (isAuthenticated) {
       loadDashboardData();
     }
-  }, [currentMonth, selectedFunction, currentUser, scorecardActionFilter, isAuthenticated]);
+  }, [currentMonth, selectedFunction, currentUser, scorecardActionFilter, isAuthenticated, cohort]);
 
   const handleFilterAction = (action: string) => {
     setScorecardActionFilter(action);
@@ -252,6 +254,8 @@ export const App: React.FC = () => {
         onMonthChange={setCurrentMonth}
         selectedFunction={effFunc}
         onFunctionChange={setSelectedFunction}
+        cohort={cohort}
+        onCohortChange={setCohort}
         user={currentUser}
         onUserChange={handleUserChange}
         onLogout={handleLogout}

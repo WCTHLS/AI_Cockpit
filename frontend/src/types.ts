@@ -20,6 +20,9 @@ export interface AgentScorecardItem {
   baseline_employee_hours?: number;
   action: 'accelerate' | 'optimize' | 'experiment' | 'intervene';
   suggested_action?: string;
+  portfolio?: string;
+  model?: string;
+  provider?: string;
 }
 
 export interface SummaryKPI {

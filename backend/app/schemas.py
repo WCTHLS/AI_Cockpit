@@ -21,8 +21,8 @@ class ThresholdConfig(BaseModel):
     experiment_days: int = 60
     intervene_eval_pass: float = 88.0
     intervene_cost_budget_pct: float = 110.0
-    intervene_value_min: float = 15000.0
-    accelerate_value_min: float = 40000.0
+    intervene_value_min: float = 0.0
+    accelerate_value_min: float = 2500.0
     accelerate_adoption_min: float = 70.0
 
 class SummaryKPI(BaseModel):
@@ -82,6 +82,9 @@ class AgentScorecardItem(BaseModel):
     baseline_employee_hours: Optional[float] = 0.5
     action: str  # accelerate, optimize, experiment, intervene
     suggested_action: Optional[str] = None
+    portfolio: Optional[str] = "Enterprise Fleet"
+    model: Optional[str] = "gpt-4o"
+    provider: Optional[str] = "Microsoft Azure"
 
 class SeatInventorySummary(BaseModel):
     month: str

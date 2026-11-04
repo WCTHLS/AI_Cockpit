@@ -10,6 +10,7 @@ router = APIRouter(prefix="/agents", tags=["agents"])
 def list_agents(
     month: Optional[str] = Query(None),
     function: Optional[str] = Query(None),
+    cohort: Optional[str] = Query("enterprise"),
     action: Optional[str] = Query(None),
     portfolio_only: Optional[bool] = Query(None),
     search: Optional[str] = Query(None),
@@ -22,7 +23,7 @@ def list_agents(
     if user.get("role") in ["function_head", "finops"] and user.get("function_name"):
         effective_function = user["function_name"]
 
-    agents = store.get_processed_agents(target_month, effective_function)
+    agents = store.get_processed_agents(target_month, effective_function, cohort=cohort)
     
     if action:
         agents = [a for a in agents if a["action"] == action.lower()]
@@ -34,13 +35,20 @@ def list_agents(
         s = search.lower()
         agents = [a for a in agents if s in a["name"].lower() or s in a["team"].lower() or s in a["function"].lower()]
 
-    # Sort
+    # Sort: Keep Live Pilot agents prioritized at the top, then sort by requested field
     reverse = (sort_order.lower() == "desc")
-    if sort_by in agents[0] if agents else {}:
-        agents.sort(key=lambda x: x.get(sort_by, 0), reverse=reverse)
-    else:
-        agents.sort(key=lambda x: x.get("net_value", 0), reverse=True)
+    sort_key = sort_by if (agents and sort_by in agents[0]) else "net_value"
+    
+    def agent_comparator(a):
+        is_live_pilot = 0 if a.get("portfolio") == "Live Pilot" else 1
+        val = a.get(sort_key, 0)
+        if isinstance(val, (int, float)):
+            val_order = -val if reverse else val
+        else:
+            val_order = str(val).lower()
+        return (is_live_pilot, val_order)
 
+    agents.sort(key=agent_comparator)
     return agents
 
 @router.get("/{agent_id}")

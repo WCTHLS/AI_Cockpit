@@ -163,9 +163,9 @@ def get_m365_summary(effective_function: Optional[str] = None, cost_per_seat: fl
         'action_counts': actions
     }
 
-def get_unified_summary(target_month: Optional[str] = None, effective_function: Optional[str] = None) -> Dict[str, Any]:
+def get_unified_summary(target_month: Optional[str] = None, effective_function: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> Dict[str, Any]:
     month = target_month or (store.get_months()[-1] if store.get_months() else '2026-09')
-    agents = store.get_processed_agents(month, effective_function)
+    agents = store.get_processed_agents(month, effective_function, cohort=cohort)
 
     agent_net = sum(a['net_value'] for a in agents)
     agent_gross = sum(a['gross_value'] for a in agents)
@@ -210,7 +210,7 @@ def get_unified_summary(target_month: Optional[str] = None, effective_function: 
         }
     }
 
-def get_unified_by_function(target_month: Optional[str] = None) -> List[Dict[str, Any]]:
+def get_unified_by_function(target_month: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> List[Dict[str, Any]]:
     month = target_month or (store.get_months()[-1] if store.get_months() else '2026-09')
     funcs = store.get_functions()
     results = []
@@ -219,7 +219,7 @@ def get_unified_by_function(target_month: Optional[str] = None) -> List[Dict[str
     m365_dept_map = m365_all.get('department_breakdown', {})
 
     for f in funcs:
-        agents = store.get_processed_agents(month, f)
+        agents = store.get_processed_agents(month, f, cohort=cohort)
         net = sum(a['net_value'] for a in agents)
         gross = sum(a['gross_value'] for a in agents)
         cost = sum(a['cost'] for a in agents)
@@ -257,11 +257,11 @@ def get_unified_by_function(target_month: Optional[str] = None) -> List[Dict[str
     results.sort(key=lambda x: x['net_value'], reverse=True)
     return results
 
-def get_unified_cost_breakdown(target_month: Optional[str] = None, function: Optional[str] = None) -> List[Dict[str, Any]]:
+def get_unified_cost_breakdown(target_month: Optional[str] = None, function: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> List[Dict[str, Any]]:
     month = target_month or (store.get_months()[-1] if store.get_months() else '2026-09')
     dev_stats = get_developer_tools_summary(function)
     m365_stats = get_m365_summary(function)
-    agents = store.get_processed_agents(month, function)
+    agents = store.get_processed_agents(month, function, cohort=cohort)
 
     infra_cost = sum(a.get('infra_cost') or (45.0 if 'IT' in a.get('name','') else 200.0) for a in agents)
     token_cost = sum(round(a.get('cost', 0) - (45.0 if 'IT' in a.get('name','') else 200.0), 2) for a in agents)
@@ -310,9 +310,9 @@ def get_unified_cost_breakdown(target_month: Optional[str] = None, function: Opt
 
     return items
 
-def get_unified_team_costs(target_month: Optional[str] = None, effective_function: Optional[str] = None) -> List[Dict[str, Any]]:
+def get_unified_team_costs(target_month: Optional[str] = None, effective_function: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> List[Dict[str, Any]]:
     month = target_month or (store.get_months()[-1] if store.get_months() else '2026-09')
-    agents = store.get_processed_agents(month, effective_function)
+    agents = store.get_processed_agents(month, effective_function, cohort=cohort)
 
     teams_map: Dict[str, Dict[str, Any]] = {}
     for a in agents:
@@ -374,8 +374,8 @@ def get_unified_team_costs(target_month: Optional[str] = None, effective_functio
     team_costs.sort(key=lambda x: x['cost'], reverse=True)
     return team_costs
 
-def get_unified_trend(effective_function: Optional[str] = None) -> List[Dict[str, Any]]:
-    summary = get_unified_summary(None, effective_function)
+def get_unified_trend(effective_function: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> List[Dict[str, Any]]:
+    summary = get_unified_summary(None, effective_function, cohort=cohort)
     current_net = summary['total_net_value']
     current_gross = summary['total_gross_value']
     current_cost = summary['total_cost']

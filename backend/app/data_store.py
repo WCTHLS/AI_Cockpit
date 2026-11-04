@@ -16,8 +16,8 @@ class CockpitDataStore:
             "experiment_days": 60,
             "intervene_eval_pass": 88.0,
             "intervene_cost_budget_pct": 110.0,
-            "intervene_value_min": 15000.0,
-            "accelerate_value_min": 40000.0,
+            "intervene_value_min": 0.0,
+            "accelerate_value_min": 2500.0,
             "accelerate_adoption_min": 70.0,
         }
         self.load_data()
@@ -46,7 +46,6 @@ class CockpitDataStore:
                 raw = json.load(f)
                 self.raw_agents = raw.get("agents", [])
                 self.raw_costs = raw.get("costs", [])
-                # Only real streams: Antigravity IDE and M365 Copilot (No 4,600 dummy mock seats)
                 self.raw_seats = [
                     ["Eng & IT", "Antigravity IDE", 0, 1]
                 ]
@@ -89,11 +88,11 @@ class CockpitDataStore:
                 return "intervene", "Tune prompts & update golden eval dataset"
             elif budget_pct > 115:
                 return "intervene", "Review token consumption & caching"
-            elif net_val < 10000:
-                return "intervene", "Re-assess scope and workflow fit"
+            elif net_val < 0:
+                return "intervene", "Negative ROI: Re-assess scope and workflow fit"
             return "intervene", "Underperforming: investigate root cause"
             
-        # 3. ACCELERATE: net value >= $40k AND adoption >= 70%
+        # 3. ACCELERATE: net value >= threshold AND adoption >= 70%
         if net_val >= current_thresh["accelerate_value_min"] and adoption >= current_thresh["accelerate_adoption_min"]:
             return "accelerate", "Scale deployment to other business units"
             
@@ -118,168 +117,172 @@ class CockpitDataStore:
             pass
         return sorted(list(set(a["Function"] for a in self.raw_agents)))
 
-    def get_processed_agents(self, month: Optional[str] = None, function_name: Optional[str] = None) -> List[Dict[str, Any]]:
+    def get_processed_agents(self, month: Optional[str] = None, function_name: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> List[Dict[str, Any]]:
         target_month = month or (self.get_months()[-1] if self.get_months() else "2026-09")
         
-        # 1. Try querying SQLite view v_agent_scorecard_monthly
+        # 1. Query SQLite view v_agent_scorecard_monthly
         try:
             sql = "SELECT * FROM v_agent_scorecard_monthly WHERE substr(month_start, 1, 7) = ?"
             params = [target_month]
+            if cohort == 'pilot':
+                sql += " AND portfolio = 'Live Pilot'"
             if function_name:
                 sql += " AND function_name = ?"
                 params.append(function_name)
             
             rows = query_all(sql, tuple(params))
-            results = []
-            for r in rows:
-                name = r.get("agent_name", "")
-                agent_id = name.lower().replace(" ", "-").replace("&", "and")
-                db_agent_id = r.get("agent_id") or 11
+            if rows:
+                # Pre-load all agent configs in a single batch query
+                try:
+                    cfg_rows = query_all("""
+                        SELECT 
+                            id, portfolio, monthly_infra_cost, monthly_budget, input_token_price_per_1m, output_token_price_per_1m,
+                            baseline_employee_hours, employee_monthly_rate, employee_monthly_working_hours, model, provider, product_name
+                        FROM ai_agent
+                    """)
+                    configs_by_id = {r["id"]: r for r in cfg_rows}
+                except Exception:
+                    configs_by_id = {}
+
+                # Pre-load live telemetry only for live pilot agents (IDs <= 100 or portfolio == 'Live Pilot')
+                live_agent_ids = [r.get("agent_id") for r in rows if (r.get("portfolio") == "Live Pilot" or (r.get("agent_id") and r.get("agent_id") <= 100))]
                 
-                # ── 1. ADOPTION RATE: (employees using agent / employees assigned to agent) * 100 ──
-                assigned_row = query_one(
-                    "SELECT COUNT(DISTINCT employee_id) as cnt FROM employee_agent WHERE agent_id = ? AND is_active = 1",
-                    (db_agent_id,)
-                )
-                assigned_count = assigned_row["cnt"] if assigned_row and assigned_row["cnt"] > 0 else 0
-
-                if assigned_count == 0 and r.get("team_id"):
-                    team_cnt_row = query_one("SELECT COUNT(*) as cnt FROM employee WHERE team_id = ? AND is_active = 1", (r["team_id"],))
-                    assigned_count = team_cnt_row["cnt"] if team_cnt_row and team_cnt_row["cnt"] > 0 else 0
-
-                if assigned_count == 0:
-                    assigned_count = int(r.get("licensed_users") or r.get("assigned_seats") or 4)
-
-                using_row = query_one(
-                    "SELECT COUNT(DISTINCT employee_id) as cnt FROM user_usage WHERE agent_id = ?",
-                    (db_agent_id,)
-                )
-                using_count = using_row["cnt"] if using_row and using_row["cnt"] > 0 else 0
-                if using_count == 0:
-                    using_count = int(r.get("active_users") or 0)
-
-                adoption = round((using_count / assigned_count) * 100.0, 1) if assigned_count > 0 else 0.0
-
-                # ── 2. EVAL PASS: AVG SUCCESS RATE (ALL USERS) ──
-                usage_agg = query_all(
-                    "SELECT daily_usage_json, sessions_count FROM user_usage WHERE agent_id = ?",
-                    (db_agent_id,)
-                )
-                tot_sessions = 0
-                tot_success = 0
-                tot_prompt_tokens = 0
-                tot_completion_tokens = 0
-                for ur in usage_agg:
+                live_assigned_map = {}
+                live_usage_map = {}
+                if live_agent_ids:
+                    placeholders = ",".join("?" for _ in live_agent_ids)
                     try:
-                        parsed = json.loads(ur["daily_usage_json"])
-                        tot_sessions += int(parsed.get("session_count", ur["sessions_count"]))
-                        tot_success += int(parsed.get("sucess", 0))
-                        tot_prompt_tokens += int(parsed.get("prompt_tokens", 0))
-                        tot_completion_tokens += int(parsed.get("completion_tokens", 0))
+                        ea_rows = query_all(f"SELECT agent_id, COUNT(DISTINCT employee_id) as cnt FROM employee_agent WHERE agent_id IN ({placeholders}) AND is_active = 1 GROUP BY agent_id", tuple(live_agent_ids))
+                        for er in ea_rows:
+                            live_assigned_map[er["agent_id"]] = er["cnt"]
                     except Exception:
                         pass
 
-                if tot_sessions > 0:
-                    eval_p = round((tot_success / tot_sessions) * 100.0, 1)
-                    runs = tot_sessions
-                    eval_passed = tot_success
-                else:
-                    runs = int(r.get("eval_cases") or 0)
-                    eval_passed = int(r.get("eval_passed_cases") or 0)
-                    eval_p = float(r.get("eval_pass_rate") or 0.0)
+                    try:
+                        uu_rows = query_all(f"SELECT agent_id, employee_id, sessions_count, daily_usage_json FROM user_usage WHERE agent_id IN ({placeholders})", tuple(live_agent_ids))
+                        for ur in uu_rows:
+                            a_id = ur["agent_id"]
+                            if a_id not in live_usage_map:
+                                live_usage_map[a_id] = {
+                                    "users": set(),
+                                    "sessions": 0,
+                                    "success": 0,
+                                    "prompt_tokens": 0,
+                                    "comp_tokens": 0
+                                }
+                            if ur.get("employee_id"):
+                                live_usage_map[a_id]["users"].add(ur["employee_id"])
+                            try:
+                                parsed = json.loads(ur["daily_usage_json"]) if ur.get("daily_usage_json") else {}
+                                live_usage_map[a_id]["sessions"] += int(parsed.get("session_count", ur.get("sessions_count") or 0))
+                                live_usage_map[a_id]["success"] += int(parsed.get("sucess", 0))
+                                live_usage_map[a_id]["prompt_tokens"] += int(parsed.get("prompt_tokens", 0))
+                                live_usage_map[a_id]["comp_tokens"] += int(parsed.get("completion_tokens", 0))
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
 
-                # ── 3. PRODUCTIVITY & FINANCIALS (Using working agent configuration) ──
-                incidents = int(r.get("incident_count") or 0)
+                results = []
+                for r in rows:
+                    name = r.get("agent_name", "")
+                    agent_id = name.lower().replace(" ", "-").replace("&", "and")
+                    db_agent_id = r.get("agent_id") or 11
+                    is_live = (r.get("portfolio") == "Live Pilot" or db_agent_id <= 100)
+                    agent_cfg = configs_by_id.get(db_agent_id, {})
 
-                # Fetch agent's specific onboarding configuration from ai_agent table
-                agent_cfg = query_one("""
-                    SELECT 
-                        monthly_infra_cost, monthly_budget, input_token_price_per_1m, output_token_price_per_1m,
-                        baseline_employee_hours, employee_monthly_rate, employee_monthly_working_hours
-                    FROM ai_agent WHERE id = ?
-                """, (db_agent_id,))
+                    baseline_hrs_cfg = float(agent_cfg.get("baseline_employee_hours") or 0.5)
+                    emp_monthly_rate_cfg = float(agent_cfg.get("employee_monthly_rate") or 6500.0)
+                    working_hours_cfg = float(agent_cfg.get("employee_monthly_working_hours") or 160.0)
+                    monthly_infra_cfg = float(agent_cfg.get("monthly_infra_cost") or 0.0)
+                    monthly_budget_cfg = float(agent_cfg.get("monthly_budget") or 500.0)
+                    input_price_cfg = float(agent_cfg.get("input_token_price_per_1m") or 2.50)
+                    output_price_cfg = float(agent_cfg.get("output_token_price_per_1m") or 10.00)
 
-                baseline_hrs_cfg = float(agent_cfg.get("baseline_employee_hours") or 0.5) if agent_cfg else 0.5
-                emp_monthly_rate_cfg = float(agent_cfg.get("employee_monthly_rate") or 6500.0) if agent_cfg else 6500.0
-                working_hours_cfg = float(agent_cfg.get("employee_monthly_working_hours") or 160.0) if agent_cfg else 160.0
-                monthly_infra_cfg = float(agent_cfg.get("monthly_infra_cost") or 0.0) if agent_cfg else 0.0
-                monthly_budget_cfg = float(agent_cfg.get("monthly_budget") or 500.0) if agent_cfg else 500.0
-                input_price_cfg = float(agent_cfg.get("input_token_price_per_1m") or 2.50) if agent_cfg else 2.50
-                output_price_cfg = float(agent_cfg.get("output_token_price_per_1m") or 10.00) if agent_cfg else 10.00
+                    if is_live and db_agent_id in live_usage_map:
+                        u_data = live_usage_map[db_agent_id]
+                        using_count = len(u_data["users"])
+                        assigned_count = live_assigned_map.get(db_agent_id, int(r.get("licensed_users") or 4))
+                        adoption = round((using_count / assigned_count * 100.0), 1) if assigned_count > 0 else 0.0
 
-                # 3A. Hours Saved
-                if tot_success > 0:
-                    hours_saved = round(tot_success * baseline_hrs_cfg, 1)
-                else:
-                    hours_saved = float(r.get("hours_saved") or 0.0)
+                        tot_sessions = u_data["sessions"]
+                        tot_success = u_data["success"]
+                        runs = tot_sessions
+                        eval_passed = tot_success
+                        eval_p = round((tot_success / tot_sessions * 100.0), 1) if tot_sessions > 0 else float(r.get("eval_pass_rate") or 0.0)
 
-                # 3B. Hourly labor rate = employee_monthly_rate / employee_monthly_working_hours
-                if emp_monthly_rate_cfg > 0 and working_hours_cfg > 0:
-                    hourly_rate = round(emp_monthly_rate_cfg / working_hours_cfg, 2)
-                else:
-                    hourly_rate = float(r.get("hourly_cost") or 40.63)
+                        hours_saved = round(tot_success * baseline_hrs_cfg, 1) if tot_success > 0 else float(r.get("hours_saved") or 0.0)
+                        hourly_rate = round(emp_monthly_rate_cfg / working_hours_cfg, 2) if (emp_monthly_rate_cfg > 0 and working_hours_cfg > 0) else float(r.get("hourly_cost") or 40.63)
+                        gross_val = round(hours_saved * hourly_rate, 2)
 
-                # 3C. Gross Labor Value Created
-                gross_val = round(hours_saved * hourly_rate, 2)
+                        token_cost = (u_data["prompt_tokens"] * input_price_cfg / 1_000_000.0) + (u_data["comp_tokens"] * output_price_cfg / 1_000_000.0)
+                        cost = round(token_cost + monthly_infra_cfg, 2)
+                        budget = round(monthly_budget_cfg if monthly_budget_cfg > 0 else float(r.get("budget") or 500.0), 2)
+                        net_val = round(gross_val - cost, 2)
+                        incidents = int(r.get("incident_count") or 0)
+                    else:
+                        using_count = int(r.get("active_users") or 0)
+                        assigned_count = int(r.get("licensed_users") or r.get("assigned_seats") or 25)
+                        adoption = round(float(r.get("adoption_pct") or 0.0), 1)
+                        runs = int(r.get("eval_cases") or 0)
+                        eval_passed = int(r.get("eval_passed_cases") or 0)
+                        eval_p = round(float(r.get("eval_pass_rate") or 0.0), 1)
+                        hours_saved = round(float(r.get("hours_saved") or 0.0), 1)
+                        gross_val = round(float(r.get("gross_value") or 0.0), 2)
+                        cost = round(float(r.get("total_cost") or 0.0), 2)
+                        budget = round(float(r.get("budget") or monthly_budget_cfg or 500.0), 2)
+                        net_val = round(float(r.get("net_value") or (gross_val - cost)), 2)
+                        incidents = int(r.get("incident_count") or 0)
 
-                # 3D. Monthly Actual AI Cost = sum of tokens usage cost + monthly infra cost (no seats for custom agents)
-                if tot_prompt_tokens > 0 or tot_completion_tokens > 0:
-                    token_cost = (tot_prompt_tokens * input_price_cfg / 1_000_000.0) + (tot_completion_tokens * output_price_cfg / 1_000_000.0)
-                else:
-                    token_cost = float(r.get("total_cost") or 0.0)
+                    action = (r.get("action_label") or "optimize").lower()
+                    cost_budget_pct = round((cost / budget * 100.0), 1) if budget > 0 else 0.0
+                    
+                    if action == "accelerate":
+                        suggested = f"High adoption ({adoption}%) and {eval_p}% evaluation pass rate. Scale deployment."
+                    elif action == "intervene":
+                        if incidents > 0:
+                            suggested = f"Incident resolution: {incidents} active alerts detected. Review guardrails."
+                        elif cost_budget_pct > 110:
+                            suggested = f"Cost overrun ({cost_budget_pct}% of budget). Apply semantic caching & model tiering."
+                        else:
+                            suggested = f"Eval quality ({eval_p}%) below benchmark. Review golden dataset & prompt engineering."
+                    elif action == "experiment":
+                        suggested = "Recently deployed agent (<60 days). Collecting operational telemetry."
+                    else:
+                        suggested = "Stable production operations. Refine latency, token budgets & fine-tuning."
 
-                cost = round(token_cost + monthly_infra_cfg, 2)
+                    results.append({
+                        "id": agent_id,
+                        "name": name,
+                        "team": r.get("team_name", ""),
+                        "function": r.get("function_name", ""),
+                        "in_portfolio": r.get("portfolio") != "None",
+                        "portfolio": r.get("portfolio", "Enterprise Fleet"),
+                        "gross_value": gross_val,
+                        "cost": cost,
+                        "budget": budget,
+                        "net_value": net_val,
+                        "hours_saved": hours_saved,
+                        "active_users": using_count,
+                        "licensed_users": assigned_count,
+                        "adoption_pct": adoption,
+                        "eval_runs": runs,
+                        "eval_passed": eval_passed,
+                        "eval_pass_rate": eval_p,
+                        "policy_incidents": incidents,
+                        "days_in_production": int(r.get("days_in_prod_at_month_end") or 0),
+                        "baseline_employee_hours": baseline_hrs_cfg,
+                        "action": action,
+                        "suggested_action": suggested,
+                        "model": agent_cfg.get("model", "gpt-4o"),
+                        "provider": agent_cfg.get("provider", "Microsoft Azure"),
+                    })
 
-                # 3E. Monthly Budget and Net Value Delivered
-                budget = round(monthly_budget_cfg if monthly_budget_cfg > 0 else float(r.get("budget") or 500.0), 2)
-                net_val = round(gross_val - cost, 2)
-                cost_budget_pct = round((cost / budget * 100.0), 1) if budget > 0 else 0.0
-
-                # ── 4. STATUS & GOVERNANCE ACTION ──
-                if incidents > 0:
-                    action = "intervene"
-                    suggested = "Immediate safety guardrails review"
-                elif runs > 0 and eval_p < 80:
-                    action = "intervene"
-                    suggested = "Tune prompts & update golden eval dataset"
-                elif cost_budget_pct > 115:
-                    action = "intervene"
-                    suggested = "Review token consumption & caching"
-                elif net_val >= 100 and adoption >= 70:
-                    action = "accelerate"
-                    suggested = f"High adoption ({adoption}%) and {eval_p}% user resolution rate. Scale rollout."
-                else:
-                    action = "optimize"
-                    suggested = "Refine latency, caching & fine-tuning"
-
-                results.append({
-                    "id": agent_id,
-                    "name": name,
-                    "team": r.get("team_name", ""),
-                    "function": r.get("function_name", ""),
-                    "in_portfolio": r.get("portfolio") != "None",
-                    "gross_value": gross_val,
-                    "cost": cost,
-                    "budget": budget,
-                    "net_value": net_val,
-                    "hours_saved": hours_saved,
-                    "active_users": using_count,
-                    "licensed_users": assigned_count,
-                    "adoption_pct": adoption,
-                    "eval_runs": runs,
-                    "eval_passed": eval_passed,
-                    "eval_pass_rate": eval_p,
-                    "policy_incidents": incidents,
-                    "days_in_production": int(r.get("days_in_prod_at_month_end") or 0),
-                    "baseline_employee_hours": baseline_hrs_cfg,
-                    "action": action,
-                    "suggested_action": suggested,
-                })
-            return results
+                # Sort: Live Pilot agents at top, then by net_value descending
+                results.sort(key=lambda a: (0 if a.get("portfolio") == "Live Pilot" else 1, -a["net_value"]))
+                return results
         except Exception as e:
-            pass
-            # Fallback if database query fails
-            pass
+            print("Error in get_processed_agents:", e)
 
         # 2. Fallback to raw_agents in-memory
         results = []
@@ -306,6 +309,7 @@ class CockpitDataStore:
                 "team": a.get("Team", ""),
                 "function": a.get("Function", ""),
                 "in_portfolio": a.get("InPortfolio") == "Yes",
+                "portfolio": "Enterprise Fleet",
                 "gross_value": float(a.get("GrossValueUSD", 0)),
                 "cost": float(a.get("CostUSD", 0)),
                 "budget": float(a.get("BudgetUSD", 0)),
@@ -321,6 +325,8 @@ class CockpitDataStore:
                 "days_in_production": int(a.get("DaysInProduction", 0)),
                 "action": action,
                 "suggested_action": suggested,
+                "model": "gpt-4o",
+                "provider": "Microsoft Azure",
             })
         return results
 

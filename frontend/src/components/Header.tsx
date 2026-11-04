@@ -7,6 +7,8 @@ interface HeaderProps {
   onMonthChange: (month: string) => void;
   selectedFunction: string;
   onFunctionChange: (fn: string) => void;
+  cohort: 'enterprise' | 'pilot';
+  onCohortChange: (cohort: 'enterprise' | 'pilot') => void;
   user: UserProfile;
   onUserChange: (user: UserProfile) => void;
   onLogout: () => void;
@@ -23,6 +25,8 @@ export const Header: React.FC<HeaderProps> = ({
   onMonthChange,
   selectedFunction,
   onFunctionChange,
+  cohort,
+  onCohortChange,
   user,
   onLogout,
   onRefresh,
@@ -165,6 +169,52 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Tier 2: Slicers, Filters & Persona Bar */}
         <div className="header-controls-wrap">
+          {/* Cohort Toggle (Enterprise Scale vs Live Pilot) */}
+          <div style={{
+            display: 'inline-flex',
+            background: isLight ? '#F1F5F9' : '#0F172A',
+            border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+            borderRadius: 20,
+            padding: 2
+          }}>
+            <button
+              onClick={() => onCohortChange('enterprise')}
+              title="Enterprise Scale Portfolio: 1,200 Autonomous Agents"
+              style={{
+                background: cohort === 'enterprise' ? '#00349B' : 'transparent',
+                color: cohort === 'enterprise' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
+                border: 'none',
+                borderRadius: 16,
+                padding: '4px 10px',
+                fontSize: 11.5,
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Enterprise View (1,200)
+            </button>
+            <button
+              onClick={() => onCohortChange('pilot')}
+              title="Live Interactive Pilot: 4 Onboarded Production Agents"
+              style={{
+                background: cohort === 'pilot' ? '#00349B' : 'transparent',
+                color: cohort === 'pilot' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
+                border: 'none',
+                borderRadius: 16,
+                padding: '4px 10px',
+                fontSize: 11.5,
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Pilot View (4)
+            </button>
+          </div>
+
           {/* Month Segmented Toggle */}
           <div style={{
             display: 'inline-flex',
