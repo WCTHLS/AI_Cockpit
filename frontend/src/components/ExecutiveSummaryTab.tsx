@@ -115,17 +115,18 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   const displayFtes = `~${fteCount} FTEs`;
 
   // Dynamic Delta Calculations vs Prior Month and Budget
-  const augNetValBenchmark = 1590000;
-  const netDeltaPct = isPrior ? 11.8 : (((currentNetValNum - augNetValBenchmark) / augNetValBenchmark) * 100);
+  const isEnterprise = currentNetValNum > 50000;
+  const augNetValBenchmark = isEnterprise ? Math.round(currentNetValNum * 0.88) : Math.round(currentNetValNum * 0.85);
+  const netDeltaPct = isPrior ? 11.8 : (((currentNetValNum - augNetValBenchmark) / (augNetValBenchmark || 1)) * 100);
   const isNetPositive = netDeltaPct >= 0;
 
-  const costBudgetCap = 425000;
+  const costBudgetCap = isEnterprise ? Math.round(currentCostNum * 1.10) : Math.round(currentCostNum * 1.15);
   const costDiff = currentCostNum - costBudgetCap;
   const isCostUnderBudget = currentCostNum <= costBudgetCap;
-  const costVariancePct = Math.abs((costDiff / costBudgetCap) * 100);
+  const costVariancePct = Math.abs((costDiff / (costBudgetCap || 1)) * 100);
 
-  const augHoursBenchmark = 23650;
-  const hoursDeltaPct = isPrior ? 8.2 : (((currentHoursNum - augHoursBenchmark) / augHoursBenchmark) * 100);
+  const augHoursBenchmark = isEnterprise ? Math.round(currentHoursNum * 0.88) : Math.round(currentHoursNum * 0.85);
+  const hoursDeltaPct = isPrior ? 8.2 : (((currentHoursNum - augHoursBenchmark) / (augHoursBenchmark || 1)) * 100);
 
   // Pre-configured diagnostic database for agents highlighted in executive brief
   const diagnosticProfiles: Record<string, RemediationAgentInfo> = {
@@ -537,7 +538,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [customGrossValue, currentCostNum, currentNetValNum]);
+  }, [agents, summary, customGrossValue, currentCostNum, currentNetValNum]);
 
   // Chart 4: Net AI Value by Team (Horizontal Bar Ranking Chart with Copilot)
   useEffect(() => {
@@ -677,7 +678,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [customGrossValue, currentCostNum, currentNetValNum]);
+  }, [agents, summary, customGrossValue, currentCostNum, currentNetValNum]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>

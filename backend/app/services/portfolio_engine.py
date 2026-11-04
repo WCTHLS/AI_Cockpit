@@ -175,10 +175,18 @@ def get_unified_summary(target_month: Optional[str] = None, effective_function: 
     dev_stats = get_developer_tools_summary(effective_function)
     m365_stats = get_m365_summary(effective_function)
 
-    tot_net = round(agent_net + dev_stats['net_value'] + m365_stats['net_value'], 2)
-    tot_gross = round(agent_gross + dev_stats['gross_value'] + m365_stats['gross_value'], 2)
-    tot_cost = round(agent_cost + dev_stats['cost'] + m365_stats['cost'], 2)
-    tot_hours = round(agent_hours + dev_stats['hours_saved'] + m365_stats['hours_saved'], 1)
+    if cohort == 'pilot':
+        dev_stats = {'cost': 0.0, 'budget': 0.0, 'hours_saved': 0.0, 'gross_value': 0.0, 'net_value': 0.0, 'seats_count': 0, 'active_count': 0, 'action_counts': {'accelerate': 0, 'optimize': 0, 'experiment': 0, 'intervene': 0}}
+        m365_stats = {'cost': 0.0, 'budget': 0.0, 'hours_saved': 0.0, 'gross_value': 0.0, 'net_value': 0.0, 'seats_count': 0, 'active_count': 0, 'dormant_count': 0, 'department_breakdown': {}, 'action_counts': {'accelerate': 0, 'optimize': 0, 'experiment': 0, 'intervene': 0}}
+        tot_net = round(agent_net, 2)
+        tot_gross = round(agent_gross, 2)
+        tot_cost = round(agent_cost, 2)
+        tot_hours = round(agent_hours, 1)
+    else:
+        tot_net = round(agent_net + dev_stats['net_value'] + m365_stats['net_value'], 2)
+        tot_gross = round(agent_gross + dev_stats['gross_value'] + m365_stats['gross_value'], 2)
+        tot_cost = round(agent_cost + dev_stats['cost'] + m365_stats['cost'], 2)
+        tot_hours = round(agent_hours + dev_stats['hours_saved'] + m365_stats['hours_saved'], 1)
     roi = round(tot_gross / tot_cost, 2) if tot_cost > 0 else 0.0
 
     # Action counts strictly reflect custom autonomous agents portfolio
@@ -212,36 +220,54 @@ def get_unified_summary(target_month: Optional[str] = None, effective_function: 
 
 def get_unified_by_function(target_month: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> List[Dict[str, Any]]:
     month = target_month or (store.get_months()[-1] if store.get_months() else '2026-09')
-    funcs = store.get_functions()
+    # Single query for all agents in this cohort, group in memory for sub-millisecond execution
+    all_cohort_agents = store.get_processed_agents(month, None, cohort=cohort)
+
+    func_map = {}
+    for a in all_cohort_agents:
+        f = a['function']
+        if f not in func_map:
+            func_map[f] = {'agents': [], 'net': 0.0, 'gross': 0.0, 'cost': 0.0, 'hours': 0.0}
+        func_map[f]['agents'].append(a)
+        func_map[f]['net'] += a['net_value']
+        func_map[f]['gross'] += a['gross_value']
+        func_map[f]['cost'] += a['cost']
+        func_map[f]['hours'] += a['hours_saved']
+
+    if cohort == 'pilot':
+        funcs = sorted(list(func_map.keys()))
+        m365_dept_map = {}
+    else:
+        funcs = store.get_functions()
+        m365_all = get_m365_summary(None)
+        m365_dept_map = m365_all.get('department_breakdown', {})
+
     results = []
-
-    m365_all = get_m365_summary(None)
-    m365_dept_map = m365_all.get('department_breakdown', {})
-
     for f in funcs:
-        agents = store.get_processed_agents(month, f, cohort=cohort)
-        net = sum(a['net_value'] for a in agents)
-        gross = sum(a['gross_value'] for a in agents)
-        cost = sum(a['cost'] for a in agents)
-        hours = sum(a['hours_saved'] for a in agents)
-        sys_cnt = len(agents)
+        f_data = func_map.get(f, {'agents': [], 'net': 0.0, 'gross': 0.0, 'cost': 0.0, 'hours': 0.0})
+        net = f_data['net']
+        gross = f_data['gross']
+        cost = f_data['cost']
+        hours = f_data['hours']
+        sys_cnt = len(f_data['agents'])
 
-        if 'Eng' in f or 'IT' in f:
-            dev_stats = get_developer_tools_summary(f)
-            net += dev_stats['net_value']
-            gross += dev_stats['gross_value']
-            cost += dev_stats['cost']
-            hours += dev_stats['hours_saved']
-            if dev_stats['seats_count'] > 0:
-                sys_cnt += 1
+        if cohort == 'enterprise':
+            if 'Eng' in f or 'IT' in f:
+                dev_stats = get_developer_tools_summary(f)
+                net += dev_stats['net_value']
+                gross += dev_stats['gross_value']
+                cost += dev_stats['cost']
+                hours += dev_stats['hours_saved']
+                if dev_stats['seats_count'] > 0:
+                    sys_cnt += 1
 
-        for dept_name, m_data in m365_dept_map.items():
-            if (f == dept_name) or (f == 'Eng & IT' and ('Eng' in dept_name or 'IT' in dept_name)) or (f in dept_name):
-                net += m_data['net_value']
-                gross += m_data['gross_value']
-                cost += m_data['cost']
-                hours += m_data['hours_saved']
-                sys_cnt += m_data['seats']
+            for dept_name, m_data in m365_dept_map.items():
+                if (f == dept_name) or (f == 'Eng & IT' and ('Eng' in dept_name or 'IT' in dept_name)) or (f in dept_name):
+                    net += m_data['net_value']
+                    gross += m_data['gross_value']
+                    cost += m_data['cost']
+                    hours += m_data['hours_saved']
+                    sys_cnt += m_data['seats']
 
         roi = round(gross / cost, 2) if cost > 0 else 0.0
         results.append({
@@ -259,25 +285,62 @@ def get_unified_by_function(target_month: Optional[str] = None, cohort: Optional
 
 def get_unified_cost_breakdown(target_month: Optional[str] = None, function: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> List[Dict[str, Any]]:
     month = target_month or (store.get_months()[-1] if store.get_months() else '2026-09')
-    dev_stats = get_developer_tools_summary(function)
-    m365_stats = get_m365_summary(function)
     agents = store.get_processed_agents(month, function, cohort=cohort)
 
-    infra_cost = sum(a.get('infra_cost') or (45.0 if 'IT' in a.get('name','') else 200.0) for a in agents)
-    token_cost = sum(round(a.get('cost', 0) - (45.0 if 'IT' in a.get('name','') else 200.0), 2) for a in agents)
-    token_cost = max(0.84, token_cost)
+    if cohort == 'pilot':
+        infra_cost = sum(45.0 if 'IT' in a.get('name','') else (200.0 if 'Supply' in a.get('name','') else 50.0) for a in agents)
+        token_cost = sum(max(0.0, round(a.get('cost', 0) - (45.0 if 'IT' in a.get('name','') else (200.0 if 'Supply' in a.get('name','') else 50.0)), 2)) for a in agents)
+        infra_budget = 350.0
+        token_budget = 100.0
+        total_cost = infra_cost + token_cost
+        return [
+            {
+                'factor': 'Platform & Infrastructure',
+                'subfactor': 'Copilot Studio Message Packs & Dedicated Hosting',
+                'cost': round(infra_cost, 2),
+                'budget': infra_budget,
+                'variance': round(infra_cost - infra_budget, 2),
+                'pct_of_total': round((infra_cost / total_cost * 100), 1) if total_cost > 0 else 0.0
+            },
+            {
+                'factor': 'Model Token Consumption',
+                'subfactor': 'Azure OpenAI GPT-4o Ingest & Triage Inference',
+                'cost': round(token_cost, 2),
+                'budget': token_budget,
+                'variance': round(token_cost - token_budget, 2),
+                'pct_of_total': round((token_cost / total_cost * 100), 1) if total_cost > 0 else 0.0
+            }
+        ]
+
+    dev_stats = get_developer_tools_summary(function)
+    m365_stats = get_m365_summary(function)
+
+    total_agent_budget = sum(a.get('budget', 500.0) for a in agents)
+    total_agent_cost = sum(a.get('cost', 0.0) for a in agents)
+    infra_cost = round(total_agent_cost * 0.28, 2)
+    token_cost = round(total_agent_cost * 0.72, 2)
+    infra_budget = round(total_agent_budget * 0.30, 2)
+    token_budget = round(total_agent_budget * 0.70, 2)
+
     dev_license_cost = dev_stats['cost']
     m365_license_cost = m365_stats['cost']
-
     total_cost = infra_cost + token_cost + dev_license_cost + m365_license_cost
 
     items = [
         {
+            'factor': 'Model Token Consumption',
+            'subfactor': 'Multi-Model Inference (GPT-4o, Claude 3.5, Gemini 2.0)',
+            'cost': token_cost,
+            'budget': token_budget,
+            'variance': round(token_cost - token_budget, 2),
+            'pct_of_total': round((token_cost / total_cost * 100), 1) if total_cost > 0 else 0.0
+        },
+        {
             'factor': 'Platform & Infrastructure',
-            'subfactor': 'Agent Server Hosting & Copilot Studio Packs',
-            'cost': round(infra_cost, 2),
-            'budget': 400.0,
-            'variance': round(infra_cost - 400.0, 2),
+            'subfactor': 'Autonomous Agent Hosting & Vector RAG Pipeline',
+            'cost': infra_cost,
+            'budget': infra_budget,
+            'variance': round(infra_cost - infra_budget, 2),
             'pct_of_total': round((infra_cost / total_cost * 100), 1) if total_cost > 0 else 0.0
         },
         {
@@ -287,14 +350,6 @@ def get_unified_cost_breakdown(target_month: Optional[str] = None, function: Opt
             'budget': dev_stats['budget'] or 100.0,
             'variance': round(dev_license_cost - (dev_stats['budget'] or 100.0), 2),
             'pct_of_total': round((dev_license_cost / total_cost * 100), 1) if total_cost > 0 else 0.0
-        },
-        {
-            'factor': 'Model Token Consumption',
-            'subfactor': 'Azure OpenAI GPT-4o Ingest & Triage',
-            'cost': round(token_cost, 2),
-            'budget': 50.0,
-            'variance': round(token_cost - 50.0, 2),
-            'pct_of_total': round((token_cost / total_cost * 100), 1) if total_cost > 0 else 0.0
         }
     ]
 

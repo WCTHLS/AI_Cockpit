@@ -150,28 +150,66 @@ export const App: React.FC = () => {
     localStorage.setItem('wct_cockpit_theme', theme);
   }, [theme]);
 
+  // In-memory instant client-side cache for 0ms cohort switching
+  const cohortCacheRef = React.useRef<Record<string, any>>({});
+
+  const handleCohortChange = (newCohort: 'enterprise' | 'pilot') => {
+    setCohort(newCohort);
+    const cacheKey = `${currentMonth}:${effFunc}:${newCohort}:${scorecardActionFilter}`;
+    if (cohortCacheRef.current[cacheKey]) {
+      const cached = cohortCacheRef.current[cacheKey];
+      setSummary(cached.sumData);
+      setByFunction(cached.funcData);
+      setCostBreakdown(cached.costData);
+      setTrend(cached.trendData);
+      setWhereToAct(cached.actData);
+      setAgents(cached.agentList);
+      setSeats(cached.seatData);
+      setThresholds(cached.thresh);
+    }
+  };
+
   // Load dashboard data scoped to role and function (with optional Claude API live sync)
-  const loadDashboardData = async (triggerClaudeSync: boolean = false) => {
-    setIsLoading(true);
+  const loadDashboardData = async (triggerClaudeSync: boolean = false, targetCohort?: 'enterprise' | 'pilot') => {
+    const activeCohort = targetCohort || cohort;
+    const cacheKey = `${currentMonth}:${effFunc}:${activeCohort}:${scorecardActionFilter}`;
+
+    // If already in cache, switch instantly without showing a blanking spinner
+    if (cohortCacheRef.current[cacheKey]) {
+      const cached = cohortCacheRef.current[cacheKey];
+      setSummary(cached.sumData);
+      setByFunction(cached.funcData);
+      setCostBreakdown(cached.costData);
+      setTrend(cached.trendData);
+      setWhereToAct(cached.actData);
+      setAgents(cached.agentList);
+      setSeats(cached.seatData);
+      setThresholds(cached.thresh);
+    } else {
+      setIsLoading(true);
+    }
+
     try {
       if (triggerClaudeSync) {
         await syncClaudeTelemetry().catch((err) => console.log('Auto Claude sync skipped/error:', err));
       }
       const [sumData, funcData, costData, trendData, actData, agentList, seatData, thresh] = await Promise.all([
-        fetchSummary(currentMonth, effFunc, cohort).catch(() => null),
-        fetchByFunction(currentMonth, cohort).catch(() => []),
-        fetchCostBreakdown(currentMonth, cohort).catch(() => []),
-        fetchTrend(effFunc, cohort).catch(() => []),
-        fetchWhereToAct(currentMonth, effFunc, cohort).catch(() => []),
+        fetchSummary(currentMonth, effFunc, activeCohort).catch(() => null),
+        fetchByFunction(currentMonth, activeCohort).catch(() => []),
+        fetchCostBreakdown(currentMonth, activeCohort).catch(() => []),
+        fetchTrend(effFunc, activeCohort).catch(() => []),
+        fetchWhereToAct(currentMonth, effFunc, activeCohort).catch(() => []),
         fetchAgents({
           month: currentMonth,
           function: effFunc,
-          cohort: cohort,
+          cohort: activeCohort,
           action: scorecardActionFilter
         }).catch(() => []),
         fetchSeats(effFunc, subscriptionConfig.m365CopilotPrice).catch(() => null),
         fetchThresholds().catch(() => null)
       ]);
+
+      cohortCacheRef.current[cacheKey] = { sumData, funcData, costData, trendData, actData, agentList, seatData, thresh };
 
       setSummary(sumData);
       setByFunction(funcData);
@@ -255,7 +293,7 @@ export const App: React.FC = () => {
         selectedFunction={effFunc}
         onFunctionChange={setSelectedFunction}
         cohort={cohort}
-        onCohortChange={setCohort}
+        onCohortChange={handleCohortChange}
         user={currentUser}
         onUserChange={handleUserChange}
         onLogout={handleLogout}

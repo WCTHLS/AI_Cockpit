@@ -20,6 +20,8 @@ class CockpitDataStore:
             "accelerate_value_min": 2500.0,
             "accelerate_adoption_min": 70.0,
         }
+        self._cache = {}
+        self._cache_time = {}
         self.load_data()
 
     @property
@@ -119,6 +121,11 @@ class CockpitDataStore:
 
     def get_processed_agents(self, month: Optional[str] = None, function_name: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> List[Dict[str, Any]]:
         target_month = month or (self.get_months()[-1] if self.get_months() else "2026-09")
+        cache_key = f"{target_month}:{function_name or 'all'}:{cohort or 'enterprise'}"
+        import time
+        now = time.time()
+        if cache_key in self._cache and (now - self._cache_time.get(cache_key, 0)) < 30:
+            return self._cache[cache_key]
         
         # 1. Query SQLite view v_agent_scorecard_monthly
         try:

@@ -91,6 +91,31 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
     }
   }, [initialActionFilter]);
 
+  // Automatically adjust expansion based on fleet size:
+  // Pilot View (<= 10 agents): FULLY EXPAND all teams and functions so the 4 live agents are 100% visible immediately!
+  // Enterprise View (> 50 agents): Neatly collapse teams to show high-level executive department rollups.
+  useEffect(() => {
+    if (scopedAgents.length <= 10) {
+      setCollapsedFunctions(new Set());
+      setCollapsedTeams(new Set());
+      setViewMode('all');
+    } else {
+      const initialTeams = new Set<string>();
+      scopedAgents.forEach(a => initialTeams.add(`${a.function}|${a.team}`));
+      setCollapsedTeams(initialTeams);
+      setCollapsedFunctions(new Set());
+      setViewMode('teams');
+    }
+  }, [scopedAgents.length]);
+
+  // When searching, expand all matching nodes
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      setCollapsedFunctions(new Set());
+      setCollapsedTeams(new Set());
+    }
+  }, [searchQuery]);
+
   // Group agents by status for the top 4 status cards
   const statusGroups = {
     accelerate: scopedAgents.filter(a => a.action?.toLowerCase() === 'accelerate'),
