@@ -1,11 +1,6 @@
 # WCT AI Cockpit — Enterprise vs. Pilot Metrics & Governance Architecture Guide
 
-> **Target Audience:** Executive Leadership, Client Pitch Teams, FinOps Engineers, Product Managers  
-> **Cockpit Version:** 2.1.0 Enterprise Production  
-> **Status:** Authoritative Reference Manual  
-
----
-
+## 1. Executive Summary: Dual-Cohort Architecture
 ## 1. Executive Summary: Dual-Cohort Architecture
 
 The **WCT AI Cockpit** operates on a **Dual-Cohort Mode** selectable via a single-click toggle in the global header:
