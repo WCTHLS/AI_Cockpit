@@ -214,7 +214,7 @@ def seed_enterprise_fleet(db_path: str = None):
         "Global HR Benefits & Policy Copilot"
     ])
 
-    months = ["2026-09-01", "2026-10-01"]
+    months = ["2026-08-01", "2026-09-01", "2026-10-01", "2026-11-01"]
 
     for f_name, f_data in ENTERPRISE_TAXONOMY.items():
         prefixes = f_data["prefixes"]
@@ -291,9 +291,13 @@ def seed_enterprise_fleet(db_path: str = None):
                     cost_oct = round(budget * random.uniform(1.18, 1.45), 2) # Over budget!
                     incidents = random.choice([1, 2, 0])
 
-                # September has ~10% lower hours/cost to show historical growth
-                hours_sep = round(hours_oct * random.uniform(0.85, 0.93), 1)
-                cost_sep = round(cost_oct * random.uniform(0.88, 0.96), 2)
+                # Multi-month progression (Aug -> Sep -> Oct -> Nov)
+                hours_aug = round(hours_oct * random.uniform(0.75, 0.83), 1)
+                cost_aug = round(cost_oct * random.uniform(0.78, 0.86), 2)
+                hours_sep = round(hours_oct * random.uniform(0.86, 0.93), 1)
+                cost_sep = round(cost_oct * random.uniform(0.88, 0.95), 2)
+                hours_nov = round(hours_oct * random.uniform(1.02, 1.08), 1)
+                cost_nov = round(cost_oct * random.uniform(1.01, 1.06), 2)
 
                 # Insert AI Agent
                 cur.execute("""
@@ -319,8 +323,14 @@ def seed_enterprise_fleet(db_path: str = None):
 
                 # Insert monthly metrics for Sep and Oct
                 for m_idx, m_start in enumerate(months):
-                    hrs = hours_sep if m_idx == 0 else hours_oct
-                    c_amt = cost_sep if m_idx == 0 else cost_oct
+                    if m_idx == 0:
+                        hrs, c_amt = hours_aug, cost_aug
+                    elif m_idx == 1:
+                        hrs, c_amt = hours_sep, cost_sep
+                    elif m_idx == 2:
+                        hrs, c_amt = hours_oct, cost_oct
+                    else:
+                        hrs, c_amt = hours_nov, cost_nov
 
                     # Value measurement
                     cur.execute("""
