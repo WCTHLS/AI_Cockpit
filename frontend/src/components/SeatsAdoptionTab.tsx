@@ -22,6 +22,7 @@ import {
   UploadCloud,
   HelpCircle,
   ChevronRight,
+  ChevronDown,
   Activity,
   Calendar,
   FileText,
@@ -123,6 +124,14 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
   const [activeRosterTab, setActiveRosterTab] = useState<'m365' | 'developer'>('m365');
   const [m365Search, setM365Search] = useState<string>('');
   const [m365StatusFilter, setM365StatusFilter] = useState<'ALL' | 'ACTIVE' | 'IDLE'>('ALL');
+  
+  // Developer Coding Seats: Department Accordion & Tooling Filters
+  const [devSearch, setDevSearch] = useState<string>('');
+  const [devToolFilter, setDevToolFilter] = useState<'ALL' | 'GITHUB' | 'CLAUDE'>('ALL');
+  const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>({
+    'Eng & IT': true // Default Eng & IT department expanded
+  });
+  const [deptPages, setDeptPages] = useState<Record<string, number>>({});
   const [reclaimedSeats, setReclaimedSeats] = useState<Record<string, boolean>>({});
   const [showClearM365Modal, setShowClearM365Modal] = useState<boolean>(false);
   const [isClearingM365, setIsClearingM365] = useState<boolean>(false);
@@ -228,18 +237,83 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
     return matchesSearch && matchesStatus;
   });
 
-  const displayedDevSeats = (developerSeats || []).filter(seat => {
-    if (isScoped) {
-      const dept = (seat.department || '').toLowerCase();
-      const target = effectiveDept.toLowerCase();
-      if (target === 'eng & it' || target.includes('eng') || target.includes('it')) {
-        if (!dept.includes('eng') && !dept.includes('it')) return false;
-      } else if (!dept.includes(target)) {
-        return false;
+  const displayedDevSeats = React.useMemo(() => {
+    return (developerSeats || []).filter(seat => {
+      if (isScoped) {
+        const dept = (seat.department || '').toLowerCase();
+        const target = effectiveDept.toLowerCase();
+        if (target === 'eng & it' || target.includes('eng') || target.includes('it')) {
+          if (!dept.includes('eng') && !dept.includes('it')) return false;
+        } else if (!dept.includes(target)) {
+          return false;
+        }
       }
+      if (devSearch.trim()) {
+        const q = devSearch.toLowerCase().trim();
+        const match = (seat.developer_name || '').toLowerCase().includes(q) ||
+                      (seat.developer_email || '').toLowerCase().includes(q) ||
+                      (seat.role || '').toLowerCase().includes(q) ||
+                      (seat.editor || '').toLowerCase().includes(q) ||
+                      (seat.provider || '').toLowerCase().includes(q);
+        if (!match) return false;
+      }
+      if (devToolFilter === 'GITHUB') {
+        const prov = (seat.provider || '').toLowerCase();
+        const tier = (seat.license_tier || '').toLowerCase();
+        if (!prov.includes('github') && !tier.includes('github')) return false;
+      } else if (devToolFilter === 'CLAUDE') {
+        const prov = (seat.provider || '').toLowerCase();
+        const tier = (seat.license_tier || '').toLowerCase();
+        if (!prov.includes('claude') && !tier.includes('claude')) return false;
+      }
+      return true;
+    });
+  }, [developerSeats, isScoped, effectiveDept, devSearch, devToolFilter]);
+
+  const devSeatsByDept = React.useMemo(() => {
+    const map: Record<string, DeveloperSeat[]> = {};
+    for (const seat of displayedDevSeats) {
+      const dept = seat.department || 'Eng & IT';
+      if (!map[dept]) map[dept] = [];
+      map[dept].push(seat);
     }
-    return true;
-  });
+    const order = ['Eng & IT', 'Operations', 'Finance', 'Customer Support'];
+    const sortedKeys = Object.keys(map).sort((a, b) => {
+      const idxA = order.indexOf(a);
+      const idxB = order.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.localeCompare(b);
+    });
+    const orderedMap: Record<string, DeveloperSeat[]> = {};
+    for (const k of sortedKeys) {
+      orderedMap[k] = map[k];
+    }
+    return orderedMap;
+  }, [displayedDevSeats]);
+
+  const githubCount = React.useMemo(() => {
+    return (developerSeats || []).filter(s => (s.provider || '').includes('github') || (s.license_tier || '').includes('GitHub')).length;
+  }, [developerSeats]);
+
+  const claudeCount = React.useMemo(() => {
+    return (developerSeats || []).filter(s => (s.provider || '').includes('claude') || (s.license_tier || '').includes('Claude')).length;
+  }, [developerSeats]);
+
+  const toggleDept = (dept: string) => {
+    setExpandedDepts(prev => ({ ...prev, [dept]: !prev[dept] }));
+  };
+
+  const expandAllDepts = () => {
+    const all: Record<string, boolean> = {};
+    Object.keys(devSeatsByDept).forEach(d => { all[d] = true; });
+    setExpandedDepts(all);
+  };
+
+  const collapseAllDepts = () => {
+    setExpandedDepts({});
+  };
 
   // DYNAMIC SEAT METRICS (Derived strictly from real streams: Antigravity + M365 Copilot)
   const m365Total = displayedM365Seats.length;
@@ -490,7 +564,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               Enterprise AI Seat Estate: Microsoft 365 Copilot ({m365Total} Seats) + Developer AI Tooling ({displayedDevSeats.length} Seats)
             </div>
             <div style={{ fontSize: 12, color: '#475569', marginTop: 2 }}>
-              Consolidated seat utilization across enterprise Microsoft 365 Copilot subscriptions and active developer AI tooling. Ingest and manage telemetry in Admin & Config.
+              Consolidated seat utilization across enterprise Microsoft 365 Copilot subscriptions, GitHub Copilot Enterprise, and Anthropic Claude Code developer tooling. Ingest and manage telemetry in Admin & Config.
             </div>
           </div>
         </div>
@@ -1066,190 +1140,492 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
           </div>
         )}
 
-        {/* TAB CONTENT: DEVELOPER TOOLING ROSTER */}
+        {/* TAB CONTENT: DEVELOPER TOOLING ROSTER - DEPARTMENT ACCORDION */}
         {activeRosterTab === 'developer' && (
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <div style={{ fontSize: 12, color: '#64748B' }}>
-                Click on any developer row below to view full session-by-session trajectories, monthly filters, and time calculation methodology.
+            {/* Controls Strip: Search + Tool Filter + Expand/Collapse All */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 12,
+              background: '#F8FAFC',
+              border: '1px solid #E2E8F0',
+              borderRadius: 10,
+              padding: '12px 16px',
+              marginBottom: 16
+            }}>
+              {/* Search Input */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 260 }}>
+                <Search size={15} color="#64748B" />
+                <input
+                  type="text"
+                  value={devSearch}
+                  onChange={(e) => setDevSearch(e.target.value)}
+                  placeholder="Search by developer name, email, role, or tool..."
+                  style={{
+                    width: '100%',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: 6,
+                    padding: '6px 10px',
+                    fontSize: 12.5,
+                    outline: 'none',
+                    background: '#FFFFFF'
+                  }}
+                />
+                {devSearch && (
+                  <button
+                    onClick={() => setDevSearch('')}
+                    style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 2 }}
+                  >
+                    <X size={14} />
+                  </button>
+                )}
               </div>
-              <span style={{
-                background: '#ECFDF5',
-                border: '1px solid #A7F3D0',
-                color: '#065F46',
-                padding: '4px 10px',
-                borderRadius: 20,
-                fontSize: 11,
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5
-              }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
-                LIVE TELEMETRY STREAM
-              </span>
+
+              {/* Tool Filters: All vs GitHub Copilot vs Claude Code */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <button
+                  onClick={() => setDevToolFilter('ALL')}
+                  style={{
+                    background: devToolFilter === 'ALL' ? '#00349B' : '#FFFFFF',
+                    color: devToolFilter === 'ALL' ? '#FFFFFF' : '#475569',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: 16,
+                    padding: '4px 10px',
+                    fontSize: 11.5,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  All Tooling ({displayedDevSeats.length})
+                </button>
+                <button
+                  onClick={() => setDevToolFilter('GITHUB')}
+                  style={{
+                    background: devToolFilter === 'GITHUB' ? '#0F172A' : '#FFFFFF',
+                    color: devToolFilter === 'GITHUB' ? '#FFFFFF' : '#334155',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: 16,
+                    padding: '4px 10px',
+                    fontSize: 11.5,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  <Code size={12} color={devToolFilter === 'GITHUB' ? '#93C5FD' : '#0F172A'} />
+                  GitHub Copilot ({githubCount})
+                </button>
+                <button
+                  onClick={() => setDevToolFilter('CLAUDE')}
+                  style={{
+                    background: devToolFilter === 'CLAUDE' ? '#C2410C' : '#FFFFFF',
+                    color: devToolFilter === 'CLAUDE' ? '#FFFFFF' : '#C2410C',
+                    border: devToolFilter === 'CLAUDE' ? '1px solid #C2410C' : '1px solid #FED7AA',
+                    borderRadius: 16,
+                    padding: '4px 10px',
+                    fontSize: 11.5,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  <Sparkles size={12} color={devToolFilter === 'CLAUDE' ? '#FED7AA' : '#EA580C'} />
+                  Claude Code ({claudeCount})
+                </button>
+              </div>
+
+              {/* Expand / Collapse All Controls */}
+              <div style={{ display: 'flex', gap: 6 }}>
+                <button
+                  onClick={expandAllDepts}
+                  style={{
+                    background: '#FFFFFF',
+                    color: '#0284C7',
+                    border: '1px solid #BAE6FD',
+                    borderRadius: 6,
+                    padding: '4px 10px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Expand All
+                </button>
+                <button
+                  onClick={collapseAllDepts}
+                  style={{
+                    background: '#FFFFFF',
+                    color: '#64748B',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: 6,
+                    padding: '4px 10px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Collapse All
+                </button>
+              </div>
             </div>
 
-            {/* Developer Seats Table */}
-            <div className="responsive-table-wrapper">
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'Figtree, sans-serif' }}>
-                <thead>
-                  <tr style={{ background: '#F8FAFC', color: '#334155', textAlign: 'left', fontWeight: 700, borderBottom: '1.5px solid #E2E8F0' }}>
-                    <th style={{ padding: '10px 14px' }}>Developer Name & Email</th>
-                    <th style={{ padding: '10px 14px' }}>Department</th>
-                    <th style={{ padding: '10px 14px' }}>Assigned AI Tool / Editor</th>
-                    <th style={{ textAlign: 'right', padding: '10px 14px' }}>Sessions</th>
-                    <th style={{ textAlign: 'right', padding: '10px 14px' }}>Prompts</th>
-                    <th style={{ textAlign: 'right', padding: '10px 14px' }}>Proposals</th>
-                    <th style={{ textAlign: 'right', padding: '10px 14px' }}>Acceptance Rate</th>
-                    <th style={{ textAlign: 'right', padding: '10px 14px' }}>Hours Saved</th>
-                    <th style={{ textAlign: 'center', padding: '10px 14px' }}>Status</th>
-                    <th style={{ textAlign: 'center', padding: '10px 14px' }}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayedDevSeats.map(seat => (
-                    <tr 
-                      key={seat.developer_id} 
-                      onClick={() => handleOpenDrilldown(seat)}
-                      style={{ 
-                        borderBottom: '1px solid #F1F5F9',
+            {/* Department Accordion Sections */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {Object.entries(devSeatsByDept).map(([deptName, deptSeats]) => {
+                const isExpanded = !!expandedDepts[deptName];
+                const deptActive = deptSeats.filter(s => s.status === 'ACTIVE').length;
+                const deptHours = deptSeats.reduce((acc, s) => acc + (s.hours_saved || 0), 0).toFixed(1);
+                const deptAvgAcc = deptSeats.length > 0 ? (deptSeats.reduce((acc, s) => acc + (s.acceptance_rate_pct || 0), 0) / deptSeats.length).toFixed(1) : '0';
+                const deptGithub = deptSeats.filter(s => (s.provider || '').includes('github') || (s.license_tier || '').includes('GitHub')).length;
+                const deptClaude = deptSeats.filter(s => (s.provider || '').includes('claude') || (s.license_tier || '').includes('Claude')).length;
+                
+                const pageSize = 50;
+                const currPage = deptPages[deptName] || 1;
+                const totalPages = Math.ceil(deptSeats.length / pageSize);
+                const startIdx = (currPage - 1) * pageSize;
+                const pagedSeats = deptSeats.slice(startIdx, startIdx + pageSize);
+
+                const deptIcon = deptName.includes('Eng') ? '💼' : (deptName.includes('Operat') ? '📦' : (deptName.includes('Finan') ? '💰' : '🎧'));
+
+                return (
+                  <div key={deptName} style={{
+                    background: '#FFFFFF',
+                    border: isExpanded ? '1.5px solid #0284C7' : '1px solid #E2E8F0',
+                    borderRadius: 10,
+                    boxShadow: isExpanded ? '0 4px 12px rgba(2, 132, 199, 0.08)' : '0 1px 3px rgba(0,0,0,0.02)',
+                    overflow: 'hidden',
+                    transition: 'all 0.15s ease'
+                  }}>
+                    {/* Department Accordion Header Bar */}
+                    <div 
+                      onClick={() => toggleDept(deptName)}
+                      style={{
+                        background: isExpanded ? '#F0F9FF' : '#F8FAFC',
+                        padding: '14px 18px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
                         cursor: 'pointer',
-                        transition: 'background 0.15s'
+                        borderBottom: isExpanded ? '1px solid #BAE6FD' : 'none',
+                        userSelect: 'none',
+                        flexWrap: 'wrap',
+                        gap: 10
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F0F9FF')}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                     >
-                      <td style={{ padding: '12px 14px' }}>
-                        <div style={{ fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span>{seat.developer_name}</span>
-                          <Sparkles size={13} color="#0284C7" />
-                        </div>
-                        <div style={{ fontSize: 11, color: '#0284C7', fontWeight: 600 }}>{seat.developer_email}</div>
-                      </td>
-                      <td style={{ padding: '12px 14px', color: '#334155', fontWeight: 600 }}>
-                        <div>{seat.department}</div>
-                        <div style={{ fontSize: 11, color: '#64748B' }}>{seat.role}</div>
-                      </td>
-                      <td style={{ padding: '12px 14px' }}>
+                      {/* Left Info: Icon, Name, Tooling Pills */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                         <span style={{
-                          background: '#F0FFF0',
-                          border: '1px solid #BAE6FD',
+                          color: isExpanded ? '#0284C7' : '#64748B',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          transition: 'transform 0.2s',
+                          transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)'
+                        }}>
+                          <ChevronDown size={18} />
+                        </span>
+                        <span style={{ fontSize: 16 }}>{deptIcon}</span>
+                        <span style={{ fontSize: 15, fontWeight: 800, color: '#0F172A' }}>
+                          {deptName}
+                        </span>
+                        <span style={{
+                          background: '#E0F2FE',
                           color: '#0369A1',
-                          padding: '3px 8px',
-                          borderRadius: 6,
-                          fontSize: 12,
-                          fontWeight: 700,
-                          display: 'inline-block'
-                        }}>
-                          {seat.editor || 'Antigravity IDE'}
-                        </span>
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '12px 14px', fontWeight: 700, color: '#0F172A' }}>
-                        {seat.sessions_count || 39}
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '12px 14px', fontWeight: 600, color: '#059669' }}>
-                        {seat.prompts_count?.toLocaleString() || '3,644'}
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '12px 14px', fontWeight: 700, color: '#D97706' }}>
-                        {seat.suggestions_generated?.toLocaleString() || '41,456'}
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '12px 14px' }}>
-                        <span style={{
-                          background: '#DCFCE7',
-                          color: '#15803D',
-                          padding: '3px 8px',
+                          padding: '2px 9px',
                           borderRadius: 12,
-                          fontWeight: 800,
-                          fontSize: 12
-                        }}>
-                          {seat.acceptance_rate_pct || 95.4}%
-                        </span>
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '12px 14px', fontWeight: 800, color: '#2563EB' }}>
-                        {seat.hours_saved || 237.3} hrs
-                      </td>
-                      <td style={{ textAlign: 'center', padding: '12px 14px' }}>
-                        <span style={{
-                          background: '#DCFCE7',
-                          color: '#15803D',
-                          padding: '3px 10px',
-                          borderRadius: 12,
-                          fontSize: 11,
+                          fontSize: 11.5,
                           fontWeight: 800
                         }}>
-                          ACTIVE
+                          {deptSeats.length} Developers
                         </span>
-                      </td>
-                      <td style={{ textAlign: 'center', padding: '12px 14px' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOpenDrilldown(seat);
-                            }}
-                            style={{
-                              background: '#0284C7',
-                              color: '#FFFFFF',
-                              border: 'none',
-                              borderRadius: 6,
-                              padding: '5px 10px',
-                              fontSize: 11,
-                              fontWeight: 700,
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 4
-                            }}
-                          >
-                            View Details <ChevronRight size={12} />
-                          </button>
-                          {isAdmin && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSeatToDelete(seat);
-                              }}
-                              title={`Delete ${seat.developer_name} developer seat`}
-                              style={{
-                                background: '#FEE2E2',
-                                color: '#DC2626',
-                                border: '1px solid #FECACA',
-                                borderRadius: 6,
-                                padding: '5px 8px',
-                                fontSize: 11,
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 4,
-                                transition: 'all 0.15s'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#DC2626';
-                                e.currentTarget.style.color = '#FFFFFF';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#FEE2E2';
-                                e.currentTarget.style.color = '#DC2626';
-                              }}
-                            >
-                              <Trash2 size={12} />
-                              Delete
-                            </button>
-                          )}
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{
+                            background: '#0F172A',
+                            color: '#F8FAFC',
+                            padding: '2px 8px',
+                            borderRadius: 4,
+                            fontSize: 10.5,
+                            fontWeight: 700
+                          }}>
+                            {deptGithub} GitHub Copilot
+                          </span>
+                          <span style={{
+                            background: '#FFF7ED',
+                            border: '1px solid #FFEDD5',
+                            color: '#C2410C',
+                            padding: '2px 8px',
+                            borderRadius: 4,
+                            fontSize: 10.5,
+                            fontWeight: 700
+                          }}>
+                            {deptClaude} Claude Code
+                          </span>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+
+                      {/* Right KPI Summary */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Active Adoption: </span>
+                          <strong style={{ color: '#059669', fontSize: 12.5 }}>
+                            {deptActive}/{deptSeats.length} ({((deptActive/deptSeats.length)*100).toFixed(1)}%)
+                          </strong>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Hours Saved: </span>
+                          <strong style={{ color: '#0284C7', fontSize: 12.5 }}>{deptHours} hrs</strong>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Avg Acceptance: </span>
+                          <strong style={{ color: '#16A34A', fontSize: 12.5 }}>{deptAvgAcc}%</strong>
+                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#0284C7', textDecoration: 'underline' }}>
+                          {isExpanded ? 'Hide Roster ▲' : `View ${deptSeats.length} Details ▼`}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Department Employee Table (Rendered when expanded) */}
+                    {isExpanded && (
+                      <div>
+                        <div className="responsive-table-wrapper">
+                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5, fontFamily: 'Figtree, sans-serif' }}>
+                            <thead>
+                              <tr style={{ background: '#F8FAFC', color: '#475569', textAlign: 'left', fontWeight: 700, borderBottom: '1.5px solid #E2E8F0' }}>
+                                <th style={{ padding: '9px 14px' }}>Developer Name & Email</th>
+                                <th style={{ padding: '9px 14px' }}>Role / Specialty</th>
+                                <th style={{ padding: '9px 14px' }}>Assigned AI Tool & Client</th>
+                                <th style={{ textAlign: 'right', padding: '9px 14px' }}>Sessions</th>
+                                <th style={{ textAlign: 'right', padding: '9px 14px' }}>Prompts</th>
+                                <th style={{ textAlign: 'right', padding: '9px 14px' }}>Suggestions</th>
+                                <th style={{ textAlign: 'right', padding: '9px 14px' }}>Acceptance Rate</th>
+                                <th style={{ textAlign: 'right', padding: '9px 14px' }}>Hours Saved</th>
+                                <th style={{ textAlign: 'center', padding: '9px 14px' }}>Status</th>
+                                <th style={{ textAlign: 'center', padding: '9px 14px' }}>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {pagedSeats.map(seat => {
+                                const isGithub = (seat.provider || '').includes('github') || (seat.license_tier || '').includes('GitHub');
+                                return (
+                                  <tr 
+                                    key={seat.developer_id} 
+                                    onClick={() => handleOpenDrilldown(seat)}
+                                    style={{ 
+                                      borderBottom: '1px solid #F1F5F9',
+                                      cursor: 'pointer',
+                                      transition: 'background 0.15s'
+                                    }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F0F9FF')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                                  >
+                                    <td style={{ padding: '10px 14px' }}>
+                                      <div style={{ fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                        <span>{seat.developer_name}</span>
+                                        {isGithub ? (
+                                          <span style={{ fontSize: 9.5, background: '#0F172A', color: '#FFFFFF', padding: '1px 5px', borderRadius: 4, fontWeight: 700 }}>GH</span>
+                                        ) : (
+                                          <Sparkles size={12} color="#C2410C" />
+                                        )}
+                                      </div>
+                                      <div style={{ fontSize: 11, color: '#0284C7', fontWeight: 600 }}>{seat.developer_email}</div>
+                                    </td>
+                                    <td style={{ padding: '10px 14px', color: '#334155', fontWeight: 600 }}>
+                                      <div>{seat.role}</div>
+                                    </td>
+                                    <td style={{ padding: '10px 14px' }}>
+                                      {isGithub ? (
+                                        <span style={{
+                                          background: '#0F172A',
+                                          color: '#F8FAFC',
+                                          padding: '3px 8px',
+                                          borderRadius: 6,
+                                          fontSize: 11,
+                                          fontWeight: 700,
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: 5
+                                        }}>
+                                          <Code size={11} color="#93C5FD" /> GitHub Copilot ({seat.editor})
+                                        </span>
+                                      ) : (
+                                        <span style={{
+                                          background: '#FFF7ED',
+                                          border: '1px solid #FFEDD5',
+                                          color: '#C2410C',
+                                          padding: '3px 8px',
+                                          borderRadius: 6,
+                                          fontSize: 11,
+                                          fontWeight: 700,
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: 5
+                                        }}>
+                                          <Terminal size={11} color="#EA580C" /> Claude Code ({seat.editor})
+                                        </span>
+                                      )}
+                                    </td>
+                                    <td style={{ textAlign: 'right', padding: '10px 14px', fontWeight: 700, color: '#0F172A' }}>
+                                      {seat.sessions_count || 39}
+                                    </td>
+                                    <td style={{ textAlign: 'right', padding: '10px 14px', fontWeight: 600, color: '#059669' }}>
+                                      {seat.prompts_count?.toLocaleString() || '3,644'}
+                                    </td>
+                                    <td style={{ textAlign: 'right', padding: '10px 14px', fontWeight: 700, color: '#D97706' }}>
+                                      {seat.suggestions_generated?.toLocaleString() || '41,456'}
+                                    </td>
+                                    <td style={{ textAlign: 'right', padding: '10px 14px' }}>
+                                      <span style={{
+                                        background: '#DCFCE7',
+                                        color: '#15803D',
+                                        padding: '2px 8px',
+                                        borderRadius: 10,
+                                        fontWeight: 800,
+                                        fontSize: 11.5
+                                      }}>
+                                        {seat.acceptance_rate_pct || 95.4}%
+                                      </span>
+                                    </td>
+                                    <td style={{ textAlign: 'right', padding: '10px 14px', fontWeight: 800, color: '#0284C7' }}>
+                                      {seat.hours_saved || 237.3} hrs
+                                    </td>
+                                    <td style={{ textAlign: 'center', padding: '10px 14px' }}>
+                                      <span style={{
+                                        background: seat.status === 'ACTIVE' ? '#DCFCE7' : (seat.status === 'LAPSING' ? '#FEF3C7' : '#FEE2E2'),
+                                        color: seat.status === 'ACTIVE' ? '#15803D' : (seat.status === 'LAPSING' ? '#B45309' : '#DC2626'),
+                                        padding: '2px 8px',
+                                        borderRadius: 10,
+                                        fontSize: 10.5,
+                                        fontWeight: 800
+                                      }}>
+                                        {seat.status || 'ACTIVE'}
+                                      </span>
+                                    </td>
+                                    <td style={{ textAlign: 'center', padding: '10px 14px' }}>
+                                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleOpenDrilldown(seat);
+                                          }}
+                                          style={{
+                                            background: '#0284C7',
+                                            color: '#FFFFFF',
+                                            border: 'none',
+                                            borderRadius: 6,
+                                            padding: '4px 8px',
+                                            fontSize: 11,
+                                            fontWeight: 700,
+                                            cursor: 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: 3
+                                          }}
+                                        >
+                                          View Details <ChevronRight size={11} />
+                                        </button>
+                                        {isAdmin && (
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setSeatToDelete(seat);
+                                            }}
+                                            title={`Delete ${seat.developer_name} developer seat`}
+                                            style={{
+                                              background: '#FEE2E2',
+                                              color: '#DC2626',
+                                              border: '1px solid #FECACA',
+                                              borderRadius: 6,
+                                              padding: '4px 6px',
+                                              fontSize: 11,
+                                              fontWeight: 700,
+                                              cursor: 'pointer',
+                                              display: 'inline-flex',
+                                              alignItems: 'center',
+                                              gap: 3
+                                            }}
+                                          >
+                                            <Trash2 size={11} />
+                                          </button>
+                                        )}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Pagination Controls for this department */}
+                        {totalPages > 1 && (
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '10px 16px',
+                            background: '#F8FAFC',
+                            borderTop: '1px solid #E2E8F0',
+                            fontSize: 12,
+                            color: '#64748B'
+                          }}>
+                            <div>
+                              Showing <strong>{startIdx + 1}–{Math.min(startIdx + pageSize, deptSeats.length)}</strong> of <strong>{deptSeats.length}</strong> {deptName} developers
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <button
+                                onClick={() => setDeptPages(prev => ({ ...prev, [deptName]: Math.max(1, currPage - 1) }))}
+                                disabled={currPage <= 1}
+                                style={{
+                                  background: currPage <= 1 ? '#F1F5F9' : '#FFFFFF',
+                                  color: currPage <= 1 ? '#94A3B8' : '#0284C7',
+                                  border: '1px solid #CBD5E1',
+                                  borderRadius: 4,
+                                  padding: '3px 8px',
+                                  cursor: currPage <= 1 ? 'not-allowed' : 'pointer',
+                                  fontWeight: 700
+                                }}
+                              >
+                                Previous
+                              </button>
+                              <span>Page <strong>{currPage}</strong> of <strong>{totalPages}</strong></span>
+                              <button
+                                onClick={() => setDeptPages(prev => ({ ...prev, [deptName]: Math.min(totalPages, currPage + 1) }))}
+                                disabled={currPage >= totalPages}
+                                style={{
+                                  background: currPage >= totalPages ? '#F1F5F9' : '#FFFFFF',
+                                  color: currPage >= totalPages ? '#94A3B8' : '#0284C7',
+                                  border: '1px solid #CBD5E1',
+                                  borderRadius: 4,
+                                  padding: '3px 8px',
+                                  cursor: currPage >= totalPages ? 'not-allowed' : 'pointer',
+                                  fontWeight: 700
+                                }}
+                              >
+                                Next
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
       </div>
 
-      
 {/* TWO CHARTS ROW */}
       <div className="scorecard-analytics-grid" style={{ marginBottom: 20 }}>
         {/* Chart 1 */}
@@ -1363,16 +1739,36 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                   <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: '#0F172A' }}>
                     {selectedDeveloper?.developer_name || drilldownData?.developer_name || 'Developer'}
                   </h3>
-                  <span style={{
-                    background: '#E0F2FE',
-                    color: '#0369A1',
-                    padding: '2px 8px',
-                    borderRadius: 12,
-                    fontSize: 11,
-                    fontWeight: 800
-                  }}>
-                    {selectedDeveloper?.editor || drilldownData?.editor || 'Antigravity IDE'}
-                  </span>
+                  {((selectedDeveloper?.provider || drilldownData?.provider || '').includes('github') || (selectedDeveloper?.license_tier || drilldownData?.license_tier || '').includes('GitHub')) ? (
+                    <span style={{
+                      background: '#0F172A',
+                      color: '#F8FAFC',
+                      padding: '3px 9px',
+                      borderRadius: 12,
+                      fontSize: 11.5,
+                      fontWeight: 800,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5
+                    }}>
+                      <Code size={12} color="#93C5FD" /> GitHub Copilot ({selectedDeveloper?.editor || drilldownData?.editor || 'VS Code'})
+                    </span>
+                  ) : (
+                    <span style={{
+                      background: '#FFF7ED',
+                      border: '1px solid #FFEDD5',
+                      color: '#C2410C',
+                      padding: '3px 9px',
+                      borderRadius: 12,
+                      fontSize: 11.5,
+                      fontWeight: 800,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5
+                    }}>
+                      <Sparkles size={12} color="#EA580C" /> Claude Code ({selectedDeveloper?.editor || drilldownData?.editor || 'CLI'})
+                    </span>
+                  )}
                   <span style={{
                     background: '#DCFCE7',
                     color: '#15803D',
@@ -1493,7 +1889,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               <div style={{ fontSize: 12.5, color: '#78350F', lineHeight: 1.5 }}>
                 <strong>Formula:</strong> <code style={{ background: '#FEF3C7', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>Hours Saved = (Accepted AI Tool Actions × 21.6 seconds) / 3600</code>
                 <div style={{ marginTop: 6 }}>
-                  • <strong>Why 21.6 seconds?</strong> This benchmark represents the median time an engineer takes to manually type terminal commands, open and search files with regex, write multi-line replacements, and manage tasks. Each automated tool proposal generated by Antigravity directly replaces manual execution.
+                  • <strong>Why 21.6 seconds?</strong> This benchmark represents the median time an engineer takes to manually type terminal commands, open and search files with regex, write multi-line replacements, and manage tasks. Each automated tool proposal generated by GitHub Copilot and Claude Code directly replaces manual typing and task execution.
                 </div>
               </div>
             </div>
@@ -1501,7 +1897,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
             {/* AGENT TOOLS BREAKDOWN */}
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontSize: 13, fontWeight: 800, color: '#1E293B', marginBottom: 10 }}>
-                Top Agent Tools Executed by Antigravity:
+                Top Agent Tools Executed by GitHub Copilot & Claude Code:
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 10 }}>
                 {Object.entries((currMetrics?.top_tools_used || currMetrics?.tools_breakdown || {})).slice(0, 8).map(([tool, count]: any) => (
