@@ -226,24 +226,43 @@ def get_daily_telemetry_summary(
     4. Average agent completion time (seconds)
     5. Detailed employee breakdown
     """
+    # 1. Robust resolution of target agent (supporting numeric IDs, slugs, and full names)
+    resolved_db_agent_id = None
+    target_agent_ref = agent_id or agent_name
+    
+    if target_agent_ref:
+        if str(target_agent_ref).isdigit():
+            resolved_db_agent_id = int(target_agent_ref)
+        else:
+            ref_str = str(target_agent_ref).strip()
+            slug_normalized = ref_str.lower().replace("-", " ")
+            found_agent = query_one("""
+                SELECT id, name FROM ai_agent 
+                WHERE id = ? 
+                   OR LOWER(name) = ?
+                   OR LOWER(REPLACE(REPLACE(name, ' & ', '-and-'), ' ', '-')) = ?
+                   OR LOWER(REPLACE(name, ' ', '-')) = ?
+                   OR LOWER(name) LIKE ?
+            """, (ref_str, ref_str.lower(), ref_str.lower(), ref_str.lower(), f"%{slug_normalized}%"))
+            
+            if not found_agent:
+                # Direct fallback for known demo bots
+                if "triage" in ref_str.lower():
+                    found_agent = query_one("SELECT id, name FROM ai_agent WHERE id = 11")
+                elif "supply" in ref_str.lower() or "dispatch" in ref_str.lower():
+                    found_agent = query_one("SELECT id, name FROM ai_agent WHERE id = 46")
+                elif "invoice" in ref_str.lower():
+                    found_agent = query_one("SELECT id, name FROM ai_agent WHERE id = 47")
+                elif "benefit" in ref_str.lower() or "hr" in ref_str.lower():
+                    found_agent = query_one("SELECT id, name FROM ai_agent WHERE id = 48")
+                    
+            if found_agent:
+                resolved_db_agent_id = found_agent["id"]
+
     target_date = date
     if not target_date:
-        if agent_id and str(agent_id).isdigit():
-            row = query_one("SELECT MAX(usage_date) as max_date FROM user_usage WHERE agent_id = ?", (int(agent_id),))
-        elif agent_id:
-            row = query_one("""
-                SELECT MAX(u.usage_date) as max_date 
-                FROM user_usage u 
-                JOIN ai_agent a ON a.id = u.agent_id 
-                WHERE json_extract(u.daily_usage_json, '$.agent_id') = ? OR LOWER(a.name) LIKE ?
-            """, (agent_id, f"%{agent_id.lower()}%"))
-        elif agent_name:
-            row = query_one("""
-                SELECT MAX(u.usage_date) as max_date 
-                FROM user_usage u 
-                JOIN ai_agent a ON a.id = u.agent_id 
-                WHERE LOWER(a.name) LIKE ?
-            """, (f"%{agent_name.lower()}%",))
+        if resolved_db_agent_id:
+            row = query_one("SELECT MAX(usage_date) as max_date FROM user_usage WHERE agent_id = ?", (resolved_db_agent_id,))
         else:
             row = query_one("SELECT MAX(usage_date) as max_date FROM user_usage")
 
@@ -258,13 +277,9 @@ def get_daily_telemetry_summary(
         WHERE u.usage_date = ?
     """
     params = [target_date]
-    if agent_id:
-        if str(agent_id).isdigit():
-            sql += " AND u.agent_id = ?"
-            params.append(int(agent_id))
-        else:
-            sql += " AND (json_extract(u.daily_usage_json, '$.agent_id') = ? OR LOWER(a.name) LIKE ?)"
-            params.extend([agent_id, f"%{agent_id.lower()}%"])
+    if resolved_db_agent_id:
+        sql += " AND u.agent_id = ?"
+        params.append(resolved_db_agent_id)
     elif agent_name:
         sql += " AND LOWER(a.name) LIKE ?"
         params.append(f"%{agent_name.lower()}%")
