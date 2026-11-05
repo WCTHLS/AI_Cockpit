@@ -1,3 +1,4 @@
+import re
 import uuid
 import json
 import random
@@ -212,6 +213,38 @@ def get_user_usage(
         })
     return results
 
+def find_agent_by_ref(target_agent_ref: Any) -> Optional[Dict[str, Any]]:
+    if not target_agent_ref:
+        return None
+    if str(target_agent_ref).isdigit():
+        return query_one("SELECT * FROM ai_agent WHERE id = ?", (int(target_agent_ref),))
+        
+    ref_str = str(target_agent_ref).strip()
+    row = query_one("SELECT * FROM ai_agent WHERE LOWER(name) = ? OR id = ?", (ref_str.lower(), ref_str))
+    if row:
+        return row
+        
+    base_clean = re.sub(r"\[.*?\]", "", ref_str)
+    base_clean = re.sub(r"[^a-zA-Z0-9\s]", " ", base_clean).strip()
+    words = [w for w in base_clean.split() if len(w) > 2 and w.lower() not in ("and", "the", "for")]
+    if words:
+        first_few = "%".join(words[:3])
+        row = query_one("SELECT * FROM ai_agent WHERE LOWER(name) LIKE ? LIMIT 1", (f"%{first_few.lower()}%",))
+        if row:
+            return row
+
+    low = ref_str.lower()
+    if "triage" in low:
+        return query_one("SELECT * FROM ai_agent WHERE id = 11")
+    elif "supply" in low or "dispatch" in low:
+        return query_one("SELECT * FROM ai_agent WHERE id = 46")
+    elif "invoice" in low:
+        return query_one("SELECT * FROM ai_agent WHERE id = 47")
+    elif "benefit" in low or "policy" in low or "hr" in low:
+        return query_one("SELECT * FROM ai_agent WHERE id = 48")
+        
+    return None
+
 @router.get("/daily-summary")
 def get_daily_telemetry_summary(
     agent_id: Optional[str] = None,
@@ -227,37 +260,10 @@ def get_daily_telemetry_summary(
     5. Detailed employee breakdown
     """
     # 1. Robust resolution of target agent (supporting numeric IDs, slugs, and full names)
-    resolved_db_agent_id = None
-    target_agent_ref = agent_id or agent_name
-    
-    if target_agent_ref:
-        if str(target_agent_ref).isdigit():
-            resolved_db_agent_id = int(target_agent_ref)
-        else:
-            ref_str = str(target_agent_ref).strip()
-            slug_normalized = ref_str.lower().replace("-", " ")
-            found_agent = query_one("""
-                SELECT id, name FROM ai_agent 
-                WHERE id = ? 
-                   OR LOWER(name) = ?
-                   OR LOWER(REPLACE(REPLACE(name, ' & ', '-and-'), ' ', '-')) = ?
-                   OR LOWER(REPLACE(name, ' ', '-')) = ?
-                   OR LOWER(name) LIKE ?
-            """, (ref_str, ref_str.lower(), ref_str.lower(), ref_str.lower(), f"%{slug_normalized}%"))
-            
-            if not found_agent:
-                # Direct fallback for known demo bots
-                if "triage" in ref_str.lower():
-                    found_agent = query_one("SELECT id, name FROM ai_agent WHERE id = 11")
-                elif "supply" in ref_str.lower() or "dispatch" in ref_str.lower():
-                    found_agent = query_one("SELECT id, name FROM ai_agent WHERE id = 46")
-                elif "invoice" in ref_str.lower():
-                    found_agent = query_one("SELECT id, name FROM ai_agent WHERE id = 47")
-                elif "benefit" in ref_str.lower() or "hr" in ref_str.lower():
-                    found_agent = query_one("SELECT id, name FROM ai_agent WHERE id = 48")
-                    
-            if found_agent:
-                resolved_db_agent_id = found_agent["id"]
+    found_agent = find_agent_by_ref(agent_id or agent_name)
+    resolved_db_agent_id = found_agent["id"] if found_agent else None
+    resolved_agent_name = found_agent["name"] if found_agent else (agent_name or "AI Agent")
+    resolved_agent_id = str(found_agent["id"]) if found_agent else (agent_id or "ai-agent")
 
     target_date = date
     if not target_date:
@@ -340,16 +346,7 @@ def get_daily_telemetry_summary(
             })
     else:
         # Resolve agent from DB for context-aware synthetic telemetry
-        a_row = None
-        if agent_id and str(agent_id).isdigit():
-            a_row = query_one("SELECT * FROM ai_agent WHERE id = ?", (int(agent_id),))
-        if not a_row and (agent_name or agent_id):
-            search_term = (agent_name or agent_id).strip()
-            a_row = query_one("SELECT * FROM ai_agent WHERE name = ?", (search_term,))
-            if not a_row:
-                a_row = query_one("SELECT * FROM ai_agent WHERE LOWER(name) = LOWER(?)", (search_term,))
-            if not a_row:
-                a_row = query_one("SELECT * FROM ai_agent WHERE LOWER(name) LIKE ? ORDER BY LENGTH(name) ASC LIMIT 1", (f"%{search_term.lower()}%",))
+        a_row = found_agent or find_agent_by_ref(agent_id or agent_name)
 
         if a_row:
             resolved_agent_id = str(a_row["id"])

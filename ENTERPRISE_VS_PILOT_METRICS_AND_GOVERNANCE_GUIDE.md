@@ -199,3 +199,4 @@ In the **Cost & Budget** dashboard, total monthly spend (**$597.3k**) is distrib
 > **Pitch Rule 3: Explaining "Optimize" vs "Intervene".**  
 > If an executive asks why a live bot is in **Optimize**:  
 > *"Optimize is the target healthy steady state. It means zero safety incidents, evaluation accuracy is above 92%, and costs are well under budget. As workforce adoption scales past $2,500/mo net value, the system automatically elevates it to Accelerate."*
+
