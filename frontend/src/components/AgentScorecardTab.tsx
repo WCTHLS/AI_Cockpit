@@ -20,6 +20,18 @@ import {
 import { AgentScorecardItem } from '../types';
 import { formatUSD, formatPct } from '../api';
 
+export function formatEnterpriseAgentName(name: string): string {
+  if (!name) return '';
+  return name
+    .replace(/\s*\[.*?#(\d+)\]/g, (_, num) => {
+      const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'][parseInt(num, 10) - 1] || `(${num})`;
+      return ` ${roman}`;
+    })
+    .replace(/\s*\[.*?Node-(\d+)\]/g, (_, num) => ` (Node ${num})`)
+    .replace(/\s*\[.*?\]/g, '')
+    .trim();
+}
+
 interface AgentScorecardTabProps {
   agents: AgentScorecardItem[];
   onSelectAgent: (agent: AgentScorecardItem) => void;
@@ -132,7 +144,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
     // 2. Search Query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      const matchName = (a.name || '').toLowerCase().includes(q);
+      const matchName = (a.name || '').toLowerCase().includes(q) || formatEnterpriseAgentName(a.name || '').toLowerCase().includes(q);
       const matchTeam = (a.team || '').toLowerCase().includes(q);
       const matchFunc = (a.function || '').toLowerCase().includes(q);
       if (!matchName && !matchTeam && !matchFunc) return false;
@@ -1052,36 +1064,23 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                   <td style={{ padding: '7px 14px 7px 64px', color: '#1A1A1A', fontSize: 13, fontWeight: 500 }}>
                                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                                         <span><span style={{ color: '#00349B', marginRight: 4 }}>•</span> {agent.name}</span>
-                                         {(agent.portfolio === 'Live Pilot' || liveAgentUrl) && (
-                                           <span style={{
-                                             fontSize: 9.5,
-                                             fontWeight: 800,
-                                             background: '#DCFCE7',
-                                             color: '#15803D',
-                                             border: '1px solid #86EFAC',
-                                             padding: '1px 6px',
-                                             borderRadius: 10,
-                                             letterSpacing: '0.2px'
-                                           }}>
-                                             LIVE PILOT
-                                           </span>
-                                         )}
-                                         {agent.model && (
-                                           <span style={{
-                                             fontSize: 10,
-                                             fontWeight: 600,
-                                             background: '#F1F5F9',
-                                             color: '#475569',
-                                             border: '1px solid #E2E8F0',
-                                             padding: '1px 5px',
-                                             borderRadius: 4
-                                           }}>
-                                             {agent.model}
-                                           </span>
-                                         )}
-                                       </div>
-                                       {liveAgentUrl && (
+                                          <span style={{ fontWeight: 600 }}><span style={{ color: '#00349B', marginRight: 4 }}>•</span> {formatEnterpriseAgentName(agent.name)}</span>
+                                          {(agent.portfolio === 'Live Pilot' || liveAgentUrl) && (
+                                            <span style={{
+                                              fontSize: 9.5,
+                                              fontWeight: 800,
+                                              background: '#DCFCE7',
+                                              color: '#15803D',
+                                              border: '1px solid #86EFAC',
+                                              padding: '1px 6px',
+                                              borderRadius: 10,
+                                              letterSpacing: '0.2px'
+                                            }}>
+                                              LIVE PILOT
+                                            </span>
+                                          )}
+                                        </div>
+                                      {liveAgentUrl && (
                                          <a
                                            href={liveAgentUrl}
                                            target="_blank"

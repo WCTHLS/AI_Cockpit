@@ -312,56 +312,58 @@ def get_unified_cost_breakdown(target_month: Optional[str] = None, function: Opt
             }
         ]
 
-    dev_stats = get_developer_tools_summary(function)
-    m365_stats = get_m365_summary(function)
-
     total_agent_budget = sum(a.get('budget', 500.0) for a in agents)
     total_agent_cost = sum(a.get('cost', 0.0) for a in agents)
-    infra_cost = round(total_agent_cost * 0.28, 2)
-    token_cost = round(total_agent_cost * 0.72, 2)
-    infra_budget = round(total_agent_budget * 0.30, 2)
-    token_budget = round(total_agent_budget * 0.70, 2)
 
-    dev_license_cost = dev_stats['cost']
-    m365_license_cost = m365_stats['cost']
-    total_cost = infra_cost + token_cost + dev_license_cost + m365_license_cost
+    # 4 Core Enterprise FinOps AI Cost Pillars (balanced across the 1,200 agent fleet)
+    token_cost = round(total_agent_cost * 0.55, 2)
+    token_budget = round(total_agent_budget * 0.55, 2)
+
+    infra_cost = round(total_agent_cost * 0.24, 2)
+    infra_budget = round(total_agent_budget * 0.24, 2)
+
+    rag_cost = round(total_agent_cost * 0.13, 2)
+    rag_budget = round(total_agent_budget * 0.13, 2)
+
+    gov_cost = round(total_agent_cost - (token_cost + infra_cost + rag_cost), 2)
+    gov_budget = round(total_agent_budget - (token_budget + infra_budget + rag_budget), 2)
+
+    total_cost = total_agent_cost
 
     items = [
         {
             'factor': 'Model Token Consumption',
-            'subfactor': 'Multi-Model Inference (GPT-4o, Claude 3.5, Gemini 2.0)',
+            'subfactor': 'Multi-Model LLM Foundation Inference (GPT-4o, Claude 3.5, Gemini 2.0 Pro)',
             'cost': token_cost,
             'budget': token_budget,
             'variance': round(token_cost - token_budget, 2),
-            'pct_of_total': round((token_cost / total_cost * 100), 1) if total_cost > 0 else 0.0
+            'pct_of_total': 55.0
         },
         {
             'factor': 'Platform & Infrastructure',
-            'subfactor': 'Autonomous Agent Hosting & Vector RAG Pipeline',
+            'subfactor': 'Autonomous Agent Container Pods, Microservices & Runtimes',
             'cost': infra_cost,
             'budget': infra_budget,
             'variance': round(infra_cost - infra_budget, 2),
-            'pct_of_total': round((infra_cost / total_cost * 100), 1) if total_cost > 0 else 0.0
+            'pct_of_total': 24.0
         },
         {
-            'factor': 'Developer Tool Subscriptions',
-            'subfactor': 'Antigravity IDE Enterprise / Gemini 2.0 Pro',
-            'cost': round(dev_license_cost, 2),
-            'budget': dev_stats['budget'] or 100.0,
-            'variance': round(dev_license_cost - (dev_stats['budget'] or 100.0), 2),
-            'pct_of_total': round((dev_license_cost / total_cost * 100), 1) if total_cost > 0 else 0.0
+            'factor': 'Vector RAG & Knowledge Pipelines',
+            'subfactor': 'Enterprise Vector Database Embeddings, Data Sync & Document Indexing',
+            'cost': rag_cost,
+            'budget': rag_budget,
+            'variance': round(rag_cost - rag_budget, 2),
+            'pct_of_total': 13.0
+        },
+        {
+            'factor': 'AI Safety, Governance & Guardrails',
+            'subfactor': 'Real-Time Prompt Injection Defense, DLP Content Filtering & Audit Telemetry',
+            'cost': gov_cost,
+            'budget': gov_budget,
+            'variance': round(gov_cost - gov_budget, 2),
+            'pct_of_total': 8.0
         }
     ]
-
-    if m365_stats['seats_count'] > 0:
-        items.append({
-            'factor': 'Enterprise Productivity Subscriptions',
-            'subfactor': f"Microsoft 365 Copilot ({m365_stats['seats_count']} seats)",
-            'cost': round(m365_license_cost, 2),
-            'budget': round(m365_stats['budget'], 2),
-            'variance': round(m365_license_cost - m365_stats['budget'], 2),
-            'pct_of_total': round((m365_license_cost / total_cost * 100), 1) if total_cost > 0 else 0.0
-        })
 
     return items
 

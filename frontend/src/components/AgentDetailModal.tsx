@@ -30,6 +30,18 @@ interface AgentDetailModalProps {
   onRefreshMetrics?: (agentName?: string) => Promise<void> | void;
 }
 
+export function formatEnterpriseAgentName(name: string): string {
+  if (!name) return '';
+  return name
+    .replace(/\s*\[.*?#(\d+)\]/g, (_, num) => {
+      const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'][parseInt(num, 10) - 1] || `(${num})`;
+      return ` ${roman}`;
+    })
+    .replace(/\s*\[.*?Node-(\d+)\]/g, (_, num) => ` (Node ${num})`)
+    .replace(/\s*\[.*?\]/g, '')
+    .trim();
+}
+
 export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClose, theme = 'light', onRefreshMetrics }) => {
   if (!agent) return null;
 
@@ -67,7 +79,7 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
     setIsRefreshingMetrics(true);
     setRefreshSuccess(false);
     try {
-      const summary = await fetchAgentDailySummary(agent.name);
+      const summary = await fetchAgentDailySummary(String(agent.id || agent.name));
       setDailySummary(summary);
       if (onRefreshMetrics) {
         await onRefreshMetrics(agent.name);
@@ -84,7 +96,7 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
   useEffect(() => {
     let isMounted = true;
     setIsLoadingDaily(true);
-    fetchAgentDailySummary(agent.name)
+    fetchAgentDailySummary(String(agent.id || agent.name))
       .then(data => {
         if (isMounted) {
           setDailySummary(data);
@@ -148,7 +160,7 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
               </span>
             </div>
             <h2 style={{ fontSize: 20, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC', margin: 0 }}>
-              {agent.name}
+              {formatEnterpriseAgentName(agent.name)}
             </h2>
             <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8', marginTop: 3 }}>
               Production Age: <b>{(agent as any).days_in_production || 180} days</b> • Tier-1 Enterprise Agent
