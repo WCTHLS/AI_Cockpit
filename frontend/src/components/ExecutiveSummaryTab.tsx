@@ -67,6 +67,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   const portfolioDonutChartRef = useRef<HTMLDivElement>(null);
   const augVsSepChartRef = useRef<HTMLDivElement>(null);
   const teamBarChartRef = useRef<HTMLDivElement>(null);
+  const [teamViewLimit, setTeamViewLimit] = useState<'top12' | 'all'>('top12');
 
   // Remediation Drawer State
   const [activeRemediation, setActiveRemediation] = useState<RemediationAgentInfo | null>(null);
@@ -543,7 +544,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
   // Chart 4: Net AI Value by Team (Horizontal Bar Ranking Chart with Copilot)
   useEffect(() => {
     if (!teamBarChartRef.current) return;
-    const chart = echarts.init(teamBarChartRef.current);
+    const chart = echarts.getInstanceByDom(teamBarChartRef.current) || echarts.init(teamBarChartRef.current);
 
     const teamValues: Array<{ name: string; val: number; agents: number; isCopilot: boolean }> = [];
 
@@ -595,6 +596,11 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
     // Sort ascending for horizontal bar chart so highest values are at top of y-axis
     teamValues.sort((a, b) => a.val - b.val);
 
+    // Filter Top 12 by default for clean, uncluttered presentation
+    const displayedTeams = (teamViewLimit === 'top12' && teamValues.length > 12)
+      ? teamValues.slice(-12)
+      : teamValues;
+
     chart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
@@ -606,15 +612,15 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         textStyle: { color: '#0F172A' },
         formatter: (params: any) => {
           const item = params[0];
-          const raw = teamValues[item.dataIndex];
+          const raw = displayedTeams[item.dataIndex];
           return `<div style="padding: 4px;">
-            <b style="color: ${raw.isCopilot ? '#1713FD' : '#00349B'}; font-size: 13px;">${item.name}</b><br/>
+            <b style="color: ${raw?.isCopilot ? '#1713FD' : '#00349B'}; font-size: 13px;">${item.name}</b><br/>
             Net AI Value: <b>${formatUSD(item.value)}</b>
-            ${raw.agents ? `<br/><span style="color:#64748B;">${raw.agents} active agents</span>` : ''}
+            ${raw?.agents ? `<br/><span style="color:#64748B;">${raw.agents} active agents</span>` : ''}
           </div>`;
         }
       },
-      grid: { top: 10, right: 75, bottom: 30, left: 15, containLabel: true },
+      grid: { top: 15, right: 145, bottom: 25, left: 15, containLabel: true },
       xAxis: {
         type: 'value',
         splitNumber: 3,
@@ -632,14 +638,14 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       },
       yAxis: {
         type: 'category',
-        data: teamValues.map(t => t.name),
+        data: displayedTeams.map(t => t.name),
         axisLine: { lineStyle: { color: '#CBD5E1' } },
         axisTick: { show: false },
         axisLabel: {
           color: '#0F172A',
-          fontSize: 11,
+          fontSize: 11.5,
           fontWeight: 600,
-          width: 100,
+          width: 175,
           overflow: 'truncate',
           ellipsis: '…'
         }
@@ -648,21 +654,22 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         {
           name: 'Net AI Value',
           type: 'bar',
-          barWidth: 12,
-          data: teamValues.map(t => ({
+          barWidth: teamViewLimit === 'top12' ? 18 : 12,
+          barCategoryGap: '35%',
+          data: displayedTeams.map(t => ({
             value: t.val,
             itemStyle: {
               color: t.isCopilot ? '#88A9E6' : (t.val < 0 ? '#C62828' : '#00349B'),
-              borderRadius: t.val >= 0 ? [0, 3, 3, 0] : [3, 0, 0, 3]
+              borderRadius: t.val >= 0 ? [0, 4, 4, 0] : [4, 0, 0, 4]
             }
           })),
           label: {
             show: true,
             position: 'right',
             formatter: (p: any) => {
-              const raw = teamValues[p.dataIndex];
+              const raw = displayedTeams[p.dataIndex];
               const valStr = formatUSD(p.value);
-              return raw.agents ? `${valStr} · ${raw.agents} agents` : valStr;
+              return raw?.agents ? `${valStr} · ${raw.agents} agents` : valStr;
             },
             color: '#334155',
             fontSize: 11,
@@ -670,7 +677,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           }
         }
       ]
-    });
+    }, true);
 
     const handleResize = () => chart.resize();
     window.addEventListener('resize', handleResize);
@@ -678,7 +685,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [agents, summary, customGrossValue, currentCostNum, currentNetValNum]);
+  }, [agents, summary, teamViewLimit]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -1322,18 +1329,58 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           background: '#FFFFFF',
           border: '1px solid #D6E2FA',
           borderRadius: 8,
-          padding: 18,
+          padding: 20,
           boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)'
         }}>
-          <div style={{ marginBottom: 12 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-              Net AI value by team
-            </h3>
-            <span style={{ fontSize: 11, color: '#64748B' }}>
-              Each team runs several agents · navy = agent teams, light blue = Microsoft 365 Copilot
-            </span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+            <div>
+              <h3 style={{ fontSize: 15, fontWeight: 800, color: '#00349B', margin: 0 }}>
+                Net AI value by team
+              </h3>
+              <span style={{ fontSize: 11, color: '#64748B' }}>
+                Each team runs several agents · navy = agent teams, light blue = Microsoft 365 Copilot
+              </span>
+            </div>
+            <div style={{ display: 'flex', background: '#F1F5F9', borderRadius: 6, padding: 2 }}>
+              <button
+                onClick={() => setTeamViewLimit('top12')}
+                style={{
+                  background: teamViewLimit === 'top12' ? '#00349B' : 'transparent',
+                  color: teamViewLimit === 'top12' ? '#FFFFFF' : '#475569',
+                  border: 'none',
+                  borderRadius: 4,
+                  padding: '3px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                Top 12 Teams
+              </button>
+              <button
+                onClick={() => setTeamViewLimit('all')}
+                style={{
+                  background: teamViewLimit === 'all' ? '#00349B' : 'transparent',
+                  color: teamViewLimit === 'all' ? '#FFFFFF' : '#475569',
+                  border: 'none',
+                  borderRadius: 4,
+                  padding: '3px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                All Teams
+              </button>
+            </div>
           </div>
-          <div ref={teamBarChartRef} style={{ height: 480, width: '100%' }} />
+          <div
+            ref={teamBarChartRef}
+            style={{
+              height: teamViewLimit === 'all' ? Math.max(520, agents.length > 50 ? 820 : 480) : 450,
+              width: '100%'
+            }}
+          />
         </div>
 
         {/* Where to Act this Month (Executive Intelligence & Remediation Panel) */}

@@ -58,6 +58,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
   cohort = 'enterprise'
 }) => {
   const isLight = theme === 'light';
+  const palette = ['#00349B', '#2563EB', '#10B981', '#8B5CF6', '#F59E0B'];
   const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
   const effectiveAgents = isScoped ? agents.filter(a => a.function === selectedFunction) : agents;
 
@@ -345,7 +346,6 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
     const chart = echarts.getInstanceByDom(treemapChartRef.current) || echarts.init(treemapChartRef.current);
 
     if (factorViewMode === 'donut') {
-      const palette = ['#00349B', '#2563EB', '#10B981', '#F59E0B', '#8B5CF6'];
       chart.setOption({
         backgroundColor: 'transparent',
         tooltip: {
@@ -1135,7 +1135,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
                   cursor: 'pointer'
                 }}
               >
-                Donut
+                Donut &amp; Table
               </button>
               <button
                 onClick={() => setFactorViewMode('treemap')}
@@ -1152,71 +1152,70 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
               >
                 Treemap
               </button>
-              <button
-                onClick={() => setFactorViewMode('table')}
-                style={{
-                  background: factorViewMode === 'table' ? '#00349B' : 'transparent',
-                  color: factorViewMode === 'table' ? '#FFFFFF' : '#475569',
-                  border: 'none',
-                  borderRadius: 4,
-                  padding: '3px 8px',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 3
-                }}
-              >
-                <TableIcon size={11} /> Table
-              </button>
             </div>
           </div>
 
-          {factorViewMode === 'table' ? (
-            <div style={{ overflowX: 'auto', maxHeight: 280, WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', minWidth: 420, borderCollapse: 'collapse', fontSize: 12, textAlign: 'left' }}>
-                <thead>
-                  <tr style={{ background: '#F8FAFC', borderBottom: '1.5px solid #E2E8F0', color: '#475569', fontWeight: 700 }}>
-                    <th style={{ padding: '8px 10px' }}>Cost Factor</th>
-                    <th style={{ padding: '8px 10px' }}>Monthly Spend</th>
-                    <th style={{ padding: '8px 10px' }}>Share</th>
-                    <th style={{ padding: '8px 10px' }}>Budget</th>
-                    <th style={{ padding: '8px 10px' }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {factorData.map(f => (
-                    <tr
-                      key={f.name}
-                      onClick={() => setSelectedFactor(f)}
-                      style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <td style={{ padding: '8px 10px', fontWeight: 700, color: '#00349B' }}>{f.name}</td>
-                      <td style={{ padding: '8px 10px', fontWeight: 600 }}>{formatUSD(f.actual)}</td>
-                      <td style={{ padding: '8px 10px', color: '#64748B' }}>{f.pctOfTotal}%</td>
-                      <td style={{ padding: '8px 10px', color: '#475569' }}>{formatUSD(f.budget)}</td>
-                      <td style={{ padding: '8px 10px' }}>
-                        <span style={{
-                          background: f.status === 'overrun' ? '#FEE2E2' : '#DCFCE7',
-                          color: f.status === 'overrun' ? '#DC2626' : '#16A34A',
-                          padding: '2px 6px',
-                          borderRadius: 4,
-                          fontSize: 10.5,
-                          fontWeight: 700
-                        }}>
-                          {f.pctOfBudget}%
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
+          {factorViewMode === 'treemap' ? (
             <div ref={treemapChartRef} style={{ height: 280, width: '100%' }} />
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              {/* Donut chart on left */}
+              <div style={{ flex: '1 1 200px', minWidth: 190, height: 280 }}>
+                <div ref={treemapChartRef} style={{ height: 280, width: '100%' }} />
+              </div>
+
+              {/* Clean breakdown table on right */}
+              <div style={{ flex: '1.4 1 280px', minWidth: 260, overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11.5, textAlign: 'left' }}>
+                  <thead>
+                    <tr style={{ background: '#F8FAFC', borderBottom: '1.5px solid #E2E8F0', color: '#475569', fontWeight: 700 }}>
+                      <th style={{ padding: '6px 8px' }}>Cost Factor</th>
+                      <th style={{ padding: '6px 8px', textAlign: 'right' }}>Spend</th>
+                      <th style={{ padding: '6px 8px', textAlign: 'center' }}>Share</th>
+                      <th style={{ padding: '6px 8px', textAlign: 'right' }}>Budget</th>
+                      <th style={{ padding: '6px 8px', textAlign: 'center' }}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {factorData.map((f, idx) => (
+                      <tr
+                        key={f.name}
+                        onClick={() => setSelectedFactor(f)}
+                        title="Click to view deep-dive FinOps diagnostics"
+                        style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 0.15s' }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        <td style={{ padding: '7px 8px', fontWeight: 700, color: '#00349B' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: palette[idx % palette.length], flexShrink: 0 }} />
+                            <span style={{ fontSize: 11.5 }}>{f.name}</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: '7px 8px', textAlign: 'right', fontWeight: 600 }}>{formatUSD(f.actual)}</td>
+                        <td style={{ padding: '7px 8px', textAlign: 'center', color: '#64748B', fontWeight: 600 }}>{f.pctOfTotal}%</td>
+                        <td style={{ padding: '7px 8px', textAlign: 'right', color: '#475569' }}>{formatUSD(f.budget)}</td>
+                        <td style={{ padding: '7px 8px', textAlign: 'center' }}>
+                          <span style={{
+                            background: f.status === 'overrun' ? '#FEE2E2' : '#DCFCE7',
+                            color: f.status === 'overrun' ? '#DC2626' : '#16A34A',
+                            padding: '2px 5px',
+                            borderRadius: 4,
+                            fontSize: 10,
+                            fontWeight: 700
+                          }}>
+                            {f.pctOfBudget}%
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div style={{ fontSize: 10.5, color: '#64748B', marginTop: 8, textAlign: 'right' }}>
+                  Click any factor row to inspect FinOps root cause &amp; optimizations →
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

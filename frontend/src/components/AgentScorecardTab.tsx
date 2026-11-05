@@ -839,12 +839,12 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'Satoshi, Figtree, sans-serif' }}>
             <thead>
               <tr style={{ background: '#00349B', color: '#FFFFFF', textAlign: 'left', fontSize: 12, fontWeight: 700 }}>
-                <th title="Business function, owning department team, and agent display name" style={{ padding: '10px 14px' }}>Business function / team / agent</th>
-                <th title="Calculated as: Gross Value Created - Actual AI Cost&#10;= (Hours Saved × Hourly Wage Rate) - (Tokens Cost + Monthly Infra)&#10;Hourly Rate = Employee Monthly Rate / Monthly Working Hours" style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help' }}>Net value / mo ▼</th>
-                <th title="Calculated as: (Active Employees Using Agent / Total Employees Assigned) × 100%" style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help' }}>Adoption</th>
-                <th title="Calculated as: (Actual AI Cost / Monthly Budget) × 100%&#10;Actual AI Cost = Token Usage Cost + Monthly Infra Cost (no seat costs for custom agents)&#10;Under 100% is on track; over 100% indicates budget overrun." style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help' }}>Cost vs budget</th>
-                <th title="Calculated as: (Successful Sessions / Total Executed Sessions) × 100%&#10;Average agent execution success rate across all company users." style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help' }}>Eval pass</th>
-                <th title="Calculated as: Successful Sessions × Baseline Human Task Duration&#10;e.g. 8 tasks × 0.5 hrs = 4.0 labor hours saved." style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help' }}>Hours saved</th>
+                <th title="Business function, owning department team, and agent display name" style={{ padding: '10px 14px', minWidth: 280 }}>Business function / team / agent</th>
+                <th title="Calculated as: Gross Value Created - Actual AI Cost&#10;= (Hours Saved × Hourly Wage Rate) - (Tokens Cost + Monthly Infra)&#10;Hourly Rate = Employee Monthly Rate / Monthly Working Hours" style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help', whiteSpace: 'nowrap', minWidth: 110 }}>Net value / mo ▼</th>
+                <th title="Calculated as: (Active Employees Using Agent / Total Employees Assigned) × 100%" style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help', whiteSpace: 'nowrap', minWidth: 85 }}>Adoption</th>
+                <th title="Calculated as: (Actual AI Cost / Monthly Budget) × 100%&#10;Actual AI Cost = Token Usage Cost + Monthly Infra Cost (no seat costs for custom agents)&#10;Under 100% is on track; over 100% indicates budget overrun." style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help', whiteSpace: 'nowrap', minWidth: 105 }}>Cost vs budget</th>
+                <th title="Calculated as: (Successful Sessions / Total Executed Sessions) × 100%&#10;Average agent execution success rate across all company users." style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help', whiteSpace: 'nowrap', minWidth: 95 }}>Eval pass</th>
+                <th title="Calculated as: Successful Sessions × Baseline Human Task Duration&#10;e.g. 8 tasks × 0.5 hrs = 4.0 labor hours saved." style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help', whiteSpace: 'nowrap', minWidth: 95 }}>Hours saved</th>
                 <th title="Calculated as: Total count of safety, compliance, or hallucination guardrail violations." style={{ textAlign: 'center', padding: '10px 10px', cursor: 'help' }}>Incidents</th>
                 <th title="Calculated as: Total days elapsed since the agent went live in production." style={{ textAlign: 'center', padding: '10px 10px', cursor: 'help' }}>Days in prod</th>
                 <th title="Governance Action Status:&#10;• Accelerate: Net value ≥ $40k & Adoption ≥ 70%&#10;• Intervene: Cost > 110% budget, Eval < 88%, or Net < $15k&#10;• Experiment: Production days < 60&#10;• Optimize: Performing within standard envelope" style={{ padding: '10px 14px', cursor: 'help' }}>Status</th>
@@ -1044,7 +1044,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
                               const ragDot = (ragType: string) => {
                                 const color = ragType === 'g' ? '#2E7D32' : ragType === 'a' ? '#E0A100' : '#C62828';
-                                return <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: color, marginRight: 5 }} />;
+                                return <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: color, marginRight: 5, flexShrink: 0 }} />;
                               };
 
                               return (
@@ -1108,21 +1108,29 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                        )}
                                      </div>
                                    </td>
-                                  <td title={`Net Value = Gross Value (${formatUSD(agent.gross_value || agent.net_value + agent.cost)}) - Actual Cost (${formatUSD(agent.cost)}) = ${formatUSD(agent.net_value)}`} style={{ textAlign: 'right', padding: '7px 12px', fontWeight: 600, cursor: 'help' }}>
-                                    {ragDot(ragNet)}
-                                    <span>{formatUSD(agent.net_value)}</span>
+                                  <td title={`Net Value = Gross Value (${formatUSD(agent.gross_value || agent.net_value + agent.cost)}) - Actual Cost (${formatUSD(agent.cost)}) = ${formatUSD(agent.net_value)}`} style={{ textAlign: 'right', padding: '7px 12px', fontWeight: 600, cursor: 'help', whiteSpace: 'nowrap' }}>
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5, whiteSpace: 'nowrap' }}>
+                                      {ragDot(ragNet)}
+                                      <span>{formatUSD(agent.net_value)}</span>
+                                    </div>
                                   </td>
-                                  <td title={`Adoption = (${agent.active_users || 0} active users / ${agent.licensed_users || 4} assigned users) × 100% = ${formatPct(agent.adoption_pct)}`} style={{ textAlign: 'right', padding: '7px 12px', cursor: 'help' }}>
-                                    {ragDot(ragAdopt)}
-                                    <span>{formatPct(agent.adoption_pct)}</span>
+                                  <td title={`Adoption = (${agent.active_users || 0} active users / ${agent.licensed_users || 4} assigned users) × 100% = ${formatPct(agent.adoption_pct)}`} style={{ textAlign: 'right', padding: '7px 12px', cursor: 'help', whiteSpace: 'nowrap' }}>
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5, whiteSpace: 'nowrap' }}>
+                                      {ragDot(ragAdopt)}
+                                      <span>{formatPct(agent.adoption_pct)}</span>
+                                    </div>
                                   </td>
-                                  <td title={`Cost vs Budget = (Actual Cost ${formatUSD(agent.cost)} / Budget ${formatUSD(agent.budget || agent.cost)}) × 100% = ${formatPct(agent.budget ? (agent.cost / agent.budget) * 100 : 100)}&#10;Actual AI Cost = Token Usage + Monthly Infra Cost (no seat costs)`} style={{ textAlign: 'right', padding: '7px 12px', cursor: 'help' }}>
-                                    {ragDot(ragCvb)}
-                                    <span>{formatPct(agent.budget ? (agent.cost / agent.budget) * 100 : 100)}</span>
+                                  <td title={`Cost vs Budget = (Actual Cost ${formatUSD(agent.cost)} / Budget ${formatUSD(agent.budget || agent.cost)}) × 100% = ${formatPct(agent.budget ? (agent.cost / agent.budget) * 100 : 100)}&#10;Actual AI Cost = Token Usage + Monthly Infra Cost (no seat costs)`} style={{ textAlign: 'right', padding: '7px 12px', cursor: 'help', whiteSpace: 'nowrap' }}>
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5, whiteSpace: 'nowrap' }}>
+                                      {ragDot(ragCvb)}
+                                      <span>{formatPct(agent.budget ? (agent.cost / agent.budget) * 100 : 100)}</span>
+                                    </div>
                                   </td>
-                                  <td title={`Eval Pass Rate = (${agent.eval_passed ?? 0} successful sessions / ${agent.eval_runs ?? 0} total sessions) × 100% = ${formatPct(agent.eval_pass_rate)}`} style={{ textAlign: 'right', padding: '7px 12px', cursor: 'help' }}>
-                                    {ragDot(ragEval)}
-                                    <span>{formatPct(agent.eval_pass_rate)}</span>
+                                  <td title={`Eval Pass Rate = (${agent.eval_passed ?? 0} successful sessions / ${agent.eval_runs ?? 0} total sessions) × 100% = ${formatPct(agent.eval_pass_rate)}`} style={{ textAlign: 'right', padding: '7px 12px', cursor: 'help', whiteSpace: 'nowrap' }}>
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5, whiteSpace: 'nowrap' }}>
+                                      {ragDot(ragEval)}
+                                      <span>{formatPct(agent.eval_pass_rate)}</span>
+                                    </div>
                                   </td>
                                   <td title={`Hours Saved = ${agent.eval_passed ?? 8} successful runs × ${agent.baseline_employee_hours || 0.5} hrs baseline = ${Math.round(agent.hours_saved || 0)} hrs`} style={{ textAlign: 'right', padding: '7px 12px', color: '#475569', cursor: 'help' }}>
                                     {Math.round(agent.hours_saved || 0).toLocaleString()}
