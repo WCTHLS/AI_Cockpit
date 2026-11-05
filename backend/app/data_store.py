@@ -241,22 +241,37 @@ class CockpitDataStore:
                         net_val = round(float(r.get("net_value") or (gross_val - cost)), 2)
                         incidents = int(r.get("incident_count") or 0)
 
-                    action = (r.get("action_label") or "optimize").lower()
-                    cost_budget_pct = round((cost / budget * 100.0), 1) if budget > 0 else 0.0
-                    
-                    if action == "accelerate":
-                        suggested = f"High adoption ({adoption}%) and {eval_p}% evaluation pass rate. Scale deployment."
-                    elif action == "intervene":
-                        if incidents > 0:
-                            suggested = f"Incident resolution: {incidents} active alerts detected. Review guardrails."
-                        elif cost_budget_pct > 110:
-                            suggested = f"Cost overrun ({cost_budget_pct}% of budget). Apply semantic caching & model tiering."
-                        else:
-                            suggested = f"Eval quality ({eval_p}%) below benchmark. Review golden dataset & prompt engineering."
-                    elif action == "experiment":
-                        suggested = "Recently deployed agent (<60 days). Collecting operational telemetry."
+                    if is_live and db_agent_id in live_usage_map:
+                        live_row = {
+                            "DaysInProduction": int(r.get("days_in_prod_at_month_end") or 0),
+                            "EvalRuns": runs,
+                            "EvalPassed": eval_passed,
+                            "CostUSD": cost,
+                            "BudgetUSD": budget,
+                            "NetValueUSD": net_val,
+                            "PolicyIncidents": incidents,
+                            "LicensedUsers": assigned_count,
+                            "ActiveUsers": using_count
+                        }
+                        action, suggested = self.compute_action(live_row)
+                        cost_budget_pct = round((cost / budget * 100.0), 1) if budget > 0 else 0.0
                     else:
-                        suggested = "Stable production operations. Refine latency, token budgets & fine-tuning."
+                        action = (r.get("action_label") or "optimize").lower()
+                        cost_budget_pct = round((cost / budget * 100.0), 1) if budget > 0 else 0.0
+                        
+                        if action == "accelerate":
+                            suggested = f"High adoption ({adoption}%) and {eval_p}% evaluation pass rate. Scale deployment."
+                        elif action == "intervene":
+                            if incidents > 0:
+                                suggested = f"Incident resolution: {incidents} active alerts detected. Review guardrails."
+                            elif cost_budget_pct > 110:
+                                suggested = f"Cost overrun ({cost_budget_pct}% of budget). Apply semantic caching & model tiering."
+                            else:
+                                suggested = f"Eval quality ({eval_p}%) below benchmark. Review golden dataset & prompt engineering."
+                        elif action == "experiment":
+                            suggested = "Recently deployed agent (<60 days). Collecting operational telemetry."
+                        else:
+                            suggested = "Stable production operations. Refine latency, token budgets & fine-tuning."
 
                     results.append({
                         "id": agent_id,
