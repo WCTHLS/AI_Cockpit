@@ -3728,7 +3728,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                       Supply Chain Preset (Copilot Studio)
                     </button>
                     <a
-                      href="http://localhost:8000/api/v1/copilot-studio/ui"
+                      href="/api/v1/copilot-studio/ui"
                       target="_blank"
                       rel="noreferrer"
                       style={{
