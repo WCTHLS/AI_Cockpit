@@ -179,7 +179,7 @@ export const Header: React.FC<HeaderProps> = ({
           }}>
             <button
               onClick={() => onCohortChange('enterprise')}
-              title="Enterprise Scale Portfolio: 1,200 Autonomous Agents"
+              title="Enterprise Scale Portfolio: 1,248 Autonomous Agents"
               style={{
                 background: cohort === 'enterprise' ? '#00349B' : 'transparent',
                 color: cohort === 'enterprise' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
@@ -193,7 +193,7 @@ export const Header: React.FC<HeaderProps> = ({
                 whiteSpace: 'nowrap'
               }}
             >
-              Enterprise View (1,200)
+              Enterprise View (1,248)
             </button>
             <button
               onClick={() => onCohortChange('pilot')}

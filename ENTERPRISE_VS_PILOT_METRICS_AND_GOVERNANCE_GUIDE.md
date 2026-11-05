@@ -6,14 +6,14 @@
 The **WCT AI Cockpit** operates on a **Dual-Cohort Mode** selectable via a single-click toggle in the global header:
 
 ```
-[ Enterprise View (1,200) ]  ↔  [ Pilot View (4) ]
+[ Enterprise View (1,248) ]  ↔  [ Pilot View (4) ]
 ```
 
 ```mermaid
 flowchart LR
     subgraph Cohorts ["Portfolio Cohorts"]
         Pilot["<b>Pilot View (4 Live Bots)</b><br/>• Real interactive container bots<br/>• Live employee sessions & tokens<br/>• Direct API telemetry sync"]
-        Enterprise["<b>Enterprise View (1,200 Agents)</b><br/>• Scaled enterprise portfolio<br/>• 35 business teams & 6 functions<br/>• ~$18M+ net value & FinOps allocation"]
+        Enterprise["<b>Enterprise View (1,248 Agents)</b><br/>• Scaled enterprise portfolio<br/>• 35 business teams & 6 functions<br/>• ~$18M+ net value & FinOps allocation"]
     end
     
     Pilot --> Engine["Unified Portfolio Engine"]
@@ -23,10 +23,10 @@ flowchart LR
 
 ### Cohort Comparison Matrix
 
-| Dimension | Pilot View (4 Agents) | Enterprise View (1,200 Agents) |
+| Dimension | Pilot View (4 Agents) | Enterprise View (1,248 Agents) |
 | :--- | :--- | :--- |
 | **Primary Purpose** | Hands-on client proof-of-concept, real bot execution, live token and telemetry demonstration. | Demonstrates macro organizational impact, labor capacity unlocking, and FinOps governance at Fortune 500 scale. |
-| **Agent Count** | **4 Live Agents** (1 in IT, 1 in Supply Chain, 1 in Finance/AP, 1 in HR). | **1,200 Autonomous Agents** spread across 35 enterprise teams and 6 core business functions. |
+| **Agent Count** | **4 Live Agents** (1 in IT, 1 in Supply Chain, 1 in Finance/AP, 1 in HR). | **1,248 Autonomous Agents** spread across 35 enterprise teams and 6 core business functions. |
 | **Telemetry Source** | Live database telemetry (`user_usage`, `agent_usage_daily`, live Azure OpenAI sessions). | Live telemetry for the 4 core pilots + mathematically consistent deterministic enterprise telemetry for the remaining fleet. |
 | **Net Value Scale** | ~$1.2k – $3.5k / mo (pilot stage). | **~$18.2M+ Annualized Net Value** (~$1.52M / mo). |
 | **Hours Saved** | ~120 – 350 hours / mo. | **~83,345 hours / mo** (~520 FTEs unlocked). |
@@ -151,9 +151,9 @@ $$\text{Eval Pass Rate} = \left(\frac{\text{Successful Executions (Eval Passed)}
 
 ---
 
-## 4. Enterprise Fleet Calculation Breakdown (1,200 Agents)
+## 4. Enterprise Fleet Calculation Breakdown (1,248 Agents)
 
-When pitching to prospective clients and C-level stakeholders, the Enterprise View shows how 1,200 autonomous agents scale across an enterprise:
+When pitching to prospective clients and C-level stakeholders, the Enterprise View shows how 1,248 autonomous agents scale across an enterprise:
 
 ```mermaid
 graph TD

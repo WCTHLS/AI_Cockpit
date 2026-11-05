@@ -18,16 +18,16 @@ random.seed(42)
 ENTERPRISE_TAXONOMY = {
     "Engineering & IT": {
         "hourly_rate": 42.50,
-        "target_count": 380,
+        "target_count": 395,
         "teams": [
-            ("Cloud Platform & SRE", 65),
-            ("Cyber Security & Zero Trust", 55),
-            ("DevOps & CI/CD Platform", 50),
-            ("Data Engineering & MLOps", 45),
-            ("Enterprise Architecture", 40),
-            ("Internal Developer Platform", 45),
+            ("Cloud Platform & SRE", 68),
+            ("Cyber Security & Zero Trust", 57),
+            ("DevOps & CI/CD Platform", 52),
+            ("Data Engineering & MLOps", 47),
+            ("Enterprise Architecture", 42),
+            ("Internal Developer Platform", 47),
             ("IT Service Desk", 45), # Holds Ticket Triage Agent (ID 11)
-            ("QA & Test Automation", 35),
+            ("QA & Test Automation", 37),
         ],
         "prefixes": [
             "Kubernetes Auto-Scaler", "Terraform Drift Sentinel", "AWS FinOps Spot Optimizer",
@@ -44,14 +44,14 @@ ENTERPRISE_TAXONOMY = {
     },
     "Customer Support": {
         "hourly_rate": 22.00,
-        "target_count": 310,
+        "target_count": 320,
         "teams": [
-            ("Global Tier-1 Resolution", 75),
-            ("VIP Premier Support", 50),
-            ("Warranty & Claims Triage", 55),
-            ("Multilingual Customer Desk", 50),
-            ("Customer Success & Escalations", 45),
-            ("Technical Incident Desk", 35),
+            ("Global Tier-1 Resolution", 78),
+            ("VIP Premier Support", 52),
+            ("Warranty & Claims Triage", 57),
+            ("Multilingual Customer Desk", 51),
+            ("Customer Success & Escalations", 46),
+            ("Technical Incident Desk", 36),
         ],
         "prefixes": [
             "Zendesk L1 Deflection Agent", "Warranty Eligibility Verifier", "Multi-Currency Refund Bot",
@@ -67,14 +67,14 @@ ENTERPRISE_TAXONOMY = {
     },
     "Operations": {
         "hourly_rate": 28.00,
-        "target_count": 215,
+        "target_count": 225,
         "teams": [
-            ("Supply Chain", 50), # Holds Global Supply Chain Bot (ID 46)
-            ("Logistics & Freight", 45),
-            ("Procurement & Sourcing", 40),
-            ("Inventory Planning & Demand", 35),
-            ("Manufacturing Operations", 25),
-            ("HR Employee Experience", 20), # Holds Global HR Benefits Copilot (ID 48)
+            ("Supply Chain", 52), # Holds Global Supply Chain Bot (ID 46)
+            ("Logistics & Freight", 47),
+            ("Procurement & Sourcing", 42),
+            ("Inventory Planning & Demand", 37),
+            ("Manufacturing Operations", 26),
+            ("HR Employee Experience", 21), # Holds Global HR Benefits Copilot (ID 48)
         ],
         "prefixes": [
             "Ocean Freight ETA Predictor", "Cold-Chain IoT Sensor Monitor", "Customs HTS Code Classifier",
@@ -88,13 +88,13 @@ ENTERPRISE_TAXONOMY = {
     },
     "Sales & Marketing": {
         "hourly_rate": 35.00,
-        "target_count": 170,
+        "target_count": 178,
         "teams": [
-            ("Strategic Bids & RFP", 45),
-            ("Sales Enablement & RevOps", 40),
-            ("B2B Account Signals", 35),
-            ("Growth & Marketing Ops", 30),
-            ("Product Marketing & Intel", 20),
+            ("Strategic Bids & RFP", 47),
+            ("Sales Enablement & RevOps", 42),
+            ("B2B Account Signals", 37),
+            ("Growth & Marketing Ops", 31),
+            ("Product Marketing & Intel", 21),
         ],
         "prefixes": [
             "RFP Technical Response Drafter", "Salesforce Pipeline Hygiene", "Gong Call Action-Item Extractor",
@@ -107,13 +107,13 @@ ENTERPRISE_TAXONOMY = {
     },
     "Finance": {
         "hourly_rate": 38.00,
-        "target_count": 125,
+        "target_count": 130,
         "teams": [
-            ("Accounts Payable & Procurement", 35), # Holds SAP 3-Way Match Bot (ID 47)
-            ("FP&A & Revenue Close", 30),
-            ("SOX & Internal Audit", 25),
-            ("Treasury & FX Exposure", 20),
-            ("Billing & Collections", 15),
+            ("Accounts Payable & Procurement", 36), # Holds SAP 3-Way Match Bot (ID 47)
+            ("FP&A & Revenue Close", 31),
+            ("SOX & Internal Audit", 26),
+            ("Treasury & FX Exposure", 21),
+            ("Billing & Collections", 16),
         ],
         "prefixes": [
             "SOX 404 Audit Trail Sentinel", "Corporate Travel Expense Auditor", "Multi-Currency FX Daily Hedging",
@@ -204,7 +204,7 @@ def seed_enterprise_fleet(db_path: str = None):
             """, (t_id, h_rate))
     conn.commit()
 
-    # 3. Generate 1,196 agents (so 1,196 + 4 live = 1,200 agents total)
+    # 3. Generate 1,244 agents (so 1,244 + 4 live = 1,248 agents total)
     agent_id_counter = 101
     total_created = 0
     seen_names = set([
