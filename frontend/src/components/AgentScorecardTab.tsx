@@ -1029,12 +1029,11 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                               const ragCvb = getRagCvb(agent.cost / (agent.budget || agent.cost || 1));
                               const ragEval = getRagEval(agent.eval_pass_rate / 100);
 
-                              const isCopilotStudio = (agent as any).provider === 'Microsoft Copilot Studio' || 
-                                agent.name.toLowerCase().includes('supply chain') || 
-                                (agent as any).category === 'built_with';
-                              const isTicketTriage = agent.name.toLowerCase().includes('ticket triage') || 
-                                agent.name.toLowerCase().includes('it service desk') || 
-                                agent.name.toLowerCase().includes('it support');
+                              // Specific check strictly for the 2 live interactive demo bots
+                              const isCopilotStudio = String(agent.id) === '46' || 
+                                (agent.name.toLowerCase().includes('order dispatch') && !agent.name.includes('#'));
+                              const isTicketTriage = String(agent.id) === '11' || 
+                                (agent.name.toLowerCase().includes('ticket triage agent') && !agent.name.includes('#'));
                               const isAzure = typeof window !== 'undefined' && window.location.hostname.includes('azurecontainerapps.io');
                               const liveAgentUrl = isCopilotStudio
                                 ? '/api/v1/copilot-studio/ui'
@@ -1065,7 +1064,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                                           <span style={{ fontWeight: 600 }}><span style={{ color: '#00349B', marginRight: 4 }}>•</span> {formatEnterpriseAgentName(agent.name)}</span>
-                                          {(agent.portfolio === 'Live Pilot' || liveAgentUrl) && (
+                                          {agent.portfolio === 'Live Pilot' && (
                                             <span style={{
                                               fontSize: 9.5,
                                               fontWeight: 800,

@@ -47,13 +47,11 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({ agent, onClo
 
   const isLight = theme === 'light';
   const isIntervene = agent.action === 'intervene';
-  const isCopilotStudio = (agent as any).provider === 'Microsoft Copilot Studio' || 
-    agent.name.toLowerCase().includes('supply chain') || 
-    (agent as any).category === 'built_with';
-
-  const isTicketTriage = agent.name.toLowerCase().includes('ticket triage') || 
-    agent.name.toLowerCase().includes('it service desk') || 
-    agent.name.toLowerCase().includes('it support');
+  // Specific check strictly for the 2 live interactive demo bots
+  const isCopilotStudio = String(agent.id) === '46' || 
+    (agent.name.toLowerCase().includes('order dispatch') && !agent.name.includes('#'));
+  const isTicketTriage = String(agent.id) === '11' || 
+    (agent.name.toLowerCase().includes('ticket triage agent') && !agent.name.includes('#'));
 
   const isAzure = typeof window !== 'undefined' && window.location.hostname.includes('azurecontainerapps.io');
   

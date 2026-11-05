@@ -287,9 +287,9 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         axisTick: { show: false },
         axisLabel: {
           color: '#0F172A',
-          fontSize: 11,
+          fontSize: 11.5,
           fontWeight: 600,
-          width: 110,
+          width: 180,
           overflow: 'truncate',
           ellipsis: '…'
         }
@@ -364,18 +364,14 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           }
         },
         legend: {
-          bottom: 0,
-          left: 'center',
-          itemWidth: 10,
-          itemHeight: 10,
-          textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 }
+          show: false
         },
         series: [
           {
             name: 'AI Cost by Factor',
             type: 'pie',
-            radius: ['48%', '74%'],
-            center: ['50%', '42%'],
+            radius: ['52%', '80%'],
+            center: ['50%', '50%'],
             minAngle: 12,
             avoidLabelOverlap: true,
             itemStyle: {
