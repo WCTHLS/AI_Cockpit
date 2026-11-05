@@ -55,6 +55,7 @@ interface SeatsAdoptionTabProps {
   onCostPerSeatChange?: (cost: number) => void;
   theme?: 'dark' | 'light';
   user?: UserProfile;
+  cohort?: 'enterprise' | 'pilot';
 }
 
 interface FunctionSeatActivity {
@@ -73,7 +74,8 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
   customCostPerSeat = 30,
   onCostPerSeatChange, 
   theme = 'light',
-  user
+  user,
+  cohort = 'enterprise'
 }) => {
   const isLight = theme === 'light';
   const isAdmin = user?.role === 'admin';
@@ -592,6 +594,8 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
             {m365Total > 0 ? `${m365Total} M365 SEATS SYNCED (ANONYMIZED)` : 'M365 AWAITING INGESTION'}
           </span>
 
+          {cohort !== 'enterprise' && (
+            <>
           <input
             type="file"
             ref={fileInputRef}
@@ -620,6 +624,8 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
             <UploadCloud size={14} />
             {isUploadingM365 ? 'Uploading...' : 'Upload M365 (CSV / Excel)'}
           </button>
+            </>
+          )}
         </div>
       </div>
 

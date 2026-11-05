@@ -398,6 +398,7 @@ export const App: React.FC = () => {
           <SeatsAdoptionTab
             seats={seats}
             selectedFunction={effFunc}
+            cohort={cohort}
             customCostPerSeat={subscriptionConfig.m365CopilotPrice}
             onCostPerSeatChange={(cost) => {
               setSubscriptionConfig({ ...subscriptionConfig, m365CopilotPrice: cost });
