@@ -127,17 +127,13 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
   const [m365Search, setM365Search] = useState<string>('');
   const [m365StatusFilter, setM365StatusFilter] = useState<'ALL' | 'ACTIVE' | 'IDLE'>('ALL');
   const [m365Page, setM365Page] = useState<number>(1);
-  const [expandedM365Depts, setExpandedM365Depts] = useState<Record<string, boolean>>({
-    'Eng & IT': true // Default Eng & IT department expanded
-  });
+  const [expandedM365Depts, setExpandedM365Depts] = useState<Record<string, boolean>>({});
   const [m365DeptPages, setM365DeptPages] = useState<Record<string, number>>({});
   
   // Developer Coding Seats: Department Accordion & Tooling Filters
   const [devSearch, setDevSearch] = useState<string>('');
   const [devToolFilter, setDevToolFilter] = useState<'ALL' | 'GITHUB' | 'CLAUDE'>('ALL');
-  const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>({
-    'Eng & IT': true // Default Eng & IT department expanded
-  });
+  const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>({});
   const [deptPages, setDeptPages] = useState<Record<string, number>>({});
   const [reclaimedSeats, setReclaimedSeats] = useState<Record<string, boolean>>({});
   const [showClearM365Modal, setShowClearM365Modal] = useState<boolean>(false);
