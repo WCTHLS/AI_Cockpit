@@ -60,20 +60,26 @@ if ($rgExists -ne "true") {
 }
 
 # 4. Determine or create Azure Container Registry (ACR)
-$rgId = (az group show --name $ResourceGroupName --query "id" -o tsv).Trim()
-$sha = [System.Security.Cryptography.SHA256]::Create()
-$hashBytes = $sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($rgId))
-$hashStr = ([System.BitConverter]::ToString($hashBytes)).Replace("-", "").Substring(0, 10).ToLower()
-$acrName = "wctacr$hashStr"
-
-Write-Host "Checking Azure Container Registry: $acrName..." -ForegroundColor Yellow
-$acrCheck = az acr check-name --name $acrName | ConvertFrom-Json
-if ($acrCheck.nameAvailable -eq $true) {
-    Write-Host "Provisioning Azure Container Registry '$acrName'..." -ForegroundColor Yellow
-    az acr create --resource-group $ResourceGroupName --name $acrName --sku Basic --admin-enabled true --location $Location --output none
-    Write-Host "ACR created successfully." -ForegroundColor Green
+$existingAcr = (az acr list --resource-group $ResourceGroupName --query "[0].name" -o tsv 2>$null)
+if ($existingAcr -and $existingAcr.Trim()) {
+    $acrName = $existingAcr.Trim()
+    Write-Host "Found existing Azure Container Registry: $acrName" -ForegroundColor Green
 } else {
-    Write-Host "ACR '$acrName' is ready." -ForegroundColor Green
+    $rgId = (az group show --name $ResourceGroupName --query "id" -o tsv).Trim()
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    $hashBytes = $sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($rgId))
+    $hashStr = ([System.BitConverter]::ToString($hashBytes)).Replace("-", "").Substring(0, 10).ToLower()
+    $acrName = "wctacr$hashStr"
+
+    Write-Host "Checking Azure Container Registry: $acrName..." -ForegroundColor Yellow
+    $acrCheck = az acr check-name --name $acrName | ConvertFrom-Json
+    if ($acrCheck.nameAvailable -eq $true) {
+        Write-Host "Provisioning Azure Container Registry '$acrName'..." -ForegroundColor Yellow
+        az acr create --resource-group $ResourceGroupName --name $acrName --sku Basic --admin-enabled true --location $Location --output none
+        Write-Host "ACR created successfully." -ForegroundColor Green
+    } else {
+        Write-Host "ACR '$acrName' is ready." -ForegroundColor Green
+    }
 }
 
 $acrServer = "$acrName.azurecr.io"
