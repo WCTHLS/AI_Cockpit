@@ -132,7 +132,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
   
   // Developer Coding Seats: Department Accordion & Tooling Filters
   const [devSearch, setDevSearch] = useState<string>('');
-  const [devToolFilter, setDevToolFilter] = useState<'ALL' | 'GITHUB' | 'CLAUDE'>('ALL');
+  const [devToolFilter, setDevToolFilter] = useState<'ALL' | 'GITHUB' | 'CLAUDE' | 'ANTIGRAVITY'>('ALL');
   const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>({});
   const [deptPages, setDeptPages] = useState<Record<string, number>>({});
   const [reclaimedSeats, setReclaimedSeats] = useState<Record<string, boolean>>({});
@@ -264,14 +264,19 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                       (seat.provider || '').toLowerCase().includes(q);
         if (!match) return false;
       }
-      if (devToolFilter === 'GITHUB') {
+      const isAg = (seat.provider || '').toLowerCase().includes('antigravity') || 
+                   (seat.license_tier || '').toLowerCase().includes('antigravity') || 
+                   (seat.editor || '').toLowerCase().includes('antigravity');
+      if (devToolFilter === 'ANTIGRAVITY') {
+        if (!isAg) return false;
+      } else if (devToolFilter === 'GITHUB') {
         const prov = (seat.provider || '').toLowerCase();
         const tier = (seat.license_tier || '').toLowerCase();
-        if (!prov.includes('github') && !tier.includes('github')) return false;
+        if ((!prov.includes('github') && !tier.includes('github')) || isAg) return false;
       } else if (devToolFilter === 'CLAUDE') {
         const prov = (seat.provider || '').toLowerCase();
         const tier = (seat.license_tier || '').toLowerCase();
-        if (!prov.includes('claude') && !tier.includes('claude')) return false;
+        if ((!prov.includes('claude') && !tier.includes('claude')) || isAg) return false;
       }
       return true;
     });
@@ -337,12 +342,30 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
     return orderedMap;
   }, [displayedDevSeats]);
 
+  const antigravityCount = React.useMemo(() => {
+    return (developerSeats || []).filter(s => 
+      (s.provider || '').toLowerCase().includes('antigravity') || 
+      (s.license_tier || '').toLowerCase().includes('antigravity') || 
+      (s.editor || '').toLowerCase().includes('antigravity')
+    ).length;
+  }, [developerSeats]);
+
   const githubCount = React.useMemo(() => {
-    return (developerSeats || []).filter(s => (s.provider || '').includes('github') || (s.license_tier || '').includes('GitHub')).length;
+    return (developerSeats || []).filter(s => {
+      const isAg = (s.provider || '').toLowerCase().includes('antigravity') || 
+                   (s.license_tier || '').toLowerCase().includes('antigravity') || 
+                   (s.editor || '').toLowerCase().includes('antigravity');
+      return !isAg && ((s.provider || '').toLowerCase().includes('github') || (s.license_tier || '').includes('GitHub'));
+    }).length;
   }, [developerSeats]);
 
   const claudeCount = React.useMemo(() => {
-    return (developerSeats || []).filter(s => (s.provider || '').includes('claude') || (s.license_tier || '').includes('Claude')).length;
+    return (developerSeats || []).filter(s => {
+      const isAg = (s.provider || '').toLowerCase().includes('antigravity') || 
+                   (s.license_tier || '').toLowerCase().includes('antigravity') || 
+                   (s.editor || '').toLowerCase().includes('antigravity');
+      return !isAg && ((s.provider || '').toLowerCase().includes('claude') || (s.license_tier || '').includes('Claude'));
+    }).length;
   }, [developerSeats]);
 
   const toggleDept = (dept: string) => {
@@ -1480,7 +1503,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                 )}
               </div>
 
-              {/* Tool Filters: All vs GitHub Copilot vs Claude Code */}
+              {/* Tool Filters: All vs Antigravity IDE vs GitHub Copilot vs Claude Code */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <button
                   onClick={() => setDevToolFilter('ALL')}
@@ -1498,46 +1521,72 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                 >
                   All Tooling ({displayedDevSeats.length})
                 </button>
-                <button
-                  onClick={() => setDevToolFilter('GITHUB')}
-                  style={{
-                    background: devToolFilter === 'GITHUB' ? '#0F172A' : '#FFFFFF',
-                    color: devToolFilter === 'GITHUB' ? '#FFFFFF' : '#334155',
-                    border: '1px solid #CBD5E1',
-                    borderRadius: 16,
-                    padding: '4px 10px',
-                    fontSize: 11.5,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    transition: 'all 0.15s'
-                  }}
-                >
-                  <Code size={12} color={devToolFilter === 'GITHUB' ? '#93C5FD' : '#0F172A'} />
-                  GitHub Copilot ({githubCount})
-                </button>
-                <button
-                  onClick={() => setDevToolFilter('CLAUDE')}
-                  style={{
-                    background: devToolFilter === 'CLAUDE' ? '#C2410C' : '#FFFFFF',
-                    color: devToolFilter === 'CLAUDE' ? '#FFFFFF' : '#C2410C',
-                    border: devToolFilter === 'CLAUDE' ? '1px solid #C2410C' : '1px solid #FED7AA',
-                    borderRadius: 16,
-                    padding: '4px 10px',
-                    fontSize: 11.5,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    transition: 'all 0.15s'
-                  }}
-                >
-                  <Sparkles size={12} color={devToolFilter === 'CLAUDE' ? '#FED7AA' : '#EA580C'} />
-                  Claude Code ({claudeCount})
-                </button>
+                {antigravityCount > 0 && (
+                  <button
+                    onClick={() => setDevToolFilter('ANTIGRAVITY')}
+                    style={{
+                      background: devToolFilter === 'ANTIGRAVITY' ? '#00349B' : '#FFFFFF',
+                      color: devToolFilter === 'ANTIGRAVITY' ? '#FFFFFF' : '#00349B',
+                      border: devToolFilter === 'ANTIGRAVITY' ? '1px solid #00349B' : '1px solid #BFDBFE',
+                      borderRadius: 16,
+                      padding: '4px 10px',
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      transition: 'all 0.15s'
+                    }}
+                  >
+                    <Sparkles size={12} color={devToolFilter === 'ANTIGRAVITY' ? '#93C5FD' : '#00349B'} />
+                    Antigravity IDE ({antigravityCount})
+                  </button>
+                )}
+                {githubCount > 0 && (
+                  <button
+                    onClick={() => setDevToolFilter('GITHUB')}
+                    style={{
+                      background: devToolFilter === 'GITHUB' ? '#0F172A' : '#FFFFFF',
+                      color: devToolFilter === 'GITHUB' ? '#FFFFFF' : '#334155',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: 16,
+                      padding: '4px 10px',
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      transition: 'all 0.15s'
+                    }}
+                  >
+                    <Code size={12} color={devToolFilter === 'GITHUB' ? '#93C5FD' : '#0F172A'} />
+                    GitHub Copilot ({githubCount})
+                  </button>
+                )}
+                {claudeCount > 0 && (
+                  <button
+                    onClick={() => setDevToolFilter('CLAUDE')}
+                    style={{
+                      background: devToolFilter === 'CLAUDE' ? '#C2410C' : '#FFFFFF',
+                      color: devToolFilter === 'CLAUDE' ? '#FFFFFF' : '#C2410C',
+                      border: devToolFilter === 'CLAUDE' ? '1px solid #C2410C' : '1px solid #FED7AA',
+                      borderRadius: 16,
+                      padding: '4px 10px',
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      transition: 'all 0.15s'
+                    }}
+                  >
+                    <Sparkles size={12} color={devToolFilter === 'CLAUDE' ? '#FED7AA' : '#EA580C'} />
+                    Claude Code ({claudeCount})
+                  </button>
+                )}
               </div>
 
               {/* Expand / Collapse All Controls */}
@@ -1582,8 +1631,23 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                 const deptActive = deptSeats.filter(s => s.status === 'ACTIVE').length;
                 const deptHours = deptSeats.reduce((acc, s) => acc + (s.hours_saved || 0), 0).toFixed(1);
                 const deptAvgAcc = deptSeats.length > 0 ? (deptSeats.reduce((acc, s) => acc + (s.acceptance_rate_pct || 0), 0) / deptSeats.length).toFixed(1) : '0';
-                const deptGithub = deptSeats.filter(s => (s.provider || '').includes('github') || (s.license_tier || '').includes('GitHub')).length;
-                const deptClaude = deptSeats.filter(s => (s.provider || '').includes('claude') || (s.license_tier || '').includes('Claude')).length;
+                const deptAntigravity = deptSeats.filter(s => 
+                  (s.provider || '').toLowerCase().includes('antigravity') || 
+                  (s.license_tier || '').toLowerCase().includes('antigravity') || 
+                  (s.editor || '').toLowerCase().includes('antigravity')
+                ).length;
+                const deptGithub = deptSeats.filter(s => {
+                  const isAg = (s.provider || '').toLowerCase().includes('antigravity') || 
+                               (s.license_tier || '').toLowerCase().includes('antigravity') || 
+                               (s.editor || '').toLowerCase().includes('antigravity');
+                  return !isAg && ((s.provider || '').includes('github') || (s.license_tier || '').includes('GitHub'));
+                }).length;
+                const deptClaude = deptSeats.filter(s => {
+                  const isAg = (s.provider || '').toLowerCase().includes('antigravity') || 
+                               (s.license_tier || '').toLowerCase().includes('antigravity') || 
+                               (s.editor || '').toLowerCase().includes('antigravity');
+                  return !isAg && ((s.provider || '').includes('claude') || (s.license_tier || '').includes('Claude'));
+                }).length;
                 
                 const pageSize = 50;
                 const currPage = deptPages[deptName] || 1;
@@ -1644,27 +1708,48 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                           {deptSeats.length} Developers
                         </span>
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                          <span style={{
-                            background: '#0F172A',
-                            color: '#F8FAFC',
-                            padding: '2px 8px',
-                            borderRadius: 4,
-                            fontSize: 10.5,
-                            fontWeight: 700
-                          }}>
-                            {deptGithub} GitHub Copilot
-                          </span>
-                          <span style={{
-                            background: '#FFF7ED',
-                            border: '1px solid #FFEDD5',
-                            color: '#C2410C',
-                            padding: '2px 8px',
-                            borderRadius: 4,
-                            fontSize: 10.5,
-                            fontWeight: 700
-                          }}>
-                            {deptClaude} Claude Code
-                          </span>
+                          {deptAntigravity > 0 && (
+                            <span style={{
+                              background: '#EFF6FF',
+                              border: '1px solid #BFDBFE',
+                              color: '#00349B',
+                              padding: '2px 8px',
+                              borderRadius: 4,
+                              fontSize: 10.5,
+                              fontWeight: 700,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4
+                            }}>
+                              <Sparkles size={10} color="#00349B" />
+                              {deptAntigravity} Antigravity IDE
+                            </span>
+                          )}
+                          {deptGithub > 0 && (
+                            <span style={{
+                              background: '#0F172A',
+                              color: '#F8FAFC',
+                              padding: '2px 8px',
+                              borderRadius: 4,
+                              fontSize: 10.5,
+                              fontWeight: 700
+                            }}>
+                              {deptGithub} GitHub Copilot
+                            </span>
+                          )}
+                          {deptClaude > 0 && (
+                            <span style={{
+                              background: '#FFF7ED',
+                              border: '1px solid #FFEDD5',
+                              color: '#C2410C',
+                              padding: '2px 8px',
+                              borderRadius: 4,
+                              fontSize: 10.5,
+                              fontWeight: 700
+                            }}>
+                              {deptClaude} Claude Code
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -1711,7 +1796,10 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                             </thead>
                             <tbody>
                               {pagedSeats.map(seat => {
-                                const isGithub = (seat.provider || '').includes('github') || (seat.license_tier || '').includes('GitHub');
+                                const isAg = (seat.provider || '').toLowerCase().includes('antigravity') || 
+                                             (seat.license_tier || '').toLowerCase().includes('antigravity') || 
+                                             (seat.editor || '').toLowerCase().includes('antigravity');
+                                const isGithub = !isAg && ((seat.provider || '').includes('github') || (seat.license_tier || '').includes('GitHub'));
                                 return (
                                   <tr 
                                     key={seat.developer_id} 
@@ -1727,7 +1815,9 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                                     <td style={{ padding: '10px 14px' }}>
                                       <div style={{ fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 6 }}>
                                         <span>{seat.developer_name}</span>
-                                        {isGithub ? (
+                                        {isAg ? (
+                                          <Sparkles size={12} color="#00349B" />
+                                        ) : isGithub ? (
                                           <span style={{ fontSize: 9.5, background: '#0F172A', color: '#FFFFFF', padding: '1px 5px', borderRadius: 4, fontWeight: 700 }}>GH</span>
                                         ) : (
                                           <Sparkles size={12} color="#C2410C" />
@@ -1739,7 +1829,22 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                                       <div>{seat.role}</div>
                                     </td>
                                     <td style={{ padding: '10px 14px' }}>
-                                      {isGithub ? (
+                                      {isAg ? (
+                                        <span style={{
+                                          background: '#EFF6FF',
+                                          border: '1px solid #BFDBFE',
+                                          color: '#00349B',
+                                          padding: '3px 8px',
+                                          borderRadius: 6,
+                                          fontSize: 11,
+                                          fontWeight: 700,
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: 5
+                                        }}>
+                                          <Sparkles size={11} color="#00349B" /> Antigravity IDE
+                                        </span>
+                                      ) : isGithub ? (
                                         <span style={{
                                           background: '#0F172A',
                                           color: '#F8FAFC',
@@ -2035,36 +2140,65 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                   <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: '#0F172A' }}>
                     {selectedDeveloper?.developer_name || drilldownData?.developer_name || 'Developer'}
                   </h3>
-                  {((selectedDeveloper?.provider || drilldownData?.provider || '').includes('github') || (selectedDeveloper?.license_tier || drilldownData?.license_tier || '').includes('GitHub')) ? (
-                    <span style={{
-                      background: '#0F172A',
-                      color: '#F8FAFC',
-                      padding: '3px 9px',
-                      borderRadius: 12,
-                      fontSize: 11.5,
-                      fontWeight: 800,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 5
-                    }}>
-                      <Code size={12} color="#93C5FD" /> GitHub Copilot ({selectedDeveloper?.editor || drilldownData?.editor || 'VS Code'})
-                    </span>
-                  ) : (
-                    <span style={{
-                      background: '#FFF7ED',
-                      border: '1px solid #FFEDD5',
-                      color: '#C2410C',
-                      padding: '3px 9px',
-                      borderRadius: 12,
-                      fontSize: 11.5,
-                      fontWeight: 800,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 5
-                    }}>
-                      <Sparkles size={12} color="#EA580C" /> Claude Code ({selectedDeveloper?.editor || drilldownData?.editor || 'CLI'})
-                    </span>
-                  )}
+                  {(() => {
+                    const prov = (selectedDeveloper?.provider || drilldownData?.provider || '').toLowerCase();
+                    const tier = (selectedDeveloper?.license_tier || drilldownData?.license_tier || '').toLowerCase();
+                    const ed = (selectedDeveloper?.editor || drilldownData?.editor || '').toLowerCase();
+                    const isAg = prov.includes('antigravity') || tier.includes('antigravity') || ed.includes('antigravity');
+                    const isGh = !isAg && (prov.includes('github') || tier.includes('github'));
+                    
+                    if (isAg) {
+                      return (
+                        <span style={{
+                          background: '#EFF6FF',
+                          border: '1px solid #BFDBFE',
+                          color: '#00349B',
+                          padding: '3px 9px',
+                          borderRadius: 12,
+                          fontSize: 11.5,
+                          fontWeight: 800,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 5
+                        }}>
+                          <Sparkles size={12} color="#00349B" /> Antigravity IDE
+                        </span>
+                      );
+                    } else if (isGh) {
+                      return (
+                        <span style={{
+                          background: '#0F172A',
+                          color: '#F8FAFC',
+                          padding: '3px 9px',
+                          borderRadius: 12,
+                          fontSize: 11.5,
+                          fontWeight: 800,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 5
+                        }}>
+                          <Code size={12} color="#93C5FD" /> GitHub Copilot ({selectedDeveloper?.editor || drilldownData?.editor || 'VS Code'})
+                        </span>
+                      );
+                    } else {
+                      return (
+                        <span style={{
+                          background: '#FFF7ED',
+                          border: '1px solid #FFEDD5',
+                          color: '#C2410C',
+                          padding: '3px 9px',
+                          borderRadius: 12,
+                          fontSize: 11.5,
+                          fontWeight: 800,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 5
+                        }}>
+                          <Sparkles size={12} color="#EA580C" /> Claude Code ({selectedDeveloper?.editor || drilldownData?.editor || 'CLI'})
+                        </span>
+                      );
+                    }
+                  })()}
                   <span style={{
                     background: '#DCFCE7',
                     color: '#15803D',

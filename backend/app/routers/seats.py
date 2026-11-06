@@ -91,7 +91,7 @@ def get_seats_summary(
     idle_30d = 0
 
     tool_counts: Dict[str, Dict[str, int]] = {
-        "Developer AI Tooling": {"tool": "Developer AI Tooling (GitHub Copilot & Claude Code)", "total": 0, "active": 0, "idle": 0},
+        "Developer AI Tooling": {"tool": "Developer AI Tooling (Antigravity IDE)" if cohort == "pilot" else "Developer AI Tooling (GitHub Copilot & Claude Code)", "total": 0, "active": 0, "idle": 0},
         "Microsoft 365 Copilot": {"tool": "Microsoft 365 Copilot", "total": 0, "active": 0, "idle": 0}
     }
     func_counts: Dict[str, Dict[str, int]] = {}

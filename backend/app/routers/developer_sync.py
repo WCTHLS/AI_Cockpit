@@ -146,8 +146,8 @@ def _init_developer_tables():
                             developer_id, developer_name, developer_email, department, role,
                             provider, license_tier, editor, status, sessions_count,
                             prompts_count, suggestions_generated, suggestions_accepted,
-                            acceptance_rate_pct, hours_saved, last_active_at, updated_at
-                        ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity IDE', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?)
+                            acceptance_rate_pct, hours_saved, last_active_at, updated_at, is_pilot
+                        ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity IDE', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?, 1)
                     """, (
                         s_data["developer_email"], s_data["developer_name"], s_data["developer_email"],
                         s_data.get("department", "Eng & IT"), s_data.get("role", "Senior AI / Software Engineer"),
@@ -178,8 +178,8 @@ def _init_developer_tables():
                             developer_id, developer_name, developer_email, department, role,
                             provider, license_tier, editor, status, sessions_count,
                             prompts_count, suggestions_generated, suggestions_accepted,
-                            acceptance_rate_pct, hours_saved, last_active_at, updated_at
-                        ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity IDE', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?)
+                            acceptance_rate_pct, hours_saved, last_active_at, updated_at, is_pilot
+                        ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity IDE', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?, 1)
                     """, (
                         n_data["developer_email"], n_data["developer_name"], n_data["developer_email"],
                         n_data.get("department", "Eng & IT"), n_data.get("role", "AI / Software Engineer"),
@@ -198,9 +198,15 @@ def _init_developer_tables():
             except Exception:
                 pass
 
-        # Clean up any legacy naming on existing databases
+        # Clean up any legacy naming on existing databases and ensure pilot live team has Antigravity Enterprise & is_pilot = 1
         try:
             conn.execute("UPDATE developer_seats SET editor = 'Antigravity IDE' WHERE editor LIKE '%Gemini%'")
+            conn.execute("""
+                UPDATE developer_seats 
+                SET is_pilot = 1, provider = 'gemini_antigravity', license_tier = 'Antigravity Enterprise', editor = 'Antigravity IDE'
+                WHERE developer_email IN ('swagathreddy00@gmail.com', 'mattanivas@gmail.com', 'unnati@gmail.com')
+                   OR developer_id IN ('swagathreddy00@gmail.com', 'mattanivas@gmail.com', 'unnati@gmail.com')
+            """)
         except Exception:
             pass
 
@@ -1080,14 +1086,17 @@ async def upload_teammate_zip(
                 developer_id, developer_name, developer_email, department, role,
                 provider, license_tier, editor, status, sessions_count,
                 prompts_count, suggestions_generated, suggestions_accepted,
-                acceptance_rate_pct, hours_saved, last_active_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity IDE', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?)
+                acceptance_rate_pct, hours_saved, last_active_at, updated_at, is_pilot
+            ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity IDE', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?, 1)
             ON CONFLICT(developer_id) DO UPDATE SET
                 developer_name = excluded.developer_name,
                 developer_email = excluded.developer_email,
                 department = excluded.department,
                 role = excluded.role,
+                provider = 'gemini_antigravity',
+                license_tier = 'Antigravity Enterprise',
                 editor = 'Antigravity IDE',
+                is_pilot = 1,
                 sessions_count = excluded.sessions_count,
                 prompts_count = excluded.prompts_count,
                 suggestions_generated = excluded.suggestions_generated,
