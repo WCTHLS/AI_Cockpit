@@ -644,7 +644,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
   const loadAdminM365 = async () => {
     setAdminM365Loading(true);
     try {
-      const res = await fetchM365Seats();
+      const res = await fetchM365Seats({ cohort });
       setAdminM365Data(res);
     } catch (err) {
       console.error('Failed to load M365 admin seats:', err);
@@ -656,14 +656,19 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
   useEffect(() => {
     loadAdminM365();
     loadWorkingAgents();
-  }, []);
+    if (cohort === 'pilot') {
+      setDevProvider('gemini_antigravity');
+    } else {
+      setDevProvider('github_copilot');
+    }
+  }, [cohort]);
 
   const handleAdminM365Upload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setIsUploadingAdminM365(true);
     try {
-      const res = await uploadM365Csv(file);
+      const res = await uploadM365Csv(file, cohort);
       await loadAdminM365();
       if (onThresholdsUpdated) onThresholdsUpdated();
       setDevSuccessMessage(res.message);
@@ -680,7 +685,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
   const handleAdminM365Clear = async () => {
     setIsClearingAdminM365(true);
     try {
-      const res = await clearM365Seats();
+      const res = await clearM365Seats(cohort);
       await loadAdminM365();
       if (onThresholdsUpdated) onThresholdsUpdated();
       setShowAdminM365ClearModal(false);
@@ -2985,7 +2990,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                 </div>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 800, color: '#0C4A6E', fontFamily: 'Figtree, sans-serif' }}>
-                    Microsoft 365 Copilot Subscriptions & Seat Ingestion Pipeline
+                    {cohort === 'pilot' ? 'Pilot Microsoft 365 Copilot (24 Seats)' : 'Microsoft 365 Copilot Subscriptions & Seat Ingestion Pipeline'}
                   </div>
                   <div style={{ fontSize: 12, color: '#475569', marginTop: 1 }}>
                     Ingest usage reports, configure Azure AD Graph API connectivity, and manage seat telemetry records.
@@ -3025,7 +3030,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                 }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>
-                      Current Ingested M365 Data Status
+                      {cohort === 'pilot' ? 'Pilot Ingested M365 Data Status' : 'Current Ingested M365 Data Status'}
                     </div>
                     <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
                       Total Seats: <strong>{adminM365Data?.total_seats ?? 0}</strong> | Active: <strong>{adminM365Data?.active_seats ?? 0}</strong> | Total Prompts: <strong>{adminM365Data?.total_prompts?.toLocaleString() ?? 0}</strong> | Hours Saved: <strong>{adminM365Data?.total_hours_saved ?? 0}h</strong>

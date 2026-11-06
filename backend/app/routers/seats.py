@@ -1,7 +1,7 @@
 import csv
 import io
 import datetime
-from fastapi import APIRouter, Query, HTTPException, Depends, UploadFile, File
+from fastapi import APIRouter, Query, HTTPException, Depends, UploadFile, File, Form
 from typing import Optional, List, Dict, Any
 from ..schemas import SeatInventorySummary
 from ..database import get_db, query_all
@@ -157,7 +157,7 @@ def get_seats_summary(
     )
 
 @router.post("/m365/upload-csv")
-async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = Depends(get_current_user)):
+async def upload_m365_csv(file: UploadFile = File(...), cohort: Optional[str] = Form("enterprise"), user: Dict[str, Any] = Depends(get_current_user)):
     """
     Ingests Microsoft 365 Copilot User Activity report (CSV or Excel .xlsx/.xls)
     exported from M365 Admin Center -> Reports -> Usage -> Microsoft 365 Apps -> Copilot activity.
@@ -165,6 +165,12 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
     ensuring sequential numbering with no gaps, matching the exact number of active users.
     """
     _init_m365_table()
+    with get_db() as conn:
+        if cohort == "pilot":
+            conn.execute("DELETE FROM m365_copilot_seats WHERE is_pilot = 1")
+        else:
+            conn.execute("DELETE FROM m365_copilot_seats WHERE is_pilot = 0")
+        conn.commit()
     content = await file.read()
     filename = (file.filename or "").lower()
 
@@ -347,12 +353,12 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
                     last_activity_date, report_period, total_prompts, chat_work_prompts,
                     chat_web_prompts, active_days, teams_active, outlook_active,
                     word_active, excel_active, powerpoint_active, loop_active,
-                    inactive_days, status, recommendation, hours_saved, updated_at
-                ) VALUES (?, ?, ?, 'Microsoft 365 Copilot', ?, 28, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    inactive_days, status, recommendation, hours_saved, updated_at, is_pilot
+                ) VALUES (?, ?, ?, 'Microsoft 365 Copilot', ?, 28, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 upn, display_name, dept, last_activity, total_prompts, chat_work, chat_web,
                 active_days, teams_act, outlook_act, word_act, excel_act, ppt_act, loop_act,
-                inactive_days, status, recommendation, hours_saved, now_iso
+                inactive_days, status, recommendation, hours_saved, now_iso, 1 if cohort == "pilot" else 0
             ))
 
             if cur.rowcount > 0:
@@ -364,16 +370,21 @@ async def upload_m365_csv(file: UploadFile = File(...), user: Dict[str, Any] = D
     }
 
 @router.delete("/m365")
-def clear_m365_seats(user: Dict[str, Any] = Depends(get_current_user)):
+def clear_m365_seats(
+    cohort: Optional[str] = Query("enterprise"),
+    user: Dict[str, Any] = Depends(get_current_user)
+):
     """
-    Clears all ingested Microsoft 365 Copilot usage records from the database.
+    Clears ingested Microsoft 365 Copilot usage records from the database for the active cohort.
     """
     _init_m365_table()
     with get_db() as conn:
-        conn.execute("DELETE FROM m365_copilot_seats")
-        conn.execute("DELETE FROM seat_pseudonym_map WHERE category = 'm365'")
+        if cohort == "pilot":
+            conn.execute("DELETE FROM m365_copilot_seats WHERE is_pilot = 1")
+        else:
+            conn.execute("DELETE FROM m365_copilot_seats WHERE is_pilot = 0")
         conn.commit()
-    return {"status": "success", "message": "All Microsoft 365 Copilot seat telemetry successfully cleared."}
+    return {"status": "success", "message": f"All Microsoft 365 Copilot seat telemetry for {cohort} cohort successfully cleared."}
 
 @router.get("/m365")
 def get_m365_seats(

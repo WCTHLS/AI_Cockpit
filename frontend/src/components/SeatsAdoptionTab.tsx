@@ -142,7 +142,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
   const handleClearM365 = async () => {
     setIsClearingM365(true);
     try {
-      const res = await clearM365Seats();
+      const res = await clearM365Seats(cohort);
       await loadM365Data();
       setShowClearM365Modal(false);
       setActionToast(res.message || 'All Microsoft 365 Copilot records cleared from database.');
@@ -205,7 +205,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
     if (!file) return;
     setIsUploadingM365(true);
     try {
-      const res = await uploadM365Csv(file);
+      const res = await uploadM365Csv(file, cohort);
       setM365UploadMsg(res.message);
       await loadM365Data();
       setActiveRosterTab('m365');

@@ -411,9 +411,12 @@ export async function fetchDeveloperDrilldown(developerId?: string): Promise<any
   return res.json();
 }
 
-export async function uploadM365Csv(file: File): Promise<any> {
+export async function uploadM365Csv(file: File, cohort?: string): Promise<any> {
   const formData = new FormData();
   formData.append('file', file);
+  if (cohort) {
+    formData.append('cohort', cohort);
+  }
   const token = localStorage.getItem('wct_auth_token');
   const headers: Record<string, string> = {};
   if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -484,8 +487,9 @@ export async function fetchM365Seats(params?: { search?: string; status?: string
   return res.json();
 }
 
-export async function clearM365Seats(): Promise<{ status: string; message: string }> {
-  const res = await fetch(`${API_BASE}/seats/m365`, {
+export async function clearM365Seats(cohort?: string): Promise<{ status: string; message: string }> {
+  const query = cohort ? `?cohort=${encodeURIComponent(cohort)}` : '';
+  const res = await fetch(`${API_BASE}/seats/m365${query}`, {
     method: 'DELETE',
     headers: getAuthHeaders()
   });
