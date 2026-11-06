@@ -1378,28 +1378,14 @@ select::placeholder {
 
 /* Scorecard Table Column 1 Responsiveness & Buttons */
 .scorecard-col-first {
-  width: 320px;
-  min-width: 320px;
-  max-width: 320px;
+  width: 300px;
+  min-width: 280px;
 }
 
 @media (max-width: 640px) {
   .scorecard-col-first {
-    width: 175px !important;
-    min-width: 175px !important;
-    max-width: 175px !important;
-  }
-
-  .scorecard-col-first > div {
-    max-width: 160px;
-    overflow: hidden;
-  }
-
-  .scorecard-col-first span,
-  .scorecard-col-first div {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    width: 250px !important;
+    min-width: 250px !important;
   }
 }
 

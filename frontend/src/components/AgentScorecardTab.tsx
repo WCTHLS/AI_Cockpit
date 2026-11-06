@@ -88,6 +88,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
   // Search and Productivity Quick Filter State
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [productivityFilter, setProductivityFilter] = useState<'all' | 'top-drivers' | 'intervene' | 'budget-overrun' | 'high-adopt'>('all');
+  const [mobileLayout, setMobileLayout] = useState<'cards' | 'table'>('cards');
 
   // Agent Telemetry Profile Drawer State
   
@@ -896,6 +897,372 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           </div>
         </div>
 
+                {/* Mobile View Mode Switcher: Cards vs Spreadsheet */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 10,
+          background: isLight ? '#F8FAFC' : '#0B132B',
+          border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+          borderRadius: 10,
+          padding: '8px 12px',
+          marginBottom: 10
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, fontWeight: 700, color: isLight ? '#0F172A' : '#F8FAFC' }}>
+            <span>📋 Display Mode:</span>
+            <span style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8', fontWeight: 500 }}>
+              {mobileLayout === 'cards' ? 'Full names & details (Zero truncation)' : 'Multi-column spreadsheet'}
+            </span>
+          </div>
+
+          <div style={{
+            display: 'inline-flex',
+            background: isLight ? '#FFFFFF' : '#070D1E',
+            border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+            borderRadius: 20,
+            padding: 2
+          }}>
+            <button
+              onClick={() => setMobileLayout('cards')}
+              style={{
+                background: mobileLayout === 'cards' ? (isLight ? '#00349B' : '#1D4ED8') : 'transparent',
+                color: mobileLayout === 'cards' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
+                border: 'none',
+                borderRadius: 16,
+                padding: '5px 12px',
+                fontSize: 11.5,
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              📱 Mobile Cards (Full Names)
+            </button>
+            <button
+              onClick={() => setMobileLayout('table')}
+              style={{
+                background: mobileLayout === 'table' ? (isLight ? '#00349B' : '#1D4ED8') : 'transparent',
+                color: mobileLayout === 'table' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
+                border: 'none',
+                borderRadius: 16,
+                padding: '5px 12px',
+                fontSize: 11.5,
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              📊 Spreadsheet Table
+            </button>
+          </div>
+        </div>
+
+        {/* 1. Mobile Cards View (100% Full Names, All 9 Metrics, Zero Truncation) */}
+        {mobileLayout === 'cards' ? (
+          <div className="mobile-cards-view" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {hierarchicalData.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '32px', color: isLight ? '#64748B' : '#94A3B8' }}>
+                No agents match current filter criteria.
+              </div>
+            ) : (
+              hierarchicalData.map(func => {
+                const isFuncCollapsed = collapsedFunctions.has(func.functionName);
+
+                return (
+                  <div
+                    key={func.functionName}
+                    style={{
+                      background: isLight ? '#FFFFFF' : '#0B132B',
+                      border: isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B',
+                      borderRadius: 12,
+                      overflow: 'hidden',
+                      boxShadow: isLight ? '0 2px 8px rgba(0, 52, 155, 0.05)' : '0 2px 8px rgba(0, 0, 0, 0.3)'
+                    }}
+                  >
+                    {/* Function Header Row (100% Full Department Name) */}
+                    <div
+                      onClick={() => toggleFunction(func.functionName)}
+                      style={{
+                        background: isLight ? '#EEF4FF' : '#0E1C3D',
+                        padding: '12px 14px',
+                        cursor: 'pointer',
+                        borderBottom: isFuncCollapsed ? 'none' : (isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B'),
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 10
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
+                        <span style={{
+                          width: 22,
+                          height: 22,
+                          borderRadius: 4,
+                          background: '#00349B',
+                          color: '#FFFFFF',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 12,
+                          fontWeight: 800,
+                          flexShrink: 0
+                        }}>
+                          {isFuncCollapsed ? '+' : '−'}
+                        </span>
+                        <div>
+                          <div style={{ fontSize: 15, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', lineHeight: 1.25 }}>
+                            {func.functionName}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
+                            <span style={{ fontSize: 11, background: isLight ? '#D6E2FA' : '#1E293B', color: isLight ? '#00349B' : '#93C5FD', padding: '1px 7px', borderRadius: 10, fontWeight: 700 }}>
+                              {func.agentCount} agents
+                            </span>
+                            <span style={{ fontSize: 11, background: isLight ? '#FFFFFF' : '#070D1E', border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B', color: isLight ? '#475569' : '#94A3B8', padding: '1px 7px', borderRadius: 10, fontWeight: 600 }}>
+                              {func.teamCount} teams
+                            </span>
+                            <span style={{ fontSize: 11, background: isLight ? '#ECFDF5' : 'rgba(16, 185, 129, 0.15)', border: isLight ? '1px solid #A7F3D0' : 'rgba(16, 185, 129, 0.3)', color: isLight ? '#065F46' : '#34D399', padding: '1px 7px', borderRadius: 10, fontWeight: 700 }}>
+                              ~{Math.round(func.totalHoursSaved / 160)} FTEs
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{ fontSize: 15, fontWeight: 900, color: isLight ? '#00349B' : '#38BDF8' }}>
+                          {formatUSD(func.totalNetValue)}
+                        </div>
+                        <div style={{ fontSize: 10.5, color: isLight ? '#64748B' : '#94A3B8', fontWeight: 600 }}>
+                          Net Value / mo
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Function Key Metrics Summary Bar */}
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(4, 1fr)',
+                      gap: 6,
+                      padding: '8px 12px',
+                      background: isLight ? '#F8FAFD' : '#0A1428',
+                      borderBottom: isFuncCollapsed ? 'none' : (isLight ? '1px solid #E2E8F0' : '1px solid #1E293B'),
+                      fontSize: 11,
+                      textAlign: 'center'
+                    }}>
+                      <div>
+                        <span style={{ color: isLight ? '#64748B' : '#94A3B8', fontSize: 10 }}>Adoption</span>
+                        <div style={{ fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC' }}>{formatPct(func.avgAdoption)}</div>
+                      </div>
+                      <div>
+                        <span style={{ color: isLight ? '#64748B' : '#94A3B8', fontSize: 10 }}>Cost/Budget</span>
+                        <div style={{ fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC' }}>{formatPct(func.costVsBudget)}</div>
+                      </div>
+                      <div>
+                        <span style={{ color: isLight ? '#64748B' : '#94A3B8', fontSize: 10 }}>Eval Pass</span>
+                        <div style={{ fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC' }}>{formatPct(func.avgEvalPass)}</div>
+                      </div>
+                      <div>
+                        <span style={{ color: isLight ? '#64748B' : '#94A3B8', fontSize: 10 }}>Hours Saved</span>
+                        <div style={{ fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC' }}>{Math.round(func.totalHoursSaved).toLocaleString()}</div>
+                      </div>
+                    </div>
+
+                    {/* Nested Teams and Agents */}
+                    {!isFuncCollapsed && (
+                      <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {func.teams.map(team => {
+                          const tKey = `${func.functionName}|${team.teamName}`;
+                          const isTeamCollapsed = collapsedTeams.has(tKey);
+
+                          return (
+                            <div
+                              key={tKey}
+                              style={{
+                                background: isLight ? '#F8FAFD' : '#0E172E',
+                                border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+                                borderRadius: 10,
+                                overflow: 'hidden'
+                              }}
+                            >
+                              {/* Team Header (100% Full Team Name) */}
+                              <div
+                                onClick={() => toggleTeam(tKey)}
+                                style={{
+                                  padding: '10px 12px',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  gap: 8,
+                                  background: isLight ? '#F1F5F9' : '#111C35',
+                                  borderBottom: isTeamCollapsed ? 'none' : (isLight ? '1px solid #E2E8F0' : '1px solid #1E293B')
+                                }}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
+                                  <span style={{
+                                    width: 18,
+                                    height: 18,
+                                    borderRadius: 3,
+                                    background: '#D6E2FA',
+                                    color: '#00349B',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: 10,
+                                    fontWeight: 800,
+                                    flexShrink: 0
+                                  }}>
+                                    {isTeamCollapsed ? '+' : '−'}
+                                  </span>
+                                  <div>
+                                    <div style={{ fontSize: 13.5, fontWeight: 700, color: isLight ? '#0F172A' : '#F8FAFC' }}>
+                                      {team.teamName}
+                                    </div>
+                                    <span style={{ fontSize: 10.5, background: isLight ? '#FFFFFF' : '#070D1E', border: isLight ? '1px solid #CBD5E1' : '1px solid #334155', color: isLight ? '#64748B' : '#94A3B8', padding: '1px 6px', borderRadius: 10, display: 'inline-block', marginTop: 2 }}>
+                                      {team.agents.length} agents · {formatPct(team.avgAdoption)} adopt · {formatPct(team.avgEvalPass)} eval
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                  <div style={{ fontSize: 13.5, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA' }}>
+                                    {formatUSD(team.totalNetValue)}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Team Agents List (100% Full Agent Names, All Metrics) */}
+                              {!isTeamCollapsed && (
+                                <div style={{ padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                  {team.agents.map(agent => {
+                                    const status = agent.action?.toLowerCase() || 'optimize';
+                                    const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.optimize;
+
+                                    return (
+                                      <div
+                                        key={agent.id}
+                                        onClick={() => onSelectAgent(agent)}
+                                        style={{
+                                          background: isLight ? '#FFFFFF' : '#070D1E',
+                                          border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+                                          borderRadius: 8,
+                                          padding: '12px 14px',
+                                          cursor: 'pointer',
+                                          boxShadow: isLight ? '0 1px 3px rgba(0,0,0,0.03)' : 'none',
+                                          transition: 'all 0.15s ease'
+                                        }}
+                                        onMouseEnter={e => e.currentTarget.style.borderColor = isLight ? '#93C5FD' : '#3B82F6'}
+                                        onMouseLeave={e => e.currentTarget.style.borderColor = isLight ? '#E2E8F0' : '#1E293B'}
+                                      >
+                                        {/* Agent Name & Action Status Badge */}
+                                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
+                                          <div style={{ flex: 1 }}>
+                                            <div style={{ fontSize: 14, fontWeight: 700, color: isLight ? '#0F172A' : '#F8FAFC', lineHeight: 1.35 }}>
+                                              <span style={{ color: isLight ? '#00349B' : '#60A5FA', marginRight: 5 }}>•</span>
+                                              {formatEnterpriseAgentName(agent.name)}
+                                            </div>
+                                            {agent.portfolio === 'Live Pilot' && (
+                                              <span style={{
+                                                fontSize: 9.5,
+                                                fontWeight: 800,
+                                                background: '#DCFCE7',
+                                                color: '#15803D',
+                                                border: '1px solid #86EFAC',
+                                                padding: '1px 6px',
+                                                borderRadius: 10,
+                                                letterSpacing: '0.2px',
+                                                display: 'inline-block',
+                                                marginTop: 3
+                                              }}>
+                                                LIVE PILOT
+                                              </span>
+                                            )}
+                                          </div>
+
+                                          <span style={{
+                                            fontSize: 10.5,
+                                            fontWeight: 800,
+                                            color: cfg.color,
+                                            background: cfg.bgLight,
+                                            padding: '3px 8px',
+                                            borderRadius: 12,
+                                            whiteSpace: 'nowrap',
+                                            flexShrink: 0
+                                          }}>
+                                            {cfg.icon} {cfg.label}
+                                          </span>
+                                        </div>
+
+                                        {/* 6 Key Metrics Grid */}
+                                        <div style={{
+                                          display: 'grid',
+                                          gridTemplateColumns: 'repeat(3, 1fr)',
+                                          gap: '6px 10px',
+                                          background: isLight ? '#F8FAFC' : '#0B132B',
+                                          padding: '8px 10px',
+                                          borderRadius: 6,
+                                          fontSize: 11
+                                        }}>
+                                          <div>
+                                            <span style={{ color: isLight ? '#64748B' : '#94A3B8', fontSize: 10 }}>Net Value</span>
+                                            <div style={{ fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', fontSize: 12 }}>
+                                              {formatUSD(agent.net_value)}
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <span style={{ color: isLight ? '#64748B' : '#94A3B8', fontSize: 10 }}>Adoption</span>
+                                            <div style={{ fontWeight: 700, color: isLight ? '#0F172A' : '#F8FAFC' }}>
+                                              {formatPct(agent.adoption_pct)}
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <span style={{ color: isLight ? '#64748B' : '#94A3B8', fontSize: 10 }}>Cost vs Budget</span>
+                                            <div style={{ fontWeight: 700, color: isLight ? '#0F172A' : '#F8FAFC' }}>
+                                              {formatPct(agent.cost / (agent.budget || agent.cost || 1) * 100)}
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <span style={{ color: isLight ? '#64748B' : '#94A3B8', fontSize: 10 }}>Eval Pass</span>
+                                            <div style={{ fontWeight: 700, color: isLight ? '#0F172A' : '#F8FAFC' }}>
+                                              {formatPct(agent.eval_pass_rate)}
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <span style={{ color: isLight ? '#64748B' : '#94A3B8', fontSize: 10 }}>Hours Saved</span>
+                                            <div style={{ fontWeight: 700, color: isLight ? '#0F172A' : '#F8FAFC' }}>
+                                              {agent.hours_saved}h
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <span style={{ color: isLight ? '#64748B' : '#94A3B8', fontSize: 10 }}>Incidents / Days</span>
+                                            <div style={{ fontWeight: 700, color: isLight ? '#0F172A' : '#F8FAFC' }}>
+                                              {agent.policy_incidents} / {agent.days_in_production}d
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {/* Tap prompt */}
+                                        <div style={{ marginTop: 6, fontSize: 10.5, color: isLight ? '#0284C7' : '#38BDF8', fontWeight: 600, display: 'flex', justifyContent: 'flex-end' }}>
+                                          Tap to inspect telemetry & logs →
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        ) : (
+        <>
         {/* Mobile Horizontal Scroll Affordance Banner with Interactive Buttons */}
         <div className="mobile-table-scroll-banner">
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700 }}>
@@ -1285,6 +1652,8 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             </tfoot>
           </table>
         </div>
+        </>
+        )}
 
         {/* Legend and Threshold Notes */}
         <div style={{
