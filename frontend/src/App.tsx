@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   LayoutDashboard,
   TableProperties,
   PieChart,
   Users,
   Settings,
-  Lock
+  Lock,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Header } from './components/Header';
 import { ExecutiveSummaryTab } from './components/ExecutiveSummaryTab';
@@ -143,6 +145,16 @@ export const App: React.FC = () => {
   const dynamicNetValue = summary?.total_net_value ?? (dynamicGrossValue - dynamicTotalCost);
   const dynamicRoiMultiplier = dynamicTotalCost > 0 ? (dynamicGrossValue / dynamicTotalCost) : (summary?.roi_ratio || 0);
   const dynamicLicenseCost = agents.reduce((acc, a) => acc + (a.cost || 0), 0);
+
+  const navTabsRef = useRef<HTMLDivElement>(null);
+  const scrollTabs = (direction: 'left' | 'right') => {
+    if (navTabsRef.current) {
+      navTabsRef.current.scrollBy({
+        left: direction === 'left' ? -180 : 180,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   // Sync theme to root DOM node
   useEffect(() => {
@@ -305,7 +317,16 @@ export const App: React.FC = () => {
 
       {/* Navigation Tabs */}
       <div className="nav-tabs-wrapper">
-        <div className="nav-tabs-container">
+        <button
+          className="tab-nav-arrow tab-nav-arrow-left"
+          onClick={() => scrollTabs('left')}
+          title="Scroll tabs left"
+          aria-label="Scroll tabs left"
+        >
+          <ChevronLeft size={16} />
+        </button>
+
+        <div className="nav-tabs-container" ref={navTabsRef}>
           <button
             className={`tab-button ${activeTab === 'summary' ? 'active' : ''}`}
             onClick={() => setActiveTab('summary')}
@@ -346,6 +367,19 @@ export const App: React.FC = () => {
               Admin &amp; Config
             </button>
           )}
+        </div>
+
+        <button
+          className="tab-nav-arrow tab-nav-arrow-right"
+          onClick={() => scrollTabs('right')}
+          title="Scroll tabs right"
+          aria-label="Scroll tabs right"
+        >
+          <ChevronRight size={16} />
+        </button>
+
+        <div className="tab-swipe-indicator">
+          <span>Swipe ⇄</span>
         </div>
       </div>
 

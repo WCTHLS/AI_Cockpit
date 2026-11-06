@@ -169,195 +169,208 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Tier 2: Slicers, Filters & Persona Bar */}
         <div className="header-controls-wrap">
-          {/* Cohort Toggle (Enterprise Scale vs Live Pilot) */}
-          <div style={{
-            display: 'inline-flex',
-            background: isLight ? '#F1F5F9' : '#0F172A',
-            border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
-            borderRadius: 20,
-            padding: 2
-          }}>
-            <button
-              onClick={() => onCohortChange('enterprise')}
-              title="Enterprise Scale Portfolio: 1,248 Autonomous Agents"
-              style={{
-                background: cohort === 'enterprise' ? '#00349B' : 'transparent',
-                color: cohort === 'enterprise' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
-                border: 'none',
-                borderRadius: 16,
-                padding: '4px 10px',
-                fontSize: 11.5,
-                fontWeight: 700,
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              Enterprise View (1,248)
-            </button>
-            <button
-              onClick={() => onCohortChange('pilot')}
-              title="Live Interactive Pilot: 4 Onboarded Production Agents"
-              style={{
-                background: cohort === 'pilot' ? '#00349B' : 'transparent',
-                color: cohort === 'pilot' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
-                border: 'none',
-                borderRadius: 16,
-                padding: '4px 10px',
-                fontSize: 11.5,
-                fontWeight: 700,
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              Pilot View (4)
-            </button>
+          {/* Group 1: Cohort Scope Toggle (Enterprise vs Live Pilot) */}
+          <div className="header-control-group-scope">
+            <div style={{
+              display: 'inline-flex',
+              background: isLight ? '#F1F5F9' : '#0B132B',
+              border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+              borderRadius: 20,
+              padding: 2,
+              boxShadow: isLight ? 'inset 0 1px 2px rgba(0,0,0,0.04)' : 'none'
+            }}>
+              <button
+                onClick={() => onCohortChange('enterprise')}
+                title="Enterprise Scale Portfolio: 1,248 Autonomous Agents"
+                style={{
+                  background: cohort === 'enterprise' ? (isLight ? '#00349B' : '#1D4ED8') : 'transparent',
+                  color: cohort === 'enterprise' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
+                  border: 'none',
+                  borderRadius: 16,
+                  padding: '5px 12px',
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Enterprise View (1,248)
+              </button>
+              <button
+                onClick={() => onCohortChange('pilot')}
+                title="Live Interactive Pilot: 4 Onboarded Production Agents"
+                style={{
+                  background: cohort === 'pilot' ? (isLight ? '#00349B' : '#1D4ED8') : 'transparent',
+                  color: cohort === 'pilot' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
+                  border: 'none',
+                  borderRadius: 16,
+                  padding: '5px 12px',
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Pilot View (4)
+              </button>
+            </div>
           </div>
 
-          {/* Month Segmented Toggle */}
-          <div style={{
-            display: 'inline-flex',
-            background: isLight ? '#F1F5F9' : '#0F172A',
-            border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
-            borderRadius: 20,
-            padding: 2
-          }}>
-            {['2026-09', '2026-10'].map(m => {
-              const active = currentMonth === m;
-              return (
-                <button
-                  key={m}
-                  onClick={() => onMonthChange(m)}
-                  style={{
-                    background: active ? '#00349B' : 'transparent',
-                    color: active ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
-                    border: 'none',
-                    borderRadius: 16,
-                    padding: '4px 10px',
-                    fontSize: 11.5,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  {m === '2026-09' ? 'Sep 2026' : 'Oct 2026 (Live)'}
-                </button>
-              );
-            })}
+          {/* Group 2: Time & Function Filters */}
+          <div className="header-control-group-filters">
+            {/* Month Segmented Toggle */}
+            <div style={{
+              display: 'inline-flex',
+              background: isLight ? '#F1F5F9' : '#0B132B',
+              border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+              borderRadius: 20,
+              padding: 2
+            }}>
+              {['2026-09', '2026-10'].map(m => {
+                const active = currentMonth === m;
+                return (
+                  <button
+                    key={m}
+                    onClick={() => onMonthChange(m)}
+                    style={{
+                      background: active ? (isLight ? '#00349B' : '#1D4ED8') : 'transparent',
+                      color: active ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
+                      border: 'none',
+                      borderRadius: 16,
+                      padding: '5px 10px',
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      whiteSpace: 'nowrap',
+                      flex: 1
+                    }}
+                  >
+                    {m === '2026-09' ? 'Sep 2026' : 'Oct 2026 (Live)'}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Business Function Filter */}
+            {isDeptLocked ? (
+              <div
+                title="Locked by Role-Based Access Control policy."
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  background: isLight ? '#FAF5FF' : '#1E1B4B',
+                  color: isLight ? '#7C3AED' : '#C084FC',
+                  border: isLight ? '1.5px solid #DDD6FE' : '1px solid #4C1D95',
+                  borderRadius: 20,
+                  padding: '5px 10px',
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <Lock size={12} />
+                <span>{lockedDeptName} (Locked)</span>
+              </div>
+            ) : (
+              <select
+                value={selectedFunction}
+                onChange={e => onFunctionChange(e.target.value)}
+                style={{
+                  background: isLight ? '#FFFFFF' : '#0B132B',
+                  color: isLight ? '#0F172A' : '#F8FAFC',
+                  border: isLight ? '1.5px solid #CBD5E1' : '1px solid #1E293B',
+                  borderRadius: 20,
+                  padding: '5px 12px',
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: isLight ? '0 1px 2px rgba(0,0,0,0.04)' : 'none'
+                }}
+              >
+                {FUNCTIONS.map(fn => (
+                  <option key={fn} value={fn === 'All Functions' ? '' : fn}>
+                    {fn}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
-          {/* Business Function Filter */}
-          {isDeptLocked ? (
-            <div
-              title="Locked by Role-Based Access Control policy."
+          {/* Group 3: User Persona & Switch */}
+          <div className="header-control-group-persona">
+            {/* User Persona & Role Pill */}
+            <div className="user-pill" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: isLight ? '#F8FAFC' : '#0B132B',
+              border: isLight ? '1.5px solid #CBD5E1' : '1px solid #1E293B',
+              borderRadius: 20,
+              padding: '3px 10px 3px 4px',
+              boxShadow: isLight ? '0 1px 2px rgba(0,0,0,0.04)' : 'none'
+            }}>
+              <div style={{
+                width: 22,
+                height: 22,
+                borderRadius: '50%',
+                background: roleMeta.bg,
+                color: roleMeta.color,
+                border: `1px solid ${roleMeta.border}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 9.5,
+                fontWeight: 800,
+                flexShrink: 0
+              }}>
+                {user.role === 'cxo' ? 'CEO' : user.role === 'function_head' ? 'VP' : user.role === 'finops' ? 'FIN' : 'ADM'}
+              </div>
+              <div className="user-pill-name" style={{ fontSize: 11.5, fontWeight: 700, color: isLight ? '#0F172A' : '#F8FAFC' }}>
+                {user.display_name}
+              </div>
+              <span style={{
+                fontSize: 9,
+                fontWeight: 800,
+                color: roleMeta.color,
+                background: roleMeta.bg,
+                padding: '1px 5px',
+                borderRadius: 10,
+                textTransform: 'uppercase',
+                flexShrink: 0
+              }}>
+                {roleMeta.shortLabel}
+              </span>
+            </div>
+
+            {/* Switch User Button */}
+            <button
+              onClick={onLogout}
+              title="Log out and return to persona selection screen"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 5,
-                background: isLight ? '#FAF5FF' : '#1E1B4B',
-                color: isLight ? '#7C3AED' : '#C084FC',
-                border: isLight ? '1.5px solid #DDD6FE' : '1px solid #4C1D95',
+                background: isLight ? '#EFF6FF' : '#132147',
+                color: isLight ? '#00349B' : '#60A5FA',
+                border: isLight ? '1.5px solid #BFDBFE' : '1px solid #2563EB',
                 borderRadius: 20,
-                padding: '4px 10px',
-                fontSize: 11.5,
-                fontWeight: 700,
-                whiteSpace: 'nowrap'
-              }}
-            >
-              <Lock size={12} />
-              <span>{lockedDeptName} (Locked)</span>
-            </div>
-          ) : (
-            <select
-              value={selectedFunction}
-              onChange={e => onFunctionChange(e.target.value)}
-              style={{
-                background: isLight ? '#FFFFFF' : '#0F172A',
-                color: isLight ? '#0F172A' : '#F8FAFC',
-                border: isLight ? '1.5px solid #CBD5E1' : '1px solid #334155',
-                borderRadius: 20,
-                padding: '4px 10px',
+                padding: '5px 12px',
                 fontSize: 11.5,
                 fontWeight: 700,
                 cursor: 'pointer',
-                outline: 'none'
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap'
               }}
             >
-              {FUNCTIONS.map(fn => (
-                <option key={fn} value={fn === 'All Functions' ? '' : fn}>
-                  {fn}
-                </option>
-              ))}
-            </select>
-          )}
-
-          {/* User Persona & Role Pill */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            background: isLight ? '#F8FAFC' : '#0F172A',
-            border: isLight ? '1.5px solid #E2E8F0' : '1px solid #1E293B',
-            borderRadius: 20,
-            padding: '3px 8px 3px 4px'
-          }}>
-            <div style={{
-              width: 22,
-              height: 22,
-              borderRadius: '50%',
-              background: roleMeta.bg,
-              color: roleMeta.color,
-              border: `1px solid ${roleMeta.border}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 9.5,
-              fontWeight: 800,
-              flexShrink: 0
-            }}>
-              {user.role === 'cxo' ? 'CEO' : user.role === 'function_head' ? 'VP' : user.role === 'finops' ? 'FIN' : 'ADM'}
-            </div>
-            <div style={{ fontSize: 11.5, fontWeight: 700, color: isLight ? '#0F172A' : '#F8FAFC', whiteSpace: 'nowrap' }}>
-              {user.display_name}
-            </div>
-            <span style={{
-              fontSize: 9,
-              fontWeight: 800,
-              color: roleMeta.color,
-              background: roleMeta.bg,
-              padding: '1px 5px',
-              borderRadius: 10,
-              textTransform: 'uppercase'
-            }}>
-              {roleMeta.shortLabel}
-            </span>
+              <LogOut size={12} />
+              <span>Switch</span>
+            </button>
           </div>
-
-          {/* Switch User Button */}
-          <button
-            onClick={onLogout}
-            title="Log out and return to persona selection screen"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 5,
-              background: isLight ? '#EFF6FF' : '#1E293B',
-              color: isLight ? '#00349B' : '#60A5FA',
-              border: isLight ? '1.5px solid #BFDBFE' : '1px solid #3B82F6',
-              borderRadius: 20,
-              padding: '4px 10px',
-              fontSize: 11.5,
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            <LogOut size={12} />
-            <span>Switch</span>
-          </button>
         </div>
       </div>
     </header>

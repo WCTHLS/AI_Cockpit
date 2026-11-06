@@ -278,25 +278,27 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
       experiment: '#607D8B'
     };
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
     chart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'item',
-        backgroundColor: '#FFFFFF',
-        borderColor: '#D6E2FA',
-        textStyle: { color: '#1A1A1A', fontSize: 12, fontFamily: 'Satoshi, Figtree, sans-serif' },
-        extraCssText: 'box-shadow: 0 8px 24px rgba(0,52,155,.16); border-radius: 6px;',
+        confine: true,
+        backgroundColor: isLight ? '#FFFFFF' : '#0F172A',
+        borderColor: isLight ? '#D6E2FA' : '#334155',
+        textStyle: { color: isLight ? '#1A1A1A' : '#F8FAFC', fontSize: isMobile ? 11 : 12, fontFamily: 'Satoshi, Figtree, sans-serif' },
+        extraCssText: isMobile ? 'max-width: 250px; font-size: 11px; z-index: 1000; box-shadow: 0 4px 16px rgba(0,0,0,0.25); border-radius: 6px;' : 'box-shadow: 0 8px 24px rgba(0,52,155,.16); border-radius: 6px;',
         formatter: (params: any) => {
           const raw = params.data.raw;
           const status = raw.action?.toLowerCase() || 'optimize';
           return `<div style="padding: 4px;">
-            <div style="font-weight: 700; color: #00349B; margin-bottom: 2px;">${raw.name}</div>
-            <div style="color: #64748B; font-size: 11.5px; margin-bottom: 6px;">${raw.team} · ${raw.function}</div>
+            <div style="font-weight: 700; color: ${isLight ? '#00349B' : '#60A5FA'}; margin-bottom: 2px;">${raw.name}</div>
+            <div style="color: ${isLight ? '#64748B' : '#94A3B8'}; font-size: 11px; margin-bottom: 6px;">${raw.team} · ${raw.function}</div>
             <div style="display:flex; justify-content:space-between; gap:16px;"><span>Status:</span><b style="color:${colorMap[status]}">${status.toUpperCase()}</b></div>
             <div style="display:flex; justify-content:space-between; gap:16px;"><span>Net value:</span><b>${formatUSD(raw.net_value)}</b></div>
             <div style="display:flex; justify-content:space-between; gap:16px;"><span>Adoption:</span><b>${formatPct(raw.adoption_pct)}</b></div>
             <div style="display:flex; justify-content:space-between; gap:16px;"><span>Cost:</span><b>${formatUSD(raw.cost)}</b></div>
-            <div style="color: #1713FD; font-size: 11px; margin-top: 4px; font-weight: 600;">Click to view full agent telemetry →</div>
+            <div style="color: #38BDF8; font-size: 10.5px; margin-top: 4px; font-weight: 600;">Click bubble to view details →</div>
           </div>`;
         }
       },
@@ -306,24 +308,30 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
         icon: 'roundRect',
         itemWidth: 10,
         itemHeight: 10,
-        textStyle: { color: '#475569', fontSize: 12, fontFamily: 'Satoshi, sans-serif' },
+        textStyle: { color: isLight ? '#475569' : '#CBD5E1', fontSize: isMobile ? 10.5 : 12, fontFamily: 'Satoshi, sans-serif' },
         data: ['Accelerate', 'Optimize', 'Intervene', 'Experiment']
       },
-      grid: { left: 10, right: 25, top: 40, bottom: 35, containLabel: true },
+      grid: { 
+        left: isMobile ? 5 : 10, 
+        right: isMobile ? 15 : 25, 
+        top: isMobile ? 35 : 40, 
+        bottom: isMobile ? 25 : 35, 
+        containLabel: true 
+      },
       xAxis: {
         type: 'value',
         min: 0,
         max: 100,
-        splitNumber: 4,
-        axisLabel: { formatter: '{value}%', color: '#475569', fontSize: 10.5 },
-        splitLine: { lineStyle: { color: '#E6ECF8' } },
-        axisLine: { lineStyle: { color: '#BFD0FF' } }
+        splitNumber: isMobile ? 3 : 4,
+        axisLabel: { formatter: '{value}%', color: isLight ? '#475569' : '#94A3B8', fontSize: isMobile ? 9.5 : 10.5 },
+        splitLine: { lineStyle: { color: isLight ? '#E6ECF8' : '#1E293B' } },
+        axisLine: { lineStyle: { color: isLight ? '#BFD0FF' : '#334155' } }
       },
       yAxis: {
         type: 'value',
-        splitNumber: 4,
-        axisLabel: { formatter: (v: number) => `$${Math.round(v / 1000)}K`, color: '#475569', fontSize: 10.5 },
-        splitLine: { lineStyle: { color: '#E6ECF8' } },
+        splitNumber: isMobile ? 3 : 4,
+        axisLabel: { formatter: (v: number) => `$${Math.round(v / 1000)}K`, color: isLight ? '#475569' : '#94A3B8', fontSize: isMobile ? 9.5 : 10.5 },
+        splitLine: { lineStyle: { color: isLight ? '#E6ECF8' : '#1E293B' } },
         axisLine: { show: false }
       },
       series: [
@@ -332,14 +340,16 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           type: 'scatter',
           data: seriesData.filter(d => d.value[3] === 'accelerate'),
           itemStyle: { color: colorMap.accelerate, opacity: 0.85 },
-          symbolSize: (data: any) => Math.max(16, Math.min(38, Math.sqrt(data[2] || 5000) / 7)),
+          symbolSize: (data: any) => isMobile 
+            ? Math.max(7, Math.min(18, Math.sqrt(data[2] || 5000) / 14)) 
+            : Math.max(14, Math.min(36, Math.sqrt(data[2] || 5000) / 7.5)),
           markLine: {
             silent: true,
             symbol: 'none',
-            lineStyle: { type: 'dashed', color: '#0B1F4D', width: 1.2 },
+            lineStyle: { type: 'dashed', color: isLight ? '#0B1F4D' : '#60A5FA', width: 1.2 },
             data: [
-              { yAxis: 40000, label: { formatter: '$40K net value', position: 'start', color: '#64748B', fontSize: 10 } },
-              { xAxis: 70, label: { formatter: '70% adoption', position: 'end', color: '#64748B', fontSize: 10 } }
+              { yAxis: 40000, label: { formatter: isMobile ? '$40K' : '$40K net value', position: 'start', color: isLight ? '#64748B' : '#94A3B8', fontSize: isMobile ? 9 : 10 } },
+              { xAxis: 70, label: { formatter: isMobile ? '70%' : '70% adoption', position: 'end', color: isLight ? '#64748B' : '#94A3B8', fontSize: isMobile ? 9 : 10 } }
             ]
           }
         },
@@ -348,21 +358,27 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           type: 'scatter',
           data: seriesData.filter(d => d.value[3] === 'optimize'),
           itemStyle: { color: colorMap.optimize, opacity: 0.85 },
-          symbolSize: (data: any) => Math.max(16, Math.min(38, Math.sqrt(data[2] || 5000) / 7))
+          symbolSize: (data: any) => isMobile 
+            ? Math.max(7, Math.min(18, Math.sqrt(data[2] || 5000) / 14)) 
+            : Math.max(14, Math.min(36, Math.sqrt(data[2] || 5000) / 7.5))
         },
         {
           name: 'Intervene',
           type: 'scatter',
           data: seriesData.filter(d => d.value[3] === 'intervene'),
           itemStyle: { color: colorMap.intervene, opacity: 0.85 },
-          symbolSize: (data: any) => Math.max(16, Math.min(38, Math.sqrt(data[2] || 5000) / 7))
+          symbolSize: (data: any) => isMobile 
+            ? Math.max(7, Math.min(18, Math.sqrt(data[2] || 5000) / 14)) 
+            : Math.max(14, Math.min(36, Math.sqrt(data[2] || 5000) / 7.5))
         },
         {
           name: 'Experiment',
           type: 'scatter',
           data: seriesData.filter(d => d.value[3] === 'experiment'),
           itemStyle: { color: colorMap.experiment, opacity: 0.85 },
-          symbolSize: (data: any) => Math.max(16, Math.min(38, Math.sqrt(data[2] || 5000) / 7))
+          symbolSize: (data: any) => isMobile 
+            ? Math.max(7, Math.min(18, Math.sqrt(data[2] || 5000) / 14)) 
+            : Math.max(14, Math.min(36, Math.sqrt(data[2] || 5000) / 7.5))
         }
       ]
     });
@@ -397,36 +413,51 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
     teamEvals.sort((a, b) => a.passRate - b.passRate);
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
     chart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'line' },
-        backgroundColor: '#FFFFFF',
-        borderColor: '#D6E2FA',
-        textStyle: { color: '#1A1A1A', fontSize: 12 },
+        confine: true,
+        backgroundColor: isLight ? '#FFFFFF' : '#0F172A',
+        borderColor: isLight ? '#D6E2FA' : '#334155',
+        textStyle: { color: isLight ? '#1A1A1A' : '#F8FAFC', fontSize: 12 },
         formatter: (params: any) => {
           const item = params[0];
           return `<div style="padding: 4px;">
-            <b>${item.name}</b><br/>
+            <b style="color: ${isLight ? '#00349B' : '#60A5FA'};">${item.name}</b><br/>
             Eval Pass Rate: <b style="color: ${item.color};">${item.value}%</b>
           </div>`;
         }
       },
-      grid: { left: 10, right: 45, top: 20, bottom: 30, containLabel: true },
+      grid: { 
+        left: 5, 
+        right: isMobile ? 35 : 45, 
+        top: 25, 
+        bottom: 25, 
+        containLabel: true 
+      },
       xAxis: {
         type: 'value',
         min: 80,
         max: 100,
-        splitNumber: 4,
-        axisLabel: { formatter: '{value}%', color: '#475569', fontSize: 10.5 },
-        splitLine: { lineStyle: { color: '#E6ECF8' } }
+        splitNumber: isMobile ? 3 : 4,
+        axisLabel: { formatter: '{value}%', color: isLight ? '#475569' : '#94A3B8', fontSize: isMobile ? 9.5 : 10.5 },
+        splitLine: { lineStyle: { color: isLight ? '#E6ECF8' : '#1E293B' } }
       },
       yAxis: {
         type: 'category',
         data: teamEvals.map(t => t.team),
-        axisLabel: { color: '#1A1A1A', fontSize: 11, fontWeight: 500, width: 100, overflow: 'truncate', ellipsis: '…' },
-        axisLine: { lineStyle: { color: '#BFD0FF' } },
+        axisLabel: { 
+          color: isLight ? '#1A1A1A' : '#F8FAFC', 
+          fontSize: isMobile ? 10 : 11, 
+          fontWeight: 500, 
+          width: isMobile ? 75 : 105, 
+          overflow: 'truncate', 
+          ellipsis: '…' 
+        },
+        axisLine: { lineStyle: { color: isLight ? '#BFD0FF' : '#334155' } },
         axisTick: { show: false }
       },
       series: [
@@ -436,13 +467,13 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           barWidth: 2,
           data: teamEvals.map(t => ({
             value: t.passRate,
-            itemStyle: { color: '#CBD5E1' }
+            itemStyle: { color: isLight ? '#CBD5E1' : '#334155' }
           }))
         },
         {
           name: 'Eval Pass Rate',
           type: 'scatter',
-          symbolSize: 10,
+          symbolSize: isMobile ? 8 : 10,
           data: teamEvals.map(t => ({
             value: t.passRate,
             itemStyle: { color: t.color }
@@ -451,15 +482,34 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             show: true,
             position: 'right',
             formatter: '{@[0]}%',
-            fontSize: 10.5,
-            color: '#475569'
+            fontSize: isMobile ? 9.5 : 10.5,
+            color: isLight ? '#475569' : '#CBD5E1'
           },
           markLine: {
             silent: true,
             symbol: 'none',
             data: [
-              { xAxis: 88, lineStyle: { type: 'dashed', color: '#C62828' }, label: { formatter: '88% SLA', color: '#C62828', fontSize: 10 } },
-              { xAxis: 92, lineStyle: { type: 'dashed', color: '#2E7D32' }, label: { formatter: '92% Target', color: '#2E7D32', fontSize: 10 } }
+              { 
+                xAxis: 88, 
+                lineStyle: { type: 'dashed', color: '#C62828' }, 
+                label: { 
+                  formatter: isMobile ? '88% SLA' : '88% SLA', 
+                  color: '#EF4444', 
+                  fontSize: isMobile ? 9 : 10,
+                  position: isMobile ? 'insideEndTop' : 'end',
+                  distance: isMobile ? 14 : 5
+                } 
+              },
+              { 
+                xAxis: 92, 
+                lineStyle: { type: 'dashed', color: '#2E7D32' }, 
+                label: { 
+                  formatter: isMobile ? '92% Obj' : '92% Target', 
+                  color: '#22C55E', 
+                  fontSize: isMobile ? 9 : 10,
+                  position: 'end'
+                } 
+              }
             ]
           }
         }
@@ -482,22 +532,22 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
-          background: '#FFFFFF',
-          border: '1.5px solid #D6E2FA',
+          background: isLight ? '#FFFFFF' : '#0B132B',
+          border: isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B',
           padding: '4px 14px',
           borderRadius: 20,
           fontSize: 12.5,
           fontWeight: 600,
-          color: '#00349B'
+          color: isLight ? '#00349B' : '#60A5FA'
         }}>
           <span>Reporting Month:</span>
           <span style={{ fontWeight: 800 }}>Oct 2026 (Live Close)</span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 12, color: '#64748B' }}>
-            Enterprise Estate: <b style={{ color: '#00349B' }}>{scopedAgents.length} Custom Agents Active</b>
-            {isScoped && <span style={{ marginLeft: 6, color: '#1E40AF', fontWeight: 700 }}>(in {selectedFunction})</span>}
+          <span style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8' }}>
+            Enterprise Estate: <b style={{ color: isLight ? '#00349B' : '#60A5FA' }}>{scopedAgents.length} Custom Agents Active</b>
+            {isScoped && <span style={{ marginLeft: 6, color: isLight ? '#1E40AF' : '#93C5FD', fontWeight: 700 }}>(in {selectedFunction})</span>}
           </span>
         </div>
       </div>
@@ -516,14 +566,16 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
               onClick={() => setSelectedStatus(isSelected ? '' : statusKey)}
               className="executive-card"
               style={{
-                background: '#FFFFFF',
-                border: isSelected ? '1.5px solid #00349B' : '1px solid #E2E8F0',
+                background: isLight ? '#FFFFFF' : '#0B132B',
+                border: isSelected 
+                  ? (isLight ? '1.5px solid #00349B' : '1.5px solid #38BDF8') 
+                  : (isLight ? '1px solid #E2E8F0' : '1px solid #1E293B'),
                 borderRadius: 12,
                 padding: '16px 18px',
                 cursor: 'pointer',
                 boxShadow: isSelected 
-                  ? '0 0 0 2px #00349B, 0 12px 28px rgba(0, 52, 155, 0.14)' 
-                  : '0 1px 3px rgba(0,0,0,0.04), 0 6px 18px -4px rgba(0, 52, 155, 0.05)',
+                  ? (isLight ? '0 0 0 2px #00349B, 0 12px 28px rgba(0, 52, 155, 0.14)' : '0 0 0 2px #38BDF8, 0 12px 28px rgba(0, 0, 0, 0.4)')
+                  : (isLight ? '0 1px 3px rgba(0,0,0,0.04), 0 6px 18px -4px rgba(0, 52, 155, 0.05)' : '0 4px 16px rgba(0,0,0,0.25)'),
                 opacity: isDim ? 0.45 : 1,
                 transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                 position: 'relative',
@@ -564,10 +616,10 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
               {/* Number and Label */}
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, margin: '8px 0 10px 0' }}>
-                <span style={{ fontSize: 30, fontWeight: 800, color: '#0F172A', fontFamily: 'Outfit, Satoshi, sans-serif' }}>
+                <span style={{ fontSize: 30, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC', fontFamily: 'Outfit, Satoshi, sans-serif' }}>
                   {group.length}
                 </span>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: isLight ? '#64748B' : '#94A3B8' }}>
                   Active Agents
                 </span>
               </div>
@@ -584,16 +636,16 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                     style={{
                       fontSize: 11,
                       fontWeight: 600,
-                      color: '#334155',
-                      background: '#F1F5F9',
-                      border: '1px solid #E2E8F0',
+                      color: isLight ? '#334155' : '#CBD5E1',
+                      background: isLight ? '#F1F5F9' : '#1E293B',
+                      border: isLight ? '1px solid #E2E8F0' : '1px solid #334155',
                       padding: '2px 7px',
                       borderRadius: 4,
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = '#94A3B8'}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = '#E2E8F0'}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = isLight ? '#94A3B8' : '#60A5FA'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = isLight ? '#E2E8F0' : '#334155'}
                   >
                     {a.name}
                   </span>
@@ -1235,17 +1287,17 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
       <div className="scorecard-analytics-grid">
         {/* Value vs Adoption Scatter Chart */}
         <div className="executive-card" style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #D6E2FA',
+          background: isLight ? '#FFFFFF' : '#0B132B',
+          border: isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '18px 20px',
-          boxShadow: '0 4px 16px rgba(0, 52, 155, 0.08)'
+          boxShadow: isLight ? '0 4px 16px rgba(0, 52, 155, 0.08)' : '0 4px 16px rgba(0, 0, 0, 0.3)'
         }}>
           <div style={{ marginBottom: 12 }}>
-            <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#00349B', fontFamily: 'Satoshi, sans-serif' }}>
+            <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', fontFamily: 'Satoshi, sans-serif' }}>
               Value vs adoption
             </h4>
-            <div style={{ fontSize: 12, color: '#64748B' }}>
+            <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8' }}>
               One bubble per agent · size = monthly cost · dashed lines = Accelerate thresholds · click any bubble to inspect
             </div>
           </div>
@@ -1254,17 +1306,17 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
         {/* Eval Pass Rate by Team Lollipop Chart */}
         <div className="executive-card" style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #D6E2FA',
+          background: isLight ? '#FFFFFF' : '#0B132B',
+          border: isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '18px 20px',
-          boxShadow: '0 4px 16px rgba(0, 52, 155, 0.08)'
+          boxShadow: isLight ? '0 4px 16px rgba(0, 52, 155, 0.08)' : '0 4px 16px rgba(0, 0, 0, 0.3)'
         }}>
           <div style={{ marginBottom: 12 }}>
-            <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#00349B', fontFamily: 'Satoshi, sans-serif' }}>
+            <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', fontFamily: 'Satoshi, sans-serif' }}>
               Eval pass rate by team
             </h4>
-            <div style={{ fontSize: 12, color: '#64748B' }}>
+            <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8' }}>
               Axis starts at 80% · below 88% triggers Intervene · hover for each team average
             </div>
           </div>
