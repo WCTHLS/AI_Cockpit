@@ -193,9 +193,7 @@ def sync_active_agents(conn: sqlite3.Connection):
             SET is_active = 1 
             WHERE name IN (
                 'Ticket Triage Agent', 
-                'Global Supply Chain & Order Dispatch Bot',
-                'Invoice Exception & SAP 3-Way Match Bot',
-                'Global HR Benefits & Policy Copilot'
+                'Global Supply Chain & Order Dispatch Bot'
             );
         """)
     except Exception as e:

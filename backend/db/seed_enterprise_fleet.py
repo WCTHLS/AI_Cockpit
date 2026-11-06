@@ -154,8 +154,8 @@ def seed_enterprise_fleet(db_path: str = None):
     print(f"Connected to {DB_PATH}. Preparing Enterprise Fleet Seed...")
 
     # 1. Preserve the 4 live pilot agents
-    LIVE_AGENT_IDS = [11, 46, 47, 48]
-    cur.execute("UPDATE ai_agent SET portfolio = 'Live Pilot' WHERE id IN (11, 46, 47, 48)")
+    LIVE_AGENT_IDS = [11, 46]
+    cur.execute("UPDATE ai_agent SET portfolio = 'Live Pilot' WHERE id IN (11, 46)")
     conn.commit()
 
     # Clean existing generated agents (keep live agents)

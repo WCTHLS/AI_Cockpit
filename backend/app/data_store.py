@@ -151,8 +151,8 @@ class CockpitDataStore:
                 except Exception:
                     configs_by_id = {}
 
-                # Pre-load live telemetry only for live pilot agents (IDs <= 100 or portfolio == 'Live Pilot')
-                live_agent_ids = [r.get("agent_id") for r in rows if (r.get("portfolio") == "Live Pilot" or (r.get("agent_id") and r.get("agent_id") <= 100))]
+                # Pre-load live telemetry only for live pilot agents (portfolio == 'Live Pilot')
+                live_agent_ids = [r.get("agent_id") for r in rows if r.get("portfolio") == "Live Pilot"]
                 
                 live_assigned_map = {}
                 live_usage_map = {}
@@ -195,7 +195,7 @@ class CockpitDataStore:
                     name = r.get("agent_name", "")
                     agent_id = name.lower().replace(" ", "-").replace("&", "and")
                     db_agent_id = r.get("agent_id") or 11
-                    is_live = (r.get("portfolio") == "Live Pilot" or db_agent_id <= 100)
+                    is_live = (r.get("portfolio") == "Live Pilot")
                     agent_cfg = configs_by_id.get(db_agent_id, {})
 
                     baseline_hrs_cfg = float(agent_cfg.get("baseline_employee_hours") or 0.5)
