@@ -147,10 +147,10 @@ def _init_developer_tables():
                             provider, license_tier, editor, status, sessions_count,
                             prompts_count, suggestions_generated, suggestions_accepted,
                             acceptance_rate_pct, hours_saved, last_active_at, updated_at, is_pilot
-                        ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity IDE', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?, 1)
+                        ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?, 1)
                     """, (
                         s_data["developer_email"], s_data["developer_name"], s_data["developer_email"],
-                        s_data.get("department", "Eng & IT"), s_data.get("role", "Senior AI / Software Engineer"),
+                        s_data.get("department", "Eng & IT"), "AI / Software Engineer",
                         s_life.get("sessions_count", 39), s_life.get("total_user_prompts", 3650),
                         s_life.get("tool_actions_generated", 41587), s_life.get("tool_actions_accepted", 39673),
                         s_life.get("acceptance_rate_pct", 95.4), s_life.get("estimated_hours_saved", 238.0),
@@ -179,10 +179,10 @@ def _init_developer_tables():
                             provider, license_tier, editor, status, sessions_count,
                             prompts_count, suggestions_generated, suggestions_accepted,
                             acceptance_rate_pct, hours_saved, last_active_at, updated_at, is_pilot
-                        ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity IDE', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?, 1)
+                        ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?, 1)
                     """, (
                         n_data["developer_email"], n_data["developer_name"], n_data["developer_email"],
-                        n_data.get("department", "Eng & IT"), n_data.get("role", "AI / Software Engineer"),
+                        n_data.get("department", "Eng & IT"), "AI / Software Engineer",
                         n_life.get("sessions_count", 35), n_life.get("total_user_prompts", 1693),
                         n_life.get("tool_actions_generated", 16541), n_life.get("tool_actions_accepted", 15780),
                         n_life.get("acceptance_rate_pct", 95.4), n_life.get("estimated_hours_saved", 94.7),
@@ -198,13 +198,19 @@ def _init_developer_tables():
             except Exception:
                 pass
 
-        # Clean up any legacy naming on existing databases and ensure pilot live team has Antigravity Enterprise & is_pilot = 1
+        # Clean up any legacy naming on existing databases and ensure pilot live team has Antigravity Enterprise, AI / Software Engineer role & is_pilot = 1
         try:
-            conn.execute("UPDATE developer_seats SET editor = 'Antigravity IDE' WHERE editor LIKE '%Gemini%'")
+            conn.execute("UPDATE developer_seats SET editor = 'Antigravity' WHERE editor LIKE '%Gemini%' OR editor LIKE '%Antigravity%'")
             conn.execute("""
                 UPDATE developer_seats 
-                SET is_pilot = 1, provider = 'gemini_antigravity', license_tier = 'Antigravity Enterprise', editor = 'Antigravity IDE'
-                WHERE developer_email IN ('swagathreddy00@gmail.com', 'mattanivas@gmail.com', 'unnati@gmail.com')
+                SET is_pilot = 1, 
+                    provider = 'gemini_antigravity', 
+                    license_tier = 'Antigravity Enterprise', 
+                    editor = 'Antigravity',
+                    role = 'AI / Software Engineer',
+                    department = 'Eng & IT'
+                WHERE is_pilot = 1 
+                   OR developer_email IN ('swagathreddy00@gmail.com', 'mattanivas@gmail.com', 'unnati@gmail.com')
                    OR developer_id IN ('swagathreddy00@gmail.com', 'mattanivas@gmail.com', 'unnati@gmail.com')
             """)
         except Exception:
@@ -316,7 +322,7 @@ def _extract_antigravity_stats(custom_path: Optional[str] = None) -> Dict[str, A
             "developer_email": "swagathreddy00@gmail.com",
             "department": "Eng & IT",
             "role": "Senior AI / Software Engineer",
-            "editor": "Antigravity IDE",
+            "editor": "Antigravity",
             "status": "ACTIVE",
             "sessions_count": len(transcript_files),
             "total_user_prompts": total_user_prompts,
@@ -349,7 +355,7 @@ def _extract_antigravity_stats(custom_path: Optional[str] = None) -> Dict[str, A
         "developer_email": "swagathreddy00@gmail.com",
         "department": "Eng & IT",
         "role": "Senior AI / Software Engineer",
-        "editor": "Antigravity IDE",
+        "editor": "Antigravity",
         "status": "ACTIVE",
         "sessions_count": 39,
         "total_user_prompts": 3644,
@@ -890,7 +896,7 @@ def get_developer_drilldown(developer_id: Optional[str] = None, user: Dict[str, 
         "developer_email": "swagathreddy00@gmail.com",
         "department": "Eng & IT",
         "role": "Senior AI / Software Engineer",
-        "editor": "Antigravity IDE",
+        "editor": "Antigravity",
         "status": "ACTIVE",
         "lifetime": {
             "sessions_count": len(transcript_files),
@@ -919,7 +925,7 @@ async def upload_teammate_zip(
     developer_name: str = Form("Teammate Engineer"),
     developer_email: str = Form(...),
     department: str = Form("Eng & IT"),
-    role: str = Form("Software Engineer"),
+    role: str = Form("AI / Software Engineer"),
     user: Dict[str, Any] = Depends(get_current_user)
 ):
     """
@@ -1050,7 +1056,7 @@ async def upload_teammate_zip(
         "developer_email": clean_email,
         "department": department,
         "role": role,
-        "editor": "Antigravity IDE",
+        "editor": "Antigravity",
         "status": "ACTIVE",
         "lifetime": {
             "sessions_count": session_count,
@@ -1087,7 +1093,7 @@ async def upload_teammate_zip(
                 provider, license_tier, editor, status, sessions_count,
                 prompts_count, suggestions_generated, suggestions_accepted,
                 acceptance_rate_pct, hours_saved, last_active_at, updated_at, is_pilot
-            ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity IDE', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?, 1)
+            ) VALUES (?, ?, ?, ?, ?, 'gemini_antigravity', 'Antigravity Enterprise', 'Antigravity', 'ACTIVE', ?, ?, ?, ?, ?, ?, ?, ?, 1)
             ON CONFLICT(developer_id) DO UPDATE SET
                 developer_name = excluded.developer_name,
                 developer_email = excluded.developer_email,
@@ -1095,7 +1101,7 @@ async def upload_teammate_zip(
                 role = excluded.role,
                 provider = 'gemini_antigravity',
                 license_tier = 'Antigravity Enterprise',
-                editor = 'Antigravity IDE',
+                editor = 'Antigravity',
                 is_pilot = 1,
                 sessions_count = excluded.sessions_count,
                 prompts_count = excluded.prompts_count,

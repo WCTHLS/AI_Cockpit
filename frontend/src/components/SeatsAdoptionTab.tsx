@@ -872,7 +872,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               Enterprise AI Seat Roster & Live Usage Telemetry
             </div>
             <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
-              Employee-level telemetry derived directly from Microsoft 365 Copilot usage reporting and Antigravity IDE streams.
+              Employee-level telemetry derived directly from Microsoft 365 Copilot usage reporting and Antigravity streams.
             </div>
           </div>
 
@@ -1540,7 +1540,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                     }}
                   >
                     <Sparkles size={12} color={devToolFilter === 'ANTIGRAVITY' ? '#93C5FD' : '#00349B'} />
-                    Antigravity IDE ({antigravityCount})
+                    Antigravity ({antigravityCount})
                   </button>
                 )}
                 {githubCount > 0 && (
@@ -1722,7 +1722,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                               gap: 4
                             }}>
                               <Sparkles size={10} color="#00349B" />
-                              {deptAntigravity} Antigravity IDE
+                              {deptAntigravity} Antigravity
                             </span>
                           )}
                           {deptGithub > 0 && (
@@ -1842,7 +1842,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                                           alignItems: 'center',
                                           gap: 5
                                         }}>
-                                          <Sparkles size={11} color="#00349B" /> Antigravity IDE
+                                          <Sparkles size={11} color="#00349B" /> Antigravity
                                         </span>
                                       ) : isGithub ? (
                                         <span style={{
@@ -2161,7 +2161,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                           alignItems: 'center',
                           gap: 5
                         }}>
-                          <Sparkles size={12} color="#00349B" /> Antigravity IDE
+                          <Sparkles size={12} color="#00349B" /> Antigravity
                         </span>
                       );
                     } else if (isGh) {
