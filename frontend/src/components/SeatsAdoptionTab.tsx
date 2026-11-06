@@ -127,6 +127,10 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
   const [m365Search, setM365Search] = useState<string>('');
   const [m365StatusFilter, setM365StatusFilter] = useState<'ALL' | 'ACTIVE' | 'IDLE'>('ALL');
   const [m365Page, setM365Page] = useState<number>(1);
+  const [expandedM365Depts, setExpandedM365Depts] = useState<Record<string, boolean>>({
+    'Eng & IT': true // Default Eng & IT department expanded
+  });
+  const [m365DeptPages, setM365DeptPages] = useState<Record<string, number>>({});
   
   // Developer Coding Seats: Department Accordion & Tooling Filters
   const [devSearch, setDevSearch] = useState<string>('');
@@ -273,6 +277,43 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
       return true;
     });
   }, [developerSeats, isScoped, effectiveDept, devSearch, devToolFilter]);
+
+  const m365SeatsByDept = React.useMemo(() => {
+    const map: Record<string, M365SeatItem[]> = {};
+    for (const seat of displayedM365Seats) {
+      const dept = seat.department || 'Operations';
+      if (!map[dept]) map[dept] = [];
+      map[dept].push(seat);
+    }
+    const order = ['Eng & IT', 'Operations', 'Sales & Marketing', 'Customer Support', 'Finance'];
+    const sortedKeys = Object.keys(map).sort((a, b) => {
+      const idxA = order.indexOf(a);
+      const idxB = order.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.localeCompare(b);
+    });
+    const orderedMap: Record<string, M365SeatItem[]> = {};
+    for (const k of sortedKeys) {
+      orderedMap[k] = map[k];
+    }
+    return orderedMap;
+  }, [displayedM365Seats]);
+
+  const toggleM365Dept = (dept: string) => {
+    setExpandedM365Depts(prev => ({ ...prev, [dept]: !prev[dept] }));
+  };
+
+  const expandAllM365Depts = () => {
+    const all: Record<string, boolean> = {};
+    Object.keys(m365SeatsByDept).forEach(d => { all[d] = true; });
+    setExpandedM365Depts(all);
+  };
+
+  const collapseAllM365Depts = () => {
+    setExpandedM365Depts({});
+  };
 
   const devSeatsByDept = React.useMemo(() => {
     const map: Record<string, DeveloperSeat[]> = {};
@@ -879,7 +920,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 8, padding: '12px 14px' }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#15803D', textTransform: 'uppercase' }}>Human Hours Saved</div>
                 <div style={{ fontSize: 22, fontWeight: 900, color: '#166534', marginTop: 2 }}>
-                  {totalHumanHoursSaved} hrs
+                  {totalHumanHoursSaved.toLocaleString()} hrs
                 </div>
                 <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>5 min saved / Copilot interaction</div>
               </div>
@@ -919,7 +960,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                       FinOps Optimization: {m365Idle} Dormant Seats Identified (0 Prompts in 28+ Days)
                     </div>
                     <div style={{ fontSize: 12, color: '#7F1D1D', marginTop: 1 }}>
-                      {m365Idle} assigned enterprise accounts have recorded 0 Copilot prompts in the reporting period. Reallocating or unassigning these licenses saves <strong>$60.00/mo ($720.00/yr)</strong>.
+                      {m365Idle} assigned enterprise accounts have recorded 0 Copilot prompts in the reporting period. Reallocating or unassigning these licenses saves <strong>${(m365Idle * 30).toLocaleString()}.00/mo (${(m365Idle * 30 * 12).toLocaleString()}.00/yr)</strong>.
                     </div>
                   </div>
                 </div>
@@ -931,7 +972,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                       next[s.user_principal_name] = true;
                     });
                     setReclaimedSeats(next);
-                    setActionToast('Successfully flagged 2 dormant licenses for harvesting in M365 Admin Center (Annual savings: $720)');
+                    setActionToast(`Successfully flagged ${m365Idle} dormant licenses for harvesting in M365 Admin Center (Annual savings: $${(m365Idle * 30 * 12).toLocaleString()})`);
                     setTimeout(() => setActionToast(null), 5000);
                   }}
                   style={{
@@ -949,37 +990,53 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                   }}
                 >
                   <DollarSign size={14} />
-                  Reclaim Both Licenses (Save $60/mo)
+                  Reclaim {m365Idle} Dormant Licenses (Save ${(m365Idle * 30).toLocaleString()}/mo)
                 </button>
               </div>
             )}
 
-            {/* Filter & Search Bar */}
+            {/* Filter & Search Bar with Department Controls */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               flexWrap: 'wrap',
               gap: 12,
-              marginBottom: 14
+              background: '#F8FAFC',
+              border: '1px solid #E2E8F0',
+              borderRadius: 10,
+              padding: '12px 16px',
+              marginBottom: 16
             }}>
               {/* Search */}
-              <div style={{ position: 'relative', minWidth: 'min(100%, 240px)', flex: 1, maxWidth: 450 }}>
-                <Search size={15} color="#94A3B8" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 260 }}>
+                <Search size={15} color="#64748B" />
                 <input
                   type="text"
                   placeholder="Search employee name, email, or department..."
                   value={m365Search}
-                  onChange={(e) => setM365Search(e.target.value)}
+                  onChange={(e) => {
+                    setM365Search(e.target.value);
+                    setM365Page(1);
+                  }}
                   style={{
                     width: '100%',
-                    padding: '8px 12px 8px 32px',
+                    padding: '6px 10px',
                     borderRadius: 6,
                     border: '1px solid #CBD5E1',
-                    fontSize: 12,
-                    outline: 'none'
+                    fontSize: 12.5,
+                    outline: 'none',
+                    background: '#FFFFFF'
                   }}
                 />
+                {m365Search && (
+                  <button
+                    onClick={() => setM365Search('')}
+                    style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 2 }}
+                  >
+                    <X size={14} />
+                  </button>
+                )}
               </div>
 
               {/* Status Filter Buttons */}
@@ -988,216 +1045,395 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                 {(['ALL', 'ACTIVE', 'IDLE'] as const).map(f => (
                   <button
                     key={f}
-                    onClick={() => setM365StatusFilter(f)}
+                    onClick={() => {
+                      setM365StatusFilter(f);
+                      setM365Page(1);
+                    }}
                     style={{
-                      padding: '5px 12px',
-                      borderRadius: 6,
-                      border: m365StatusFilter === f ? '1.5px solid #0284C7' : '1px solid #E2E8F0',
-                      background: m365StatusFilter === f ? '#E0F2FE' : '#FFFFFF',
-                      color: m365StatusFilter === f ? '#0369A1' : '#475569',
+                      padding: '4px 10px',
+                      borderRadius: 16,
+                      border: m365StatusFilter === f ? '1.5px solid #0284C7' : '1px solid #CBD5E1',
+                      background: m365StatusFilter === f ? '#0284C7' : '#FFFFFF',
+                      color: m365StatusFilter === f ? '#FFFFFF' : '#475569',
                       fontSize: 11.5,
                       fontWeight: 700,
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      transition: 'all 0.15s'
                     }}
                   >
                     {f === 'ALL' ? `All (${m365Total})` : f === 'ACTIVE' ? `Active (${m365Active})` : `Idle (${m365Idle})`}
                   </button>
                 ))}
               </div>
-            </div>
-            {/* Employee M365 Table */}
-            <div className="responsive-table-wrapper">
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'Figtree, sans-serif' }}>
-                <thead>
-                  <tr style={{ background: '#F8FAFC', color: '#334155', textAlign: 'left', fontWeight: 700, borderBottom: '1.5px solid #E2E8F0' }}>
-                    <th style={{ padding: '10px 14px' }}>Employee & Email</th>
-                    <th style={{ padding: '10px 14px' }}>Department</th>
-                    <th style={{ padding: '10px 14px', width: 140 }}>Active Days (28d)</th>
-                    <th style={{ textAlign: 'right', padding: '10px 14px' }}>Total Prompts</th>
-                    <th style={{ textAlign: 'right', padding: '10px 14px' }}>Work Chat</th>
-                    <th style={{ padding: '10px 14px' }}>Active Apps</th>
-                    <th style={{ textAlign: 'right', padding: '10px 14px' }}>Hours Saved</th>
-                    <th style={{ textAlign: 'center', padding: '10px 14px' }}>Last Active</th>
-                    <th style={{ textAlign: 'center', padding: '10px 14px' }}>Status</th>
-                    <th style={{ textAlign: 'center', padding: '10px 14px' }}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayedM365Seats.length === 0 && (
-                    <tr>
-                      <td colSpan={10} style={{ textAlign: 'center', padding: '40px 20px', color: '#64748B' }}>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: '#0C4A6E' }}>No Microsoft 365 Copilot usage records currently loaded</div>
-                        <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>
-                          Upload and manage Microsoft 365 Copilot usage reports in the <strong>Admin & Config</strong> portal.
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                  {displayedM365Seats.slice((m365Page - 1) * 50, m365Page * 50).map(seat => {
-                      const isReclaimed = reclaimedSeats[seat.user_principal_name];
-                      return (
-                        <tr
-                          key={seat.id}
-                          style={{
-                            borderBottom: '1px solid #F1F5F9',
-                            transition: 'background 0.15s',
-                            background: seat.status === 'IDLE' ? '#FFFBEB' : 'transparent'
-                          }}
-                        >
-                          <td style={{ padding: '12px 14px' }}>
-                            <div style={{ fontWeight: 800, color: '#0F172A' }}>{seat.display_name}</div>
-                            <div style={{ fontSize: 11, color: '#0284C7', fontWeight: 600 }}>{seat.user_principal_name}</div>
-                          </td>
-                          <td style={{ padding: '12px 14px', color: '#334155', fontWeight: 600 }}>
-                            <div>{seat.department || 'Operations'}</div>
-                            <div style={{ fontSize: 11, color: '#64748B' }}>{seat.assigned_license}</div>
-                          </td>
-                          <td style={{ padding: '12px 14px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                              <div style={{ flex: 1, height: 6, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
-                                <div
-                                  style={{
-                                    width: `${Math.min(100, Math.round(((seat.active_days || 0) / 28) * 100))}%`,
-                                    height: '100%',
-                                    background: seat.active_days > 10 ? '#10B981' : seat.active_days > 0 ? '#3B82F6' : '#EF4444',
-                                    borderRadius: 3
-                                  }}
-                                />
-                              </div>
-                              <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', minWidth: 35 }}>
-                                {seat.active_days}/28d
-                              </span>
-                            </div>
-                          </td>
-                          <td style={{ textAlign: 'right', padding: '12px 14px', fontWeight: 800, color: seat.total_prompts > 0 ? '#059669' : '#EF4444' }}>
-                            {seat.total_prompts?.toLocaleString() || 0}
-                          </td>
-                          <td style={{ textAlign: 'right', padding: '12px 14px', fontWeight: 600, color: '#0284C7' }}>
-                            {seat.chat_work_prompts ?? 0}
-                          </td>
-                          <td style={{ padding: '12px 14px' }}>
-                            {renderAppBadges(seat)}
-                          </td>
-                          <td style={{ textAlign: 'right', padding: '12px 14px', fontWeight: 800, color: '#2563EB' }}>
-                            {seat.hours_saved || 0} hrs
-                          </td>
-                          <td style={{ textAlign: 'center', padding: '12px 14px', fontSize: 12, color: '#475569' }}>
-                            {seat.last_activity_date || 'None in period'}
-                          </td>
-                          <td style={{ textAlign: 'center', padding: '12px 14px' }}>
-                            <span style={{
-                              background: seat.status === 'ACTIVE' ? '#DCFCE7' : '#FEE2E2',
-                              color: seat.status === 'ACTIVE' ? '#15803D' : '#DC2626',
-                              padding: '3px 10px',
-                              borderRadius: 12,
-                              fontSize: 11,
-                              fontWeight: 800
-                            }}>
-                              {seat.status}
-                            </span>
-                          </td>
-                          <td style={{ textAlign: 'center', padding: '12px 14px' }}>
-                            {seat.status === 'IDLE' ? (
-                              <button
-                                onClick={() => {
-                                  setReclaimedSeats({ ...reclaimedSeats, [seat.user_principal_name]: true });
-                                  setActionToast(`Flagged license for ${seat.display_name} for reclamation (Saves $30/mo)`);
-                                  setTimeout(() => setActionToast(null), 5000);
-                                }}
-                                disabled={isReclaimed}
-                                style={{
-                                  background: isReclaimed ? '#94A3B8' : '#DC2626',
-                                  color: '#FFFFFF',
-                                  border: 'none',
-                                  borderRadius: 6,
-                                  padding: '5px 10px',
-                                  fontSize: 11,
-                                  fontWeight: 700,
-                                  cursor: isReclaimed ? 'default' : 'pointer',
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 4
-                                }}
-                              >
-                                {isReclaimed ? <Check size={12} /> : <DollarSign size={12} />}
-                                {isReclaimed ? 'Reclaimed' : 'Reclaim ($30/mo)'}
-                              </button>
-                            ) : (
-                              <span style={{
-                                background: '#F0FDF4',
-                                border: '1px solid #BBF7D0',
-                                color: '#15803D',
-                                padding: '3px 8px',
-                                borderRadius: 6,
-                                fontSize: 11,
-                                fontWeight: 700,
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 3
-                              }}>
-                                <CheckCircle2 size={12} /> Optimal
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
+
+              {/* Expand / Collapse All Controls */}
+              <div style={{ display: 'flex', gap: 6 }}>
+                <button
+                  onClick={expandAllM365Depts}
+                  style={{
+                    background: '#FFFFFF',
+                    color: '#0284C7',
+                    border: '1px solid #BAE6FD',
+                    borderRadius: 6,
+                    padding: '4px 10px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Expand All
+                </button>
+                <button
+                  onClick={collapseAllM365Depts}
+                  style={{
+                    background: '#FFFFFF',
+                    color: '#64748B',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: 6,
+                    padding: '4px 10px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Collapse All
+                </button>
+              </div>
             </div>
 
-            {/* M365 Pagination Controls */}
-            {Math.ceil(displayedM365Seats.length / 50) > 1 && (
+            {/* Empty State when no seats match filters */}
+            {displayedM365Seats.length === 0 && (
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '12px 18px',
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                borderTop: 'none',
-                borderRadius: '0 0 10px 10px',
-                fontSize: 12.5,
-                color: '#64748B'
+                textAlign: 'center',
+                padding: '40px 20px',
+                background: '#FFFFFF',
+                borderRadius: 10,
+                border: '1px solid #E2E8F0'
               }}>
-                <div>
-                  Showing <strong>{(m365Page - 1) * 50 + 1}–{Math.min(m365Page * 50, displayedM365Seats.length)}</strong> of <strong>{displayedM365Seats.length.toLocaleString()}</strong> Microsoft 365 Copilot seats
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <button
-                    onClick={() => setM365Page(prev => Math.max(1, prev - 1))}
-                    disabled={m365Page <= 1}
-                    style={{
-                      background: m365Page <= 1 ? '#F1F5F9' : '#FFFFFF',
-                      color: m365Page <= 1 ? '#94A3B8' : '#0284C7',
-                      border: '1px solid #CBD5E1',
-                      borderRadius: 6,
-                      padding: '4px 10px',
-                      cursor: m365Page <= 1 ? 'not-allowed' : 'pointer',
-                      fontWeight: 700
-                    }}
-                  >
-                    Previous
-                  </button>
-                  <span>Page <strong>{m365Page}</strong> of <strong>{Math.ceil(displayedM365Seats.length / 50)}</strong></span>
-                  <button
-                    onClick={() => setM365Page(prev => Math.min(Math.ceil(displayedM365Seats.length / 50), prev + 1))}
-                    disabled={m365Page >= Math.ceil(displayedM365Seats.length / 50)}
-                    style={{
-                      background: m365Page >= Math.ceil(displayedM365Seats.length / 50) ? '#F1F5F9' : '#FFFFFF',
-                      color: m365Page >= Math.ceil(displayedM365Seats.length / 50) ? '#94A3B8' : '#0284C7',
-                      border: '1px solid #CBD5E1',
-                      borderRadius: 6,
-                      padding: '4px 10px',
-                      cursor: m365Page >= Math.ceil(displayedM365Seats.length / 50) ? 'not-allowed' : 'pointer',
-                      fontWeight: 700
-                    }}
-                  >
-                    Next
-                  </button>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#0C4A6E' }}>No Microsoft 365 Copilot usage records match your search</div>
+                <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>
+                  Try adjusting your search query or status filter.
                 </div>
               </div>
             )}
+
+            {/* Department Accordion Sections for M365 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {Object.entries(m365SeatsByDept).map(([deptName, deptSeats]) => {
+                const isExpanded = !!expandedM365Depts[deptName];
+                const deptActive = deptSeats.filter(s => s.status === 'ACTIVE').length;
+                const deptIdle = deptSeats.filter(s => s.status === 'IDLE').length;
+                const deptHours = deptSeats.reduce((acc, s) => acc + (s.hours_saved || 0), 0).toFixed(1);
+                const deptPrompts = deptSeats.reduce((acc, s) => acc + (s.total_prompts || 0), 0);
+
+                const pageSize = 50;
+                const currPage = m365DeptPages[deptName] || 1;
+                const totalPages = Math.ceil(deptSeats.length / pageSize);
+                const startIdx = (currPage - 1) * pageSize;
+                const pagedSeats = deptSeats.slice(startIdx, startIdx + pageSize);
+
+                const deptIcon = deptName.includes('Eng') ? '💼' : (
+                  deptName.includes('Operat') ? '📦' : (
+                    deptName.includes('Sales') ? '📢' : (
+                      deptName.includes('Support') ? '🎧' : '💰'
+                    )
+                  )
+                );
+
+                return (
+                  <div key={deptName} style={{
+                    background: '#FFFFFF',
+                    border: isExpanded ? '1.5px solid #0284C7' : '1px solid #E2E8F0',
+                    borderRadius: 10,
+                    boxShadow: isExpanded ? '0 4px 12px rgba(2, 132, 199, 0.08)' : '0 1px 3px rgba(0,0,0,0.02)',
+                    overflow: 'hidden',
+                    transition: 'all 0.15s ease'
+                  }}>
+                    {/* Department Accordion Header Bar */}
+                    <div
+                      onClick={() => toggleM365Dept(deptName)}
+                      style={{
+                        background: isExpanded ? '#F0F9FF' : '#F8FAFC',
+                        padding: '14px 18px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        borderBottom: isExpanded ? '1px solid #BAE6FD' : 'none',
+                        userSelect: 'none',
+                        flexWrap: 'wrap',
+                        gap: 10
+                      }}
+                    >
+                      {/* Left Info: Chevron, Icon, Name, Count */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                        <span style={{
+                          color: isExpanded ? '#0284C7' : '#64748B',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          transition: 'transform 0.2s',
+                          transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)'
+                        }}>
+                          <ChevronDown size={18} />
+                        </span>
+                        <span style={{ fontSize: 16 }}>{deptIcon}</span>
+                        <span style={{ fontSize: 15, fontWeight: 800, color: '#0F172A' }}>
+                          {deptName}
+                        </span>
+                        <span style={{
+                          background: '#E0F2FE',
+                          color: '#0369A1',
+                          padding: '2px 9px',
+                          borderRadius: 12,
+                          fontSize: 11.5,
+                          fontWeight: 800
+                        }}>
+                          {deptSeats.length.toLocaleString()} Seats
+                        </span>
+                        <span style={{
+                          background: '#F1F5F9',
+                          color: '#475569',
+                          padding: '2px 8px',
+                          borderRadius: 4,
+                          fontSize: 10.5,
+                          fontWeight: 700
+                        }}>
+                          Microsoft 365 Copilot
+                        </span>
+                      </div>
+
+                      {/* Right KPI Summary */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Active Adoption: </span>
+                          <strong style={{ color: '#059669', fontSize: 12.5 }}>
+                            {deptActive}/{deptSeats.length} ({((deptActive / deptSeats.length) * 100).toFixed(1)}%)
+                          </strong>
+                        </div>
+                        {deptIdle > 0 && (
+                          <div style={{ textAlign: 'right' }}>
+                            <span style={{ fontSize: 11.5, color: '#64748B' }}>Dormant: </span>
+                            <strong style={{ color: '#DC2626', fontSize: 12.5 }}>{deptIdle} idle</strong>
+                          </div>
+                        )}
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Hours Saved: </span>
+                          <strong style={{ color: '#0284C7', fontSize: 12.5 }}>{Number(deptHours).toLocaleString()} hrs</strong>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Total Prompts: </span>
+                          <strong style={{ color: '#0F172A', fontSize: 12.5 }}>{deptPrompts.toLocaleString()}</strong>
+                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#0284C7', textDecoration: 'underline' }}>
+                          {isExpanded ? 'Hide Roster ▲' : `View ${deptSeats.length.toLocaleString()} Details ▼`}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Department Employee Table (Rendered when expanded) */}
+                    {isExpanded && (
+                      <div>
+                        <div className="responsive-table-wrapper">
+                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5, fontFamily: 'Figtree, sans-serif' }}>
+                            <thead>
+                              <tr style={{ background: '#F8FAFC', color: '#475569', textAlign: 'left', fontWeight: 700, borderBottom: '1.5px solid #E2E8F0' }}>
+                                <th style={{ padding: '9px 14px' }}>Employee & Email</th>
+                                <th style={{ padding: '9px 14px' }}>Department & License</th>
+                                <th style={{ padding: '9px 14px' }}>Active Days (28d)</th>
+                                <th style={{ textAlign: 'right', padding: '9px 14px' }}>Total Prompts</th>
+                                <th style={{ textAlign: 'right', padding: '9px 14px' }}>Work Chat</th>
+                                <th style={{ padding: '9px 14px' }}>Active Apps</th>
+                                <th style={{ textAlign: 'right', padding: '9px 14px' }}>Hours Saved</th>
+                                <th style={{ textAlign: 'center', padding: '9px 14px' }}>Last Active</th>
+                                <th style={{ textAlign: 'center', padding: '9px 14px' }}>Status</th>
+                                <th style={{ textAlign: 'center', padding: '9px 14px' }}>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {pagedSeats.map(seat => {
+                                const isReclaimed = reclaimedSeats[seat.user_principal_name];
+                                return (
+                                  <tr
+                                    key={seat.id}
+                                    style={{
+                                      borderBottom: '1px solid #F1F5F9',
+                                      transition: 'background 0.15s',
+                                      background: seat.status === 'IDLE' ? '#FFFBEB' : 'transparent'
+                                    }}
+                                  >
+                                    <td style={{ padding: '10px 14px' }}>
+                                      <div style={{ fontWeight: 800, color: '#0F172A' }}>{seat.display_name}</div>
+                                      <div style={{ fontSize: 11, color: '#0284C7', fontWeight: 600 }}>{seat.user_principal_name}</div>
+                                    </td>
+                                    <td style={{ padding: '10px 14px', color: '#334155', fontWeight: 600 }}>
+                                      <div>{seat.department || 'Operations'}</div>
+                                      <div style={{ fontSize: 11, color: '#64748B' }}>{seat.assigned_license}</div>
+                                    </td>
+                                    <td style={{ padding: '10px 14px' }}>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                        <div style={{ flex: 1, minWidth: 60, height: 6, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
+                                          <div
+                                            style={{
+                                              width: `${Math.min(100, Math.round(((seat.active_days || 0) / 28) * 100))}%`,
+                                              height: '100%',
+                                              background: seat.active_days > 10 ? '#10B981' : seat.active_days > 0 ? '#3B82F6' : '#EF4444',
+                                              borderRadius: 3
+                                            }}
+                                          />
+                                        </div>
+                                        <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', minWidth: 35 }}>
+                                          {seat.active_days}/28d
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td style={{ textAlign: 'right', padding: '10px 14px', fontWeight: 800, color: seat.total_prompts > 0 ? '#059669' : '#EF4444' }}>
+                                      {seat.total_prompts?.toLocaleString() || 0}
+                                    </td>
+                                    <td style={{ textAlign: 'right', padding: '10px 14px', fontWeight: 600, color: '#0284C7' }}>
+                                      {seat.chat_work_prompts ?? 0}
+                                    </td>
+                                    <td style={{ padding: '10px 14px' }}>
+                                      {renderAppBadges(seat)}
+                                    </td>
+                                    <td style={{ textAlign: 'right', padding: '10px 14px', fontWeight: 800, color: '#2563EB' }}>
+                                      {seat.hours_saved || 0} hrs
+                                    </td>
+                                    <td style={{ textAlign: 'center', padding: '10px 14px', fontSize: 11.5, color: '#475569' }}>
+                                      {seat.last_activity_date || 'None in period'}
+                                    </td>
+                                    <td style={{ textAlign: 'center', padding: '10px 14px' }}>
+                                      <span style={{
+                                        background: seat.status === 'ACTIVE' ? '#DCFCE7' : (seat.status === 'LAPSING' ? '#FEF3C7' : '#FEE2E2'),
+                                        color: seat.status === 'ACTIVE' ? '#15803D' : (seat.status === 'LAPSING' ? '#B45309' : '#DC2626'),
+                                        padding: '2px 8px',
+                                        borderRadius: 10,
+                                        fontSize: 10.5,
+                                        fontWeight: 800
+                                      }}>
+                                        {seat.status}
+                                      </span>
+                                    </td>
+                                    <td style={{ textAlign: 'center', padding: '10px 14px' }}>
+                                      {seat.status === 'IDLE' ? (
+                                        <button
+                                          onClick={() => {
+                                            setReclaimedSeats({ ...reclaimedSeats, [seat.user_principal_name]: true });
+                                            setActionToast(`Flagged license for ${seat.display_name} for reclamation (Saves $30/mo)`);
+                                            setTimeout(() => setActionToast(null), 5000);
+                                          }}
+                                          disabled={isReclaimed}
+                                          style={{
+                                            background: isReclaimed ? '#94A3B8' : '#DC2626',
+                                            color: '#FFFFFF',
+                                            border: 'none',
+                                            borderRadius: 6,
+                                            padding: '4px 8px',
+                                            fontSize: 11,
+                                            fontWeight: 700,
+                                            cursor: isReclaimed ? 'default' : 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: 4
+                                          }}
+                                        >
+                                          {isReclaimed ? <Check size={11} /> : <DollarSign size={11} />}
+                                          {isReclaimed ? 'Reclaimed' : 'Reclaim ($30/mo)'}
+                                        </button>
+                                      ) : seat.status === 'LAPSING' ? (
+                                        <span style={{
+                                          background: '#FEF3C7',
+                                          border: '1px solid #FDE68A',
+                                          color: '#B45309',
+                                          padding: '3px 8px',
+                                          borderRadius: 6,
+                                          fontSize: 10.5,
+                                          fontWeight: 700,
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: 3
+                                        }}>
+                                          <Sparkles size={11} /> Nudge Target
+                                        </span>
+                                      ) : (
+                                        <span style={{
+                                          background: '#F0FDF4',
+                                          border: '1px solid #BBF7D0',
+                                          color: '#15803D',
+                                          padding: '3px 8px',
+                                          borderRadius: 6,
+                                          fontSize: 11,
+                                          fontWeight: 700,
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: 3
+                                        }}>
+                                          <CheckCircle2 size={11} /> Optimal
+                                        </span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Pagination Controls for this department */}
+                        {totalPages > 1 && (
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '10px 16px',
+                            background: '#F8FAFC',
+                            borderTop: '1px solid #E2E8F0',
+                            fontSize: 12,
+                            color: '#64748B'
+                          }}>
+                            <div>
+                              Showing <strong>{startIdx + 1}–{Math.min(startIdx + pageSize, deptSeats.length)}</strong> of <strong>{deptSeats.length.toLocaleString()}</strong> {deptName} seats
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <button
+                                onClick={() => setM365DeptPages(prev => ({ ...prev, [deptName]: Math.max(1, currPage - 1) }))}
+                                disabled={currPage <= 1}
+                                style={{
+                                  background: currPage <= 1 ? '#F1F5F9' : '#FFFFFF',
+                                  color: currPage <= 1 ? '#94A3B8' : '#0284C7',
+                                  border: '1px solid #CBD5E1',
+                                  borderRadius: 4,
+                                  padding: '3px 8px',
+                                  cursor: currPage <= 1 ? 'not-allowed' : 'pointer',
+                                  fontWeight: 700
+                                }}
+                              >
+                                Previous
+                              </button>
+                              <span>Page <strong>{currPage}</strong> of <strong>{totalPages}</strong></span>
+                              <button
+                                onClick={() => setM365DeptPages(prev => ({ ...prev, [deptName]: Math.min(totalPages, currPage + 1) }))}
+                                disabled={currPage >= totalPages}
+                                style={{
+                                  background: currPage >= totalPages ? '#F1F5F9' : '#FFFFFF',
+                                  color: currPage >= totalPages ? '#94A3B8' : '#0284C7',
+                                  border: '1px solid #CBD5E1',
+                                  borderRadius: 4,
+                                  padding: '3px 8px',
+                                  cursor: currPage >= totalPages ? 'not-allowed' : 'pointer',
+                                  fontWeight: 700
+                                }}
+                              >
+                                Next
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
