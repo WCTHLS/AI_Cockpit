@@ -205,7 +205,7 @@ export const App: React.FC = () => {
           cohort: activeCohort,
           action: scorecardActionFilter
         }).catch(() => []),
-        fetchSeats(effFunc, subscriptionConfig.m365CopilotPrice).catch(() => null),
+        fetchSeats(effFunc, subscriptionConfig.m365CopilotPrice, activeCohort).catch(() => null),
         fetchThresholds().catch(() => null)
       ]);
 
@@ -402,7 +402,7 @@ export const App: React.FC = () => {
             customCostPerSeat={subscriptionConfig.m365CopilotPrice}
             onCostPerSeatChange={(cost) => {
               setSubscriptionConfig({ ...subscriptionConfig, m365CopilotPrice: cost });
-              fetchSeats(effFunc, cost).then(res => setSeats(res)).catch(() => {});
+              fetchSeats(effFunc, cost, cohort).then(res => setSeats(res)).catch(() => {});
             }}
             theme={theme}
             user={currentUser}

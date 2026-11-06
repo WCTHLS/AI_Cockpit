@@ -62,6 +62,7 @@ def _init_m365_table():
 def get_seats_summary(
     function: Optional[str] = Query(None),
     cost_per_seat: Optional[float] = Query(30.0),
+    cohort: Optional[str] = Query("enterprise"),
     user: Dict[str, Any] = Depends(get_current_user)
 ):
     _init_m365_table()
@@ -73,10 +74,12 @@ def get_seats_summary(
     # 1. Fetch Developer Seats (Antigravity IDE) - purely real data
     dev_seats = query_all("SELECT * FROM developer_seats WHERE developer_id NOT LIKE '%waferwire.com%'")
     
-    # 2. Fetch M365 Copilot Seats (Balaji's stream - only populated when CSV/API is ingested)
-    m365_query = "SELECT * FROM m365_copilot_seats"
+    # 2. Fetch M365 Copilot Seats (24 pilot seats in pilot view, 2,850 seats in enterprise view)
+    m365_query = "SELECT * FROM m365_copilot_seats WHERE 1=1"
+    if cohort == "pilot":
+        m365_query += " AND is_pilot = 1"
     if effective_function and effective_function != "All Functions":
-        m365_query += f" WHERE department LIKE '%{effective_function}%'"
+        m365_query += f" AND department LIKE '%{effective_function}%'"
     m365_seats = query_all(m365_query)
 
     total_seats = 0
@@ -85,7 +88,7 @@ def get_seats_summary(
     idle_30d = 0
 
     tool_counts: Dict[str, Dict[str, int]] = {
-        "Antigravity IDE": {"tool": "Antigravity IDE", "total": 0, "active": 0, "idle": 0},
+        "Developer AI Tooling": {"tool": "Developer AI Tooling (GitHub Copilot & Claude Code)", "total": 0, "active": 0, "idle": 0},
         "Microsoft 365 Copilot": {"tool": "Microsoft 365 Copilot", "total": 0, "active": 0, "idle": 0}
     }
     func_counts: Dict[str, Dict[str, int]] = {}
@@ -97,8 +100,8 @@ def get_seats_summary(
             continue
         total_seats += 1
         active_7d += 1
-        tool_counts["Antigravity IDE"]["total"] += 1
-        tool_counts["Antigravity IDE"]["active"] += 1
+        tool_counts["Developer AI Tooling"]["total"] += 1
+        tool_counts["Developer AI Tooling"]["active"] += 1
 
         if dept not in func_counts:
             func_counts[dept] = {"function": dept, "total": 0, "active": 0, "idle": 0}
@@ -374,6 +377,7 @@ def get_m365_seats(
     search: Optional[str] = Query(None),
     status: Optional[str] = Query(None),
     department: Optional[str] = Query(None),
+    cohort: Optional[str] = Query("enterprise"),
     user: Dict[str, Any] = Depends(get_current_user)
 ):
     """
@@ -387,6 +391,8 @@ def get_m365_seats(
 
     sql = "SELECT * FROM m365_copilot_seats WHERE 1=1"
     params = []
+    if cohort == "pilot":
+        sql += " AND is_pilot = 1"
 
     if search:
         s = f"%{search.strip().lower()}%"
@@ -404,10 +410,11 @@ def get_m365_seats(
     sql += " ORDER BY total_prompts DESC, id ASC"
     rows = query_all(sql, tuple(params))
 
+    pilot_filter = " AND is_pilot = 1" if cohort == "pilot" else ""
     if eff_dept and eff_dept != "All Functions":
-        all_seats = query_all("SELECT * FROM m365_copilot_seats WHERE department LIKE ?", (f"%{eff_dept}%",))
+        all_seats = query_all(f"SELECT * FROM m365_copilot_seats WHERE department LIKE ?{pilot_filter}", (f"%{eff_dept}%",))
     else:
-        all_seats = query_all("SELECT * FROM m365_copilot_seats")
+        all_seats = query_all(f"SELECT * FROM m365_copilot_seats WHERE 1=1{pilot_filter}")
     total_cnt = len(all_seats)
     active_cnt = sum(1 for s in all_seats if s.get("status") == "ACTIVE")
     lapsing_cnt = sum(1 for s in all_seats if s.get("status") == "LAPSING")

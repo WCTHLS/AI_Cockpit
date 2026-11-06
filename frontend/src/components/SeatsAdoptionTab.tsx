@@ -126,6 +126,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
   const [activeRosterTab, setActiveRosterTab] = useState<'m365' | 'developer'>('m365');
   const [m365Search, setM365Search] = useState<string>('');
   const [m365StatusFilter, setM365StatusFilter] = useState<'ALL' | 'ACTIVE' | 'IDLE'>('ALL');
+  const [m365Page, setM365Page] = useState<number>(1);
   
   // Developer Coding Seats: Department Accordion & Tooling Filters
   const [devSearch, setDevSearch] = useState<string>('');
@@ -165,7 +166,8 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
     setIsLoadingM365(true);
     try {
       const res = await fetchM365Seats({
-        department: isScoped ? effectiveDept : undefined
+        department: isScoped ? effectiveDept : undefined,
+        cohort: cohort
       });
       setM365Data(res);
     } catch (err) {
@@ -181,7 +183,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
       .catch(err => console.error('Failed to load developer seats:', err));
 
     loadM365Data();
-  }, [selectedFunction, user?.role, user?.function_name]);
+  }, [selectedFunction, user?.role, user?.function_name, cohort]);
 
   const handleOpenDrilldown = async (seat: DeveloperSeat) => {
     setSelectedDeveloper(seat);
@@ -1031,7 +1033,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                       </td>
                     </tr>
                   )}
-                  {displayedM365Seats.map(seat => {
+                  {displayedM365Seats.slice((m365Page - 1) * 50, m365Page * 50).map(seat => {
                       const isReclaimed = reclaimedSeats[seat.user_principal_name];
                       return (
                         <tr
@@ -1143,6 +1145,59 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                 </tbody>
               </table>
             </div>
+
+            {/* M365 Pagination Controls */}
+            {Math.ceil(displayedM365Seats.length / 50) > 1 && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 18px',
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderTop: 'none',
+                borderRadius: '0 0 10px 10px',
+                fontSize: 12.5,
+                color: '#64748B'
+              }}>
+                <div>
+                  Showing <strong>{(m365Page - 1) * 50 + 1}–{Math.min(m365Page * 50, displayedM365Seats.length)}</strong> of <strong>{displayedM365Seats.length.toLocaleString()}</strong> Microsoft 365 Copilot seats
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button
+                    onClick={() => setM365Page(prev => Math.max(1, prev - 1))}
+                    disabled={m365Page <= 1}
+                    style={{
+                      background: m365Page <= 1 ? '#F1F5F9' : '#FFFFFF',
+                      color: m365Page <= 1 ? '#94A3B8' : '#0284C7',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: 6,
+                      padding: '4px 10px',
+                      cursor: m365Page <= 1 ? 'not-allowed' : 'pointer',
+                      fontWeight: 700
+                    }}
+                  >
+                    Previous
+                  </button>
+                  <span>Page <strong>{m365Page}</strong> of <strong>{Math.ceil(displayedM365Seats.length / 50)}</strong></span>
+                  <button
+                    onClick={() => setM365Page(prev => Math.min(Math.ceil(displayedM365Seats.length / 50), prev + 1))}
+                    disabled={m365Page >= Math.ceil(displayedM365Seats.length / 50)}
+                    style={{
+                      background: m365Page >= Math.ceil(displayedM365Seats.length / 50) ? '#F1F5F9' : '#FFFFFF',
+                      color: m365Page >= Math.ceil(displayedM365Seats.length / 50) ? '#94A3B8' : '#0284C7',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: 6,
+                      padding: '4px 10px',
+                      cursor: m365Page >= Math.ceil(displayedM365Seats.length / 50) ? 'not-allowed' : 'pointer',
+                      fontWeight: 700
+                    }}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

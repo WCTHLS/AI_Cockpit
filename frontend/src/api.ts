@@ -140,10 +140,11 @@ export async function fetchAgents(params: {
   return res.json();
 }
 
-export async function fetchSeats(functionName?: string, costPerSeat?: number): Promise<SeatInventorySummary> {
+export async function fetchSeats(functionName?: string, costPerSeat?: number, cohort?: string): Promise<SeatInventorySummary> {
   const params = new URLSearchParams();
   if (functionName) params.append('function', functionName);
   if (costPerSeat) params.append('cost_per_seat', costPerSeat.toString());
+  if (cohort) params.append('cohort', cohort);
   const res = await fetch(`${API_BASE}/seats?${params.toString()}`, {
     headers: getAuthHeaders()
   });
@@ -467,11 +468,12 @@ export interface M365SeatsResponse {
   seats: M365SeatItem[];
 }
 
-export async function fetchM365Seats(params?: { search?: string; status?: string; department?: string }): Promise<M365SeatsResponse> {
+export async function fetchM365Seats(params?: { search?: string; status?: string; department?: string; cohort?: string }): Promise<M365SeatsResponse> {
   const query = new URLSearchParams();
   if (params?.search) query.set('search', params.search);
   if (params?.status) query.set('status', params.status);
   if (params?.department) query.set('department', params.department);
+  if (params?.cohort) query.set('cohort', params.cohort);
   const res = await fetch(`${API_BASE}/seats/m365?${query.toString()}`, {
     headers: getAuthHeaders()
   });
