@@ -94,6 +94,16 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
   const scatterChartRef = useRef<HTMLDivElement>(null);
   const evalChartRef = useRef<HTMLDivElement>(null);
+  const tableWrapperRef = useRef<HTMLDivElement>(null);
+
+  const scrollScorecardTable = (direction: 'left' | 'right') => {
+    if (tableWrapperRef.current) {
+      tableWrapperRef.current.scrollBy({
+        left: direction === 'left' ? -240 : 240,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const isLight = theme === 'light';
 
@@ -886,23 +896,39 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           </div>
         </div>
 
-        {/* Mobile Horizontal Scroll Affordance Banner */}
+        {/* Mobile Horizontal Scroll Affordance Banner with Interactive Buttons */}
         <div className="mobile-table-scroll-banner">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
-            <span style={{ fontSize: 16 }}>👉</span>
-            <span><strong>Swipe table horizontally</strong> to inspect all 9 metrics (Adoption, Budget, Eval, Hours, Status)</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700 }}>
+            <span style={{ fontSize: 16 }}>📊</span>
+            <span>Inspect All 9 Metrics (Net Value, Adoption, Budget, Eval, Hours, Status):</span>
           </div>
-          <span className="scroll-pill">
-            ⇄ Scroll Horizontally
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
+            <button
+              onClick={() => scrollScorecardTable('left')}
+              className="table-scroll-btn"
+              title="Scroll table left"
+            >
+              ◀ Scroll Left
+            </button>
+            <button
+              onClick={() => scrollScorecardTable('right')}
+              className="table-scroll-btn"
+              title="Scroll table right"
+            >
+              Scroll Right ▶
+            </button>
+            <span style={{ fontSize: 11, color: isLight ? '#1E40AF' : '#93C5FD', fontWeight: 600 }}>
+              (or swipe table ⇄)
+            </span>
+          </div>
         </div>
 
         {/* Tree Table */}
-        <div className="responsive-table-wrapper">
+        <div className="responsive-table-wrapper" ref={tableWrapperRef}>
           <table style={{ minWidth: 1080, width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'Satoshi, Figtree, sans-serif' }}>
             <thead>
-              <tr style={{ background: '#00349B', color: '#FFFFFF', textAlign: 'left', fontSize: 12, fontWeight: 700 }}>
-                <th title="Business function, owning department team, and agent display name" style={{ padding: '10px 14px', minWidth: 280, position: 'sticky', left: 0, zIndex: 4, background: '#00349B', boxShadow: '2px 0 6px rgba(0,0,0,0.12)' }}>Business function / team / agent</th>
+              <tr style={{ background: isLight ? '#00349B' : '#081738', color: '#FFFFFF', textAlign: 'left', fontSize: 12, fontWeight: 700 }}>
+                <th title="Business function, owning department team, and agent display name" className="scorecard-col-first" style={{ padding: '10px 14px', position: 'sticky', left: 0, zIndex: 4, background: isLight ? '#00349B' : '#081738', boxShadow: '2px 0 6px rgba(0,0,0,0.12)' }}>Business function / team / agent</th>
                 <th title="Calculated as: Gross Value Created - Actual AI Cost&#10;= (Hours Saved × Hourly Wage Rate) - (Tokens Cost + Monthly Infra)&#10;Hourly Rate = Employee Monthly Rate / Monthly Working Hours" style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help', whiteSpace: 'nowrap', minWidth: 110 }}>Net value / mo ▼</th>
                 <th title="Calculated as: (Active Employees Using Agent / Total Employees Assigned) × 100%" style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help', whiteSpace: 'nowrap', minWidth: 85 }}>Adoption</th>
                 <th title="Calculated as: (Actual AI Cost / Monthly Budget) × 100%&#10;Actual AI Cost = Token Usage Cost + Monthly Infra Cost (no seat costs for custom agents)&#10;Under 100% is on track; over 100% indicates budget overrun." style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help', whiteSpace: 'nowrap', minWidth: 105 }}>Cost vs budget</th>
@@ -936,8 +962,8 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                           fontWeight: 700
                         }}
                       >
-                        <td style={{ padding: '10px 14px', position: 'sticky', left: 0, zIndex: 3, background: '#EEF4FF', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <td className="scorecard-col-first" style={{ padding: '10px 14px', position: 'sticky', left: 0, zIndex: 3, background: isLight ? '#EEF4FF' : '#0E1C3D', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
                           <span style={{
                             width: 18,
                             height: 18,
@@ -1039,8 +1065,8 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                 fontWeight: 600
                               }}
                             >
-                              <td style={{ padding: '8px 14px 8px 36px', position: 'sticky', left: 0, zIndex: 2, background: '#F8FAFD', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <td className="scorecard-col-first" style={{ padding: '8px 14px 8px 24px', position: 'sticky', left: 0, zIndex: 2, background: isLight ? '#F8FAFD' : '#0B1630', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
                                   <span style={{
                                     width: 16,
                                     height: 16,
@@ -1127,7 +1153,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                   onMouseEnter={e => e.currentTarget.style.background = '#F3F6FC'}
                                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                 >
-                                  <td style={{ padding: '7px 14px 7px 64px', color: '#1A1A1A', fontSize: 13, fontWeight: 500, position: 'sticky', left: 0, zIndex: 1, background: '#FFFFFF', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
+                                  <td className="scorecard-col-first" style={{ padding: '7px 14px 7px 32px', color: isLight ? '#1A1A1A' : '#F8FAFC', fontSize: 13, fontWeight: 500, position: 'sticky', left: 0, zIndex: 1, background: isLight ? '#FFFFFF' : '#070D1E', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
                                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                                           <span style={{ fontWeight: 600 }}><span style={{ color: '#00349B', marginRight: 4 }}>•</span> {formatEnterpriseAgentName(agent.name)}</span>
