@@ -88,7 +88,20 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
   // Search and Productivity Quick Filter State
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [productivityFilter, setProductivityFilter] = useState<'all' | 'top-drivers' | 'intervene' | 'budget-overrun' | 'high-adopt'>('all');
+
+  // Responsive screen detection: Desktop (>= 768px) vs Mobile (< 768px)
+  const [isMobileScreen, setIsMobileScreen] = useState<boolean>(() => {
+    return typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+  });
   const [mobileLayout, setMobileLayout] = useState<'cards' | 'table'>('cards');
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileScreen(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Agent Telemetry Profile Drawer State
   
@@ -897,7 +910,8 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           </div>
         </div>
 
-                {/* Mobile View Mode Switcher: Cards vs Spreadsheet */}
+        {/* Mobile View Mode Switcher: Cards vs Spreadsheet (ONLY on Mobile screens < 768px) */}
+        {isMobileScreen && (
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -958,9 +972,10 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             </button>
           </div>
         </div>
+        )}
 
         {/* 1. Mobile Cards View (100% Full Names, All 9 Metrics, Zero Truncation) */}
-        {mobileLayout === 'cards' ? (
+        {isMobileScreen && mobileLayout === 'cards' ? (
           <div className="mobile-cards-view" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {hierarchicalData.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '32px', color: isLight ? '#64748B' : '#94A3B8' }}>

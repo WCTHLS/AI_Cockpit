@@ -1378,8 +1378,8 @@ select::placeholder {
 
 /* Scorecard Table Column 1 Responsiveness & Buttons */
 .scorecard-col-first {
-  width: 300px;
-  min-width: 280px;
+  width: 320px;
+  min-width: 320px;
 }
 
 @media (max-width: 640px) {
