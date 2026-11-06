@@ -533,8 +533,9 @@ export async function fetchWorkingAgentSchema(): Promise<any> {
   return res.json();
 }
 
-export async function fetchWorkingAgents(): Promise<{ total: number; agents: any[] }> {
-  const res = await fetch(`${API_BASE}/admin/working-agents`, {
+export async function fetchWorkingAgents(cohort?: string): Promise<{ total: number; agents: any[] }> {
+  const query = cohort ? `?cohort=${encodeURIComponent(cohort)}` : '';
+  const res = await fetch(`${API_BASE}/admin/working-agents${query}`, {
     headers: getAuthHeaders()
   });
   if (!res.ok) throw new Error('Failed to fetch working agents');

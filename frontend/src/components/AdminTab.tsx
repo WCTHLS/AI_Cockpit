@@ -51,6 +51,7 @@ interface AdminTabProps {
   theme?: 'dark' | 'light';
   user?: UserProfile;
   summary?: SummaryKPI | null;
+  cohort?: 'enterprise' | 'pilot';
 }
 
 export interface SubscriptionConfig {
@@ -107,7 +108,7 @@ const DEFAULT_GUARDRAIL_CONFIG: GuardrailConfig = {
   budgetOverrunAlertPct: 110
 };
 
-export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, onConfigSaved, theme = 'light', user, summary }) => {
+export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresholdsUpdated, onConfigSaved, theme = 'light', user, summary, cohort = 'enterprise' }) => {
   const isAdmin = user ? user.role === 'admin' : true;
   const [activeSection, setActiveSection] = useState<'subs' | 'labor' | 'guardrails' | 'governance' | 'ingestion' | 'developer_tools' | 'working_agents'>('subs');
 
@@ -537,7 +538,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
   const loadWorkingAgents = async () => {
     try {
       setIsLoadingWorkingAgents(true);
-      const data = await fetchWorkingAgents();
+      const data = await fetchWorkingAgents(cohort);
       if (data && data.agents) {
         setWorkingAgentsList(data.agents);
       }
@@ -552,7 +553,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     if (activeSection === 'working_agents') {
       loadWorkingAgents();
     }
-  }, [activeSection]);
+  }, [activeSection, cohort]);
 
   const handleValidateJson = () => {
     try {
@@ -3370,7 +3371,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
               <div>
                 <h3 style={{ fontSize: 17, fontWeight: 800, color: '#1E293B', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Database size={18} color="#4F46E5" />
-                  Currently Ingested Agents in Database ({workingAgentsList.length})
+                  {cohort === 'pilot' ? 'Pilot Working Agents in Database' : 'Currently Ingested Agents in Database'} ({workingAgentsList.length})
                 </h3>
                 <div style={{ fontSize: 12, color: '#64748B' }}>
                   Live records in SQLite <code style={{ color: '#4F46E5', fontWeight: 700 }}>ai_agent</code> table with linked business functions, teams, and token pricing

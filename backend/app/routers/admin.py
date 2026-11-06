@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File, Depends, Body
+from fastapi import APIRouter, HTTPException, UploadFile, File, Depends, Body, Query
 from typing import Dict, Any, List, Optional, Union
 from pydantic import BaseModel
 import io
@@ -182,11 +182,15 @@ def get_working_agents_schema(user: Dict[str, Any] = Depends(get_current_user)):
     return WORKING_AGENT_SCHEMA
 
 @router.get("/working-agents")
-def get_working_agents(user: Dict[str, Any] = Depends(get_current_user)):
+def get_working_agents(
+    cohort: Optional[str] = Query("enterprise"),
+    user: Dict[str, Any] = Depends(get_current_user)
+):
     """
     Fetches all working agents registered in the database along with their FinOps and productivity parameters.
     """
-    agents = query_all("""
+    cohort_filter = " AND a.portfolio = 'Live Pilot'" if cohort == "pilot" else ""
+    agents = query_all(f"""
         SELECT 
             a.id, a.company_id, a.name, a.category, a.agent_type, a.portfolio,
             a.description, a.go_live_date, a.is_active, a.created_at,
@@ -203,6 +207,7 @@ def get_working_agents(user: Dict[str, Any] = Depends(get_current_user)):
           AND (a.portfolio IS NULL OR a.portfolio NOT IN ('Claude Enterprise', 'Overhead', 'Unattributed'))
           AND a.name NOT LIKE '%Overhead%'
           AND a.name NOT LIKE '%Unattributed%'
+          {cohort_filter}
         GROUP BY a.id
         ORDER BY a.name ASC;
     """)

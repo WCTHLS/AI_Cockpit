@@ -420,6 +420,7 @@ export const App: React.FC = () => {
             theme={theme}
             user={currentUser}
             summary={summary}
+            cohort={cohort}
           />
         )}
       </main>
