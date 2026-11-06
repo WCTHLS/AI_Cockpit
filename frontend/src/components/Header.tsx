@@ -199,7 +199,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
               <button
                 onClick={() => onCohortChange('pilot')}
-                title="Live Interactive Pilot: 2 Onboarded Production Agents"
+                title="Live Interactive Pilot: 4 Onboarded Production Agents"
                 style={{
                   background: cohort === 'pilot' ? (isLight ? '#00349B' : '#1D4ED8') : 'transparent',
                   color: cohort === 'pilot' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
@@ -213,7 +213,7 @@ export const Header: React.FC<HeaderProps> = ({
                   whiteSpace: 'nowrap'
                 }}
               >
-                Pilot View (2)
+                Pilot View (4)
               </button>
             </div>
           </div>

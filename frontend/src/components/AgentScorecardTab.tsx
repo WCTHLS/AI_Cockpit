@@ -1177,7 +1177,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                               <span style={{ color: isLight ? '#00349B' : '#60A5FA', marginRight: 5 }}>•</span>
                                               {formatEnterpriseAgentName(agent.name)}
                                             </div>
-                                            {agent.portfolio === 'Live Pilot' && (
+                                            {agent.portfolio === 'Live Pilot' && (String(agent.id) === '11' || String(agent.id) === '46' || (agent.name && (agent.name.toLowerCase().includes('ticket triage') || agent.name.toLowerCase().includes('order dispatch')) && !agent.name.includes('#'))) && (
                                               <span style={{
                                                 fontSize: 9.5,
                                                 fontWeight: 800,
@@ -1539,7 +1539,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                                           <span style={{ fontWeight: 600 }}><span style={{ color: '#00349B', marginRight: 4 }}>•</span> {formatEnterpriseAgentName(agent.name)}</span>
-                                          {agent.portfolio === 'Live Pilot' && (
+                                          {agent.portfolio === 'Live Pilot' && (isCopilotStudio || isTicketTriage) && (
                                             <span style={{
                                               fontSize: 9.5,
                                               fontWeight: 800,
