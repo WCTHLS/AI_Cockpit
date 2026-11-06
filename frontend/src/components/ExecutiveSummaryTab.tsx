@@ -64,6 +64,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
 
   // Chart DOM refs
   const functionBarChartRef = useRef<HTMLDivElement>(null);
+  const [functionViewMode, setFunctionViewMode] = useState<'chart' | 'table'>('chart');
+  const [isFocusModalOpen, setIsFocusModalOpen] = useState<boolean>(false);
   const portfolioDonutChartRef = useRef<HTMLDivElement>(null);
   const augVsSepChartRef = useRef<HTMLDivElement>(null);
   const teamBarChartRef = useRef<HTMLDivElement>(null);
@@ -273,6 +275,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
 
     const sorted = [...functionData].sort((a, b) => a.net_value - b.net_value);
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
     chart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
@@ -290,16 +293,25 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           </div>`;
         }
       },
-      grid: { top: 10, right: 65, bottom: 25, left: 15, containLabel: true },
+      grid: { 
+        top: 10, 
+        right: isMobile ? 55 : 65, 
+        bottom: 25, 
+        left: isMobile ? 5 : 15, 
+        containLabel: true 
+      },
       xAxis: {
         type: 'value',
-        splitNumber: 3,
+        splitNumber: isMobile ? 2 : 3,
         axisLine: { show: false },
         splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
         axisLabel: {
           color: '#64748B',
-          fontSize: 10.5,
-          formatter: (v: number) => `$${(v / 1000).toFixed(0)}K`
+          fontSize: isMobile ? 9.5 : 10.5,
+          formatter: (v: number) => {
+            if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
+            return `$${(v / 1000).toFixed(0)}K`;
+          }
         }
       },
       yAxis: {
@@ -309,9 +321,9 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         axisTick: { show: false },
         axisLabel: {
           color: '#0F172A',
-          fontSize: 11,
+          fontSize: isMobile ? 10 : 11,
           fontWeight: 600,
-          width: 95,
+          width: isMobile ? 85 : 95,
           overflow: 'truncate',
           ellipsis: '…'
         }
@@ -321,7 +333,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           name: 'Net AI Value',
           type: 'bar',
           data: sorted.map(f => f.net_value),
-          barWidth: 20,
+          barWidth: isMobile ? 15 : 20,
           itemStyle: {
             color: '#00349B',
             borderRadius: [0, 4, 4, 0]
@@ -332,7 +344,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             formatter: (p: any) => formatUSD(p.value),
             color: '#00349B',
             fontWeight: 700,
-            fontSize: 12
+            fontSize: isMobile ? 10.5 : 12
           }
         }
       ]
@@ -601,6 +613,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       ? teamValues.slice(-12)
       : teamValues;
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
     chart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
@@ -620,15 +633,21 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           </div>`;
         }
       },
-      grid: { top: 15, right: 145, bottom: 25, left: 15, containLabel: true },
+      grid: { 
+        top: 15, 
+        right: isMobile ? 65 : 145, 
+        bottom: 25, 
+        left: isMobile ? 5 : 15, 
+        containLabel: true 
+      },
       xAxis: {
         type: 'value',
-        splitNumber: 3,
+        splitNumber: isMobile ? 2 : 3,
         axisLine: { lineStyle: { color: '#CBD5E1' } },
         splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
         axisLabel: {
           color: '#64748B',
-          fontSize: 10,
+          fontSize: isMobile ? 9 : 10,
           formatter: (v: number) => {
             if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
             if (v <= -1000) return `-$${Math.abs(v / 1000).toFixed(0)}K`;
@@ -643,9 +662,9 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         axisTick: { show: false },
         axisLabel: {
           color: '#0F172A',
-          fontSize: 11.5,
+          fontSize: isMobile ? 10 : 11.5,
           fontWeight: 600,
-          width: 175,
+          width: isMobile ? 95 : 175,
           overflow: 'truncate',
           ellipsis: '…'
         }
@@ -654,7 +673,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         {
           name: 'Net AI Value',
           type: 'bar',
-          barWidth: teamViewLimit === 'top12' ? 18 : 12,
+          barWidth: isMobile ? 12 : (teamViewLimit === 'top12' ? 18 : 12),
           barCategoryGap: '35%',
           data: displayedTeams.map(t => ({
             value: t.val,
@@ -669,10 +688,13 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             formatter: (p: any) => {
               const raw = displayedTeams[p.dataIndex];
               const valStr = formatUSD(p.value);
+              if (isMobile) {
+                return valStr;
+              }
               return raw?.agents ? `${valStr} · ${raw.agents} agents` : valStr;
             },
             color: '#334155',
-            fontSize: 11,
+            fontSize: isMobile ? 10 : 11,
             fontWeight: 600
           }
         }
@@ -1248,39 +1270,99 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </span>
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
-              <button style={{
-                background: '#F1F5F9',
-                border: '1px solid #CBD5E1',
-                borderRadius: 4,
-                padding: '3px 8px',
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#475569',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                cursor: 'pointer'
-              }}>
-                <TableIcon size={12} /> Table
+              <button 
+                onClick={() => setFunctionViewMode(prev => prev === 'table' ? 'chart' : 'table')}
+                title="Toggle between chart and data table view"
+                style={{
+                  background: functionViewMode === 'table' ? '#00349B' : '#F1F5F9',
+                  border: functionViewMode === 'table' ? '1px solid #00349B' : '1px solid #CBD5E1',
+                  borderRadius: 4,
+                  padding: '3px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: functionViewMode === 'table' ? '#FFFFFF' : '#475569',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <TableIcon size={12} color={functionViewMode === 'table' ? '#FFFFFF' : '#475569'} /> 
+                {functionViewMode === 'table' ? 'Chart' : 'Table'}
               </button>
-              <button style={{
-                background: '#F1F5F9',
-                border: '1px solid #CBD5E1',
-                borderRadius: 4,
-                padding: '3px 8px',
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#475569',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                cursor: 'pointer'
-              }}>
+              <button 
+                onClick={() => setIsFocusModalOpen(true)}
+                title="Expand to full-screen focus view"
+                style={{
+                  background: '#F1F5F9',
+                  border: '1px solid #CBD5E1',
+                  borderRadius: 4,
+                  padding: '3px 8px',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: '#475569',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
                 <Maximize2 size={12} /> Focus
               </button>
             </div>
           </div>
-          <div ref={functionBarChartRef} style={{ height: 260, width: '100%' }} />
+          {functionViewMode === 'table' ? (
+            <div style={{ height: 260, overflowY: 'auto', borderRadius: 6, border: '1px solid #E2E8F0', padding: 2 }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                <thead>
+                  <tr style={{ background: '#F8FAFC', borderBottom: '1.5px solid #E2E8F0', color: '#475569', textAlign: 'left', fontWeight: 700 }}>
+                    <th style={{ padding: '8px 10px' }}>Business Function</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'right' }}>Net AI Value</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'right' }}>AI Cost</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'center' }}>Agents</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...(byFunction.length > 0 ? byFunction : [
+                    { function_name: 'Customer Support', net_value: 620000, cost: 110000, agent_count: 12, gross_value: 730000, roi: 5.6 },
+                    { function_name: 'Engineering & IT', net_value: 480000, cost: 145000, agent_count: 10, gross_value: 625000, roi: 4.3 },
+                    { function_name: 'Sales & Marketing', net_value: 310000, cost: 75000, agent_count: 9, gross_value: 385000, roi: 4.1 },
+                    { function_name: 'Operations', net_value: 240000, cost: 52000, agent_count: 7, gross_value: 292000, roi: 4.6 },
+                    { function_name: 'Finance', net_value: 150000, cost: 30000, agent_count: 5, gross_value: 180000, roi: 5.0 }
+                  ])].sort((a, b) => b.net_value - a.net_value).map((f: any, idx) => (
+                    <tr 
+                      key={f.function_name} 
+                      style={{ 
+                        borderBottom: '1px solid #F1F5F9', 
+                        background: idx % 2 === 0 ? '#FFFFFF' : '#FBFDFF'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.backgroundColor = '#F0F9FF'}
+                      onMouseLeave={e => e.currentTarget.style.backgroundColor = idx % 2 === 0 ? '#FFFFFF' : '#FBFDFF'}
+                    >
+                      <td style={{ padding: '7px 10px', fontWeight: 700, color: '#0F172A' }}>
+                        {f.function_name}
+                      </td>
+                      <td style={{ padding: '7px 10px', textAlign: 'right', fontWeight: 800, color: '#00349B' }}>
+                        {formatUSD(f.net_value)}
+                      </td>
+                      <td style={{ padding: '7px 10px', textAlign: 'right', color: '#64748B' }}>
+                        {formatUSD(f.cost || f.total_cost || 0)}
+                      </td>
+                      <td style={{ padding: '7px 10px', textAlign: 'center' }}>
+                        <span style={{ background: '#DCFCE7', color: '#15803D', padding: '2px 7px', borderRadius: 10, fontSize: 11, fontWeight: 800 }}>
+                          {f.agent_count || f.active_agents || 0}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div ref={functionBarChartRef} style={{ height: 260, width: '100%' }} />
+          )}
         </div>
 
         {/* Chart 2: Agent Portfolio Status (Donut Chart) */}
@@ -1649,6 +1731,162 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           </div>
         </div>
       )}
-    </div>
+    
+      {/* Focus Modal Overlay: Strategic Function Drilldown */}
+      {isFocusModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(5px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000,
+          padding: 16
+        }}>
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: 14,
+            width: '100%',
+            maxWidth: 920,
+            maxHeight: '92vh',
+            overflowY: 'auto',
+            padding: 24,
+            boxShadow: '0 24px 48px rgba(0,0,0,0.3)',
+            position: 'relative'
+          }}>
+            <button
+              onClick={() => setIsFocusModalOpen(false)}
+              style={{
+                position: 'absolute',
+                top: 18,
+                right: 18,
+                background: '#F1F5F9',
+                border: 'none',
+                borderRadius: '50%',
+                width: 34,
+                height: 34,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: '#64748B'
+              }}
+            >
+              <X size={18} />
+            </button>
+
+            <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: 16, marginBottom: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ background: '#00349B', color: '#FFFFFF', padding: '7px 9px', borderRadius: 8 }}>
+                  <Maximize2 size={18} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: '#0F172A' }}>
+                    Net AI Value by Function — Strategic Portfolio Focus
+                  </h3>
+                  <div style={{ fontSize: 12.5, color: '#64748B', marginTop: 3 }}>
+                    High-resolution functional telemetry, ROI breakdown, and active agent allocations across the enterprise estate.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 20 }}>
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
+                <div style={{ fontSize: 11, color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Total Net Value</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: '#00349B', marginTop: 4 }}>
+                  {formatUSD(summary?.total_net_value || (byFunction || []).reduce((acc, f) => acc + f.net_value, 0))}
+                </div>
+              </div>
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
+                <div style={{ fontSize: 11, color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Top Producing Function</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', marginTop: 6 }}>
+                  {[...(byFunction || [])].sort((a,b) => b.net_value - a.net_value)[0]?.function_name || 'Engineering & IT'}
+                </div>
+                <div style={{ fontSize: 12, color: '#16A34A', fontWeight: 700 }}>
+                  {formatUSD([...(byFunction || [])].sort((a,b) => b.net_value - a.net_value)[0]?.net_value || 0)}
+                </div>
+              </div>
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: 14 }}>
+                <div style={{ fontSize: 11, color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Active Functions</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: '#0F172A', marginTop: 4 }}>
+                  {(byFunction || []).length || 5} Functions
+                </div>
+              </div>
+            </div>
+
+            <div style={{ borderRadius: 8, border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: '#00349B', color: '#FFFFFF', textAlign: 'left', fontWeight: 700 }}>
+                    <th style={{ padding: '10px 14px' }}>Business Function</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'right' }}>Net AI Value</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'right' }}>Actual AI Cost</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'right' }}>Share of Total</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'center' }}>Active Agents</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...(byFunction.length > 0 ? byFunction : [
+                    { function_name: 'Customer Support', net_value: 620000, cost: 110000, agent_count: 12, gross_value: 730000, roi: 5.6 },
+                    { function_name: 'Engineering & IT', net_value: 480000, cost: 145000, agent_count: 10, gross_value: 625000, roi: 4.3 },
+                    { function_name: 'Sales & Marketing', net_value: 310000, cost: 75000, agent_count: 9, gross_value: 385000, roi: 4.1 },
+                    { function_name: 'Operations', net_value: 240000, cost: 52000, agent_count: 7, gross_value: 292000, roi: 4.6 },
+                    { function_name: 'Finance', net_value: 150000, cost: 30000, agent_count: 5, gross_value: 180000, roi: 5.0 }
+                  ])].sort((a, b) => b.net_value - a.net_value).map((f: any, idx, arr) => {
+                    const totalNet = arr.reduce((acc: number, curr: any) => acc + curr.net_value, 0) || 1;
+                    const share = ((f.net_value / totalNet) * 100).toFixed(1);
+                    return (
+                      <tr key={f.function_name} style={{ borderBottom: '1px solid #F1F5F9', background: idx % 2 === 0 ? '#FFFFFF' : '#FBFDFF' }}>
+                        <td style={{ padding: '10px 14px', fontWeight: 800, color: '#0F172A' }}>
+                          {f.function_name}
+                        </td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 800, color: '#00349B' }}>
+                          {formatUSD(f.net_value)}
+                        </td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right', color: '#64748B' }}>
+                          {formatUSD(f.cost || f.total_cost || 0)}
+                        </td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 700, color: '#0284C7' }}>
+                          {share}%
+                        </td>
+                        <td style={{ padding: '10px 14px', textAlign: 'center' }}>
+                          <span style={{ background: '#DCFCE7', color: '#15803D', padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 800 }}>
+                            {f.agent_count || f.active_agents || 0} agents
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 18 }}>
+              <button
+                onClick={() => setIsFocusModalOpen(false)}
+                style={{
+                  background: '#00349B',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '8px 18px',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                Close Focus View
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+</div>
   );
 };

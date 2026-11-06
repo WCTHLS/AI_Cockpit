@@ -834,12 +834,23 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           </div>
         </div>
 
+        {/* Mobile Horizontal Scroll Affordance Banner */}
+        <div className="mobile-table-scroll-banner">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
+            <span style={{ fontSize: 16 }}>👉</span>
+            <span><strong>Swipe table horizontally</strong> to inspect all 9 metrics (Adoption, Budget, Eval, Hours, Status)</span>
+          </div>
+          <span className="scroll-pill">
+            ⇄ Scroll Horizontally
+          </span>
+        </div>
+
         {/* Tree Table */}
         <div className="responsive-table-wrapper">
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'Satoshi, Figtree, sans-serif' }}>
+          <table style={{ minWidth: 1080, width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'Satoshi, Figtree, sans-serif' }}>
             <thead>
               <tr style={{ background: '#00349B', color: '#FFFFFF', textAlign: 'left', fontSize: 12, fontWeight: 700 }}>
-                <th title="Business function, owning department team, and agent display name" style={{ padding: '10px 14px', minWidth: 280 }}>Business function / team / agent</th>
+                <th title="Business function, owning department team, and agent display name" style={{ padding: '10px 14px', minWidth: 280, position: 'sticky', left: 0, zIndex: 4, background: '#00349B', boxShadow: '2px 0 6px rgba(0,0,0,0.12)' }}>Business function / team / agent</th>
                 <th title="Calculated as: Gross Value Created - Actual AI Cost&#10;= (Hours Saved × Hourly Wage Rate) - (Tokens Cost + Monthly Infra)&#10;Hourly Rate = Employee Monthly Rate / Monthly Working Hours" style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help', whiteSpace: 'nowrap', minWidth: 110 }}>Net value / mo ▼</th>
                 <th title="Calculated as: (Active Employees Using Agent / Total Employees Assigned) × 100%" style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help', whiteSpace: 'nowrap', minWidth: 85 }}>Adoption</th>
                 <th title="Calculated as: (Actual AI Cost / Monthly Budget) × 100%&#10;Actual AI Cost = Token Usage Cost + Monthly Infra Cost (no seat costs for custom agents)&#10;Under 100% is on track; over 100% indicates budget overrun." style={{ textAlign: 'right', padding: '10px 12px', cursor: 'help', whiteSpace: 'nowrap', minWidth: 105 }}>Cost vs budget</th>
@@ -873,7 +884,8 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                           fontWeight: 700
                         }}
                       >
-                        <td style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <td style={{ padding: '10px 14px', position: 'sticky', left: 0, zIndex: 3, background: '#EEF4FF', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                           <span style={{
                             width: 18,
                             height: 18,
@@ -928,6 +940,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                               </div>
                             )}
                           </div>
+                          </div>
                         </td>
                         <td title={`Function Net Value = Sum of net value across all agents in ${func.functionName}`} style={{ textAlign: 'right', padding: '10px 12px', color: '#00349B', fontWeight: 800, cursor: 'help' }}>
                           {formatUSD(func.totalNetValue)}
@@ -974,32 +987,34 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                 fontWeight: 600
                               }}
                             >
-                              <td style={{ padding: '8px 14px 8px 36px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <span style={{
-                                  width: 16,
-                                  height: 16,
-                                  borderRadius: 3,
-                                  background: '#D6E2FA',
-                                  color: '#00349B',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  fontSize: 10,
-                                  textAlign: 'center'
-                                }}>
-                                  {isTeamCollapsed ? '+' : '−'}
-                                </span>
-                                <span style={{ color: '#1A1A1A', fontSize: 13.5 }}>{team.teamName}</span>
-                                <span style={{
-                                  fontSize: 10.5,
-                                  background: '#FFFFFF',
-                                  border: '1px solid #D6E2FA',
-                                  color: '#64748B',
-                                  padding: '1px 6px',
-                                  borderRadius: 10
-                                }}>
-                                  {team.agents.length} agents
-                                </span>
+                              <td style={{ padding: '8px 14px 8px 36px', position: 'sticky', left: 0, zIndex: 2, background: '#F8FAFD', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                  <span style={{
+                                    width: 16,
+                                    height: 16,
+                                    borderRadius: 3,
+                                    background: '#D6E2FA',
+                                    color: '#00349B',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: 10,
+                                    textAlign: 'center'
+                                  }}>
+                                    {isTeamCollapsed ? '+' : '−'}
+                                  </span>
+                                  <span style={{ color: '#1A1A1A', fontSize: 13.5 }}>{team.teamName}</span>
+                                  <span style={{
+                                    fontSize: 10.5,
+                                    background: '#FFFFFF',
+                                    border: '1px solid #D6E2FA',
+                                    color: '#64748B',
+                                    padding: '1px 6px',
+                                    borderRadius: 10
+                                  }}>
+                                    {team.agents.length} agents
+                                  </span>
+                                </div>
                               </td>
                               <td title={`Team Net Value = Sum of net value generated by ${team.teamName}'s agents`} style={{ textAlign: 'right', padding: '8px 12px', color: '#00349B', fontWeight: 700, cursor: 'help' }}>
                                 {formatUSD(team.totalNetValue)}
@@ -1060,7 +1075,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                                   onMouseEnter={e => e.currentTarget.style.background = '#F3F6FC'}
                                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                 >
-                                  <td style={{ padding: '7px 14px 7px 64px', color: '#1A1A1A', fontSize: 13, fontWeight: 500 }}>
+                                  <td style={{ padding: '7px 14px 7px 64px', color: '#1A1A1A', fontSize: 13, fontWeight: 500, position: 'sticky', left: 0, zIndex: 1, background: '#FFFFFF', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
                                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                                           <span style={{ fontWeight: 600 }}><span style={{ color: '#00349B', marginRight: 4 }}>•</span> {formatEnterpriseAgentName(agent.name)}</span>
