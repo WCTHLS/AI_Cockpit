@@ -71,8 +71,11 @@ def get_seats_summary(
     if user.get("role") == "function_head" and user.get("function_name"):
         effective_function = user["function_name"]
 
-    # 1. Fetch Developer Seats (Antigravity IDE) - purely real data
-    dev_seats = query_all("SELECT * FROM developer_seats WHERE developer_id NOT LIKE '%waferwire.com%'")
+    # 1. Fetch Developer Seats (GitHub Copilot & Claude Code) - cohort scoped
+    if cohort == "pilot":
+        dev_seats = query_all("SELECT * FROM developer_seats WHERE is_pilot = 1")
+    else:
+        dev_seats = query_all("SELECT * FROM developer_seats WHERE is_pilot = 0 AND developer_id NOT LIKE '%waferwire.com%'")
     
     # 2. Fetch M365 Copilot Seats (24 pilot seats in pilot view, 2,850 seats in enterprise view)
     m365_query = "SELECT * FROM m365_copilot_seats WHERE 1=1"

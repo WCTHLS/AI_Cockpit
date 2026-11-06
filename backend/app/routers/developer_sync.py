@@ -100,7 +100,8 @@ def _init_developer_tables():
                 acceptance_rate_pct REAL,
                 hours_saved REAL,
                 last_active_at TEXT,
-                updated_at TEXT
+                updated_at TEXT,
+                is_pilot INTEGER DEFAULT 0
             )
         """)
 
@@ -607,7 +608,10 @@ def sync_developer_telemetry(req: Optional[DeveloperSyncRequest] = None, user: D
     }
 
 @router.get("/seats")
-def get_developer_seats(user: Dict[str, Any] = Depends(get_current_user)):
+def get_developer_seats(
+    cohort: Optional[str] = Query("enterprise"),
+    user: Dict[str, Any] = Depends(get_current_user)
+):
     _init_developer_tables()
     with get_db() as conn:
         deleted_rows = conn.execute("SELECT developer_id, developer_email FROM deleted_developer_seats").fetchall()
@@ -616,7 +620,10 @@ def get_developer_seats(user: Dict[str, Any] = Depends(get_current_user)):
             if dr[0]: deleted_keys.add(dr[0].lower().strip())
             if dr[1]: deleted_keys.add(dr[1].lower().strip())
 
-    all_rows = query_all("SELECT * FROM developer_seats WHERE developer_id NOT LIKE '%waferwire.com%' ORDER BY updated_at DESC")
+    if cohort == "pilot":
+        all_rows = query_all("SELECT * FROM developer_seats WHERE is_pilot = 1 ORDER BY updated_at DESC")
+    else:
+        all_rows = query_all("SELECT * FROM developer_seats WHERE is_pilot = 0 AND developer_id NOT LIKE '%waferwire.com%' ORDER BY updated_at DESC")
     rows = [r for r in all_rows if (r.get("developer_id") or "").lower().strip() not in deleted_keys and (r.get("developer_email") or "").lower().strip() not in deleted_keys]
     
     # RBAC: Department Heads & FinOps are locked to their functional scope

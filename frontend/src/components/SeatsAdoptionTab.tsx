@@ -177,11 +177,14 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
     }
   };
 
-  useEffect(() => {
-    fetchDeveloperSeats()
+  const loadDeveloperSeats = () => {
+    fetchDeveloperSeats(cohort)
       .then(res => setDeveloperSeats(res.seats || []))
       .catch(err => console.error('Failed to load developer seats:', err));
+  };
 
+  useEffect(() => {
+    loadDeveloperSeats();
     loadM365Data();
   }, [selectedFunction, user?.role, user?.function_name, cohort]);
 
@@ -602,10 +605,10 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
           </div>
           <div>
             <div style={{ fontSize: 14, fontWeight: 800, color: '#0C4A6E' }}>
-              Enterprise AI Seat Estate: Microsoft 365 Copilot ({m365Total} Seats) + Developer AI Tooling ({displayedDevSeats.length} Seats)
+              {cohort === 'pilot' ? 'Pilot AI Seat Estate' : 'Enterprise AI Seat Estate'}: Microsoft 365 Copilot ({m365Total} Seats) + Developer AI Tooling ({displayedDevSeats.length} Seats)
             </div>
             <div style={{ fontSize: 12, color: '#475569', marginTop: 2 }}>
-              Consolidated seat utilization across enterprise Microsoft 365 Copilot subscriptions, GitHub Copilot Enterprise, and Anthropic Claude Code developer tooling. Ingest and manage telemetry in Admin & Config.
+              {cohort === 'pilot' ? 'Live active telemetry for pilot employee cohort across Microsoft 365 Copilot and Engineering developer tooling.' : 'Consolidated seat utilization across enterprise Microsoft 365 Copilot subscriptions, GitHub Copilot Enterprise, and Anthropic Claude Code developer tooling. Ingest and manage telemetry in Admin & Config.'}
             </div>
           </div>
         </div>

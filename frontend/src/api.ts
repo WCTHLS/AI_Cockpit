@@ -377,8 +377,9 @@ export async function syncDeveloperTelemetry(params?: {
   return res.json();
 }
 
-export async function fetchDeveloperSeats(): Promise<{ total: number; seats: DeveloperSeat[] }> {
-  const res = await fetch(`${API_BASE}/admin/developer-tools/seats`, {
+export async function fetchDeveloperSeats(cohort?: string): Promise<{ total: number; seats: DeveloperSeat[] }> {
+  const query = cohort ? `?cohort=${encodeURIComponent(cohort)}` : '';
+  const res = await fetch(`${API_BASE}/admin/developer-tools/seats${query}`, {
     headers: getAuthHeaders()
   });
   if (!res.ok) {
