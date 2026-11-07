@@ -1,3 +1,9 @@
+_M365_CACHE = {}
+_M365_CACHE_TIME = {}
+_SUMMARY_CACHE = {}
+_SUMMARY_CACHE_TIME = {}
+
+from ..data_store import normalize_function_name
 """
 Enterprise AI Portfolio Valuation & FinOps Engine.
 Centralized Single Source of Truth for Autonomous Agents, Developer Tool Seats,
@@ -79,10 +85,24 @@ def get_developer_tools_summary(effective_function: Optional[str] = None, cost_p
     }
 
 def get_m365_summary(effective_function: Optional[str] = None, cost_per_seat: float = 30.0) -> Dict[str, Any]:
+    import time
+    norm = normalize_function_name(effective_function) if (effective_function and effective_function != 'All Functions') else 'all'
+    cache_key = f"{norm}:{cost_per_seat}"
+    now = time.time()
+    if cache_key in _M365_CACHE and (now - _M365_CACHE_TIME.get(cache_key, 0)) < 30:
+        return _M365_CACHE[cache_key]
     try:
         sql = 'SELECT * FROM m365_copilot_seats'
         if effective_function and effective_function != 'All Functions':
-            sql += f" WHERE department LIKE '%{effective_function}%'"
+            norm = normalize_function_name(effective_function)
+            if norm == 'Engineering & IT':
+                sql += " WHERE (department LIKE '%Eng%' OR department LIKE '%IT%')"
+            elif norm == 'Customer Support':
+                sql += " WHERE (department LIKE '%Customer%')"
+            elif norm == 'Sales & Marketing':
+                sql += " WHERE (department LIKE '%Sales%' OR department LIKE '%Marketing%')"
+            else:
+                sql += f" WHERE department LIKE '%{norm}%'"
         m365_seats = query_all(sql)
     except Exception:
         m365_seats = []
@@ -150,7 +170,7 @@ def get_m365_summary(effective_function: Optional[str] = None, cost_per_seat: fl
     total_gross = round(total_gross, 2)
     total_net = round(total_gross - total_cost, 2)
 
-    return {
+    res = {
         'cost': total_cost,
         'budget': total_budget,
         'hours_saved': total_hours,
@@ -162,9 +182,18 @@ def get_m365_summary(effective_function: Optional[str] = None, cost_per_seat: fl
         'department_breakdown': dept_map,
         'action_counts': actions
     }
+    _M365_CACHE[cache_key] = res
+    _M365_CACHE_TIME[cache_key] = now
+    return res
 
 def get_unified_summary(target_month: Optional[str] = None, effective_function: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> Dict[str, Any]:
+    import time
     month = target_month or (store.get_months()[-1] if store.get_months() else '2026-09')
+    norm = normalize_function_name(effective_function) if (effective_function and effective_function != 'All Functions') else 'all'
+    cache_key = f"{month}:{norm}:{cohort or 'enterprise'}"
+    now = time.time()
+    if cache_key in _SUMMARY_CACHE and (now - _SUMMARY_CACHE_TIME.get(cache_key, 0)) < 30:
+        return _SUMMARY_CACHE[cache_key]
     agents = store.get_processed_agents(month, effective_function, cohort=cohort)
 
     agent_net = sum(a['net_value'] for a in agents)
@@ -196,7 +225,7 @@ def get_unified_summary(target_month: Optional[str] = None, effective_function: 
         if act in action_counts:
             action_counts[act] += 1
 
-    return {
+    summary_res = {
         'month': month,
         'total_net_value': tot_net,
         'total_gross_value': tot_gross,
@@ -217,6 +246,9 @@ def get_unified_summary(target_month: Optional[str] = None, effective_function: 
             'm365_copilot': m365_stats
         }
     }
+    _SUMMARY_CACHE[cache_key] = summary_res
+    _SUMMARY_CACHE_TIME[cache_key] = now
+    return summary_res
 
 def get_unified_by_function(target_month: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> List[Dict[str, Any]]:
     month = target_month or (store.get_months()[-1] if store.get_months() else '2026-09')

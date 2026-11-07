@@ -1,3 +1,4 @@
+import { normalizeFunction } from '../utils/functionNormalize';
 import React, { useState, useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 import { 
@@ -159,7 +160,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
 
   const effectiveDept = (user?.role === 'finops' 
     ? 'Finance' 
-    : (user?.role === 'function_head' ? (user?.function_name || 'Eng & IT') : selectedFunction)) || '';
+    : (user?.role === 'function_head' ? (normalizeFunction(user?.function_name) || 'Engineering & IT') : normalizeFunction(selectedFunction))) || '';
   const isScoped = Boolean(effectiveDept && effectiveDept !== 'All Functions');
 
   const loadM365Data = async () => {
@@ -611,8 +612,8 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
 
       {/* M365 Upload Banner / Stream Status */}
       <div style={{
-        background: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)',
-        border: '1.5px solid #BAE6FD',
+        background: isLight ? 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)' : 'linear-gradient(135deg, #0A192F 0%, #0B2545 100%)',
+        border: isLight ? '1.5px solid #BAE6FD' : '1px solid #1E3A8A',
         borderRadius: 12,
         padding: '14px 20px',
         marginBottom: 20,
@@ -627,10 +628,10 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
             <Activity size={20} />
           </div>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#0C4A6E' }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: isLight ? '#0C4A6E' : '#38BDF8' }}>
               {cohort === 'pilot' ? 'Pilot AI Seat Estate' : 'Enterprise AI Seat Estate'}: Microsoft 365 Copilot ({m365Total} Seats) + Developer AI Tooling ({displayedDevSeats.length} Seats)
             </div>
-            <div style={{ fontSize: 12, color: '#475569', marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: isLight ? '#475569' : '#CBD5E1', marginTop: 2 }}>
               {cohort === 'pilot' ? 'Live active telemetry for pilot employee cohort across Microsoft 365 Copilot and Engineering developer tooling.' : 'Consolidated seat utilization across enterprise Microsoft 365 Copilot subscriptions, GitHub Copilot Enterprise, and Anthropic Claude Code developer tooling. Ingest and manage telemetry in Admin & Config.'}
             </div>
           </div>
@@ -743,24 +744,24 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
 
         {/* Card 2: Active Seats (Context-Aware to Active Tab) */}
         <div title="Active user adoption within past 7 days" style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #D1FAE5',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1.5px solid #D1FAE5' : '1px solid #065F46',
           borderRadius: 12,
           padding: '18px 20px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
           cursor: 'help'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#059669' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: isLight ? '#059669' : '#34D399' }}>
               {activeRosterTab === 'm365' ? 'Active M365 Seats (7d)' : 'Active Developers (7d)'}
             </span>
-            <span style={{ fontSize: 11, fontWeight: 800, background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, background: isLight ? '#DCFCE7' : 'rgba(16, 185, 129, 0.2)', color: isLight ? '#15803D' : '#34D399', padding: '2px 8px', borderRadius: 12 }}>
               {activeRosterTab === 'm365'
                 ? (m365Total > 0 ? ((m365Active / m365Total) * 100).toFixed(1) : '0.0')
                 : (developerSeats.length > 0 ? '100.0' : '0.0')}% Utilized
             </span>
           </div>
-          <div style={{ fontSize: 32, fontWeight: 900, marginTop: 6, color: '#0F172A', fontFamily: 'Figtree, sans-serif' }}>
+          <div style={{ fontSize: 32, fontWeight: 900, marginTop: 6, color: isLight ? '#0F172A' : '#F8FAFC', fontFamily: 'Figtree, sans-serif' }}>
             {activeRosterTab === 'm365' ? m365Active : developerSeats.length}
           </div>
           <div style={{ fontSize: 11.5, color: '#16A34A', marginTop: 4, fontWeight: 700 }}>
@@ -772,22 +773,22 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
 
         {/* Card 3: Lapsing Seats */}
         <div title={`Calculated as: (${lapsing} users inactive between 7 and 29 days ÷ ${total} total seats) × 100%`} style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #E2E8F0',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1.5px solid #E2E8F0' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '18px 20px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
           cursor: 'help'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#475569' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: isLight ? '#475569' : '#94A3B8' }}>
               Lapsing (7–29 Days)
             </span>
-            <span style={{ fontSize: 11, fontWeight: 700, background: '#F1F5F9', color: '#475569', padding: '2px 8px', borderRadius: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, background: isLight ? '#F1F5F9' : '#070D1E', color: isLight ? '#475569' : '#94A3B8', padding: '2px 8px', borderRadius: 12 }}>
               Nudge Target
             </span>
           </div>
-          <div style={{ fontSize: 32, fontWeight: 900, marginTop: 6, color: '#0F172A', fontFamily: 'Figtree, sans-serif' }}>
+          <div style={{ fontSize: 32, fontWeight: 900, marginTop: 6, color: isLight ? '#0F172A' : '#F8FAFC', fontFamily: 'Figtree, sans-serif' }}>
             {lapsing}
           </div>
           <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 4, fontWeight: 600 }}>
@@ -797,22 +798,22 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
 
         {/* Card 4: Idle Seats */}
         <div title={`Calculated as: (${idle} users with 0 sessions over 30+ days ÷ ${total} total seats) × 100%`} style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #FEF3C7',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1.5px solid #FEF3C7' : '1px solid #78350F',
           borderRadius: 12,
           padding: '18px 20px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
           cursor: 'help'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#B45309' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: isLight ? '#B45309' : '#FBBF24' }}>
               Idle Seats (30d+)
             </span>
-            <span style={{ fontSize: 11, fontWeight: 800, background: '#FEF3C7', color: '#B45309', padding: '2px 8px', borderRadius: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, background: isLight ? '#FEF3C7' : 'rgba(245, 158, 11, 0.2)', color: isLight ? '#B45309' : '#FBBF24', padding: '2px 8px', borderRadius: 12 }}>
               Reclaimable
             </span>
           </div>
-          <div style={{ fontSize: 32, fontWeight: 900, marginTop: 6, color: '#B45309', fontFamily: 'Figtree, sans-serif' }}>
+          <div style={{ fontSize: 32, fontWeight: 900, marginTop: 6, color: isLight ? '#B45309' : '#FBBF24', fontFamily: 'Figtree, sans-serif' }}>
             {idle}
           </div>
           <div style={{ fontSize: 11.5, color: '#B45309', marginTop: 4, fontWeight: 700 }}>
@@ -822,8 +823,8 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
 
         {/* Card 5: Idle Seat Cost */}
         <div title={`Calculated as: ${idle} idle dormant seats × $${seatCost} cost per seat/month = ${formatUSD(monthlyIdleCost)}/mo unrecovered spend`} style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #FEE2E2',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1.5px solid #FEE2E2' : '1px solid #7F1D1D',
           borderRadius: 12,
           padding: '18px 20px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
@@ -850,8 +851,8 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
       <div style={{
         marginTop: 20,
         marginBottom: 20,
-        background: '#FFFFFF',
-        border: '1.5px solid #BAE6FD',
+        background: isLight ? '#FFFFFF' : '#101A33',
+        border: isLight ? '1.5px solid #BAE6FD' : '1px solid #1E293B',
         borderRadius: 12,
         padding: 20,
         boxShadow: '0 4px 16px rgba(2, 132, 199, 0.05)'
@@ -861,23 +862,23 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: '1px solid #E0F2FE',
+          borderBottom: isLight ? '1px solid #E0F2FE' : '1px solid #1E293B',
           paddingBottom: 14,
           marginBottom: 16,
           flexWrap: 'wrap',
           gap: 12
         }}>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: '#0C4A6E', fontFamily: 'Figtree, sans-serif' }}>
+            <div style={{ fontSize: 16, fontWeight: 800, color: isLight ? '#0C4A6E' : '#38BDF8', fontFamily: 'Figtree, sans-serif' }}>
               Enterprise AI Seat Roster & Live Usage Telemetry
             </div>
-            <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>
               Employee-level telemetry derived directly from Microsoft 365 Copilot usage reporting and Antigravity streams.
             </div>
           </div>
 
           {/* Roster Switcher Tabs */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F1F5F9', padding: 4, borderRadius: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: isLight ? '#F1F5F9' : '#070D1E', border: isLight ? 'none' : '1px solid #1E293B', padding: 4, borderRadius: 8 }}>
             <button
               onClick={() => setActiveRosterTab('m365')}
               style={{
@@ -931,24 +932,24 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               gap: 12,
               marginBottom: 16
             }}>
-              <div style={{ background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: 8, padding: '12px 14px' }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#0369A1', textTransform: 'uppercase' }}>Total Prompts Submitted</div>
-                <div style={{ fontSize: 22, fontWeight: 900, color: '#0C4A6E', marginTop: 2 }}>
+              <div style={{ background: isLight ? '#F0F9FF' : '#0B1E38', border: isLight ? '1px solid #BAE6FD' : '1px solid #1E3A8A', borderRadius: 8, padding: '12px 14px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#0369A1' : '#38BDF8', textTransform: 'uppercase' }}>Total Prompts Submitted</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: isLight ? '#0C4A6E' : '#F0F9FF', marginTop: 2 }}>
                   {totalPromptsSubmitted.toLocaleString()}
                 </div>
-                <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>Across all M365 apps (28-day window)</div>
+                <div style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>Across all M365 apps (28-day window)</div>
               </div>
 
-              <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 8, padding: '12px 14px' }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#15803D', textTransform: 'uppercase' }}>Human Hours Saved</div>
-                <div style={{ fontSize: 22, fontWeight: 900, color: '#166534', marginTop: 2 }}>
+              <div style={{ background: isLight ? '#F0FDF4' : '#062816', border: isLight ? '1px solid #BBF7D0' : '1px solid #065F46', borderRadius: 8, padding: '12px 14px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#15803D' : '#34D399', textTransform: 'uppercase' }}>Human Hours Saved</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: isLight ? '#166534' : '#4ADE80', marginTop: 2 }}>
                   {totalHumanHoursSaved.toLocaleString()} hrs
                 </div>
-                <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>5 min saved / Copilot interaction</div>
+                <div style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>5 min saved / Copilot interaction</div>
               </div>
 
-              <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: 8, padding: '12px 14px' }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#7E22CE', textTransform: 'uppercase' }}>Active App Adoption Footprint</div>
+              <div style={{ background: isLight ? '#FAF5FF' : '#1E1035', border: isLight ? '1px solid #E9D5FF' : '1px solid #4C1D95', borderRadius: 8, padding: '12px 14px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#7E22CE' : '#C084FC', textTransform: 'uppercase' }}>Active App Adoption Footprint</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
                   <span style={{ fontSize: 11, fontWeight: 700, background: '#F5F3FF', color: '#6D28D9', padding: '2px 8px', borderRadius: 4, border: '1px solid #DDD6FE' }}>Chat: {chatAppCount}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, background: '#EEF2FF', color: '#4338CA', padding: '2px 8px', borderRadius: 4, border: '1px solid #C7D2FE' }}>Teams: {teamsAppCount}</span>
@@ -1024,8 +1025,8 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
               justifyContent: 'space-between',
               flexWrap: 'wrap',
               gap: 12,
-              background: '#F8FAFC',
-              border: '1px solid #E2E8F0',
+              background: isLight ? '#F8FAFC' : '#0B132B',
+              border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
               borderRadius: 10,
               padding: '12px 16px',
               marginBottom: 16
@@ -1045,10 +1046,11 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                     width: '100%',
                     padding: '6px 10px',
                     borderRadius: 6,
-                    border: '1px solid #CBD5E1',
+                    border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
                     fontSize: 12.5,
                     outline: 'none',
-                    background: '#FFFFFF'
+                    background: isLight ? '#FFFFFF' : '#070D1E',
+                    color: isLight ? '#0F172A' : '#F8FAFC'
                   }}
                 />
                 {m365Search && (
@@ -1074,9 +1076,9 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                     style={{
                       padding: '4px 10px',
                       borderRadius: 16,
-                      border: m365StatusFilter === f ? '1.5px solid #0284C7' : '1px solid #CBD5E1',
-                      background: m365StatusFilter === f ? '#0284C7' : '#FFFFFF',
-                      color: m365StatusFilter === f ? '#FFFFFF' : '#475569',
+                      border: m365StatusFilter === f ? '1.5px solid #0284C7' : (isLight ? '1px solid #CBD5E1' : '1px solid #334155'),
+                      background: m365StatusFilter === f ? '#0284C7' : (isLight ? '#FFFFFF' : '#070D1E'),
+                      color: m365StatusFilter === f ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
                       fontSize: 11.5,
                       fontWeight: 700,
                       cursor: 'pointer',
@@ -1093,9 +1095,9 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                 <button
                   onClick={expandAllM365Depts}
                   style={{
-                    background: '#FFFFFF',
-                    color: '#0284C7',
-                    border: '1px solid #BAE6FD',
+                    background: isLight ? '#FFFFFF' : '#070D1E',
+                    color: isLight ? '#0284C7' : '#38BDF8',
+                    border: isLight ? '1px solid #BAE6FD' : '1px solid #0284C7',
                     borderRadius: 6,
                     padding: '4px 10px',
                     fontSize: 11,
@@ -1108,9 +1110,9 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                 <button
                   onClick={collapseAllM365Depts}
                   style={{
-                    background: '#FFFFFF',
-                    color: '#64748B',
-                    border: '1px solid #E2E8F0',
+                    background: isLight ? '#FFFFFF' : '#070D1E',
+                    color: isLight ? '#64748B' : '#94A3B8',
+                    border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
                     borderRadius: 6,
                     padding: '4px 10px',
                     fontSize: 11,
@@ -1164,8 +1166,8 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
 
                 return (
                   <div key={deptName} style={{
-                    background: '#FFFFFF',
-                    border: isExpanded ? '1.5px solid #0284C7' : '1px solid #E2E8F0',
+                    background: isLight ? '#FFFFFF' : '#0B132B',
+                    border: isExpanded ? (isLight ? '1.5px solid #0284C7' : '1.5px solid #38BDF8') : (isLight ? '1px solid #E2E8F0' : '1px solid #1E293B'),
                     borderRadius: 10,
                     boxShadow: isExpanded ? '0 4px 12px rgba(2, 132, 199, 0.08)' : '0 1px 3px rgba(0,0,0,0.02)',
                     overflow: 'hidden',
@@ -1175,7 +1177,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                     <div
                       onClick={() => toggleM365Dept(deptName)}
                       style={{
-                        background: isExpanded ? '#F0F9FF' : '#F8FAFC',
+                        background: isExpanded ? (isLight ? '#F0F9FF' : '#0A1E38') : (isLight ? '#F8FAFC' : '#070D1E'),
                         padding: '14px 18px',
                         display: 'flex',
                         alignItems: 'center',
@@ -1258,7 +1260,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                         <div className="responsive-table-wrapper">
                           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5, fontFamily: 'Figtree, sans-serif' }}>
                             <thead>
-                              <tr style={{ background: '#F8FAFC', color: '#475569', textAlign: 'left', fontWeight: 700, borderBottom: '1.5px solid #E2E8F0' }}>
+                              <tr style={{ background: isLight ? '#F8FAFC' : '#070D1E', color: isLight ? '#475569' : '#94A3B8', textAlign: 'left', fontWeight: 700, borderBottom: isLight ? '1.5px solid #E2E8F0' : '1px solid #1E293B' }}>
                                 <th style={{ padding: '9px 14px' }}>Employee & Email</th>
                                 <th style={{ padding: '9px 14px' }}>Department & License</th>
                                 <th style={{ padding: '9px 14px' }}>Active Days (28d)</th>
@@ -1284,10 +1286,10 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                                     }}
                                   >
                                     <td style={{ padding: '10px 14px' }}>
-                                      <div style={{ fontWeight: 800, color: '#0F172A' }}>{seat.display_name}</div>
+                                      <div style={{ fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC' }}>{seat.display_name}</div>
                                       <div style={{ fontSize: 11, color: '#0284C7', fontWeight: 600 }}>{seat.user_principal_name}</div>
                                     </td>
-                                    <td style={{ padding: '10px 14px', color: '#334155', fontWeight: 600 }}>
+                                    <td style={{ padding: '10px 14px', color: isLight ? '#334155' : '#CBD5E1', fontWeight: 600 }}>
                                       <div>{seat.department || 'Operations'}</div>
                                       <div style={{ fontSize: 11, color: '#64748B' }}>{seat.assigned_license}</div>
                                     </td>
@@ -1781,7 +1783,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                         <div className="responsive-table-wrapper">
                           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5, fontFamily: 'Figtree, sans-serif' }}>
                             <thead>
-                              <tr style={{ background: '#F8FAFC', color: '#475569', textAlign: 'left', fontWeight: 700, borderBottom: '1.5px solid #E2E8F0' }}>
+                              <tr style={{ background: isLight ? '#F8FAFC' : '#070D1E', color: isLight ? '#475569' : '#94A3B8', textAlign: 'left', fontWeight: 700, borderBottom: isLight ? '1.5px solid #E2E8F0' : '1px solid #1E293B' }}>
                                 <th style={{ padding: '9px 14px' }}>Developer Name & Email</th>
                                 <th style={{ padding: '9px 14px' }}>Role / Specialty</th>
                                 <th style={{ padding: '9px 14px' }}>Assigned AI Tool & Client</th>
@@ -1813,7 +1815,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                                   >
                                     <td style={{ padding: '10px 14px' }}>
-                                      <div style={{ fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                      <div style={{ fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC', display: 'flex', alignItems: 'center', gap: 6 }}>
                                         <span>{seat.developer_name}</span>
                                         {isAg ? (
                                           <Sparkles size={12} color="#00349B" />
@@ -1825,7 +1827,7 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                                       </div>
                                       <div style={{ fontSize: 11, color: '#0284C7', fontWeight: 600 }}>{seat.developer_email}</div>
                                     </td>
-                                    <td style={{ padding: '10px 14px', color: '#334155', fontWeight: 600 }}>
+                                    <td style={{ padding: '10px 14px', color: isLight ? '#334155' : '#CBD5E1', fontWeight: 600 }}>
                                       <div>{seat.role}</div>
                                     </td>
                                     <td style={{ padding: '10px 14px' }}>

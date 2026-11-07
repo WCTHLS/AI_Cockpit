@@ -106,16 +106,17 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
     ? customGrossValue
     : (summary?.total_gross_value ?? agents.reduce((acc, a) => acc + (a.gross_value || 0), 0));
 
-  const displayNetValue = formatUSD(currentNetValNum);
-  const displayGrossValue = formatUSD(currentGrossValNum);
-  const displayCost = formatUSD(currentCostNum);
-  const displayRoi = currentCostNum > 0
+  const isDataLoaded = Boolean(summary || agents.length > 0 || currentNetValNum > 0);
+  const displayNetValue = !isDataLoaded ? '...' : formatUSD(currentNetValNum);
+  const displayGrossValue = !isDataLoaded ? '...' : formatUSD(currentGrossValNum);
+  const displayCost = !isDataLoaded ? '...' : formatUSD(currentCostNum);
+  const displayRoi = !isDataLoaded ? '...' : (currentCostNum > 0
     ? `${(currentGrossValNum / currentCostNum).toFixed(2)}x ROI`
-    : (customRoi != null ? `${customRoi.toFixed(2)}x ROI` : (summary?.roi_ratio != null ? `${summary.roi_ratio.toFixed(2)}x ROI` : '0.00x ROI'));
+    : (customRoi != null ? `${customRoi.toFixed(2)}x ROI` : (summary?.roi_ratio != null ? `${summary.roi_ratio.toFixed(2)}x ROI` : '0.00x ROI')));
 
-  const displayHours = currentHoursNum.toLocaleString();
+  const displayHours = !isDataLoaded ? '...' : currentHoursNum.toLocaleString();
   const fteCount = Math.round(currentHoursNum / 160);
-  const displayFtes = `~${fteCount} FTEs`;
+  const displayFtes = !isDataLoaded ? '...' : `~${fteCount} FTEs`;
 
   // Dynamic Delta Calculations vs Prior Month and Budget
   const isEnterprise = currentNetValNum > 50000;
@@ -317,10 +318,10 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       yAxis: {
         type: 'category',
         data: sorted.map(f => f.function_name),
-        axisLine: { lineStyle: { color: '#CBD5E1' } },
+        axisLine: { lineStyle: { color: isLight ? '#CBD5E1' : '#334155' } },
         axisTick: { show: false },
         axisLabel: {
-          color: '#0F172A',
+          color: isLight ? '#0F172A' : '#F8FAFC',
           fontSize: isMobile ? 10 : 11,
           fontWeight: 600,
           width: isMobile ? 85 : 95,
@@ -342,7 +343,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             show: true,
             position: 'right',
             formatter: (p: any) => formatUSD(p.value),
-            color: '#00349B',
+            color: isLight ? '#00349B' : '#60A5FA',
             fontWeight: 700,
             fontSize: isMobile ? 10.5 : 12
           }
@@ -457,7 +458,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [statusCounts, totalAgents, onFilterAction]);
+  }, [statusCounts, totalAgents, onFilterAction, isLight]);
 
   // Chart 3: September vs October Comparison (Grouped Bar Chart)
   useEffect(() => {
@@ -493,12 +494,12 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
         data: ['Gross value', 'AI cost', 'Net value'],
         axisLine: { lineStyle: { color: '#CBD5E1' } },
         axisTick: { show: false },
-        axisLabel: { color: '#0F172A', fontSize: 12, fontWeight: 600 }
+        axisLabel: { color: isLight ? '#0F172A' : '#F8FAFC', fontSize: 12, fontWeight: 600 }
       },
       yAxis: {
         type: 'value',
         axisLine: { show: false },
-        splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
+        splitLine: { lineStyle: { color: isLight ? '#E2E8F0' : 'rgba(255,255,255,0.08)', type: 'dashed' } },
         axisLabel: {
           color: '#64748B',
           fontSize: 10,
@@ -537,7 +538,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
             show: true,
             position: 'top',
             formatter: (p: any) => formatUSD(p.value),
-            color: '#00349B',
+            color: isLight ? '#00349B' : '#60A5FA',
             fontWeight: 700,
             fontSize: 11
           }
@@ -551,7 +552,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [agents, summary, customGrossValue, currentCostNum, currentNetValNum]);
+  }, [agents, summary, customGrossValue, currentCostNum, currentNetValNum, isLight]);
 
   // Chart 4: Net AI Value by Team (Horizontal Bar Ranking Chart with Copilot)
   useEffect(() => {
@@ -643,10 +644,10 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       xAxis: {
         type: 'value',
         splitNumber: isMobile ? 2 : 3,
-        axisLine: { lineStyle: { color: '#CBD5E1' } },
-        splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
+        axisLine: { lineStyle: { color: isLight ? '#CBD5E1' : '#334155' } },
+        splitLine: { lineStyle: { color: isLight ? '#E2E8F0' : 'rgba(255,255,255,0.08)', type: 'dashed' } },
         axisLabel: {
-          color: '#64748B',
+          color: isLight ? '#64748B' : '#94A3B8',
           fontSize: isMobile ? 9 : 10,
           formatter: (v: number) => {
             if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
@@ -658,10 +659,10 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       yAxis: {
         type: 'category',
         data: displayedTeams.map(t => t.name),
-        axisLine: { lineStyle: { color: '#CBD5E1' } },
+        axisLine: { lineStyle: { color: isLight ? '#CBD5E1' : '#334155' } },
         axisTick: { show: false },
         axisLabel: {
-          color: '#0F172A',
+          color: isLight ? '#0F172A' : '#F8FAFC',
           fontSize: isMobile ? 10 : 11.5,
           fontWeight: 600,
           width: isMobile ? 95 : 175,
@@ -693,7 +694,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               }
               return raw?.agents ? `${valStr} · ${raw.agents} agents` : valStr;
             },
-            color: '#334155',
+            color: isLight ? '#334155' : '#CBD5E1',
             fontSize: isMobile ? 10 : 11,
             fontWeight: 600
           }
@@ -707,7 +708,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [agents, summary, teamViewLimit]);
+  }, [agents, summary, teamViewLimit, isLight]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -735,7 +736,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       )}
 
       {/* Top Telemetry & Live Governance Status Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div className="exec-status-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
             display: 'inline-flex',
@@ -910,8 +911,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
 
         {/* KPI 2: HOURS SAVED */}
         <div className="executive-card" title="Calculated as: Sum of (Successful Agent Runs × Baseline Human Hours) across all active agents = ~26,000 hrs (~163 FTEs at 160 hrs/mo)" style={{
-          background: '#FFFFFF',
-          border: '1px solid #E2E8F0',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '16px 18px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
@@ -956,7 +957,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
-              <div className="kpi-val-text" style={{ color: '#0F172A' }}>
+              <div className="kpi-val-text" style={{ color: isLight ? '#0F172A' : '#F8FAFC' }}>
                 {displayHours}
               </div>
               <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
@@ -972,8 +973,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
 
         {/* KPI 3: ADOPTION */}
         <div className="executive-card" title="Calculated as: (Active Employees Using AI / Total Licensed Workforce Seats) × 100% = 3,588 / 4,600 = 78%" style={{
-          background: '#FFFFFF',
-          border: '1px solid #E2E8F0',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '16px 18px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
@@ -1094,7 +1095,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
-              <div className="kpi-val-text" style={{ color: '#0F172A' }}>
+              <div className="kpi-val-text" style={{ color: isLight ? '#0F172A' : '#F8FAFC' }}>
                 {displayCost}
               </div>
               <svg width="60" height="22" viewBox="0 0 60 22" fill="none" style={{ marginBottom: 4 }}>
@@ -1254,18 +1255,18 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       <div className="executive-charts-grid-3">
         {/* Chart 1: Net AI Value by Function */}
         <div className="executive-card" style={{
-          background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
           borderRadius: 8,
           padding: 18,
           boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <div>
-              <h3 style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC', margin: 0 }}>
                 Net AI value by function
               </h3>
-              <span style={{ fontSize: 11, color: '#64748B' }}>
+              <span style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8' }}>
                 Click a bar to filter the cockpit
               </span>
             </div>
@@ -1408,27 +1409,27 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
       <div className="executive-bottom-grid-2">
         {/* Net AI Value by Team (Ranking Bar Chart) */}
         <div className="executive-card" style={{
-          background: '#FFFFFF',
-          border: '1px solid #D6E2FA',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
           borderRadius: 8,
           padding: 20,
           boxShadow: '0 2px 6px rgba(0, 52, 155, 0.04)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
             <div>
-              <h3 style={{ fontSize: 15, fontWeight: 800, color: '#00349B', margin: 0 }}>
+              <h3 style={{ fontSize: 15, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', margin: 0 }}>
                 Net AI value by team
               </h3>
-              <span style={{ fontSize: 11, color: '#64748B' }}>
+              <span style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8' }}>
                 Each team runs several agents · navy = agent teams, light blue = Microsoft 365 Copilot
               </span>
             </div>
-            <div style={{ display: 'flex', background: '#F1F5F9', borderRadius: 6, padding: 2 }}>
+            <div style={{ display: 'flex', background: isLight ? '#F1F5F9' : '#070D1E', borderRadius: 6, padding: 2, border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B' }}>
               <button
                 onClick={() => setTeamViewLimit('top12')}
                 style={{
-                  background: teamViewLimit === 'top12' ? '#00349B' : 'transparent',
-                  color: teamViewLimit === 'top12' ? '#FFFFFF' : '#475569',
+                  background: teamViewLimit === 'top12' ? (isLight ? '#00349B' : '#1D4ED8') : 'transparent',
+                  color: teamViewLimit === 'top12' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
                   border: 'none',
                   borderRadius: 4,
                   padding: '3px 10px',
@@ -1442,8 +1443,8 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               <button
                 onClick={() => setTeamViewLimit('all')}
                 style={{
-                  background: teamViewLimit === 'all' ? '#00349B' : 'transparent',
-                  color: teamViewLimit === 'all' ? '#FFFFFF' : '#475569',
+                  background: teamViewLimit === 'all' ? (isLight ? '#00349B' : '#1D4ED8') : 'transparent',
+                  color: teamViewLimit === 'all' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
                   border: 'none',
                   borderRadius: 4,
                   padding: '3px 10px',
@@ -1479,7 +1480,7 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div>
-                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#00349B', margin: 0 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', margin: 0 }}>
                   Where to act this month
                 </h3>
                 <span style={{ fontSize: 11.5, color: '#64748B' }}>
@@ -1498,25 +1499,25 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
               </span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 13, lineHeight: '1.6', color: '#334155' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 13, lineHeight: '1.6', color: isLight ? '#334155' : '#CBD5E1' }}>
               <div>
-                <b style={{ color: '#0F172A' }}>• Portfolio Valuation:</b> Net AI value is <b style={{ color: '#00349B' }}>{displayNetValue}</b> in October, delivering an enterprise ROI of <b style={{ color: '#00349B' }}>{displayRoi}</b> across all active AI assets (Gross Value: <b style={{ color: '#16A34A' }}>{displayGrossValue}</b> against Total Cost: <b style={{ color: '#00349B' }}>{displayCost}</b>).
+                <b style={{ color: isLight ? '#0F172A' : '#F8FAFC' }}>• Portfolio Valuation:</b> Net AI value is <b style={{ color: isLight ? '#00349B' : '#60A5FA' }}>{displayNetValue}</b> in October, delivering an enterprise ROI of <b style={{ color: isLight ? '#00349B' : '#60A5FA' }}>{displayRoi}</b> across all active AI assets (Gross Value: <b style={{ color: isLight ? '#16A34A' : '#4ADE80' }}>{displayGrossValue}</b> against Total Cost: <b style={{ color: isLight ? '#00349B' : '#60A5FA' }}>{displayCost}</b>).
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Asset Deployment:</b> <b style={{ color: '#2E7D32' }}>{totalAgents} Autonomous Agents</b> active in production alongside <b style={{ color: '#00349B' }}>{((summary as any)?.breakdown?.m365_copilot?.seats_count ?? 24) + ((summary as any)?.breakdown?.developer_seats?.seats_count ?? 2)} Enterprise Seats</b> (24 Microsoft 365 Copilot + 2 Antigravity IDE developer seats).
+                <b style={{ color: isLight ? '#0F172A' : '#F8FAFC' }}>• Asset Deployment:</b> <b style={{ color: isLight ? '#2E7D32' : '#4ADE80' }}>{totalAgents} Autonomous Agents</b> active in production alongside <b style={{ color: isLight ? '#00349B' : '#60A5FA' }}>{((summary as any)?.breakdown?.m365_copilot?.seats_count ?? 24) + ((summary as any)?.breakdown?.developer_seats?.seats_count ?? 2)} Enterprise Seats</b> (24 Microsoft 365 Copilot + 2 Antigravity IDE developer seats).
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• License Optimization:</b> Ingested telemetry identifies <b style={{ color: '#C62828' }}>2 dormant M365 Copilot seats</b> with zero activity over 30+ days. Revoking these dormant licenses directly recovers <b style={{ color: '#2E7D32' }}>$60.00/mo ($720/yr)</b>.
+                <b style={{ color: isLight ? '#0F172A' : '#F8FAFC' }}>• License Optimization:</b> Ingested telemetry identifies <b style={{ color: isLight ? '#C62828' : '#F87171' }}>2 dormant M365 Copilot seats</b> with zero activity over 30+ days. Revoking these dormant licenses directly recovers <b style={{ color: isLight ? '#2E7D32' : '#4ADE80' }}>$60.00/mo ($720/yr)</b>.
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Developer Tooling:</b> Antigravity IDE developer seats maintain high engagement (95.4% suggestion acceptance) generating 332.0 engineering hours saved.
+                <b style={{ color: isLight ? '#0F172A' : '#F8FAFC' }}>• Developer Tooling:</b> Antigravity IDE developer seats maintain high engagement (95.4% suggestion acceptance) generating 332.0 engineering hours saved.
               </div>
 
               <div>
-                <b style={{ color: '#0F172A' }}>• Governance & Budget:</b> Total spend tracking at <b style={{ color: '#0F172A' }}>{displayCost}</b>, well within approved budget cap. Zero high-risk policy incidents logged.
+                <b style={{ color: isLight ? '#0F172A' : '#F8FAFC' }}>• Governance & Budget:</b> Total spend tracking at <b style={{ color: isLight ? '#0F172A' : '#F8FAFC' }}>{displayCost}</b>, well within approved budget cap. Zero high-risk policy incidents logged.
               </div>
             </div>
           </div>
@@ -1524,14 +1525,14 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
           <div style={{
             marginTop: 20,
             padding: '12px 14px',
-            background: '#F8FAFC',
-            border: '1px solid #E2E8F0',
+            background: isLight ? '#F8FAFC' : '#0B132B',
+            border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
             borderRadius: 6,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: isLight ? '#475569' : '#CBD5E1' }}>
               Explore detailed agent scorecard & telemetry:
             </span>
             <button

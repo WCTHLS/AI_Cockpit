@@ -1,3 +1,4 @@
+import { normalizeFunction } from './utils/functionNormalize';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   LayoutDashboard,
@@ -10,6 +11,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
 import { ExecutiveSummaryTab } from './components/ExecutiveSummaryTab';
 import { AgentScorecardTab } from './components/AgentScorecardTab';
 import { CostBudgetTab } from './components/CostBudgetTab';
@@ -96,8 +98,8 @@ export const App: React.FC = () => {
 
   // Department scoping: function_head is locked to their department (e.g. Eng & IT)
   const isDeptLocked = currentUser.role === 'function_head' || currentUser.role === 'finops';
-  const lockedDeptName = currentUser.role === 'finops' ? 'Finance' : (currentUser.role === 'function_head' ? (currentUser.function_name || 'Eng & IT') : '');
-  const effFunc = isDeptLocked ? lockedDeptName : selectedFunction;
+  const lockedDeptName = currentUser.role === 'finops' ? 'Finance' : (normalizeFunction(currentUser.function_name) || 'Engineering & IT');
+  const effFunc = isDeptLocked ? lockedDeptName : normalizeFunction(selectedFunction);
 
   // Enterprise Subscription and Labor Config state
   const [subscriptionConfig, setSubscriptionConfig] = useState<SubscriptionConfig>(() => {
@@ -125,18 +127,61 @@ export const App: React.FC = () => {
     }
   }, [currentUser.role, activeTab]);
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [summary, setSummary] = useState<SummaryKPI | null>(null);
-  const [byFunction, setByFunction] = useState<FunctionSummary[]>([]);
-  const [costBreakdown, setCostBreakdown] = useState<CostBreakdownItem[]>([]);
-  const [trend, setTrend] = useState<TrendMonth[]>([]);
-  const [whereToAct, setWhereToAct] = useState<AgentScorecardItem[]>([]);
-  const [agents, setAgents] = useState<AgentScorecardItem[]>([]);
-  const [seats, setSeats] = useState<SeatInventorySummary | null>(null);
-  const [thresholds, setThresholds] = useState<any>(null);
+  // Instant Hydration from local persistent cache (eliminates 0s on load/refresh)
+  const getInitialCache = () => {
+    try {
+      const saved = localStorage.getItem('wct_dashboard_cache_v2');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.sumData) return parsed;
+      }
+    } catch {}
+    return null;
+  };
+
+  const initialCache = React.useMemo(() => getInitialCache(), []);
+
+  const [isLoading, setIsLoading] = useState<boolean>(!initialCache);
+  const [summary, setSummary] = useState<SummaryKPI | null>(() => initialCache?.sumData || null);
+  const [byFunction, setByFunction] = useState<FunctionSummary[]>(() => initialCache?.funcData || []);
+  const [costBreakdown, setCostBreakdown] = useState<CostBreakdownItem[]>(() => initialCache?.costData || []);
+  const [trend, setTrend] = useState<TrendMonth[]>(() => initialCache?.trendData || []);
+  const [whereToAct, setWhereToAct] = useState<AgentScorecardItem[]>(() => initialCache?.actData || []);
+  const [agents, setAgents] = useState<AgentScorecardItem[]>(() => initialCache?.agentList || []);
+  const [seats, setSeats] = useState<SeatInventorySummary | null>(() => initialCache?.seatData || null);
+  const [thresholds, setThresholds] = useState<any>(() => initialCache?.thresh || null);
 
   const [selectedAgent, setSelectedAgent] = useState<AgentScorecardItem | null>(null);
   const [scorecardActionFilter, setScorecardActionFilter] = useState<string>('');
+
+  // Left Sidebar State (Collapsible & Mobile Drawer) - Defined at top level to satisfy Rules of Hooks
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('wct_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+
+  const handleToggleSidebarCollapse = () => {
+    setIsSidebarCollapsed(prev => {
+      const next = !prev;
+      try { localStorage.setItem('wct_sidebar_collapsed', String(next)); } catch {}
+      return next;
+    });
+  };
+
+  const getActiveTabTitle = (tab: string) => {
+    switch (tab) {
+      case 'summary': return 'Executive Summary';
+      case 'scorecard': return 'Agent Scorecard';
+      case 'costs': return 'Cost & Budget';
+      case 'seats': return 'Seats & Adoption';
+      case 'admin': return 'Admin & Config';
+      default: return 'AI Cockpit';
+    }
+  };
 
   // Dynamic portfolio totals directly computed from database-backed summary and active agents
   const totalHours = summary?.total_hours_saved ?? (agents.reduce((acc, a) => acc + (a.hours_saved || 0), 0));
@@ -222,6 +267,11 @@ export const App: React.FC = () => {
       ]);
 
       cohortCacheRef.current[cacheKey] = { sumData, funcData, costData, trendData, actData, agentList, seatData, thresh };
+      try {
+        if (!effFunc && activeCohort === 'enterprise' && sumData) {
+          localStorage.setItem('wct_dashboard_cache_v2', JSON.stringify({ sumData, funcData, costData, trendData, actData, agentList, seatData, thresh }));
+        }
+      } catch {}
 
       setSummary(sumData);
       setByFunction(funcData);
@@ -251,16 +301,29 @@ export const App: React.FC = () => {
     }
   }, [currentMonth, selectedFunction, currentUser, scorecardActionFilter, isAuthenticated, cohort]);
 
+  // Always scroll to top when switching tab or persona
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    const viewport = document.querySelector('.cockpit-main-viewport');
+    if (viewport) viewport.scrollTo({ top: 0, left: 0 });
+    const main = document.querySelector('.main-content');
+    if (main) main.scrollTo({ top: 0, left: 0 });
+  }, [activeTab, currentUser.email]);
+
   const handleFilterAction = (action: string) => {
     setScorecardActionFilter(action);
     setActiveTab('scorecard');
+    setIsMobileMenuOpen(false);
   };
 
   const handleUserChange = async (newUser: UserProfile) => {
     setCurrentUser(newUser);
     localStorage.setItem('wct_user', JSON.stringify(newUser));
+    setIsMobileMenuOpen(false);
+    setActiveTab('summary');
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     if (newUser.role === 'function_head') {
-      setSelectedFunction(newUser.function_name || 'Eng & IT');
+      setSelectedFunction(normalizeFunction(newUser.function_name) || 'Engineering & IT');
     } else {
       setSelectedFunction('');
     }
@@ -274,6 +337,9 @@ export const App: React.FC = () => {
     localStorage.removeItem('wct_auth_token');
     localStorage.removeItem('wct_user');
     setIsAuthenticated(false);
+    setIsMobileMenuOpen(false);
+    setActiveTab('summary');
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
   // If unauthenticated, render the full Enterprise Sign-in experience
@@ -283,8 +349,11 @@ export const App: React.FC = () => {
         onLoginSuccess={(user) => {
           setCurrentUser(user);
           setIsAuthenticated(true);
+          setIsMobileMenuOpen(false);
+          setActiveTab('summary');
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
           if (user.role === 'function_head') {
-            setSelectedFunction(user.function_name || 'Eng & IT');
+            setSelectedFunction(normalizeFunction(user.function_name) || 'Engineering & IT');
           } else {
             setSelectedFunction('');
           }
@@ -294,97 +363,50 @@ export const App: React.FC = () => {
     );
   }
 
-  const isLight = theme === 'light';
+
+
+    const isLight = theme === 'light';
 
   return (
-    <div className="cockpit-container">
-      {/* Global Header */}
-      <Header
-        currentMonth={currentMonth}
-        onMonthChange={setCurrentMonth}
-        selectedFunction={effFunc}
-        onFunctionChange={setSelectedFunction}
-        cohort={cohort}
-        onCohortChange={handleCohortChange}
+    <div className="cockpit-app-layout">
+      {/* Left Collapsible Navigation Sidebar (Option 1) */}
+      <Sidebar
+        activeTab={activeTab}
+        onTabChange={(tab) => {
+          if (tab === 'scorecard') setScorecardActionFilter('');
+          setActiveTab(tab);
+        }}
         user={currentUser}
-        onUserChange={handleUserChange}
         onLogout={handleLogout}
-        onRefresh={() => loadDashboardData(true)}
-        isLoading={isLoading}
         theme={theme}
         onThemeChange={setTheme}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={handleToggleSidebarCollapse}
+        isMobileOpen={isMobileMenuOpen}
+        onMobileClose={() => setIsMobileMenuOpen(false)}
       />
 
-      {/* Navigation Tabs */}
-      <div className="nav-tabs-wrapper">
-        <button
-          className="tab-nav-arrow tab-nav-arrow-left"
-          onClick={() => scrollTabs('left')}
-          title="Scroll tabs left"
-          aria-label="Scroll tabs left"
-        >
-          <ChevronLeft size={16} />
-        </button>
+      {/* Main Dashboard Viewport */}
+      <div className="cockpit-main-viewport">
+        {/* Slim Top Bar: Context, Slicers & Quick Switch */}
+        <Header
+          activeTabTitle={getActiveTabTitle(activeTab)}
+          currentMonth={currentMonth}
+          onMonthChange={setCurrentMonth}
+          selectedFunction={effFunc}
+          onFunctionChange={setSelectedFunction}
+          cohort={cohort}
+          onCohortChange={handleCohortChange}
+          user={currentUser}
+          onLogout={handleLogout}
+          onRefresh={() => loadDashboardData(true)}
+          isLoading={isLoading}
+          theme={theme}
+          onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+        />
 
-        <div className="nav-tabs-container" ref={navTabsRef}>
-          <button
-            className={`tab-button ${activeTab === 'summary' ? 'active' : ''}`}
-            onClick={() => setActiveTab('summary')}
-          >
-            <LayoutDashboard size={16} />
-            Executive Summary
-          </button>
-          <button
-            className={`tab-button ${activeTab === 'scorecard' ? 'active' : ''}`}
-            onClick={() => {
-              setScorecardActionFilter('');
-              setActiveTab('scorecard');
-            }}
-          >
-            <TableProperties size={16} />
-            Agent Scorecard
-          </button>
-          <button
-            className={`tab-button ${activeTab === 'costs' ? 'active' : ''}`}
-            onClick={() => setActiveTab('costs')}
-          >
-            <PieChart size={16} />
-            Cost &amp; Budget
-          </button>
-          <button
-            className={`tab-button ${activeTab === 'seats' ? 'active' : ''}`}
-            onClick={() => setActiveTab('seats')}
-          >
-            <Users size={16} />
-            Seats &amp; Adoption
-          </button>
-                    {currentUser.role === 'admin' && (
-            <button
-              className={`tab-button ${activeTab === 'admin' ? 'active' : ''}`}
-              onClick={() => setActiveTab('admin')}
-            >
-              <Settings size={16} />
-              Admin &amp; Config
-            </button>
-          )}
-        </div>
-
-        <button
-          className="tab-nav-arrow tab-nav-arrow-right"
-          onClick={() => scrollTabs('right')}
-          title="Scroll tabs right"
-          aria-label="Scroll tabs right"
-        >
-          <ChevronRight size={16} />
-        </button>
-
-        <div className="tab-swipe-indicator">
-          <span>Swipe ⇄</span>
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      <main className="main-content">
+        {/* Main Content Area */}
+        <main className="main-content">
         {activeTab === 'summary' && (
           <ExecutiveSummaryTab
             summary={summary}
@@ -457,7 +479,8 @@ export const App: React.FC = () => {
             cohort={cohort}
           />
         )}
-      </main>
+        </main>
+      </div>
 
       {/* Agent Detail Inspection Modal */}
       <AgentDetailModal

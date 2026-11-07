@@ -19,7 +19,7 @@ DEMO_USERS = {
         "email": "eng_head@wct.com",
         "display_name": "VP of Engineering & IT",
         "role": "function_head",
-        "function_name": "Eng & IT",
+        "function_name": "Engineering & IT",
         "team_name": None
     },
     "finops@wct.com": {

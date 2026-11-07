@@ -1,3 +1,4 @@
+import { normalizeFunction } from '../utils/functionNormalize';
 import React, { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import { 
@@ -59,8 +60,9 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
 }) => {
   const isLight = theme === 'light';
   const palette = ['#00349B', '#2563EB', '#10B981', '#8B5CF6', '#F59E0B'];
-  const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
-  const effectiveAgents = isScoped ? agents.filter(a => a.function === selectedFunction) : agents;
+  const effSelectedFunction = normalizeFunction(selectedFunction);
+  const isScoped = Boolean(effSelectedFunction && effSelectedFunction !== 'All Functions');
+  const effectiveAgents = isScoped ? agents.filter(a => normalizeFunction(a.function) === effSelectedFunction) : agents;
 
   const FACTOR_METADATA: Record<string, { driver: string; remediation: string }> = {
     'Model Token Consumption': {
@@ -199,7 +201,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
   });
 
   const devBreakdown = (summary as any)?.breakdown?.developer_seats;
-  if (devBreakdown && devBreakdown.seats_count > 0 && (!isScoped || effectiveAgents.some(a => a.function === 'Eng & IT') || selectedFunction === 'Eng & IT')) {
+  if (devBreakdown && devBreakdown.seats_count > 0 && (!isScoped || effectiveAgents.some(a => normalizeFunction(a.function) === 'Engineering & IT') || effSelectedFunction === 'Engineering & IT')) {
     teamsMap['Software Engineering (Antigravity IDE)'] = {
       team: 'Software Engineering (Antigravity IDE)',
       cost: devBreakdown.cost,
@@ -211,7 +213,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
   const m365Depts = (summary as any)?.breakdown?.m365_copilot?.department_breakdown;
   if (m365Depts) {
     Object.entries(m365Depts).forEach(([deptName, dData]: [string, any]) => {
-      if (!isScoped || effectiveAgents.some(a => a.function === deptName) || selectedFunction === deptName) {
+      if (!isScoped || effectiveAgents.some(a => normalizeFunction(a.function) === normalizeFunction(deptName)) || effSelectedFunction === normalizeFunction(deptName)) {
         const teamName = `Microsoft 365 Copilot (${deptName})`;
         teamsMap[teamName] = {
           team: teamName,
@@ -239,10 +241,10 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
-        backgroundColor: '#FFFFFF',
-        borderColor: '#D6E2FA',
+        backgroundColor: isLight ? '#FFFFFF' : '#0F172A',
+        borderColor: isLight ? '#D6E2FA' : '#334155',
         borderWidth: 1,
-        textStyle: { color: '#0F172A', fontFamily: 'Figtree, sans-serif' },
+        textStyle: { color: isLight ? '#0F172A' : '#F8FAFC', fontFamily: 'Figtree, sans-serif' },
         formatter: (params: any) => {
           const item = sorted[params[0].dataIndex];
           const isOver = item.pctOfBudget > 100;
@@ -283,10 +285,10 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
       yAxis: {
         type: 'category',
         data: sorted.map(f => f.name),
-        axisLine: { lineStyle: { color: '#CBD5E1' } },
+        axisLine: { lineStyle: { color: isLight ? '#CBD5E1' : '#334155' } },
         axisTick: { show: false },
         axisLabel: {
-          color: '#0F172A',
+          color: isLight ? '#0F172A' : '#F8FAFC',
           fontSize: 11.5,
           fontWeight: 600,
           width: 180,
@@ -760,7 +762,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
               FUNCTION SPEND SCOPED
             </span>
             <span>
-              FinOps tracking filtered to <b>{selectedFunction}</b> ({effectiveAgents.length} agents · {formatUSD(totalActualCost)} spend)
+              FinOps tracking filtered to <b>{effSelectedFunction}</b> ({effectiveAgents.length} agents · {formatUSD(totalActualCost)} spend)
             </span>
           </div>
         </div>
@@ -833,8 +835,8 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
 
         {/* KPI 2: BUDGET VARIANCE */}
         <div className="executive-card" title="Calculated as: Approved Enterprise Budget Cap - Total Actual AI Cost" style={{
-          background: '#FFFFFF',
-          border: '1px solid #E2E8F0',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '16px 18px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
@@ -893,8 +895,8 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
 
         {/* KPI 3: VALUE PER $1 SPENT */}
         <div className="executive-card" title="Calculated as: Total Gross Labor Value Created ÷ Total Actual AI Cost" style={{
-          background: '#FFFFFF',
-          border: '1px solid #E2E8F0',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '16px 18px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
@@ -954,8 +956,8 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
 
         {/* KPI 4: COST PER HOUR SAVED */}
         <div className="executive-card" title="Calculated as: Total Actual AI Cost ÷ Total Labor Hours Saved" style={{
-          background: '#FFFFFF',
-          border: '1px solid #E2E8F0',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '16px 18px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
@@ -999,7 +1001,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
-              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+              <div style={{ fontSize: 29, fontWeight: 800, letterSpacing: '-0.02em', color: isLight ? '#0F172A' : '#F8FAFC', fontFamily: 'Outfit, sans-serif' }}>
                 {formatUSD(costPerHourSaved)}
               </div>
               <svg width="56" height="20" viewBox="0 0 56 20" fill="none" style={{ marginBottom: 4 }}>
@@ -1015,8 +1017,8 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
 
         {/* KPI 5: MODEL TOKENS */}
         <div className="executive-card" title="Token consumption spend on model inference across active agents" style={{
-          background: '#FFFFFF',
-          border: '1px solid #E2E8F0',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '16px 18px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 6px 16px -4px rgba(0, 52, 155, 0.05)',
@@ -1078,22 +1080,22 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
       <div className="cost-charts-grid">
         {/* Cost vs Budget by Factor */}
         <div className="executive-card" style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #D6E2FA',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '18px 20px',
           boxShadow: '0 4px 16px rgba(0, 52, 155, 0.08)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
             <div>
-              <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#00349B', fontFamily: 'Satoshi, sans-serif' }}>
+              <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', fontFamily: 'Satoshi, sans-serif' }}>
                 Cost vs budget by cost factor
               </h4>
-              <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 2 }}>
+              <div style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>
                 Bar = actual · marker = budget · not filtered by Function or Portfolio
               </div>
             </div>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', background: '#F1F5F9', padding: '3px 8px', borderRadius: 4 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: isLight ? '#475569' : '#CBD5E1', background: isLight ? '#F1F5F9' : '#070D1E', padding: '3px 8px', borderRadius: 4 }}>
               Click bar for diagnostics
             </span>
           </div>
@@ -1102,22 +1104,22 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
 
         {/* AI Cost by Factor Treemap */}
         <div className="executive-card" style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #D6E2FA',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '18px 20px',
           boxShadow: '0 4px 16px rgba(0, 52, 155, 0.08)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
             <div>
-              <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#00349B', fontFamily: 'Satoshi, sans-serif' }}>
+              <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', fontFamily: 'Satoshi, sans-serif' }}>
                 AI cost by factor
               </h4>
-              <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 2 }}>
+              <div style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>
                 Share of monthly AI cost · not filtered by Function or Portfolio
               </div>
             </div>
-            <div style={{ display: 'inline-flex', background: '#F1F5F9', padding: 2, borderRadius: 6, border: '1px solid #CBD5E1' }}>
+            <div style={{ display: 'inline-flex', background: isLight ? '#F1F5F9' : '#070D1E', padding: 2, borderRadius: 6, border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B' }}>
               <button
                 onClick={() => setFactorViewMode('donut')}
                 style={{
@@ -1164,7 +1166,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
               <div style={{ flex: '1.4 1 280px', minWidth: 260, overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11.5, textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ background: '#F8FAFC', borderBottom: '1.5px solid #E2E8F0', color: '#475569', fontWeight: 700 }}>
+                    <tr style={{ background: isLight ? '#F8FAFC' : '#070D1E', borderBottom: isLight ? '1.5px solid #E2E8F0' : '1px solid #1E293B', color: isLight ? '#475569' : '#94A3B8', fontWeight: 700 }}>
                       <th style={{ padding: '6px 8px' }}>Cost Factor</th>
                       <th style={{ padding: '6px 8px', textAlign: 'right' }}>Spend</th>
                       <th style={{ padding: '6px 8px', textAlign: 'center' }}>Share</th>
@@ -1182,15 +1184,15 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
                         onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
                         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                       >
-                        <td style={{ padding: '7px 8px', fontWeight: 700, color: '#00349B' }}>
+                        <td style={{ padding: '7px 8px', fontWeight: 700, color: isLight ? '#00349B' : '#60A5FA' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             <span style={{ width: 8, height: 8, borderRadius: '50%', background: palette[idx % palette.length], flexShrink: 0 }} />
                             <span style={{ fontSize: 11.5 }}>{f.name}</span>
                           </div>
                         </td>
-                        <td style={{ padding: '7px 8px', textAlign: 'right', fontWeight: 600 }}>{formatUSD(f.actual)}</td>
+                        <td style={{ padding: '7px 8px', textAlign: 'right', fontWeight: 600, color: isLight ? '#0F172A' : '#F8FAFC' }}>{formatUSD(f.actual)}</td>
                         <td style={{ padding: '7px 8px', textAlign: 'center', color: '#64748B', fontWeight: 600 }}>{f.pctOfTotal}%</td>
-                        <td style={{ padding: '7px 8px', textAlign: 'right', color: '#475569' }}>{formatUSD(f.budget)}</td>
+                        <td style={{ padding: '7px 8px', textAlign: 'right', color: isLight ? '#475569' : '#CBD5E1' }}>{formatUSD(f.budget)}</td>
                         <td style={{ padding: '7px 8px', textAlign: 'center' }}>
                           <span style={{
                             background: f.status === 'overrun' ? '#FEE2E2' : '#DCFCE7',
@@ -1220,17 +1222,17 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
       <div className="cost-charts-grid">
         {/* Cost vs Budget by Team */}
         <div className="executive-card" style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #D6E2FA',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '18px 20px',
           boxShadow: '0 4px 16px rgba(0, 52, 155, 0.08)'
         }}>
           <div style={{ marginBottom: 12 }}>
-            <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#00349B', fontFamily: 'Satoshi, sans-serif' }}>
+            <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', fontFamily: 'Satoshi, sans-serif' }}>
               Cost vs budget by team
             </h4>
-            <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 2 }}>
+            <div style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>
               Bar colour = cost vs budget status · marker = budget
             </div>
           </div>
@@ -1239,17 +1241,17 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
 
         {/* Cost by Factor, Sep vs Oct */}
         <div className="executive-card" style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #D6E2FA',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B',
           borderRadius: 12,
           padding: '18px 20px',
           boxShadow: '0 4px 16px rgba(0, 52, 155, 0.08)'
         }}>
           <div style={{ marginBottom: 12 }}>
-            <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#00349B', fontFamily: 'Satoshi, sans-serif' }}>
+            <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', fontFamily: 'Satoshi, sans-serif' }}>
               Cost by factor, Sep vs Oct
             </h4>
-            <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 2 }}>
+            <div style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8', marginTop: 2 }}>
               Both months · ignores Month slicer
             </div>
           </div>

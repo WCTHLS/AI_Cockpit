@@ -1,3 +1,4 @@
+from ..data_store import normalize_function_name
 import csv
 import io
 import datetime
@@ -82,7 +83,15 @@ def get_seats_summary(
     if cohort == "pilot":
         m365_query += " AND is_pilot = 1"
     if effective_function and effective_function != "All Functions":
-        m365_query += f" AND department LIKE '%{effective_function}%'"
+        norm = normalize_function_name(effective_function)
+        if norm == "Engineering & IT":
+            m365_query += " AND (department LIKE '%Eng%' OR department LIKE '%IT%')"
+        elif norm == "Customer Support":
+            m365_query += " AND (department LIKE '%Customer%')"
+        elif norm == "Sales & Marketing":
+            m365_query += " AND (department LIKE '%Sales%' OR department LIKE '%Marketing%')"
+        else:
+            m365_query += f" AND department LIKE '%{norm}%'"
     m365_seats = query_all(m365_query)
 
     total_seats = 0

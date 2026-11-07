@@ -1,3 +1,4 @@
+import { normalizeFunction } from '../utils/functionNormalize';
 import React, { useState, useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 import { 
@@ -67,14 +68,23 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
   selectedFunction = '',
   theme = 'light'
 }) => {
-  const isScoped = Boolean(selectedFunction && selectedFunction !== 'All Functions');
+  const effSelectedFunction = normalizeFunction(selectedFunction);
+  const isScoped = Boolean(effSelectedFunction && effSelectedFunction !== 'All Functions');
   const scopedAgents = isScoped 
-    ? agents.filter(a => a.function === selectedFunction) 
+    ? agents.filter(a => normalizeFunction(a.function) === effSelectedFunction) 
     : agents;
   const [selectedStatus, setSelectedStatus] = useState<string>(initialActionFilter ? initialActionFilter.toLowerCase() : '');
-  const [collapsedFunctions, setCollapsedFunctions] = useState<Set<string>>(new Set());
+  // By default, department/function dropdowns are CLOSED/COLLAPSED in Enterprise View
+  const [collapsedFunctions, setCollapsedFunctions] = useState<Set<string>>(() => {
+    if (agents.length > 10) {
+      const initialFuncs = new Set<string>();
+      agents.forEach(a => { if (a.function) initialFuncs.add(a.function); });
+      return initialFuncs;
+    }
+    return new Set();
+  });
   const [collapsedTeams, setCollapsedTeams] = useState<Set<string>>(() => {
-    if (agents.length > 50) {
+    if (agents.length > 10) {
       const initialTeams = new Set<string>();
       agents.forEach(a => initialTeams.add(`${a.function}|${a.team}`));
       return initialTeams;
@@ -82,7 +92,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
     return new Set();
   });
   const [viewMode, setViewMode] = useState<'all' | 'teams' | 'functions'>(() => {
-    return agents.length > 50 ? 'teams' : 'all';
+    return agents.length > 10 ? 'functions' : 'all';
   });
 
   // Search and Productivity Quick Filter State
@@ -94,6 +104,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
     return typeof window !== 'undefined' ? window.innerWidth < 768 : false;
   });
   const [mobileLayout, setMobileLayout] = useState<'cards' | 'table'>('cards');
+  const [scatterViewMode, setScatterViewMode] = useState<'focused' | 'full'>('focused');
 
   useEffect(() => {
     const handleResize = () => {
@@ -129,18 +140,23 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
   // Automatically adjust expansion based on fleet size:
   // Pilot View (<= 10 agents): FULLY EXPAND all teams and functions so the 4 live agents are 100% visible immediately!
-  // Enterprise View (> 50 agents): Neatly collapse teams to show high-level executive department rollups.
+  // Enterprise View (> 10 agents): By default, keep all departments CLOSED (collapsed) for clean high-level view!
   useEffect(() => {
+    if (scopedAgents.length === 0) return;
     if (scopedAgents.length <= 10) {
       setCollapsedFunctions(new Set());
       setCollapsedTeams(new Set());
       setViewMode('all');
     } else {
+      const initialFuncs = new Set<string>();
       const initialTeams = new Set<string>();
-      scopedAgents.forEach(a => initialTeams.add(`${a.function}|${a.team}`));
+      scopedAgents.forEach(a => {
+        if (a.function) initialFuncs.add(a.function);
+        initialTeams.add(`${a.function}|${a.team}`);
+      });
+      setCollapsedFunctions(initialFuncs);
       setCollapsedTeams(initialTeams);
-      setCollapsedFunctions(new Set());
-      setViewMode('teams');
+      setViewMode('functions');
     }
   }, [scopedAgents.length]);
 
@@ -303,6 +319,40 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
     };
 
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    const isLargeFleet = agents.length > 50;
+    const isFocused = scatterViewMode === 'focused' && isLargeFleet;
+
+    // Adaptive bubble sizing: for 1,248 fleet use crisp 6px-12px bubbles with subtle stroke
+    // In Focused Mode, bubbles are spread out across full chart height with excellent separation
+    const getSymbolSize = (data: any) => {
+      if (isMobile) return isLargeFleet ? (isFocused ? 6 : 5) : 13;
+      if (isLargeFleet) {
+        const cost = Number(data[2]) || 1000;
+        return isFocused 
+          ? Math.max(7, Math.min(12, 6 + Math.sqrt(cost) / 32))
+          : Math.max(5, Math.min(10, 4 + Math.sqrt(cost) / 40));
+      }
+      return Math.max(14, Math.min(24, Math.sqrt(Number(data[2]) || 5000) / 9));
+    };
+
+    const getItemStyle = (status: string) => ({
+      color: colorMap[status] || colorMap.optimize,
+      opacity: isLargeFleet ? (isFocused ? 0.72 : 0.60) : 0.88,
+      borderColor: isLight ? '#FFFFFF' : '#0B132B',
+      borderWidth: isLargeFleet ? 0.8 : 1.5
+    });
+
+    const emphasisStyle = {
+      focus: 'series' as const,
+      itemStyle: {
+        opacity: 1,
+        borderColor: isLight ? '#00349B' : '#60A5FA',
+        borderWidth: 2,
+        shadowBlur: 10,
+        shadowColor: 'rgba(0, 52, 155, 0.4)'
+      }
+    };
+
     chart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
@@ -315,30 +365,44 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
         formatter: (params: any) => {
           const raw = params.data.raw;
           const status = raw.action?.toLowerCase() || 'optimize';
-          return `<div style="padding: 4px;">
-            <div style="font-weight: 700; color: ${isLight ? '#00349B' : '#60A5FA'}; margin-bottom: 2px;">${raw.name}</div>
-            <div style="color: ${isLight ? '#64748B' : '#94A3B8'}; font-size: 11px; margin-bottom: 6px;">${raw.team} · ${raw.function}</div>
-            <div style="display:flex; justify-content:space-between; gap:16px;"><span>Status:</span><b style="color:${colorMap[status]}">${status.toUpperCase()}</b></div>
-            <div style="display:flex; justify-content:space-between; gap:16px;"><span>Net value:</span><b>${formatUSD(raw.net_value)}</b></div>
-            <div style="display:flex; justify-content:space-between; gap:16px;"><span>Adoption:</span><b>${formatPct(raw.adoption_pct)}</b></div>
-            <div style="display:flex; justify-content:space-between; gap:16px;"><span>Cost:</span><b>${formatUSD(raw.cost)}</b></div>
-            <div style="color: #38BDF8; font-size: 10.5px; margin-top: 4px; font-weight: 600;">Click bubble to view details →</div>
+          const labelCol = isLight ? '#64748B' : '#94A3B8';
+          const valCol = isLight ? '#0F172A' : '#F8FAFC';
+          return `<div style="padding: 6px; min-width: 190px;">
+            <div style="font-weight: 800; font-size: 13px; color: ${isLight ? '#00349B' : '#60A5FA'}; margin-bottom: 2px;">${raw.name}</div>
+            <div style="color: ${labelCol}; font-size: 11px; margin-bottom: 8px;">${raw.team || ''} · ${raw.function || ''}</div>
+            <div style="display:flex; justify-content:space-between; gap:16px; margin-bottom: 3px;">
+              <span style="color: ${labelCol}; font-weight: 500;">Status:</span>
+              <b style="color:${colorMap[status]}">${status.toUpperCase()}</b>
+            </div>
+            <div style="display:flex; justify-content:space-between; gap:16px; margin-bottom: 3px;">
+              <span style="color: ${labelCol}; font-weight: 500;">Net value:</span>
+              <b style="color: ${valCol};">${formatUSD(raw.net_value)}</b>
+            </div>
+            <div style="display:flex; justify-content:space-between; gap:16px; margin-bottom: 3px;">
+              <span style="color: ${labelCol}; font-weight: 500;">Adoption:</span>
+              <b style="color: ${valCol};">${formatPct(raw.adoption_pct)}</b>
+            </div>
+            <div style="display:flex; justify-content:space-between; gap:16px; margin-bottom: 3px;">
+              <span style="color: ${labelCol}; font-weight: 500;">Cost:</span>
+              <b style="color: ${valCol};">${formatUSD(raw.cost)}</b>
+            </div>
+            <div style="color: #0284C7; font-size: 10px; margin-top: 6px; font-weight: 600; text-align: right;">Tap to inspect telemetry →</div>
           </div>`;
         }
       },
       legend: {
         top: 0,
         left: 0,
-        icon: 'roundRect',
-        itemWidth: 10,
-        itemHeight: 10,
+        icon: 'circle',
+        itemWidth: 9,
+        itemHeight: 9,
         textStyle: { color: isLight ? '#475569' : '#CBD5E1', fontSize: isMobile ? 10.5 : 12, fontFamily: 'Satoshi, sans-serif' },
         data: ['Accelerate', 'Optimize', 'Intervene', 'Experiment']
       },
       grid: { 
         left: isMobile ? 5 : 10, 
-        right: isMobile ? 15 : 25, 
-        top: isMobile ? 35 : 40, 
+        right: isMobile ? 20 : 30, 
+        top: isMobile ? 35 : 45, 
         bottom: isMobile ? 25 : 35, 
         containLabel: true 
       },
@@ -346,34 +410,43 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
         type: 'value',
         min: 0,
         max: 100,
-        splitNumber: isMobile ? 3 : 4,
-        axisLabel: { formatter: '{value}%', color: isLight ? '#475569' : '#94A3B8', fontSize: isMobile ? 9.5 : 10.5 },
+        splitNumber: isMobile ? 3 : 5,
+        axisLabel: { formatter: '{value}%', color: isLight ? '#475569' : '#94A3B8', fontSize: isMobile ? 9.5 : 11 },
         splitLine: { lineStyle: { color: isLight ? '#E6ECF8' : '#1E293B' } },
         axisLine: { lineStyle: { color: isLight ? '#BFD0FF' : '#334155' } }
       },
       yAxis: {
         type: 'value',
-        splitNumber: isMobile ? 3 : 4,
-        axisLabel: { formatter: (v: number) => `$${Math.round(v / 1000)}K`, color: isLight ? '#475569' : '#94A3B8', fontSize: isMobile ? 9.5 : 10.5 },
+        min: isFocused ? -1000 : (isLargeFleet ? -2000 : undefined),
+        max: isFocused ? 7500 : (isLargeFleet ? 25000 : undefined),
+        splitNumber: isMobile ? 4 : 5,
+        axisLabel: { 
+          formatter: (v: number) => `$${Math.round(v / 1000)}K`, 
+          color: isLight ? '#475569' : '#94A3B8', 
+          fontSize: isMobile ? 9.5 : 11 
+        },
         splitLine: { lineStyle: { color: isLight ? '#E6ECF8' : '#1E293B' } },
         axisLine: { show: false }
       },
+      dataZoom: [
+        { type: 'inside', xAxisIndex: 0, filterMode: 'none' },
+        { type: 'inside', yAxisIndex: 0, filterMode: 'none' }
+      ],
       series: [
         {
           name: 'Accelerate',
           type: 'scatter',
           data: seriesData.filter(d => d.value[3] === 'accelerate'),
-          itemStyle: { color: colorMap.accelerate, opacity: 0.85 },
-          symbolSize: (data: any) => isMobile 
-            ? Math.max(7, Math.min(18, Math.sqrt(data[2] || 5000) / 14)) 
-            : Math.max(14, Math.min(36, Math.sqrt(data[2] || 5000) / 7.5)),
+          itemStyle: getItemStyle('accelerate'),
+          emphasis: emphasisStyle,
+          symbolSize: getSymbolSize,
           markLine: {
             silent: true,
             symbol: 'none',
             lineStyle: { type: 'dashed', color: isLight ? '#0B1F4D' : '#60A5FA', width: 1.2 },
             data: [
-              { yAxis: 40000, label: { formatter: isMobile ? '$40K' : '$40K net value', position: 'start', color: isLight ? '#64748B' : '#94A3B8', fontSize: isMobile ? 9 : 10 } },
-              { xAxis: 70, label: { formatter: isMobile ? '70%' : '70% adoption', position: 'end', color: isLight ? '#64748B' : '#94A3B8', fontSize: isMobile ? 9 : 10 } }
+              { yAxis: 2500, label: { formatter: isMobile ? '$2.5K' : '$2.5K target', position: 'start', color: isLight ? '#64748B' : '#94A3B8', fontSize: isMobile ? 9 : 10.5 } },
+              { xAxis: 70, label: { formatter: isMobile ? '70%' : '70% adoption', position: 'end', color: isLight ? '#64748B' : '#94A3B8', fontSize: isMobile ? 9 : 10.5 } }
             ]
           }
         },
@@ -381,28 +454,25 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           name: 'Optimize',
           type: 'scatter',
           data: seriesData.filter(d => d.value[3] === 'optimize'),
-          itemStyle: { color: colorMap.optimize, opacity: 0.85 },
-          symbolSize: (data: any) => isMobile 
-            ? Math.max(7, Math.min(18, Math.sqrt(data[2] || 5000) / 14)) 
-            : Math.max(14, Math.min(36, Math.sqrt(data[2] || 5000) / 7.5))
+          itemStyle: getItemStyle('optimize'),
+          emphasis: emphasisStyle,
+          symbolSize: getSymbolSize
         },
         {
           name: 'Intervene',
           type: 'scatter',
           data: seriesData.filter(d => d.value[3] === 'intervene'),
-          itemStyle: { color: colorMap.intervene, opacity: 0.85 },
-          symbolSize: (data: any) => isMobile 
-            ? Math.max(7, Math.min(18, Math.sqrt(data[2] || 5000) / 14)) 
-            : Math.max(14, Math.min(36, Math.sqrt(data[2] || 5000) / 7.5))
+          itemStyle: getItemStyle('intervene'),
+          emphasis: emphasisStyle,
+          symbolSize: getSymbolSize
         },
         {
           name: 'Experiment',
           type: 'scatter',
           data: seriesData.filter(d => d.value[3] === 'experiment'),
-          itemStyle: { color: colorMap.experiment, opacity: 0.85 },
-          symbolSize: (data: any) => isMobile 
-            ? Math.max(7, Math.min(18, Math.sqrt(data[2] || 5000) / 14)) 
-            : Math.max(14, Math.min(36, Math.sqrt(data[2] || 5000) / 7.5))
+          itemStyle: getItemStyle('experiment'),
+          emphasis: emphasisStyle,
+          symbolSize: getSymbolSize
         }
       ]
     });
@@ -419,7 +489,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
-  }, [agents]);
+  }, [agents, theme, scatterViewMode]);
 
   // Render Eval Pass Rate by Team Lollipop Chart
   useEffect(() => {
@@ -571,7 +641,7 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8' }}>
             Enterprise Estate: <b style={{ color: isLight ? '#00349B' : '#60A5FA' }}>{scopedAgents.length} Custom Agents Active</b>
-            {isScoped && <span style={{ marginLeft: 6, color: isLight ? '#1E40AF' : '#93C5FD', fontWeight: 700 }}>(in {selectedFunction})</span>}
+            {isScoped && <span style={{ marginLeft: 6, color: isLight ? '#1E40AF' : '#93C5FD', fontWeight: 700 }}>(in {effSelectedFunction})</span>}
           </span>
         </div>
       </div>
@@ -776,8 +846,8 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           flexWrap: 'wrap',
           gap: 12,
           padding: '10px 14px',
-          background: '#F8FAFD',
-          border: '1px solid #E2E8F0',
+          background: isLight ? '#F8FAFD' : '#0B132B',
+          border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
           borderRadius: 8,
           marginBottom: 16
         }}>
@@ -786,14 +856,14 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            background: '#FFFFFF',
-            border: '1px solid #CBD5E1',
+            background: isLight ? '#FFFFFF' : '#070D1E',
+            border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
             borderRadius: 6,
             padding: '6px 12px',
             flex: 1,
             minWidth: 'min(100%, 220px)'
           }}>
-            <Search size={14} color="#64748B" />
+            <Search size={14} color={isLight ? '#64748B' : '#94A3B8'} />
             <input
               type="text"
               value={searchQuery}
@@ -805,13 +875,13 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                 fontSize: 12,
                 width: '100%',
                 background: 'transparent',
-                color: '#0F172A'
+                color: isLight ? '#0F172A' : '#F8FAFC'
               }}
             />
             {searchQuery && (
               <button 
                 onClick={() => setSearchQuery('')}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: 0 }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: isLight ? '#94A3B8' : '#64748B', padding: 0 }}
               >
                 <X size={13} />
               </button>
@@ -820,14 +890,16 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
           {/* Productivity Quick Chips */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 11.5, fontWeight: 700, color: '#475569' }}>Quick Triage:</span>
+            <span style={{ fontSize: 11.5, fontWeight: 700, color: isLight ? '#475569' : '#94A3B8' }}>Quick Triage:</span>
             
             <button
               onClick={() => setProductivityFilter('all')}
               style={{
-                background: productivityFilter === 'all' ? '#00349B' : '#FFFFFF',
-                color: productivityFilter === 'all' ? '#FFFFFF' : '#475569',
-                border: '1px solid #D6E2FA',
+                background: productivityFilter === 'all' 
+                  ? (isLight ? '#00349B' : '#1D4ED8') 
+                  : (isLight ? '#FFFFFF' : '#070D1E'),
+                color: productivityFilter === 'all' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
+                border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
                 borderRadius: 4,
                 padding: '4px 10px',
                 fontSize: 11.5,
@@ -841,9 +913,11 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             <button
               onClick={() => setProductivityFilter('top-drivers')}
               style={{
-                background: productivityFilter === 'top-drivers' ? '#166534' : '#FFFFFF',
-                color: productivityFilter === 'top-drivers' ? '#FFFFFF' : '#166534',
-                border: '1px solid #BBF7D0',
+                background: productivityFilter === 'top-drivers' 
+                  ? (isLight ? '#166534' : '#059669') 
+                  : (isLight ? '#FFFFFF' : '#070D1E'),
+                color: productivityFilter === 'top-drivers' ? '#FFFFFF' : (isLight ? '#166534' : '#34D399'),
+                border: isLight ? '1px solid #BBF7D0' : '1px solid #065F46',
                 borderRadius: 4,
                 padding: '4px 10px',
                 fontSize: 11.5,
@@ -860,9 +934,11 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             <button
               onClick={() => setProductivityFilter('intervene')}
               style={{
-                background: productivityFilter === 'intervene' ? '#991B1B' : '#FFFFFF',
-                color: productivityFilter === 'intervene' ? '#FFFFFF' : '#991B1B',
-                border: '1px solid #FECACA',
+                background: productivityFilter === 'intervene' 
+                  ? (isLight ? '#991B1B' : '#DC2626') 
+                  : (isLight ? '#FFFFFF' : '#070D1E'),
+                color: productivityFilter === 'intervene' ? '#FFFFFF' : (isLight ? '#991B1B' : '#F87171'),
+                border: isLight ? '1px solid #FECACA' : '1px solid #7F1D1D',
                 borderRadius: 4,
                 padding: '4px 10px',
                 fontSize: 11.5,
@@ -879,9 +955,11 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             <button
               onClick={() => setProductivityFilter('budget-overrun')}
               style={{
-                background: productivityFilter === 'budget-overrun' ? '#7C2D12' : '#FFFFFF',
-                color: productivityFilter === 'budget-overrun' ? '#FFFFFF' : '#7C2D12',
-                border: '1px solid #FED7AA',
+                background: productivityFilter === 'budget-overrun' 
+                  ? (isLight ? '#7C2D12' : '#EA580C') 
+                  : (isLight ? '#FFFFFF' : '#070D1E'),
+                color: productivityFilter === 'budget-overrun' ? '#FFFFFF' : (isLight ? '#7C2D12' : '#FB923C'),
+                border: isLight ? '1px solid #FED7AA' : '1px solid #7C2D12',
                 borderRadius: 4,
                 padding: '4px 10px',
                 fontSize: 11.5,
@@ -895,9 +973,11 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             <button
               onClick={() => setProductivityFilter('high-adopt')}
               style={{
-                background: productivityFilter === 'high-adopt' ? '#1E3A8A' : '#FFFFFF',
-                color: productivityFilter === 'high-adopt' ? '#FFFFFF' : '#1E3A8A',
-                border: '1px solid #BFDBFE',
+                background: productivityFilter === 'high-adopt' 
+                  ? (isLight ? '#1E3A8A' : '#2563EB') 
+                  : (isLight ? '#FFFFFF' : '#070D1E'),
+                color: productivityFilter === 'high-adopt' ? '#FFFFFF' : (isLight ? '#1E3A8A' : '#60A5FA'),
+                border: isLight ? '1px solid #BFDBFE' : '1px solid #1E3A8A',
                 borderRadius: 4,
                 padding: '4px 10px',
                 fontSize: 11.5,
@@ -1338,13 +1418,13 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                       <tr
                         onClick={() => toggleFunction(func.functionName)}
                         style={{
-                          background: '#EEF4FF',
-                          borderBottom: '1px solid #D6E2FA',
+                          background: isLight ? '#EEF4FF' : '#0C1C3D',
+                          borderBottom: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
                           cursor: 'pointer',
                           fontWeight: 700
                         }}
                       >
-                        <td className="scorecard-col-first" style={{ padding: '10px 14px', position: 'sticky', left: 0, zIndex: 3, background: isLight ? '#EEF4FF' : '#0E1C3D', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
+                        <td className="scorecard-col-first" style={{ padding: '10px 14px', position: 'sticky', left: 0, zIndex: 3, background: isLight ? '#EEF4FF' : '#0C1C3D', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
                           <span style={{
                             width: 18,
@@ -1402,22 +1482,22 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                           </div>
                           </div>
                         </td>
-                        <td title={`Function Net Value = Sum of net value across all agents in ${func.functionName}`} style={{ textAlign: 'right', padding: '10px 12px', color: '#00349B', fontWeight: 800, cursor: 'help' }}>
+                        <td title={`Function Net Value = Sum of net value across all agents in ${func.functionName}`} style={{ textAlign: 'right', padding: '10px 12px', color: isLight ? '#00349B' : '#60A5FA', fontWeight: 800, cursor: 'help' }}>
                           {formatUSD(func.totalNetValue)}
                         </td>
-                        <td title={`Function Adoption = Average adoption rate of ${func.functionName} across teams`} style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A', cursor: 'help' }}>
+                        <td title={`Function Adoption = Average adoption rate of ${func.functionName} across teams`} style={{ textAlign: 'right', padding: '10px 12px', color: isLight ? '#1A1A1A' : '#F8FAFC', cursor: 'help' }}>
                           {formatPct(func.avgAdoption)}
                         </td>
-                        <td title={`Function Cost vs Budget = (Total spend ${formatUSD(func.totalCost)} / Total budget) × 100%`} style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A', cursor: 'help' }}>
+                        <td title={`Function Cost vs Budget = (Total spend ${formatUSD(func.totalCost)} / Total budget) × 100%`} style={{ textAlign: 'right', padding: '10px 12px', color: isLight ? '#1A1A1A' : '#F8FAFC', cursor: 'help' }}>
                           {formatPct(func.costVsBudget)}
                         </td>
-                        <td title={`Function Eval Pass = Average success rate across all agents in ${func.functionName}`} style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A', cursor: 'help' }}>
+                        <td title={`Function Eval Pass = Average success rate across all agents in ${func.functionName}`} style={{ textAlign: 'right', padding: '10px 12px', color: isLight ? '#1A1A1A' : '#F8FAFC', cursor: 'help' }}>
                           {formatPct(func.avgEvalPass)}
                         </td>
-                        <td title={`Function Hours Saved = Total human labor hours saved across all agents in ${func.functionName}`} style={{ textAlign: 'right', padding: '10px 12px', color: '#1A1A1A', cursor: 'help' }}>
+                        <td title={`Function Hours Saved = Total human labor hours saved across all agents in ${func.functionName}`} style={{ textAlign: 'right', padding: '10px 12px', color: isLight ? '#1A1A1A' : '#F8FAFC', cursor: 'help' }}>
                           {Math.round(func.totalHoursSaved).toLocaleString()}
                         </td>
-                        <td title={`Function Incidents = Total safety/guardrail policy alerts across ${func.functionName}`} style={{ textAlign: 'center', padding: '10px 10px', color: '#1A1A1A', cursor: 'help' }}>
+                        <td title={`Function Incidents = Total safety/guardrail policy alerts across ${func.functionName}`} style={{ textAlign: 'center', padding: '10px 10px', color: isLight ? '#1A1A1A' : '#F8FAFC', cursor: 'help' }}>
                           {func.totalIncidents}
                         </td>
                         <td style={{ textAlign: 'center', padding: '10px 10px', color: '#94a3b8' }}>—</td>
@@ -1648,12 +1728,12 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                 <td style={{ padding: '12px 14px' }}>
                   Total · {functionsList.length} functions · {totalTeams} teams · {activeAgents.length} agents
                 </td>
-                <td style={{ textAlign: 'right', padding: '12px 12px' }}>{formatUSD(totalNetValue)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 12px', color: '#1A1A1A' }}>{formatPct(avgTotalAdoption)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 12px', color: '#1A1A1A' }}>{formatPct(avgTotalCostBudget)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 12px', color: '#1A1A1A' }}>{formatPct(avgTotalEvalPass)}</td>
-                <td style={{ textAlign: 'right', padding: '12px 12px', color: '#1A1A1A' }}>{Math.round(totalHoursSaved).toLocaleString()}</td>
-                <td style={{ textAlign: 'center', padding: '12px 10px', color: '#1A1A1A' }}>{totalIncidents}</td>
+                <td style={{ textAlign: 'right', padding: '12px 12px', color: isLight ? '#00349B' : '#60A5FA', fontWeight: 800 }}>{formatUSD(totalNetValue)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 12px', color: isLight ? '#1A1A1A' : '#F8FAFC' }}>{formatPct(avgTotalAdoption)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 12px', color: isLight ? '#1A1A1A' : '#F8FAFC' }}>{formatPct(avgTotalCostBudget)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 12px', color: isLight ? '#1A1A1A' : '#F8FAFC' }}>{formatPct(avgTotalEvalPass)}</td>
+                <td style={{ textAlign: 'right', padding: '12px 12px', color: isLight ? '#1A1A1A' : '#F8FAFC' }}>{Math.round(totalHoursSaved).toLocaleString()}</td>
+                <td style={{ textAlign: 'center', padding: '12px 10px', color: isLight ? '#1A1A1A' : '#F8FAFC' }}>{totalIncidents}</td>
                 <td style={{ textAlign: 'center', padding: '12px 10px', color: '#94a3b8' }}>—</td>
                 <td style={{ padding: '12px 14px' }}>
                   <div style={{ display: 'flex', gap: 6, fontSize: 11 }}>
@@ -1700,18 +1780,87 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
           background: isLight ? '#FFFFFF' : '#0B132B',
           border: isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B',
           borderRadius: 12,
-          padding: '18px 20px',
+          padding: isMobileScreen ? '14px 12px' : '18px 20px',
           boxShadow: isLight ? '0 4px 16px rgba(0, 52, 155, 0.08)' : '0 4px 16px rgba(0, 0, 0, 0.3)'
         }}>
-          <div style={{ marginBottom: 12 }}>
-            <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', fontFamily: 'Satoshi, sans-serif' }}>
-              Value vs adoption
-            </h4>
-            <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8' }}>
-              One bubble per agent · size = monthly cost · dashed lines = Accelerate thresholds · click any bubble to inspect
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 8,
+            marginBottom: 12
+          }}>
+            <div>
+              <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', fontFamily: 'Satoshi, sans-serif' }}>
+                Value vs adoption
+              </h4>
+              <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8' }}>
+                One bubble per agent · size = monthly cost · dashed lines = Accelerate thresholds · click any bubble to inspect
+              </div>
             </div>
+
+            {agents.length > 10 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                {scatterViewMode === 'focused' && (
+                  <span style={{
+                    fontSize: 10.5,
+                    color: isLight ? '#64748B' : '#94A3B8',
+                    background: isLight ? '#F1F5F9' : '#1E293B',
+                    padding: '3px 8px',
+                    borderRadius: 12
+                  }}>
+                    2 top outliers &gt;$7.5K
+                  </span>
+                )}
+                <div style={{
+                  display: 'inline-flex',
+                  background: isLight ? '#F1F5F9' : '#070D1E',
+                  border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+                  borderRadius: 20,
+                  padding: 2
+                }}>
+                  <button
+                    type="button"
+                    onClick={() => setScatterViewMode('focused')}
+                    style={{
+                      background: scatterViewMode === 'focused' ? (isLight ? '#00349B' : '#2563EB') : 'transparent',
+                      color: scatterViewMode === 'focused' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
+                      border: 'none',
+                      borderRadius: 16,
+                      padding: '4px 10px',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    title="Focus on core 99% fleet (-$1K to $7.5K) with spacious quadrant distribution"
+                  >
+                    🎯 Focused (&lt;$7.5k)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setScatterViewMode('full')}
+                    style={{
+                      background: scatterViewMode === 'full' ? (isLight ? '#00349B' : '#2563EB') : 'transparent',
+                      color: scatterViewMode === 'full' ? '#FFFFFF' : (isLight ? '#475569' : '#94A3B8'),
+                      border: 'none',
+                      borderRadius: 16,
+                      padding: '4px 10px',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    title="Show full scale up to $25K including top pilot outliers"
+                  >
+                    🌐 Full Scale ($25k)
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-          <div ref={scatterChartRef} style={{ height: 380, width: '100%' }} />
+          <div ref={scatterChartRef} style={{ height: isMobileScreen ? 340 : 380, width: '100%' }} />
         </div>
 
         {/* Eval Pass Rate by Team Lollipop Chart */}

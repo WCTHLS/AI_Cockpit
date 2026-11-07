@@ -8,6 +8,26 @@ from .database import (
     update_thresholds_in_db
 )
 
+def normalize_function_name(f: Optional[str]) -> Optional[str]:
+    if not f:
+        return None
+    s = str(f).strip()
+    if s.lower() in ["all functions", "all", "none", ""]:
+        return None
+    lower = s.lower()
+    if lower in ["eng & it", "engineering & it", "engineering", "eng", "it", "eng and it", "engineering and it"]:
+        return "Engineering & IT"
+    if lower in ["customer", "customer support", "support", "cust"]:
+        return "Customer Support"
+    if lower in ["sales", "sales & marketing", "marketing", "sales and marketing"]:
+        return "Sales & Marketing"
+    if lower in ["operations", "ops", "operation"]:
+        return "Operations"
+    if lower in ["finance", "fin", "finops"]:
+        return "Finance"
+    return s
+
+
 DATA_PATH = os.path.join(os.path.dirname(__file__), "mock_data.json")
 
 class CockpitDataStore:
@@ -102,26 +122,33 @@ class CockpitDataStore:
         return "optimize", "Refine latency, caching & fine-tuning"
 
     def get_months(self) -> List[str]:
+        if hasattr(self, "_cached_months") and self._cached_months:
+            return self._cached_months
         try:
             rows = query_all("SELECT DISTINCT substr(month_start, 1, 7) AS m FROM v_agent_scorecard_monthly ORDER BY m ASC")
             if rows:
-                return [r["m"] for r in rows]
+                self._cached_months = [r["m"] for r in rows]
+                return self._cached_months
         except Exception:
             pass
         return ["2026-09", "2026-10"]
 
     def get_functions(self) -> List[str]:
+        if hasattr(self, "_cached_functions") and self._cached_functions:
+            return self._cached_functions
         try:
             rows = query_all("SELECT DISTINCT name FROM business_function ORDER BY name ASC")
             if rows:
-                return [r["name"] for r in rows]
+                self._cached_functions = [r["name"] for r in rows]
+                return self._cached_functions
         except Exception:
             pass
-        return sorted(list(set(a["Function"] for a in self.raw_agents)))
+        return ["Customer Support", "Engineering & IT", "Finance", "Operations", "Sales & Marketing"]
 
     def get_processed_agents(self, month: Optional[str] = None, function_name: Optional[str] = None, cohort: Optional[str] = 'enterprise') -> List[Dict[str, Any]]:
         target_month = month or (self.get_months()[-1] if self.get_months() else "2026-09")
-        cache_key = f"{target_month}:{function_name or 'all'}:{cohort or 'enterprise'}"
+        norm_func = normalize_function_name(function_name)
+        cache_key = f"{target_month}:{norm_func or 'all'}:{cohort or 'enterprise'}"
         import time
         now = time.time()
         if cache_key in self._cache and (now - self._cache_time.get(cache_key, 0)) < 30:
@@ -133,9 +160,16 @@ class CockpitDataStore:
             params = [target_month]
             if cohort == 'pilot':
                 sql += " AND portfolio = 'Live Pilot'"
-            if function_name:
-                sql += " AND function_name = ?"
-                params.append(function_name)
+            if norm_func:
+                if norm_func == "Engineering & IT":
+                    sql += " AND (function_name = 'Engineering & IT' OR function_name = 'Eng & IT')"
+                elif norm_func == "Customer Support":
+                    sql += " AND (function_name = 'Customer Support' OR function_name = 'Customer')"
+                elif norm_func == "Sales & Marketing":
+                    sql += " AND (function_name = 'Sales & Marketing' OR function_name = 'Sales')"
+                else:
+                    sql += " AND function_name = ?"
+                    params.append(norm_func)
             
             rows = query_all(sql, tuple(params))
             if rows:
@@ -277,7 +311,7 @@ class CockpitDataStore:
                         "id": agent_id,
                         "name": name,
                         "team": r.get("team_name", ""),
-                        "function": r.get("function_name", ""),
+                        "function": normalize_function_name(r.get("function_name", "")) or r.get("function_name", ""),
                         "in_portfolio": r.get("portfolio") != "None",
                         "portfolio": r.get("portfolio", "Enterprise Fleet"),
                         "gross_value": gross_val,
@@ -302,6 +336,8 @@ class CockpitDataStore:
 
                 # Sort: Live Pilot agents at top, then by net_value descending
                 results.sort(key=lambda a: (0 if a.get("portfolio") == "Live Pilot" else 1, -a["net_value"]))
+                self._cache[cache_key] = results
+                self._cache_time[cache_key] = now
                 return results
         except Exception as e:
             print("Error in get_processed_agents:", e)
@@ -311,7 +347,7 @@ class CockpitDataStore:
         for a in self.raw_agents:
             if a.get("Month") != target_month:
                 continue
-            if function_name and a.get("Function") != function_name:
+            if norm_func and normalize_function_name(a.get("Function")) != norm_func:
                 continue
                 
             action, suggested = self.compute_action(a)
@@ -329,7 +365,7 @@ class CockpitDataStore:
                 "id": agent_id,
                 "name": name,
                 "team": a.get("Team", ""),
-                "function": a.get("Function", ""),
+                "function": normalize_function_name(a.get("Function", "")) or a.get("Function", ""),
                 "in_portfolio": a.get("InPortfolio") == "Yes",
                 "portfolio": "Enterprise Fleet",
                 "gross_value": float(a.get("GrossValueUSD", 0)),

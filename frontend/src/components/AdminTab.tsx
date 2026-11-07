@@ -1429,14 +1429,14 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
       {/* SECTION 1: AI SUBSCRIPTIONS & LICENSES */}
       {activeSection === 'subs' && (
         <div style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #D6E2FA',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B',
           borderRadius: 12,
           padding: 24,
           boxShadow: '0 4px 16px rgba(0, 52, 155, 0.05)'
         }}>
           <div style={{ marginBottom: 18 }}>
-            <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#00349B' }}>
+            <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA' }}>
               Seat License Unit Pricing &amp; Token Metering
             </h3>
             <p style={{ margin: '4px 0 0 0', fontSize: 12.5, color: '#64748B' }}>
