@@ -757,11 +757,11 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
 
       {/* Main Heatmap Tree Table Container */}
       <div style={{
-        background: '#FFFFFF',
-        border: '1.5px solid #D6E2FA',
+        background: isLight ? '#FFFFFF' : '#101A33',
+        border: isLight ? '1.5px solid #D6E2FA' : '1px solid #1E293B',
         borderRadius: 12,
         padding: '18px 22px',
-        boxShadow: '0 4px 16px rgba(0, 52, 155, 0.08)'
+        boxShadow: isLight ? '0 4px 16px rgba(0, 52, 155, 0.08)' : '0 4px 16px rgba(0, 0, 0, 0.3)'
       }}>
         {/* Table Header & Controls Bar */}
         <div style={{
@@ -777,13 +777,13 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
               margin: 0,
               fontSize: 17,
               fontWeight: 800,
-              color: '#00349B',
+              color: isLight ? '#00349B' : '#60A5FA',
               letterSpacing: '-0.01em',
               fontFamily: 'Satoshi, Outfit, sans-serif'
             }}>
               AI portfolio heatmap by business function
             </h4>
-            <div style={{ fontSize: 12.5, color: '#475569', marginTop: 2 }}>
+            <div style={{ fontSize: 12.5, color: isLight ? '#475569' : '#94A3B8', marginTop: 2 }}>
               Each business function runs several teams, and each team runs several agents · agents are rated on value, adoption, cost and quality · click any row to inspect deep-dive telemetry
             </div>
           </div>
@@ -793,9 +793,9 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             <button
               onClick={() => handleViewMode('all')}
               style={{
-                background: viewMode === 'all' ? '#00349B' : '#F3F6FC',
-                color: viewMode === 'all' ? '#FFFFFF' : '#00349B',
-                border: '1px solid #D6E2FA',
+                background: viewMode === 'all' ? (isLight ? '#00349B' : '#1D4ED8') : (isLight ? '#F3F6FC' : '#070D1E'),
+                color: viewMode === 'all' ? '#FFFFFF' : (isLight ? '#00349B' : '#94A3B8'),
+                border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
                 borderRadius: 20,
                 padding: '5px 14px',
                 fontSize: 12,
@@ -808,9 +808,9 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             <button
               onClick={() => handleViewMode('teams')}
               style={{
-                background: viewMode === 'teams' ? '#00349B' : '#F3F6FC',
-                color: viewMode === 'teams' ? '#FFFFFF' : '#00349B',
-                border: '1px solid #D6E2FA',
+                background: viewMode === 'teams' ? (isLight ? '#00349B' : '#1D4ED8') : (isLight ? '#F3F6FC' : '#070D1E'),
+                color: viewMode === 'teams' ? '#FFFFFF' : (isLight ? '#00349B' : '#94A3B8'),
+                border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
                 borderRadius: 20,
                 padding: '5px 14px',
                 fontSize: 12,
@@ -823,9 +823,9 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
             <button
               onClick={() => handleViewMode('functions')}
               style={{
-                background: viewMode === 'functions' ? '#00349B' : '#F3F6FC',
-                color: viewMode === 'functions' ? '#FFFFFF' : '#00349B',
-                border: '1px solid #D6E2FA',
+                background: viewMode === 'functions' ? (isLight ? '#00349B' : '#1D4ED8') : (isLight ? '#F3F6FC' : '#070D1E'),
+                color: viewMode === 'functions' ? '#FFFFFF' : (isLight ? '#00349B' : '#94A3B8'),
+                border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
                 borderRadius: 20,
                 padding: '5px 14px',
                 fontSize: 12,
@@ -1418,64 +1418,69 @@ export const AgentScorecardTab: React.FC<AgentScorecardTabProps> = ({
                       <tr
                         onClick={() => toggleFunction(func.functionName)}
                         style={{
-                          background: isLight ? '#EEF4FF' : '#0C1C3D',
+                          background: isLight ? '#EEF4FF' : '#0B1736',
                           borderBottom: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
                           cursor: 'pointer',
                           fontWeight: 700
                         }}
                       >
-                        <td className="scorecard-col-first" style={{ padding: '10px 14px', position: 'sticky', left: 0, zIndex: 3, background: isLight ? '#EEF4FF' : '#0C1C3D', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
+                        <td className="scorecard-col-first" style={{ padding: '10px 14px', position: 'sticky', left: 0, zIndex: 3, background: isLight ? '#EEF4FF' : '#0B1736', boxShadow: '2px 0 6px rgba(0,0,0,0.06)' }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                           <span style={{
                             width: 18,
                             height: 18,
                             borderRadius: 4,
-                            background: '#00349B',
+                            background: isLight ? '#00349B' : '#2563EB',
                             color: '#FFFFFF',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: 11
+                            fontSize: 11,
+                            flexShrink: 0,
+                            marginTop: 2
                           }}>
                             {isFuncCollapsed ? '+' : '−'}
                           </span>
-                          <div>
-                            <span style={{ fontSize: 14.5, color: '#00349B' }}>{func.functionName}</span>
-                            <span style={{
-                              marginLeft: 8,
-                              fontSize: 11,
-                              background: '#D6E2FA',
-                              color: '#00349B',
-                              padding: '2px 8px',
-                              borderRadius: 12
-                            }}>
-                              {func.agentCount} agents
-                            </span>
-                            <span style={{
-                              marginLeft: 6,
-                              fontSize: 11,
-                              background: '#FFFFFF',
-                              color: '#475569',
-                              border: '1px solid #D6E2FA',
-                              padding: '2px 8px',
-                              borderRadius: 12
-                            }}>
-                              {func.teamCount} teams
-                            </span>
-                            <span style={{
-                              marginLeft: 6,
-                              fontSize: 11,
-                              background: '#ECFDF5',
-                              color: '#065F46',
-                              border: '1px solid #A7F3D0',
-                              padding: '2px 8px',
-                              borderRadius: 12,
-                              fontWeight: 700
-                            }}>
-                              ~{Math.round(func.totalHoursSaved / 160)} FTEs Unlocked
-                            </span>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                              <span style={{ fontSize: 14.5, color: isLight ? '#00349B' : '#F8FAFC', fontWeight: 800, whiteSpace: 'nowrap' }}>{func.functionName}</span>
+                              <span style={{
+                                fontSize: 11,
+                                background: isLight ? '#D6E2FA' : '#1E293B',
+                                color: isLight ? '#00349B' : '#60A5FA',
+                                padding: '2px 8px',
+                                borderRadius: 12,
+                                whiteSpace: 'nowrap',
+                                fontWeight: 700
+                              }}>
+                                {func.agentCount} agents
+                              </span>
+                              <span style={{
+                                fontSize: 11,
+                                background: isLight ? '#FFFFFF' : '#132147',
+                                color: isLight ? '#475569' : '#CBD5E1',
+                                border: isLight ? '1px solid #D6E2FA' : '1px solid #1E293B',
+                                padding: '2px 8px',
+                                borderRadius: 12,
+                                whiteSpace: 'nowrap'
+                              }}>
+                                {func.teamCount} teams
+                              </span>
+                              <span style={{
+                                fontSize: 11,
+                                background: isLight ? '#ECFDF5' : 'rgba(16, 185, 129, 0.15)',
+                                color: isLight ? '#065F46' : '#34D399',
+                                border: isLight ? '1px solid #A7F3D0' : '1px solid rgba(16, 185, 129, 0.3)',
+                                padding: '2px 8px',
+                                borderRadius: 12,
+                                fontWeight: 700,
+                                whiteSpace: 'nowrap'
+                              }}>
+                                ~{Math.round(func.totalHoursSaved / 160)} FTEs Unlocked
+                              </span>
+                            </div>
                             {!isFuncCollapsed && (
-                              <div style={{ fontSize: 11, color: '#64748B', fontWeight: 500, marginTop: 2 }}>
+                              <div style={{ fontSize: 11, color: isLight ? '#64748B' : '#94A3B8', fontWeight: 500, marginTop: 2 }}>
                                 {func.teams.map(t => `${t.teamName} (${t.agents.length})`).join(' · ')}
                               </div>
                             )}

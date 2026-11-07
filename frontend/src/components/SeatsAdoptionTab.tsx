@@ -1201,12 +1201,13 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                           <ChevronDown size={18} />
                         </span>
                         <span style={{ fontSize: 16 }}>{deptIcon}</span>
-                        <span style={{ fontSize: 15, fontWeight: 800, color: '#0F172A' }}>
+                        <span style={{ fontSize: 15, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC' }}>
                           {deptName}
                         </span>
                         <span style={{
-                          background: '#E0F2FE',
-                          color: '#0369A1',
+                          background: isLight ? '#E0F2FE' : '#0B2545',
+                          color: isLight ? '#0369A1' : '#38BDF8',
+                          border: isLight ? 'none' : '1px solid #1E3A8A',
                           padding: '2px 9px',
                           borderRadius: 12,
                           fontSize: 11.5,
@@ -1215,8 +1216,9 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                           {deptSeats.length.toLocaleString()} Seats
                         </span>
                         <span style={{
-                          background: '#F1F5F9',
-                          color: '#475569',
+                          background: isLight ? '#F1F5F9' : '#070D1E',
+                          color: isLight ? '#475569' : '#94A3B8',
+                          border: isLight ? 'none' : '1px solid #1E293B',
                           padding: '2px 8px',
                           borderRadius: 4,
                           fontSize: 10.5,
@@ -1229,26 +1231,26 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                       {/* Right KPI Summary */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                         <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Active Adoption: </span>
-                          <strong style={{ color: '#059669', fontSize: 12.5 }}>
+                          <span style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8' }}>Active Adoption: </span>
+                          <strong style={{ color: isLight ? '#059669' : '#34D399', fontSize: 12.5 }}>
                             {deptActive}/{deptSeats.length} ({((deptActive / deptSeats.length) * 100).toFixed(1)}%)
                           </strong>
                         </div>
                         {deptIdle > 0 && (
                           <div style={{ textAlign: 'right' }}>
-                            <span style={{ fontSize: 11.5, color: '#64748B' }}>Dormant: </span>
-                            <strong style={{ color: '#DC2626', fontSize: 12.5 }}>{deptIdle} idle</strong>
+                            <span style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8' }}>Dormant: </span>
+                            <strong style={{ color: isLight ? '#DC2626' : '#F87171', fontSize: 12.5 }}>{deptIdle} idle</strong>
                           </div>
                         )}
                         <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Hours Saved: </span>
-                          <strong style={{ color: '#0284C7', fontSize: 12.5 }}>{Number(deptHours).toLocaleString()} hrs</strong>
+                          <span style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8' }}>Hours Saved: </span>
+                          <strong style={{ color: isLight ? '#0284C7' : '#38BDF8', fontSize: 12.5 }}>{Number(deptHours).toLocaleString()} hrs</strong>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Total Prompts: </span>
-                          <strong style={{ color: '#0F172A', fontSize: 12.5 }}>{deptPrompts.toLocaleString()}</strong>
+                          <span style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8' }}>Total Prompts: </span>
+                          <strong style={{ color: isLight ? '#0F172A' : '#F8FAFC', fontSize: 12.5 }}>{deptPrompts.toLocaleString()}</strong>
                         </div>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#0284C7', textDecoration: 'underline' }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#0284C7' : '#38BDF8', textDecoration: 'underline' }}>
                           {isExpanded ? 'Hide Roster ▲' : `View ${deptSeats.length.toLocaleString()} Details ▼`}
                         </span>
                       </div>
@@ -1696,12 +1698,13 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                           <ChevronDown size={18} />
                         </span>
                         <span style={{ fontSize: 16 }}>{deptIcon}</span>
-                        <span style={{ fontSize: 15, fontWeight: 800, color: '#0F172A' }}>
+                        <span style={{ fontSize: 15, fontWeight: 800, color: isLight ? '#0F172A' : '#F8FAFC' }}>
                           {deptName}
                         </span>
                         <span style={{
-                          background: '#E0F2FE',
-                          color: '#0369A1',
+                          background: isLight ? '#E0F2FE' : '#0B2545',
+                          color: isLight ? '#0369A1' : '#38BDF8',
+                          border: isLight ? 'none' : '1px solid #1E3A8A',
                           padding: '2px 9px',
                           borderRadius: 12,
                           fontSize: 11.5,
@@ -1758,20 +1761,20 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
                       {/* Right KPI Summary */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                         <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Active Adoption: </span>
-                          <strong style={{ color: '#059669', fontSize: 12.5 }}>
+                          <span style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8' }}>Active Adoption: </span>
+                          <strong style={{ color: isLight ? '#059669' : '#34D399', fontSize: 12.5 }}>
                             {deptActive}/{deptSeats.length} ({((deptActive/deptSeats.length)*100).toFixed(1)}%)
                           </strong>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Hours Saved: </span>
-                          <strong style={{ color: '#0284C7', fontSize: 12.5 }}>{deptHours} hrs</strong>
+                          <span style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8' }}>Hours Saved: </span>
+                          <strong style={{ color: isLight ? '#0284C7' : '#38BDF8', fontSize: 12.5 }}>{deptHours} hrs</strong>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: 11.5, color: '#64748B' }}>Avg Acceptance: </span>
-                          <strong style={{ color: '#16A34A', fontSize: 12.5 }}>{deptAvgAcc}%</strong>
+                          <span style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8' }}>Avg Acceptance: </span>
+                          <strong style={{ color: isLight ? '#16A34A' : '#4ADE80', fontSize: 12.5 }}>{deptAvgAcc}%</strong>
                         </div>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#0284C7', textDecoration: 'underline' }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: isLight ? '#0284C7' : '#38BDF8', textDecoration: 'underline' }}>
                           {isExpanded ? 'Hide Roster ▲' : `View ${deptSeats.length} Details ▼`}
                         </span>
                       </div>
