@@ -299,10 +299,10 @@ def ensure_ai_agent_columns(conn: sqlite3.Connection):
                 input_token_price_per_1m = CASE WHEN input_token_price_per_1m = 0 THEN 2.50 ELSE input_token_price_per_1m END,
                 output_token_price_per_1m = CASE WHEN output_token_price_per_1m = 0 THEN 10.00 ELSE output_token_price_per_1m END,
                 model = COALESCE(model, 'gpt-4o'),
-                baseline_employee_hours = CASE WHEN baseline_employee_hours = 0 THEN 0.25 ELSE baseline_employee_hours END,
-                employee_monthly_rate = CASE WHEN employee_monthly_rate = 0 THEN 900.0 ELSE employee_monthly_rate END,
+                baseline_employee_hours = CASE WHEN baseline_employee_hours = 0 THEN 0.5 ELSE baseline_employee_hours END,
+                employee_monthly_rate = 6800.0,
                 employee_monthly_working_hours = CASE WHEN employee_monthly_working_hours = 0 THEN 160.0 ELSE employee_monthly_working_hours END,
-                monthly_budget = CASE WHEN monthly_budget = 0 THEN 100.0 ELSE monthly_budget END,
+                monthly_budget = CASE WHEN monthly_budget = 0 THEN 500.0 ELSE monthly_budget END,
                 business_function = COALESCE(business_function, 'Eng & IT'),
                 team = COALESCE(team, 'IT Service Desk'),
                 description = COALESCE(description, 'Automated IT service desk ticket triaging, diagnostic analysis, and resolution suggestions.')
@@ -342,8 +342,47 @@ def init_db(seed_if_empty: bool = True):
         # Seed and persist the 15 employees from Claude Code usage telemetry
         seed_claude_code_employees(conn)
 
+        # Seed and persist Supply Chain employees
+        seed_supply_chain_employees(conn)
+
         # Seed and persist Ticket Triage Agent daily user usage
         seed_ticket_triage_user_usage(conn)
+
+def seed_supply_chain_employees(conn: sqlite3.Connection):
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM team WHERE name LIKE '%Supply Chain%' LIMIT 1;")
+        t_row = cur.fetchone()
+        team_id = t_row[0] if t_row else 15
+
+        sc_employees = [
+            ("chen.wei@lenovo.com", "Chen Wei", "Senior Supply Planner"),
+            ("sarah.miller@lenovo.com", "Sarah Miller", "Logistics Coordinator"),
+            ("marcus.vance@lenovo.com", "Marcus Vance", "Procurement Specialist"),
+            ("priya.patel@lenovo.com", "Priya Patel", "Fulfillment Lead")
+        ]
+
+        for email, name, role in sc_employees:
+            username = email.split("@")[0]
+            cur.execute("""
+                INSERT OR IGNORE INTO employee (company_id, team_id, external_user_key, display_name, email)
+                VALUES (1, ?, ?, ?, ?);
+            """, (team_id, f"usr-{username}", name, email))
+
+        cur.execute("SELECT id FROM ai_agent WHERE name = 'Global Supply Chain & Order Dispatch Bot';")
+        a_row = cur.fetchone()
+        if a_row:
+            sc_agent_id = a_row[0]
+            for email, name, _ in sc_employees:
+                cur.execute("SELECT id FROM employee WHERE email = ?;", (email,))
+                er = cur.fetchone()
+                if er:
+                    cur.execute("""
+                        INSERT OR IGNORE INTO employee_agent (company_id, employee_id, agent_id, assigned_from, is_active)
+                        VALUES (1, ?, ?, '2026-02-15', 1);
+                    """, (er[0], sc_agent_id))
+    except Exception as e:
+        print(f"Warning seeding supply chain employees: {e}")
 
 def seed_ticket_triage_user_usage(conn: sqlite3.Connection):
     try:

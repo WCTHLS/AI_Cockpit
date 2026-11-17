@@ -304,11 +304,26 @@ export const App: React.FC = () => {
   // Always scroll to top when switching tab or persona
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     const viewport = document.querySelector('.cockpit-main-viewport');
-    if (viewport) viewport.scrollTo({ top: 0, left: 0 });
+    if (viewport) viewport.scrollTop = 0;
     const main = document.querySelector('.main-content');
-    if (main) main.scrollTo({ top: 0, left: 0 });
-  }, [activeTab, currentUser.email]);
+    if (main) main.scrollTop = 0;
+  }, [activeTab]);
+
+  // When switching user profile/persona, guarantee redirect to exact home page ('summary'), close any mobile menus, and scroll to top
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setActiveTab('summary');
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    const viewport = document.querySelector('.cockpit-main-viewport');
+    if (viewport) viewport.scrollTop = 0;
+    const main = document.querySelector('.main-content');
+    if (main) main.scrollTop = 0;
+  }, [currentUser.email]);
 
   const handleFilterAction = (action: string) => {
     setScorecardActionFilter(action);

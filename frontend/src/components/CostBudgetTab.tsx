@@ -262,7 +262,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         left: 0,
         itemWidth: 12,
         itemHeight: 12,
-        textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 },
+        textStyle: { color: isLight ? '#475569' : '#CBD5E1', fontSize: 11, fontWeight: 600 },
         data: ['Actual cost', 'Budget']
       },
       grid: { top: 35, right: 50, bottom: 25, left: 10, containLabel: true },
@@ -270,9 +270,9 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         type: 'value',
         splitNumber: 3,
         axisLine: { show: false },
-        splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
+        splitLine: { lineStyle: { color: isLight ? '#E2E8F0' : 'rgba(255,255,255,0.08)', type: 'dashed' } },
         axisLabel: {
-          color: '#64748B',
+          color: isLight ? '#64748B' : '#94A3B8',
           fontSize: 10,
           formatter: (v: number) => {
             if (v === 0) return '$0';
@@ -312,7 +312,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
             show: true,
             position: 'right',
             formatter: (p: any) => `${sorted[p.dataIndex].pctOfBudget}%`,
-            color: '#334155',
+            color: isLight ? '#334155' : '#CBD5E1',
             fontWeight: 700,
             fontSize: 11.5
           }
@@ -323,7 +323,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           symbol: 'rect',
           symbolSize: [3, 24],
           data: sorted.map(f => f.budget),
-          itemStyle: { color: '#0B1F4D' },
+          itemStyle: { color: isLight ? '#0B1F4D' : '#60A5FA' },
           z: 10
         }
       ]
@@ -378,7 +378,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
             avoidLabelOverlap: true,
             itemStyle: {
               borderRadius: 4,
-              borderColor: '#FFFFFF',
+              borderColor: isLight ? '#FFFFFF' : '#0B132B',
               borderWidth: 2
             },
             label: {
@@ -398,7 +398,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
             top: '36%',
             style: {
               text: formatUSD(totalActualCost),
-              fill: '#00349B',
+              fill: isLight ? '#00349B' : '#60A5FA',
               fontSize: 19,
               fontWeight: 800,
               fontFamily: 'Outfit, sans-serif'
@@ -410,7 +410,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
             top: '47%',
             style: {
               text: 'Monthly Spend',
-              fill: '#64748B',
+              fill: isLight ? '#64748B' : '#94A3B8',
               fontSize: 10.5,
               fontWeight: 600
             }
@@ -426,7 +426,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           pct: f.pctOfTotal,
           itemStyle: {
             color: colors[idx % colors.length],
-            borderColor: '#FFFFFF',
+            borderColor: isLight ? '#FFFFFF' : '#0B132B',
             borderWidth: 2
           }
         };
@@ -534,7 +534,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         left: 0,
         itemWidth: 12,
         itemHeight: 12,
-        textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 },
+        textStyle: { color: isLight ? '#475569' : '#CBD5E1', fontSize: 11, fontWeight: 600 },
         data: ['Actual cost', 'Budget']
       },
       grid: { top: 35, right: 50, bottom: 25, left: 10, containLabel: true },
@@ -542,9 +542,9 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         type: 'value',
         splitNumber: 3,
         axisLine: { show: false },
-        splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
+        splitLine: { lineStyle: { color: isLight ? '#E2E8F0' : 'rgba(255,255,255,0.08)', type: 'dashed' } },
         axisLabel: {
-          color: '#64748B',
+          color: isLight ? '#64748B' : '#94A3B8',
           fontSize: 10,
           formatter: (v: number) => {
             if (v === 0) return '$0';
@@ -557,10 +557,10 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
       yAxis: {
         type: 'category',
         data: topTeams.map(t => t.team),
-        axisLine: { lineStyle: { color: '#CBD5E1' } },
+        axisLine: { lineStyle: { color: isLight ? '#CBD5E1' : '#334155' } },
         axisTick: { show: false },
         axisLabel: {
-          color: '#0F172A',
+          color: isLight ? '#0F172A' : '#F8FAFC',
           fontSize: 10.5,
           fontWeight: 600,
           width: 110,
@@ -590,7 +590,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
               const item = topTeams[p.dataIndex];
               return `${Math.round((item.cost / item.budget) * 100)}%`;
             },
-            color: '#334155',
+            color: isLight ? '#334155' : '#CBD5E1',
             fontWeight: 700,
             fontSize: 11
           }
@@ -601,7 +601,7 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           symbol: 'rect',
           symbolSize: [3, 20],
           data: topTeams.map(t => t.budget),
-          itemStyle: { color: '#0B1F4D' },
+          itemStyle: { color: isLight ? '#0B1F4D' : '#60A5FA' },
           z: 10
         }
       ]
@@ -646,16 +646,16 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
         left: 0,
         itemWidth: 12,
         itemHeight: 12,
-        textStyle: { color: '#475569', fontSize: 11, fontWeight: 600 }
+        textStyle: { color: isLight ? '#475569' : '#CBD5E1', fontSize: 11, fontWeight: 600 }
       },
       grid: { top: 35, right: 50, bottom: 25, left: 10, containLabel: true },
       xAxis: {
         type: 'value',
         splitNumber: 3,
         axisLine: { show: false },
-        splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
+        splitLine: { lineStyle: { color: isLight ? '#E2E8F0' : 'rgba(255,255,255,0.08)', type: 'dashed' } },
         axisLabel: {
-          color: '#64748B',
+          color: isLight ? '#64748B' : '#94A3B8',
           fontSize: 10,
           formatter: (v: number) => {
             if (v === 0) return '$0';
@@ -668,10 +668,10 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
       yAxis: {
         type: 'category',
         data: categories,
-        axisLine: { lineStyle: { color: '#CBD5E1' } },
+        axisLine: { lineStyle: { color: isLight ? '#CBD5E1' : '#334155' } },
         axisTick: { show: false },
         axisLabel: {
-          color: '#0F172A',
+          color: isLight ? '#0F172A' : '#F8FAFC',
           fontSize: 10.5,
           fontWeight: 600,
           width: 110,
@@ -696,14 +696,14 @@ export const CostBudgetTab: React.FC<CostBudgetTabProps> = ({
           barWidth: 11,
           data: sepValues,
           itemStyle: {
-            color: '#00349B',
+            color: isLight ? '#00349B' : '#3B82F6',
             borderRadius: [0, 3, 3, 0]
           },
           label: {
             show: true,
             position: 'right',
             formatter: (p: any) => formatUSD(p.value),
-            color: '#00349B',
+            color: isLight ? '#00349B' : '#60A5FA',
             fontWeight: 700,
             fontSize: 11
           }

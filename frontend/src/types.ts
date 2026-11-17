@@ -192,6 +192,11 @@ export interface DeveloperSyncResponse {
   provider: string;
   developer: string;
   developer_email: string;
+  total_seats?: number;
+  active_seats?: number;
+  idle_seats?: number;
+  hours_saved?: number;
+  mode?: string;
   metrics: any;
   message: string;
 }

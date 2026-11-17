@@ -502,14 +502,14 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         splitNumber: 4,
         axisLine: { lineStyle: { color: isLight ? '#E2E8F0' : '#334155' } },
         splitLine: { lineStyle: { color: isLight ? '#F1F5F9' : '#1E293B' } },
-        axisLabel: { color: '#64748B', fontSize: 10 }
+        axisLabel: { color: isLight ? '#64748B' : '#94A3B8', fontSize: 10 }
       },
       yAxis: {
         type: 'category',
         data: names,
         axisLine: { lineStyle: { color: isLight ? '#E2E8F0' : '#334155' } },
         axisLabel: {
-          color: isLight ? '#1E293B' : '#E2E8F0',
+          color: isLight ? '#1E293B' : '#F8FAFC',
           fontWeight: 600,
           fontSize: 11,
           width: 95,
@@ -518,8 +518,8 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
         }
       },
       series: [
-        { name: 'Active (<7d)', type: 'bar', stack: 'total', data: activeVals, itemStyle: { color: '#00349B' } },
-        { name: 'Lapsing (7-29d)', type: 'bar', stack: 'total', data: lapsingVals, itemStyle: { color: '#88A9E6' } },
+        { name: 'Active (<7d)', type: 'bar', stack: 'total', data: activeVals, itemStyle: { color: isLight ? '#00349B' : '#3B82F6' } },
+        { name: 'Lapsing (7-29d)', type: 'bar', stack: 'total', data: lapsingVals, itemStyle: { color: isLight ? '#88A9E6' : '#60A5FA' } },
         { name: 'Idle (30d+)', type: 'bar', stack: 'total', data: idleVals, itemStyle: { color: '#E0A100' } }
       ]
     });
@@ -2036,16 +2036,16 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
       <div className="scorecard-analytics-grid" style={{ marginBottom: 20 }}>
         {/* Chart 1 */}
         <div style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #E2E8F0',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1.5px solid #E2E8F0' : '1px solid #1E293B',
           borderRadius: 12,
           padding: 20,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.03)' : 'none'
         }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: '#1E293B', marginBottom: 4 }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: isLight ? '#1E293B' : '#F8FAFC', marginBottom: 4 }}>
             Active AI Seat Activity by Department
           </div>
-          <div style={{ fontSize: 12, color: '#64748B', marginBottom: 12 }}>
+          <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8', marginBottom: 12 }}>
             Engineering & IT (Antigravity + M365) vs Business Functions
           </div>
           <div ref={funcStackedChartRef} style={{ width: '100%', height: 260 }} />
@@ -2053,16 +2053,16 @@ export const SeatsAdoptionTab: React.FC<SeatsAdoptionTabProps> = ({
 
         {/* Chart 2 */}
         <div style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #E2E8F0',
+          background: isLight ? '#FFFFFF' : '#101A33',
+          border: isLight ? '1.5px solid #E2E8F0' : '1px solid #1E293B',
           borderRadius: 12,
           padding: 20,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.03)' : 'none'
         }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: '#1E293B', marginBottom: 4 }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: isLight ? '#1E293B' : '#F8FAFC', marginBottom: 4 }}>
             Inactivity Distribution (Days Since Last AI Interaction)
           </div>
-          <div style={{ fontSize: 12, color: '#64748B', marginBottom: 12 }}>
+          <div style={{ fontSize: 12, color: isLight ? '#64748B' : '#94A3B8', marginBottom: 12 }}>
             Number of seats by inactivity band (Active &lt; 7d, Lapsing 7-29d, Idle 30d+)
           </div>
           <div ref={histogramChartRef} style={{ width: '100%', height: 260 }} />

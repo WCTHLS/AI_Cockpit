@@ -361,6 +361,7 @@ export async function syncDeveloperTelemetry(params?: {
   connection_mode?: string;
   endpoint_url?: string;
   api_key?: string;
+  org_or_project_id?: string;
   developer_email?: string;
   local_data_path?: string;
   force_refresh?: boolean;

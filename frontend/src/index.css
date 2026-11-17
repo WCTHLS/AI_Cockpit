@@ -1467,6 +1467,12 @@ select::placeholder {
   gap: 12px;
 }
 
+@media (max-width: 1024px) {
+  .topbar-cohort-slicer {
+    display: none !important;
+  }
+}
+
 .topbar-mobile-container {
   display: none;
 }

@@ -410,7 +410,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             {isExpanded && (
               <button
-                onClick={onLogout}
+                onClick={() => {
+                  onMobileClose();
+                  onLogout();
+                }}
                 title="Switch persona or sign out"
                 style={{
                   background: isLight ? '#EFF6FF' : '#132147',

@@ -1483,15 +1483,15 @@ export const ExecutiveSummaryTab: React.FC<ExecutiveSummaryTabProps> = ({
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: isLight ? '#00349B' : '#60A5FA', margin: 0 }}>
                   Where to act this month
                 </h3>
-                <span style={{ fontSize: 11.5, color: '#64748B' }}>
+                <span style={{ fontSize: 11.5, color: isLight ? '#64748B' : '#94A3B8' }}>
                   Click any highlighted agent chip to view diagnostics &amp; action plan
                 </span>
               </div>
               <span style={{
                 fontSize: 10,
                 fontWeight: 700,
-                background: '#F1F5F9',
-                color: '#475569',
+                background: isLight ? '#F1F5F9' : '#1E293B',
+                color: isLight ? '#475569' : '#94A3B8',
                 padding: '3px 8px',
                 borderRadius: 4
               }}>

@@ -143,9 +143,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
 
   // Developer AI Tools (Google Gemini / Antigravity / GitHub Copilot) State
   const [devConfig, setDevConfig] = useState<DeveloperToolConfig | null>(null);
-  const [devProvider, setDevProvider] = useState<string>('gemini_antigravity');
-  const [devConnectionMode, setDevConnectionMode] = useState<string>('local_antigravity');
-  const [devEndpointUrl, setDevEndpointUrl] = useState<string>('https://generativelanguage.googleapis.com');
+  const [devProvider, setDevProvider] = useState<string>(cohort === 'pilot' ? 'gemini_antigravity' : 'github_copilot');
+  const [devConnectionMode, setDevConnectionMode] = useState<string>(cohort === 'pilot' ? 'local_antigravity' : 'live_api');
+  const [devEndpointUrl, setDevEndpointUrl] = useState<string>(cohort === 'pilot' ? 'https://generativelanguage.googleapis.com' : 'https://api.github.com');
 
   // Working Agents Onboarding & Ingestion State
   const TICKET_TRIAGE_AGENT_JSON = JSON.stringify({
@@ -658,8 +658,12 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
     loadWorkingAgents();
     if (cohort === 'pilot') {
       setDevProvider('gemini_antigravity');
+      setDevEndpointUrl('https://generativelanguage.googleapis.com');
+      setDevConnectionMode('local_antigravity');
     } else {
       setDevProvider('github_copilot');
+      setDevEndpointUrl('https://api.github.com');
+      setDevConnectionMode('live_api');
     }
   }, [cohort]);
 
@@ -782,12 +786,13 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
         connection_mode: devConnectionMode,
         endpoint_url: devEndpointUrl,
         api_key: devApiKey || undefined,
+        org_or_project_id: devOrgId,
         developer_email: devEmail,
         local_data_path: devLocalPath,
         force_refresh: true
       });
       setDevSyncResult(res);
-      setDevSuccessMessage(`Synced ${res.metrics?.tool_actions_generated?.toLocaleString()} AI proposals for ${res.developer_email}`);
+      setDevSuccessMessage(res.message || `Successfully synced ${res.total_seats || 1} seats for ${res.developer || devProvider}`);
       setTimeout(() => setDevSuccessMessage(null), 5000);
       if (onConfigSaved) onConfigSaved(subscriptions, laborRates);
     } catch (err: any) {
@@ -1390,7 +1395,7 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             borderRadius: 10,
             marginLeft: 2
           }}>
-            GEMINI / COPILOT
+            {cohort === 'pilot' ? 'ANTIGRAVITY' : 'GITHUB COPILOT'}
           </span>
         </button>
 
@@ -2303,7 +2308,9 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
                     Developer AI Tools Telemetry & Seat Pipeline
                   </h3>
                   <div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>
-                    Connect to Google Gemini (Antigravity IDE & Code Assist) or GitHub Copilot API to harvest real developer activity.
+                    {cohort === 'pilot'
+                      ? 'Local Antigravity IDE workspace streams, trajectories, and developer telemetry for the pilot engineering team.'
+                      : 'Connect to GitHub Copilot Enterprise API to harvest real developer activity and organization seat usage.'}
                   </div>
                 </div>
               </div>
@@ -2357,88 +2364,98 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             </div>
           </div>
 
-          {/* Provider Selection Tabs */}
-          <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
-            <button
-              onClick={() => {
-                setDevProvider('gemini_antigravity');
-                setDevEndpointUrl('https://generativelanguage.googleapis.com');
-                setDevConnectionMode('live_api');
-              }}
-              style={{
-                flex: 1,
+          {/* DEDICATED TOOL IDENTIFIER BANNER (Strictly isolated by cohort) */}
+          {cohort === 'pilot' ? (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              padding: '14px 18px',
+              borderRadius: 10,
+              border: '2px solid #0284C7',
+              background: '#F0F9FF',
+              marginBottom: 20
+            }}>
+              <div style={{
+                background: '#0284C7',
+                color: '#FFFFFF',
+                borderRadius: 8,
+                padding: 10,
                 display: 'flex',
                 alignItems: 'center',
-                gap: 12,
-                padding: '14px 18px',
-                borderRadius: 10,
-                border: devProvider === 'gemini_antigravity' ? '2px solid #0284C7' : '1.5px solid #E2E8F0',
-                background: devProvider === 'gemini_antigravity' ? '#F0F9FF' : '#FFFFFF',
-                cursor: 'pointer',
-                textAlign: 'left'
-              }}
-            >
-              <div style={{
-                background: devProvider === 'gemini_antigravity' ? '#0284C7' : '#F1F5F9',
-                color: devProvider === 'gemini_antigravity' ? '#FFFFFF' : '#64748B',
-                borderRadius: 8,
-                padding: 10
+                justifyContent: 'center'
               }}>
                 <Sparkles size={20} />
               </div>
-              <div>
-                <div style={{ fontWeight: 800, fontSize: 14, color: devProvider === 'gemini_antigravity' ? '#0369A1' : '#1E293B' }}>
-                  Antigravity IDE
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 800, fontSize: 14, color: '#0369A1', fontFamily: 'Figtree, sans-serif' }}>
+                  Antigravity IDE (Pilot Engineering Team)
                 </div>
                 <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
-                  Local IDE workspace trajectories, prompts, tool execution & telemetry
+                  Local IDE workspace trajectories, prompts, tool execution & live telemetry for Swagath, Nivas & Team
                 </div>
               </div>
-              {devProvider === 'gemini_antigravity' && (
-                <CheckCircle2 size={18} color="#0284C7" style={{ marginLeft: 'auto' }} />
-              )}
-            </button>
-
-            <button
-              onClick={() => {
-                setDevProvider('github_copilot');
-                setDevEndpointUrl('https://api.github.com');
-                setDevConnectionMode('live_api');
-              }}
-              style={{
-                flex: 1,
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{
+                  background: '#E0F2FE',
+                  border: '1px solid #BAE6FD',
+                  color: '#0369A1',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  padding: '3px 10px',
+                  borderRadius: 12
+                }}>
+                  Live Pilot Stream
+                </span>
+                <CheckCircle2 size={18} color="#0284C7" />
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              padding: '14px 18px',
+              borderRadius: 10,
+              border: '2px solid #24292F',
+              background: '#FFFFFF',
+              marginBottom: 20
+            }}>
+              <div style={{
+                background: '#24292F',
+                color: '#FFFFFF',
+                borderRadius: 8,
+                padding: 10,
                 display: 'flex',
                 alignItems: 'center',
-                gap: 12,
-                padding: '14px 18px',
-                borderRadius: 10,
-                border: devProvider === 'github_copilot' ? '2px solid #24292F' : '1.5px solid #E2E8F0',
-                background: devProvider === 'github_copilot' ? '#F6F8FA' : '#FFFFFF',
-                cursor: 'pointer',
-                textAlign: 'left'
-              }}
-            >
-              <div style={{
-                background: devProvider === 'github_copilot' ? '#24292F' : '#F1F5F9',
-                color: devProvider === 'github_copilot' ? '#FFFFFF' : '#64748B',
-                borderRadius: 8,
-                padding: 10
+                justifyContent: 'center'
               }}>
                 <Cpu size={20} />
               </div>
-              <div>
-                <div style={{ fontWeight: 800, fontSize: 14, color: devProvider === 'github_copilot' ? '#24292F' : '#1E293B' }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 800, fontSize: 14, color: '#1E293B', fontFamily: 'Figtree, sans-serif' }}>
                   GitHub Copilot Enterprise
                 </div>
                 <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
-                  GitHub Organization Seats, Activity & Telemetry API
+                  Official GitHub Organization Seats, Activity & Telemetry REST API Suite (v2022-11-28)
                 </div>
               </div>
-              {devProvider === 'github_copilot' && (
-                <CheckCircle2 size={18} color="#24292F" style={{ marginLeft: 'auto' }} />
-              )}
-            </button>
-          </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{
+                  background: '#F1F5F9',
+                  border: '1px solid #CBD5E1',
+                  color: '#334155',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  padding: '3px 10px',
+                  borderRadius: 12
+                }}>
+                  Enterprise Standard
+                </span>
+                <CheckCircle2 size={18} color="#24292F" />
+              </div>
+            </div>
+          )}
 
           {/* Feedback messages */}
           {devError && (
@@ -2751,8 +2768,8 @@ export const AdminTab: React.FC<AdminTabProps> = ({ initialThresholds, onThresho
             )}
           </div>
 
-          {/* ACCORDION 2: IMPORT TEAMMATE ANTIGRAVITY LOGS (BRAIN.ZIP) - Antigravity IDE Only */}
-          {devProvider === 'gemini_antigravity' && (
+          {/* ACCORDION 2: IMPORT TEAMMATE ANTIGRAVITY LOGS (BRAIN.ZIP) - Pilot View Only */}
+          {cohort === 'pilot' && (
 
           <div style={{
             background: '#FFFFFF',

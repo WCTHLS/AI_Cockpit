@@ -105,8 +105,8 @@ export const Header: React.FC<HeaderProps> = ({
           gap: 8,
           flexWrap: 'nowrap'
         }}>
-          {/* Cohort Slicer */}
-          <div style={{
+          {/* Cohort Slicer (Enterprise / Pilot) */}
+          <div className="topbar-cohort-slicer" style={{
             display: 'inline-flex',
             background: isLight ? '#F1F5F9' : '#0B132B',
             border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
@@ -293,23 +293,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Tier 2: Dedicated Slicers Strip (Zero Scrolling) */}
         <div className="topbar-mobile-tier2">
-          {/* 1. Full-Width Cohort Segmented Control */}
-          <div className="topbar-mobile-cohort-tabs">
-            <button
-              onClick={() => onCohortChange('enterprise')}
-              className={`topbar-mobile-tab-btn ${cohort === 'enterprise' ? 'active' : ''}`}
-            >
-              Enterprise View (1,248)
-            </button>
-            <button
-              onClick={() => onCohortChange('pilot')}
-              className={`topbar-mobile-tab-btn ${cohort === 'pilot' ? 'active' : ''}`}
-            >
-              Pilot View (4)
-            </button>
-          </div>
-
-          {/* 2. Side-by-Side Clean Selectors (50% / 50%) */}
+          {/* Side-by-Side Clean Selectors (50% / 50%) */}
           <div className="topbar-mobile-dropdowns-row">
             {/* Month Dropdown */}
             <div className="topbar-mobile-select-wrapper">
